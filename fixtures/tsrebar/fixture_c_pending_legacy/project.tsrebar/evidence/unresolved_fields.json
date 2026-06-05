@@ -1,0 +1,24 @@
+{
+  "schemaVersion": "unresolved-fields/v1",
+  "items": [
+    { "objectId": "steel-data-legacy-c-001", "jsonPath": "rebar/steel_data.json#/items/0/legacyObject/raw/fields/int72", "gapId": "GAP-SFL-003" },
+    { "objectId": "steel-data-legacy-c-001", "jsonPath": "rebar/steel_data.json#/items/0/legacyObject/raw/fields/int76", "gapId": "GAP-SFL-003" },
+    { "objectId": "steel-data-legacy-c-001", "jsonPath": "rebar/steel_data.json#/items/0/legacyObject/raw/fields/int80", "gapId": "GAP-SFL-003" },
+    { "objectId": "steel-data-legacy-c-001", "jsonPath": "rebar/steel_data.json#/items/0/legacyObject/raw/fields/real84_120", "gapId": "GAP-SFL-003" },
+    { "objectId": "group-legacy-c-001", "jsonPath": "rebar/groups.json#/items/0/legacyObject/raw/fields/refs80_112", "gapId": "GAP-SFL-004" },
+    { "objectId": "group-legacy-c-001", "jsonPath": "rebar/groups.json#/items/0/legacyObject/raw/fields/vector144", "gapId": "GAP-SFL-004" },
+    { "objectId": "group-legacy-c-001", "jsonPath": "rebar/groups.json#/items/0/legacyObject/raw/fields/positions168_192", "gapId": "GAP-SFL-004" },
+    { "objectId": "group-legacy-c-001", "jsonPath": "rebar/groups.json#/items/0/legacyObject/raw/fields/variesShanghLzBlock", "gapId": "GAP-SFL-004" },
+    { "objectId": "group-legacy-c-001", "jsonPath": "rebar/groups.json#/items/0/legacyObject/raw/fields/indexOrNumberFields328_360", "gapId": "GAP-SFL-004" },
+    { "objectId": "group-legacy-c-001", "jsonPath": "rebar/groups.json#/items/0/legacyObject/raw/fields/flags364_380", "gapId": "GAP-SFL-004" },
+    { "objectId": "bar-legacy-c-001", "jsonPath": "rebar/bars.json#/items/0/legacyObject/raw/fields/ref72", "gapId": "GAP-SFL-005" },
+    { "objectId": "bar-legacy-c-001", "jsonPath": "rebar/bars.json#/items/0/legacyObject/raw/fields/ref80", "gapId": "GAP-SFL-005" },
+    { "objectId": "bar-legacy-c-001", "jsonPath": "rebar/bars.json#/items/0/legacyObject/raw/fields/ref88", "gapId": "GAP-SFL-005" },
+    { "objectId": "bar-legacy-c-001", "jsonPath": "rebar/bars.json#/items/0/legacyObject/raw/fields/int96", "gapId": "GAP-SFL-005" },
+    { "objectId": "bar-legacy-c-001", "jsonPath": "rebar/bars.json#/items/0/legacyObject/raw/fields/int100", "gapId": "GAP-SFL-005" },
+    { "objectId": "segment-legacy-c-001", "jsonPath": "rebar/segments.json#/items/0/legacyObject/raw/fields/ptr80", "gapId": "GAP-IDA-007" },
+    { "objectId": "segment-legacy-c-001", "jsonPath": "rebar/segments.json#/items/0/legacyObject/raw/fields/ptr96", "gapId": "GAP-IDA-007" },
+    { "objectId": "segment-legacy-c-001", "jsonPath": "rebar/segments.json#/items/0/legacyObject/raw/fields/ptr88", "gapId": "GAP-IDA-007" },
+    { "objectId": "segment-legacy-c-001", "jsonPath": "rebar/segments.json#/items/0/legacyObject/raw/fields/int64RoleOrState", "gapId": "GAP-IDA-007" }
+  ]
+}

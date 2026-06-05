@@ -1,0 +1,84 @@
+{
+  "id": "m1_app_010_run_001",
+  "date": "2026-06-05",
+  "decision": "m1-app-010-pass",
+  "appRoot": "C:/Users/ghost/Desktop/reverse_engineering/【03】图石软件/【图石钢筋1比1复刻】/app",
+  "scope": [
+    "LegacyGeometry DTO P3B",
+    "OccLegacyGeometryAdapter P3B",
+    "edge point projection",
+    "split by projected point",
+    "endpoint projection split rejection",
+    "wrong type and missing part diagnostics"
+  ],
+  "sample": {
+    "path": "C:/Users/ghost/Desktop/reverse_engineering/【03】图石软件/123.stp",
+    "sizeBytes": 87746388,
+    "sha256": "6a3c4f2044c2cc1f1123f0f58c61b2c869fbad3110a3585fdab49e69daf52a2a",
+    "knownStats": {
+      "solids": 754,
+      "faces": 3016,
+      "uniqueEdges": 4524,
+      "uniqueVertices": 3016,
+      "rawEdges": 9048,
+      "rawVertices": 18096,
+      "lengthUnit": "METRE"
+    }
+  },
+  "red": {
+    "verified": true,
+    "failure": "error C2039: edgeProjectPoint / edgeSplitAtPoint are not members of OccLegacyGeometryAdapter"
+  },
+  "build": {
+    "success": true,
+    "target": "legacy_geometry_adapter_tests"
+  },
+  "tests": {
+    "success": true,
+    "passed": 8,
+    "failed": 0,
+    "totalSeconds": 122.27,
+    "cases": [
+      "command_registry_tests",
+      "legacy_selection_ref_tests",
+      "app_smoke",
+      "viewer_smoke_tests",
+      "domain_rebar_boundary",
+      "step_import_probe_123",
+      "occ_selection_index_123",
+      "legacy_geometry_adapter_123"
+    ]
+  },
+  "adapterP3B": {
+    "projectionQueries": [
+      "edgeProjectPoint",
+      "edgeSplitAtPoint"
+    ],
+    "assertions": [
+      "midpoint projection preserves source edge stable id",
+      "midpoint projection distance is near zero",
+      "midpoint projection is split-safe inside interval",
+      "endpoint projection has valid parameter but is not split-safe",
+      "split at midpoint point returns first and second intervals",
+      "endpoint split at point is rejected with stable diagnostic",
+      "outside projection reports non-zero distance and is not split-safe",
+      "wrong type and missing part diagnostics are stable"
+    ]
+  },
+  "guardrails": {
+    "domainRebarOcctBoundary": "pass",
+    "parentRebarGenerationChainMigrated": false,
+    "rebarBusinessImplemented": false,
+    "todo011Implemented": false,
+    "topologySplitImplemented": false,
+    "splineRebuildImplemented": false
+  },
+  "readinessGate": {
+    "decision": "M1-Formal-Ready",
+    "m1FormalAllowed": true,
+    "errorCount": 0,
+    "warningCount": 0,
+    "passCount": 78,
+    "checkCount": 78
+  }
+}

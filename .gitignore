@@ -1,0 +1,52 @@
+# Build outputs
+app/build/
+app/build2/
+tools/**/build/
+**/CMakeFiles/
+**/CMakeCache.txt
+**/cmake_install.cmake
+**/*.vcxproj
+**/*.vcxproj.filters
+**/*.sln
+**/*.pdb
+**/*.ilk
+**/*.obj
+**/*.exe
+**/*.dll
+**/*.lib
+**/*.exp
+
+# Local IDE / editor state
+.vs/
+.vscode/
+.idea/
+*.user
+*.suo
+
+# Local reverse-engineering databases and commercial binaries
+*.i64
+*.id0
+*.id1
+*.id2
+*.nam
+*.til
+*.sfl
+
+# Large imported geometry samples and generated probes
+*.stp
+*.step
+docs/phase1/step_selection/**/step_selection_run_*.json
+docs/phase1/step_selection/**/*_probe_once.json
+docs/phase1/step_selection/**/*_copied_input.*
+docs/phase1/app_save_open_reports/_work/
+
+# Temporary files
+__pycache__/
+**/__pycache__/
+*.py[cod]
+.pytest_cache/
+*.tmp
+*.bak
+*.log
+Thumbs.db
+desktop.ini

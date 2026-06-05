@@ -1,0 +1,15 @@
+{
+    "createdAt": "2026-06-05T03:57:51+08:00",
+    "dirtyAfter": false,
+    "dirtyBefore": false,
+    "finalState": "OpenedRepairRequired",
+    "guardrails": {
+        "formalPackageUnchanged": true,
+        "previewDiscarded": true
+    },
+    "initialState": "BindingRepairPreview",
+    "reportId": "binding_repair_cancel_001",
+    "runtime": "Qt6 C++ runtime gate",
+    "schemaVersion": "binding-repair-cancel/v1",
+    "sourcePackage": "C:/Users/ghost/Desktop/reverse_engineering/【03】图石软件/【图石钢筋1比1复刻】/fixtures/tsrebar/negative/broken_binding/project.tsrebar"
+}

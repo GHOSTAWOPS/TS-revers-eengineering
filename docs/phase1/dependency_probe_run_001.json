@@ -1,0 +1,167 @@
+{
+  "schemaVersion": "dependency-probe/v1",
+  "reportId": "dependency_probe_run_001",
+  "createdAt": "2026-06-05T03:17:24+08:00",
+  "scope": "Local Qt6 + OCCT vcpkg probe",
+  "vcpkg": {
+    "root": "D:\\Work\\vcpkg",
+    "version": "vcpkg package management program version 2026-04-08-e0612b42ce44e55a0e630f2ee9d3c533a63d8bc1\n\nSee LICENSE.txt for license information.",
+    "triplet": "x64-windows",
+    "installedRoot": "D:\\Work\\vcpkg\\installed\\x64-windows",
+    "statusFile": "D:\\Work\\vcpkg\\installed\\vcpkg\\status"
+  },
+  "packages": {
+    "qtbase": {
+      "name": "qtbase",
+      "version": "6.10.3",
+      "port_version": "1",
+      "architecture": "x64-windows",
+      "default_features": [
+        "brotli",
+        "concurrent",
+        "dbus",
+        "dnslookup",
+        "doubleconversion",
+        "freetype",
+        "gui",
+        "harfbuzz",
+        "icu",
+        "jpeg",
+        "network",
+        "opengl",
+        "openssl",
+        "pcre2",
+        "png",
+        "sessionmanager",
+        "sql",
+        "sql-psql",
+        "sql-sqlite",
+        "testlib",
+        "thread",
+        "widgets",
+        "zstd"
+      ],
+      "status": "install ok installed"
+    },
+    "opencascade": {
+      "name": "opencascade",
+      "version": "7.9.3",
+      "port_version": "1",
+      "architecture": "x64-windows",
+      "default_features": [
+        "freetype"
+      ],
+      "status": "install ok installed"
+    }
+  },
+  "cmakeConfig": {
+    "qt6Config": "D:\\Work\\vcpkg\\installed\\x64-windows\\share\\Qt6\\Qt6Config.cmake",
+    "occtConfig": "D:\\Work\\vcpkg\\installed\\x64-windows\\share\\opencascade\\OpenCASCADEConfig.cmake",
+    "qt6ConfigExists": true,
+    "occtConfigExists": true
+  },
+  "runtimeDlls": {
+    "qtAll": [
+      "Qt6Concurrent.dll",
+      "Qt6Core.dll",
+      "Qt6DBus.dll",
+      "Qt6Gui.dll",
+      "Qt6Network.dll",
+      "Qt6OpenGL.dll",
+      "Qt6OpenGLWidgets.dll",
+      "Qt6PrintSupport.dll",
+      "Qt6Sql.dll",
+      "Qt6Test.dll",
+      "Qt6Widgets.dll",
+      "Qt6Xml.dll"
+    ],
+    "qtRecommendedForPhase1": [
+      "Qt6Core.dll",
+      "Qt6Gui.dll",
+      "Qt6OpenGL.dll",
+      "Qt6OpenGLWidgets.dll",
+      "Qt6Test.dll",
+      "Qt6Widgets.dll"
+    ],
+    "qtInstalledButNeedsReviewBeforeLinking": [
+      "Qt6Concurrent.dll",
+      "Qt6DBus.dll",
+      "Qt6Network.dll",
+      "Qt6PrintSupport.dll",
+      "Qt6Sql.dll",
+      "Qt6Xml.dll"
+    ],
+    "occtAllTk": [
+      "TKBO.dll",
+      "TKBRep.dll",
+      "TKBin.dll",
+      "TKBinL.dll",
+      "TKBinTObj.dll",
+      "TKBinXCAF.dll",
+      "TKBool.dll",
+      "TKCAF.dll",
+      "TKCDF.dll",
+      "TKDE.dll",
+      "TKDECascade.dll",
+      "TKDEGLTF.dll",
+      "TKDEIGES.dll",
+      "TKDEOBJ.dll",
+      "TKDEPLY.dll",
+      "TKDESTEP.dll",
+      "TKDESTL.dll",
+      "TKDEVRML.dll",
+      "TKFeat.dll",
+      "TKFillet.dll",
+      "TKG2d.dll",
+      "TKG3d.dll",
+      "TKGeomAlgo.dll",
+      "TKGeomBase.dll",
+      "TKHLR.dll",
+      "TKLCAF.dll",
+      "TKMath.dll",
+      "TKMesh.dll",
+      "TKMeshVS.dll",
+      "TKOffset.dll",
+      "TKOpenGl.dll",
+      "TKPrim.dll",
+      "TKRWMesh.dll",
+      "TKService.dll",
+      "TKShHealing.dll",
+      "TKStd.dll",
+      "TKStdL.dll",
+      "TKTObj.dll",
+      "TKTopAlgo.dll",
+      "TKV3d.dll",
+      "TKVCAF.dll",
+      "TKXCAF.dll",
+      "TKXMesh.dll",
+      "TKXSBase.dll",
+      "TKXml.dll",
+      "TKXmlL.dll",
+      "TKXmlTObj.dll",
+      "TKXmlXCAF.dll",
+      "TKernel.dll"
+    ]
+  },
+  "sourceArchives": {
+    "qtbase": [
+      "qtbase-everywhere-src-6.10.3.tar.xz"
+    ],
+    "opencascade": [
+      "Open-Cascade-SAS-OCCT-V7_9_3.tar.gz"
+    ]
+  },
+  "copyrightFiles": {
+    "qtbase": "D:\\Work\\vcpkg\\installed\\x64-windows\\share\\qtbase\\copyright",
+    "opencascade": "D:\\Work\\vcpkg\\installed\\x64-windows\\share\\opencascade\\copyright"
+  },
+  "decision": {
+    "dependencyCandidateFound": true,
+    "canFreezeFromLocalVcpkg": true,
+    "notes": [
+      "Installed modules are not automatically allowed project link modules.",
+      "Phase 1 CMake must still link only the approved Qt/OCCT subset.",
+      "This probe does not replace the formal dependency gate."
+    ]
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "schemaVersion": "project/v1",
+  "projectId": "proj-fixture-a",
+  "name": "fixture_a_empty_step",
+  "sourceModelId": "step-main",
+  "status": "empty-project-with-step-reference",
+  "dirtyFlags": {
+    "projectDirty": false,
+    "geometryDirty": false,
+    "rebarDirty": false,
+    "drawingDirty": false
+  },
+  "models": {
+    "structure": "geometry/source_step.json",
+    "topologyRefs": "geometry/topology_refs.json",
+    "steelData": "rebar/steel_data.json",
+    "groups": "rebar/groups.json",
+    "bars": "rebar/bars.json",
+    "segments": "rebar/segments.json",
+    "detailMapping": "drawing/detail_mapping.json",
+    "evidenceIndex": "evidence/evidence_index.json",
+    "unresolvedFields": "evidence/unresolved_fields.json"
+  },
+  "evidence": [
+    "E-DEV-007",
+    "E-DEV-010",
+    "E-DEV-011"
+  ],
+  "gaps": [
+    "GAP-DEV-001",
+    "GAP-DEV-002",
+    "GAP-DEV-007"
+  ]
+}

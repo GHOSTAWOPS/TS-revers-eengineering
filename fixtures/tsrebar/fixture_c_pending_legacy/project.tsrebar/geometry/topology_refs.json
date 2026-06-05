@@ -1,0 +1,73 @@
+{
+  "schemaVersion": "geometry-topology-refs/v1",
+  "sourceStepId": "step-main",
+  "geometryRefs": [
+    {
+      "geometryRefId": "geom-face-legacy-c-001",
+      "sourceStepId": "step-main",
+      "kind": "face",
+      "topologyId": "face-legacy-c-001",
+      "kernel": "OCCT",
+      "fingerprint": "face-sha256-fixture-c-face-legacy-c-001-placeholder",
+      "occtTransientIndexHint": 3,
+      "topologyPathHint": "solid[0]/shell[0]/face[2]",
+      "state": "resolved",
+      "evidence": [
+        "E-DEV-009",
+        "GAP-DEV-002"
+      ]
+    },
+    {
+      "geometryRefId": "geom-edge-missing-c-001",
+      "sourceStepId": "step-main",
+      "kind": "edge",
+      "topologyId": "edge-missing-c-001",
+      "kernel": "OCCT",
+      "fingerprint": null,
+      "occtTransientIndexHint": null,
+      "topologyPathHint": null,
+      "state": "unresolvedGeometry",
+      "unresolvedReason": "The legacy seg_steelbargroup curve pointer fields are preserved, but no stable STEP edge has been confirmed by IDA or runtime evidence.",
+      "openMode": "repairRequired",
+      "evidence": [
+        "E-DEV-004",
+        "GAP-DEV-002",
+        "GAP-IDA-007"
+      ]
+    }
+  ],
+  "topologyRefs": [
+    {
+      "topologyId": "face-legacy-c-001",
+      "shapeType": "face",
+      "sourceStepId": "step-main",
+      "occtTransientIndex": 3,
+      "fingerprint": {
+        "surfaceType": "plane",
+        "area": 96.0,
+        "center": [8.0, 4.0, 2.0],
+        "normalHint": [0.0, 0.0, 1.0],
+        "edgeCount": 4
+      },
+      "evidence": [
+        "GAP-DEV-002"
+      ]
+    }
+  ],
+  "unresolvedGeometry": [
+    {
+      "geometryRefId": "geom-edge-missing-c-001",
+      "topologyId": "edge-missing-c-001",
+      "requiredBy": [
+        "segment-legacy-c-001"
+      ],
+      "openMode": "repairRequired",
+      "unresolvedReason": "No confirmed STEP edge binding for the preserved seg_steelbargroup legacy pointers."
+    }
+  ],
+  "notes": [
+    "Fixture C intentionally contains unresolved geometry. Validators must not silently rebind it to a similar edge.",
+    "occtTransientIndex is a debug hint only. fingerprint and topologyId are the intended stable references.",
+    "STEP diff has not been run yet."
+  ]
+}

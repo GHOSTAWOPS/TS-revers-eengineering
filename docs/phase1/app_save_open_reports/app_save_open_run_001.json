@@ -1,0 +1,288 @@
+{
+    "appVersion": "phase1-qt6-cpp-runtime-gate",
+    "bindingRepairPreview": "C:/Users/ghost/Desktop/reverse_engineering/【03】图石软件/【图石钢筋1比1复刻】/docs/phase1/app_save_open_reports/binding_repair_preview_001.md",
+    "bindingRepairReport": "C:/Users/ghost/Desktop/reverse_engineering/【03】图石软件/【图石钢筋1比1复刻】/docs/phase1/app_save_open_reports/binding_repair_run_001.json",
+    "cases": [
+        {
+            "bindingDecision": "resolved",
+            "caseId": "ASO-001",
+            "command": "Project.OpenTsReBar",
+            "commandAvailability": {
+                "bindingRepair": false,
+                "drawing": true,
+                "rebarEdit": true,
+                "save": true,
+                "selectGeometry": true,
+                "view": true
+            },
+            "decision": "pass",
+            "dirtyAfter": false,
+            "dirtyBefore": false,
+            "errorCodes": [
+            ],
+            "finalState": "OpenedFormal",
+            "initialState": "NoProject",
+            "inputPackage": "C:/Users/ghost/Desktop/reverse_engineering/【03】图石软件/【图石钢筋1比1复刻】/fixtures/tsrebar/fixture_a_empty_step/project.tsrebar",
+            "validationDecision": "pass",
+            "warningCodes": [
+            ]
+        },
+        {
+            "bindingDecision": "warningOnly",
+            "caseId": "ASO-002",
+            "command": "Project.OpenTsReBar",
+            "commandAvailability": {
+                "bindingRepair": false,
+                "drawing": "warning",
+                "rebarEdit": true,
+                "save": true,
+                "selectGeometry": true,
+                "view": true
+            },
+            "decision": "pass",
+            "dirtyAfter": false,
+            "dirtyBefore": false,
+            "errorCodes": [
+            ],
+            "finalState": "OpenedWarning",
+            "initialState": "NoProject",
+            "inputPackage": "C:/Users/ghost/Desktop/reverse_engineering/【03】图石软件/【图石钢筋1比1复刻】/fixtures/tsrebar/fixture_b_single_group/project.tsrebar",
+            "validationDecision": "warning-only",
+            "warningCodes": [
+                "EVW001_PENDING_LEGACY_FIELD",
+                "EVW001_PENDING_LEGACY_FIELD",
+                "EVW001_PENDING_LEGACY_FIELD",
+                "EVW001_PENDING_LEGACY_FIELD",
+                "EVW001_PENDING_LEGACY_FIELD",
+                "EVW001_PENDING_LEGACY_FIELD",
+                "EVW001_PENDING_LEGACY_FIELD",
+                "EVW001_PENDING_LEGACY_FIELD",
+                "EVW001_PENDING_LEGACY_FIELD",
+                "EVW001_PENDING_LEGACY_FIELD",
+                "EVW001_PENDING_LEGACY_FIELD",
+                "EVW001_PENDING_LEGACY_FIELD",
+                "EVW001_PENDING_LEGACY_FIELD"
+            ]
+        },
+        {
+            "bindingDecision": "pendingLegacyEvidence",
+            "caseId": "ASO-003",
+            "command": "Project.OpenTsReBar",
+            "commandAvailability": {
+                "bindingRepair": true,
+                "drawing": false,
+                "rebarEdit": false,
+                "save": "raw-only-or-after-repair",
+                "selectGeometry": "repair-candidate-only",
+                "view": true
+            },
+            "decision": "pass",
+            "dirtyAfter": false,
+            "dirtyBefore": false,
+            "errorCodes": [
+            ],
+            "finalState": "OpenedRepairRequired",
+            "initialState": "NoProject",
+            "inputPackage": "C:/Users/ghost/Desktop/reverse_engineering/【03】图石软件/【图石钢筋1比1复刻】/fixtures/tsrebar/fixture_c_pending_legacy/project.tsrebar",
+            "validationDecision": "warning-only",
+            "warningCodes": [
+                "EVW001_PENDING_LEGACY_FIELD",
+                "EVW001_PENDING_LEGACY_FIELD",
+                "EVW001_PENDING_LEGACY_FIELD",
+                "EVW001_PENDING_LEGACY_FIELD",
+                "EVW001_PENDING_LEGACY_FIELD",
+                "EVW001_PENDING_LEGACY_FIELD",
+                "EVW001_PENDING_LEGACY_FIELD",
+                "EVW001_PENDING_LEGACY_FIELD",
+                "EVW001_PENDING_LEGACY_FIELD",
+                "EVW001_PENDING_LEGACY_FIELD",
+                "EVW001_PENDING_LEGACY_FIELD",
+                "EVW001_PENDING_LEGACY_FIELD",
+                "EVW001_PENDING_LEGACY_FIELD",
+                "EVW001_PENDING_LEGACY_FIELD",
+                "EVW001_PENDING_LEGACY_FIELD",
+                "EVW001_PENDING_LEGACY_FIELD",
+                "EVW001_PENDING_LEGACY_FIELD",
+                "EVW001_PENDING_LEGACY_FIELD",
+                "EVW001_PENDING_LEGACY_FIELD"
+            ]
+        },
+        {
+            "bindingDecision": "blocked",
+            "caseId": "ASO-004",
+            "command": "Project.OpenTsReBar",
+            "commandAvailability": {
+                "bindingRepair": false,
+                "drawing": false,
+                "rebarEdit": false,
+                "save": false,
+                "selectGeometry": false,
+                "view": "report-only"
+            },
+            "decision": "blocked",
+            "dirtyAfter": false,
+            "dirtyBefore": false,
+            "errorCodes": [
+                "PV001_REQUIRED_FILE_MISSING"
+            ],
+            "finalState": "OpenBlocked",
+            "initialState": "NoProject",
+            "inputPackage": "C:/Users/ghost/Desktop/reverse_engineering/【03】图石软件/【图石钢筋1比1复刻】/fixtures/tsrebar/negative/missing_required_file/project.tsrebar",
+            "validationDecision": "fail",
+            "warningCodes": [
+                "EVW001_PENDING_LEGACY_FIELD",
+                "EVW001_PENDING_LEGACY_FIELD",
+                "EVW001_PENDING_LEGACY_FIELD",
+                "EVW001_PENDING_LEGACY_FIELD",
+                "EVW001_PENDING_LEGACY_FIELD",
+                "EVW001_PENDING_LEGACY_FIELD",
+                "EVW001_PENDING_LEGACY_FIELD",
+                "EVW001_PENDING_LEGACY_FIELD",
+                "EVW001_PENDING_LEGACY_FIELD",
+                "EVW001_PENDING_LEGACY_FIELD",
+                "EVW001_PENDING_LEGACY_FIELD",
+                "EVW001_PENDING_LEGACY_FIELD",
+                "EVW001_PENDING_LEGACY_FIELD"
+            ]
+        },
+        {
+            "bindingDecision": "repairRequired",
+            "caseId": "ASO-008-open",
+            "command": "Project.OpenTsReBar",
+            "commandAvailability": {
+                "bindingRepair": true,
+                "drawing": false,
+                "rebarEdit": false,
+                "save": "raw-only-or-after-repair",
+                "selectGeometry": "repair-candidate-only",
+                "view": true
+            },
+            "decision": "pass",
+            "dirtyAfter": false,
+            "dirtyBefore": false,
+            "errorCodes": [
+                "LGV004_GEOMETRY_PATH_BROKEN"
+            ],
+            "finalState": "OpenedRepairRequired",
+            "initialState": "NoProject",
+            "inputPackage": "C:/Users/ghost/Desktop/reverse_engineering/【03】图石软件/【图石钢筋1比1复刻】/fixtures/tsrebar/negative/broken_binding/project.tsrebar",
+            "validationDecision": "fail",
+            "warningCodes": [
+                "EVW001_PENDING_LEGACY_FIELD",
+                "EVW001_PENDING_LEGACY_FIELD",
+                "EVW001_PENDING_LEGACY_FIELD",
+                "EVW001_PENDING_LEGACY_FIELD",
+                "EVW001_PENDING_LEGACY_FIELD",
+                "EVW001_PENDING_LEGACY_FIELD",
+                "EVW001_PENDING_LEGACY_FIELD",
+                "EVW001_PENDING_LEGACY_FIELD",
+                "EVW001_PENDING_LEGACY_FIELD",
+                "EVW001_PENDING_LEGACY_FIELD",
+                "EVW001_PENDING_LEGACY_FIELD",
+                "EVW001_PENDING_LEGACY_FIELD",
+                "EVW001_PENDING_LEGACY_FIELD"
+            ]
+        },
+        {
+            "bindingDecision": "repairRequired",
+            "candidatePackage": "C:/Users/ghost/Desktop/reverse_engineering/【03】图石软件/【图石钢筋1比1复刻】/fixtures/tsrebar/negative/broken_binding/project.tsrebar",
+            "caseId": "ASO-005",
+            "command": "Project.Save",
+            "currentPackage": "C:/Users/ghost/Desktop/reverse_engineering/【03】图石软件/【图石钢筋1比1复刻】/docs/phase1/app_save_open_reports/_work/save_open_current.tsrebar",
+            "decision": "blocked",
+            "dirtyAfter": true,
+            "dirtyBefore": true,
+            "errorCodes": [
+                "LGV004_GEOMETRY_PATH_BROKEN"
+            ],
+            "finalState": "SaveFailed",
+            "guardrails": {
+                "dirtyPreserved": true,
+                "oldPackagePreserved": true,
+                "silentRebindForbidden": true
+            },
+            "initialState": "Dirty",
+            "newPackageHash": "sha256:2ee950c4a3a01bd7cd02bd22bb033e505059d0fac163295740fe2c18dad02ef7",
+            "oldPackageHash": "sha256:2ee950c4a3a01bd7cd02bd22bb033e505059d0fac163295740fe2c18dad02ef7",
+            "validationDecision": "fail",
+            "validationReportPath": "C:/Users/ghost/Desktop/reverse_engineering/【03】图石软件/【图石钢筋1比1复刻】/docs/phase1/app_save_open_reports/broken_binding_validation.json"
+        },
+        {
+            "bindingDecision": "warningOnly",
+            "candidatePackage": "C:/Users/ghost/Desktop/reverse_engineering/【03】图石软件/【图石钢筋1比1复刻】/fixtures/tsrebar/fixture_b_single_group/project.tsrebar",
+            "caseId": "ASO-006",
+            "command": "Project.Save",
+            "currentPackage": "C:/Users/ghost/Desktop/reverse_engineering/【03】图石软件/【图石钢筋1比1复刻】/docs/phase1/app_save_open_reports/_work/save_open_current.tsrebar",
+            "decision": "pass",
+            "dirtyAfter": false,
+            "dirtyBefore": true,
+            "errorCodes": [
+            ],
+            "finalState": "OpenedWarning",
+            "guardrails": {
+                "dirtyCleared": true,
+                "oldPackageReplaced": true,
+                "saveTransactionUsed": true
+            },
+            "initialState": "Dirty",
+            "newPackageHash": "sha256:d3104d7b4488ea1eabe392f849a3295c38adb49aaf5820fdecb77c3722b77fa4",
+            "oldPackageHash": "sha256:2ee950c4a3a01bd7cd02bd22bb033e505059d0fac163295740fe2c18dad02ef7",
+            "validationDecision": "warning-only",
+            "validationReportPath": "C:/Users/ghost/Desktop/reverse_engineering/【03】图石软件/【图石钢筋1比1复刻】/docs/phase1/app_save_open_reports/fixture_b_single_group_validation.json"
+        },
+        {
+            "bindingDecision": "repairPreview",
+            "caseId": "ASO-008",
+            "command": "Binding.Repair.Begin",
+            "decision": "pass",
+            "dirtyAfter": false,
+            "dirtyBefore": false,
+            "finalState": "BindingRepairPreview",
+            "initialState": "OpenedRepairRequired",
+            "reportPath": "C:/Users/ghost/Desktop/reverse_engineering/【03】图石软件/【图石钢筋1比1复刻】/docs/phase1/app_save_open_reports/binding_repair_preview_001.md",
+            "validationDecision": "not-run-preview-only"
+        },
+        {
+            "bindingDecision": "repairAppliedPendingSave",
+            "caseId": "ASO-009",
+            "command": "Binding.Repair.Apply",
+            "decision": "pass",
+            "dirtyAfter": false,
+            "dirtyBefore": true,
+            "finalState": "OpenedWarning",
+            "initialState": "BindingRepairPreview",
+            "reportPath": "C:/Users/ghost/Desktop/reverse_engineering/【03】图石软件/【图石钢筋1比1复刻】/docs/phase1/app_save_open_reports/binding_repair_run_001.json",
+            "validationDecision": "warning-only"
+        },
+        {
+            "bindingDecision": "repairRequired",
+            "caseId": "ASO-010",
+            "command": "Binding.Repair.Cancel",
+            "decision": "pass",
+            "dirtyAfter": false,
+            "dirtyBefore": false,
+            "finalState": "OpenedRepairRequired",
+            "initialState": "BindingRepairPreview",
+            "reportPath": "C:/Users/ghost/Desktop/reverse_engineering/【03】图石软件/【图石钢筋1比1复刻】/docs/phase1/app_save_open_reports/binding_repair_cancel_001.json",
+            "validationDecision": "not-run-cancel-only"
+        }
+    ],
+    "createdAt": "2026-06-05T03:57:51+08:00",
+    "qtRuntime": {
+        "guiCommandActionsCreated": true,
+        "qApplicationCreated": true,
+        "qpaPlatform": "minimal"
+    },
+    "reportId": "app_save_open_run_001",
+    "schemaVersion": "app-save-open-run/v1",
+    "scope": "Qt6 C++ runtime gate",
+    "summary": {
+        "blockedCount": 2,
+        "decision": "qt6-app-pass",
+        "failCount": 0,
+        "m1FormalCandidate": true,
+        "passCount": 8,
+        "remainingGaps": [
+        ]
+    }
+}

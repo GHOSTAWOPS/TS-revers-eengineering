@@ -1,0 +1,31 @@
+Qt Version: 6.10.3#1
+Qt Source: vcpkg qtbase package with local source archive
+vcpkg package: qtbase:x64-windows
+vcpkg root: D:\Work\vcpkg
+Install root: D:\Work\vcpkg\installed\x64-windows
+Source archive: D:\Work\vcpkg\downloads\qtbase-everywhere-src-6.10.3.tar.xz
+License route: open-source Qt Base dynamic linking route; legal review before external distribution
+Modules:
+  - Core
+  - Gui
+  - Widgets
+  - OpenGL
+  - OpenGLWidgets
+  - Test (test-only)
+Runtime DLLs:
+  - Qt6Core.dll
+  - Qt6Gui.dll
+  - Qt6Widgets.dll
+  - Qt6OpenGL.dll
+  - Qt6OpenGLWidgets.dll
+  - Qt6Test.dll (test-only)
+Official license URL: https://doc.qt.io/qt-6/licenses-used-in-qt.html
+Official SBOM URL: https://doc.qt.io/qt-6/sbom.html
+Installed vcpkg copyright file: D:\Work\vcpkg\installed\x64-windows\share\qtbase\copyright
+Installed vcpkg SPDX file: D:\Work\vcpkg\installed\x64-windows\share\qtbase\vcpkg.spdx.json
+Source modified: no
+
+Gate note:
+This record freezes the local Qt Base dependency candidate for M1. Installed
+Qt DLLs outside the listed runtime subset require explicit review before they
+can be linked by the project.

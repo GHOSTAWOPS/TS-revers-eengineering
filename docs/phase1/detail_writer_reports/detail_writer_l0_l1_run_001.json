@@ -1,0 +1,106 @@
+{
+  "schemaVersion": "detail-writer-l0-l1-run/v1",
+  "reportId": "detail_writer_l0_l1_run_001",
+  "createdAt": "2026-06-05T03:02:55+08:00",
+  "decision": "l0-l1-pass",
+  "summary": {
+    "l0": "passed",
+    "l1": "passed",
+    "l2AutoCadRun": false,
+    "positiveOutputDir": "docs/phase1/detail_writer_reports/generated_detail_package",
+    "rollbackOldPackagePreserved": true,
+    "autoCadImportNotClaimed": true
+  },
+  "positiveRun": {
+    "schemaVersion": "detail-writer-run/v1",
+    "runId": "DW-RUN-001-POSITIVE",
+    "createdAt": "2026-06-05T03:02:55+08:00",
+    "inputPackage": "C:/Users/ghost/Desktop/reverse_engineering/【03】图石软件/【图石钢筋1比1复刻】/fixtures/tsrebar/fixture_b_single_group/project.tsrebar",
+    "outputDir": "docs/phase1/detail_writer_reports/generated_detail_package",
+    "decision": "l0-l1-pass",
+    "l0": "passed",
+    "l1": "passed",
+    "l2": "not_run",
+    "files": [
+      "Detail.xml",
+      "Detail01.stl"
+    ],
+    "findings": [],
+    "warnings": [
+      "DW-WARN-DEFAULT_DIAMETER"
+    ],
+    "errorCodes": [],
+    "outputHashBefore": "sha256:missing",
+    "outputHashAfter": "sha256:cf2df590737e4026c3235a8e01ec901ca791606f57ed9800d402076626847d4a",
+    "guardrails": {
+      "replacedOnlyAfterValidation": true,
+      "drawingDirtyCanBeClearedAfterL1": true,
+      "autoCadImportNotClaimed": true
+    },
+    "linkedEvidence": [
+      "E-DETAIL-001",
+      "E-DETAIL-002",
+      "E-IDA-018",
+      "E-IDA-019"
+    ],
+    "linkedGaps": [
+      "GAP-DRAW-001",
+      "GAP-DRAW-002",
+      "GAP-DRAW-005"
+    ]
+  },
+  "rollbackRun": {
+    "schemaVersion": "detail-writer-run/v1",
+    "runId": "DW-RUN-001-ROLLBACK",
+    "createdAt": "2026-06-05T03:02:55+08:00",
+    "inputPackage": "C:/Users/ghost/Desktop/reverse_engineering/【03】图石软件/【图石钢筋1比1复刻】/fixtures/tsrebar/negative/detail_rsd_mismatch/project.tsrebar",
+    "outputDir": "docs/phase1/detail_writer_reports/rollback_probe_package",
+    "decision": "fail",
+    "l0": "passed",
+    "l1": "failed",
+    "l2": "not_run",
+    "files": [],
+    "findings": [
+      {
+        "code": "DW003_ID_CROSS_REFERENCE_FAILED",
+        "file": "Detail01.stl",
+        "message": "StbGroup rsdID ['rsd-001'] != StbRow rsdID ['rsd-mismatch-999']"
+      }
+    ],
+    "warnings": [
+      "DW-WARN-DEFAULT_DIAMETER"
+    ],
+    "errorCodes": [
+      "DW003_ID_CROSS_REFERENCE_FAILED"
+    ],
+    "guardrails": {
+      "oldPackagePreserved": true,
+      "drawingDirtyPreserved": true
+    },
+    "linkedEvidence": [
+      "E-DETAIL-001",
+      "E-DETAIL-002",
+      "E-IDA-018",
+      "E-IDA-019"
+    ],
+    "linkedGaps": [
+      "GAP-DRAW-005"
+    ]
+  },
+  "linkedRequirements": [
+    "REQ-DRAW-003",
+    "REQ-DRAW-004"
+  ],
+  "linkedEvidence": [
+    "E-DEV-001",
+    "E-DETAIL-001",
+    "E-DETAIL-002",
+    "E-IDA-018",
+    "E-IDA-019"
+  ],
+  "linkedGaps": [
+    "GAP-DRAW-001",
+    "GAP-DRAW-002",
+    "GAP-DRAW-005"
+  ]
+}

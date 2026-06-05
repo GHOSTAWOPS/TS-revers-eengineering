@@ -1,0 +1,27 @@
+{
+  "schemaVersion": "rebar-steel-data/v1",
+  "items": [
+    {
+      "id": "steel-data-legacy-c-001",
+      "kind": "RebarSteelData",
+      "legacyObject": {
+        "type": "steelData",
+        "raw": {
+          "schema": "legacy-steelData-v1",
+          "fields": {
+            "name": "fixture-c-steel-data",
+            "int72": { "value": 0, "confidence": "pending", "evidence": ["GAP-SFL-003"] },
+            "int76": { "value": 0, "confidence": "pending", "evidence": ["GAP-SFL-003"] },
+            "int80": { "value": 0, "confidence": "pending", "evidence": ["GAP-SFL-003"] },
+            "real84_120": { "value": [0.0, 0.0, 0.0, 0.0], "confidence": "pending", "evidence": ["GAP-SFL-003"] }
+          }
+        }
+      },
+      "evidence": [
+        "E-IDA-015",
+        "E-IDA-016",
+        "GAP-SFL-003"
+      ]
+    }
+  ]
+}

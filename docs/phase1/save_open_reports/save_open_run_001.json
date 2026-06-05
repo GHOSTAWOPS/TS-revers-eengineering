@@ -1,0 +1,106 @@
+{
+  "schemaVersion": "save-open-run/v1",
+  "runId": "save_open_run_001",
+  "createdAt": "2026-06-05T01:34:42+08:00",
+  "runner": "tools/tsrebar_transaction_gate/transaction_gate.py",
+  "scope": "standalone transaction gate around tsrebar validator; not Qt6 application Save/Open",
+  "saveResults": [
+    {
+      "schemaVersion": "save-transaction-result/v1",
+      "scenario": "save_broken_binding",
+      "decision": "SaveFailed",
+      "validationDecision": "fail",
+      "dirtyBefore": true,
+      "dirtyAfter": true,
+      "oldPackageHashBefore": "sha256:2ee950c4a3a01bd7cd02bd22bb033e505059d0fac163295740fe2c18dad02ef7",
+      "oldPackageHashAfter": "sha256:2ee950c4a3a01bd7cd02bd22bb033e505059d0fac163295740fe2c18dad02ef7",
+      "candidatePackage": "C:/Users/ghost/Desktop/reverse_engineering/【03】图石软件/【图石钢筋1比1复刻】/fixtures/tsrebar/negative/broken_binding/project.tsrebar",
+      "currentPackage": "C:/Users/ghost/AppData/Local/Temp/tsrebar-save-open-6kcgztfr/current.tsrebar",
+      "validationReportPath": "C:/Users/ghost/Desktop/reverse_engineering/【03】图石软件/【图石钢筋1比1复刻】/docs/phase1/save_open_reports/save_broken_binding_validation.json",
+      "errorCodes": [
+        "LGV004_GEOMETRY_PATH_BROKEN"
+      ],
+      "guardrails": {
+        "oldPackagePreserved": true,
+        "dirtyPreserved": true
+      }
+    },
+    {
+      "schemaVersion": "save-transaction-result/v1",
+      "scenario": "save_fixture_b_single_group",
+      "decision": "SaveSucceeded",
+      "validationDecision": "warning-only",
+      "dirtyBefore": true,
+      "dirtyAfter": false,
+      "oldPackageHashBefore": "sha256:2ee950c4a3a01bd7cd02bd22bb033e505059d0fac163295740fe2c18dad02ef7",
+      "oldPackageHashAfter": "sha256:d3104d7b4488ea1eabe392f849a3295c38adb49aaf5820fdecb77c3722b77fa4",
+      "candidatePackage": "C:/Users/ghost/Desktop/reverse_engineering/【03】图石软件/【图石钢筋1比1复刻】/fixtures/tsrebar/fixture_b_single_group/project.tsrebar",
+      "currentPackage": "C:/Users/ghost/AppData/Local/Temp/tsrebar-save-open-6kcgztfr/current.tsrebar",
+      "validationReportPath": "C:/Users/ghost/Desktop/reverse_engineering/【03】图石软件/【图石钢筋1比1复刻】/docs/phase1/save_open_reports/save_fixture_b_single_group_validation.json",
+      "errorCodes": [],
+      "guardrails": {
+        "oldPackageReplaced": true,
+        "dirtyCleared": true
+      }
+    }
+  ],
+  "openResults": [
+    {
+      "schemaVersion": "open-transaction-result/v1",
+      "packagePath": "C:/Users/ghost/Desktop/reverse_engineering/【03】图石软件/【图石钢筋1比1复刻】/fixtures/tsrebar/fixture_a_empty_step/project.tsrebar",
+      "openState": "formalEdit",
+      "validationDecision": "pass",
+      "errorCount": 0,
+      "warningCount": 0,
+      "errorCodes": []
+    },
+    {
+      "schemaVersion": "open-transaction-result/v1",
+      "packagePath": "C:/Users/ghost/Desktop/reverse_engineering/【03】图石软件/【图石钢筋1比1复刻】/fixtures/tsrebar/fixture_b_single_group/project.tsrebar",
+      "openState": "warningOnly",
+      "validationDecision": "warning-only",
+      "errorCount": 0,
+      "warningCount": 13,
+      "errorCodes": []
+    },
+    {
+      "schemaVersion": "open-transaction-result/v1",
+      "packagePath": "C:/Users/ghost/Desktop/reverse_engineering/【03】图石软件/【图石钢筋1比1复刻】/fixtures/tsrebar/fixture_c_pending_legacy/project.tsrebar",
+      "openState": "warningOnly",
+      "validationDecision": "warning-only",
+      "errorCount": 0,
+      "warningCount": 19,
+      "errorCodes": []
+    },
+    {
+      "schemaVersion": "open-transaction-result/v1",
+      "packagePath": "C:/Users/ghost/Desktop/reverse_engineering/【03】图石软件/【图石钢筋1比1复刻】/fixtures/tsrebar/negative/missing_required_file/project.tsrebar",
+      "openState": "blocked",
+      "validationDecision": "fail",
+      "errorCount": 1,
+      "warningCount": 13,
+      "errorCodes": [
+        "PV001_REQUIRED_FILE_MISSING"
+      ]
+    },
+    {
+      "schemaVersion": "open-transaction-result/v1",
+      "packagePath": "C:/Users/ghost/Desktop/reverse_engineering/【03】图石软件/【图石钢筋1比1复刻】/fixtures/tsrebar/negative/half_written_package/project.tsrebar",
+      "openState": "blocked",
+      "validationDecision": "fail",
+      "errorCount": 3,
+      "warningCount": 13,
+      "errorCodes": [
+        "PV004_SAVE_TRANSACTION_INCOMPLETE",
+        "TXV001_TEMP_PACKAGE_INVALID",
+        "TXV006_HALF_WRITTEN_PACKAGE_OPENED_AS_FORMAL"
+      ]
+    }
+  ],
+  "decision": "standalone-pass",
+  "remainingGaps": [
+    "Qt6 application Save/Open integration not run",
+    "real STEP multi-run diff not run",
+    "binding repair workflow not implemented"
+  ]
+}

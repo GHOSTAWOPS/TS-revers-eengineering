@@ -1,0 +1,15 @@
+{
+  "schemaVersion": "geometry-topology-refs/v1",
+  "sourceStepId": "step-main",
+  "geometryRefs": [],
+  "topologyRefs": [],
+  "unresolvedGeometry": [],
+  "notes": [
+    "Fixture A intentionally contains no selected face or edge.",
+    "STEP diff has not been run yet."
+  ],
+  "evidence": [
+    "E-DEV-009",
+    "GAP-DEV-002"
+  ]
+}

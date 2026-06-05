@@ -1,0 +1,50 @@
+{
+  "schemaVersion": "rebar-bars/v1",
+  "items": [
+    {
+      "id": "bar-001",
+      "kind": "Rebar",
+      "groupId": "group-001",
+      "segmentIds": ["segment-001"],
+      "legacyObject": {
+        "type": "steelbar",
+        "raw": {
+          "schema": "legacy-steelbar-v1",
+          "fields": {
+            "name64": "fixture-b-bar-001",
+            "ref72": { "value": "group-001", "confidence": "pending", "evidence": ["GAP-SFL-005"] },
+            "ref80": { "value": "segment-001", "confidence": "pending", "evidence": ["GAP-SFL-005"] },
+            "ref88": { "value": "steel-data-001", "confidence": "pending", "evidence": ["GAP-SFL-005"] },
+            "int96": { "value": 1, "confidence": "pending", "evidence": ["GAP-SFL-005"] },
+            "int100": { "value": 1, "confidence": "pending", "evidence": ["GAP-SFL-005"] }
+          }
+        }
+      },
+      "geometryRef": {
+        "kernel": "OCCT",
+        "sourceStepId": "step-main",
+        "curveRefs": ["curve-seg-001"]
+      },
+      "binding": {
+        "state": "resolved",
+        "items": [
+          {
+            "role": "sourceCurve",
+            "legacyPath": "rebar/bars.json#/items/0/legacyObject/raw/fields/ref80",
+            "geometryPath": "rebar/segments.json#/items/0/geometryRef/curveRefs/0",
+            "curveId": "curve-seg-001",
+            "evidence": [
+              "E-DEV-004",
+              "GAP-DEV-002"
+            ]
+          }
+        ]
+      },
+      "evidence": [
+        "E-IDA-015",
+        "E-IDA-017",
+        "GAP-SFL-005"
+      ]
+    }
+  ]
+}

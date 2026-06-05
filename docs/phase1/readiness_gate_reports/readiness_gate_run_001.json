@@ -1,0 +1,1188 @@
+{
+  "schemaVersion": "phase1-readiness-gate/v1",
+  "reportId": "readiness_gate_run_001",
+  "createdAt": "2026-06-05T03:58:04+08:00",
+  "scope": "M1-Formal readiness artifact gate",
+  "summary": {
+    "decision": "M1-Formal-Ready",
+    "m1FormalAllowed": true,
+    "errorCount": 0,
+    "warningCount": 0,
+    "passCount": 78,
+    "checkCount": 78,
+    "blockerGaps": []
+  },
+  "checks": [
+    {
+      "gate": "Documentation",
+      "item": "00_总览.md",
+      "severity": "error",
+      "ok": true,
+      "path": "00_总览.md",
+      "evidence": [],
+      "gap": [
+        "GAP-DEV-001",
+        "GAP-DEV-007"
+      ],
+      "message": "present"
+    },
+    {
+      "gate": "Documentation",
+      "item": "08_开发命令契约.md",
+      "severity": "error",
+      "ok": true,
+      "path": "08_开发命令契约.md",
+      "evidence": [],
+      "gap": [
+        "GAP-DEV-001",
+        "GAP-DEV-007"
+      ],
+      "message": "present"
+    },
+    {
+      "gate": "Documentation",
+      "item": "11_需求证据追溯矩阵.md",
+      "severity": "error",
+      "ok": true,
+      "path": "11_需求证据追溯矩阵.md",
+      "evidence": [],
+      "gap": [
+        "GAP-DEV-001",
+        "GAP-DEV-007"
+      ],
+      "message": "present"
+    },
+    {
+      "gate": "Documentation",
+      "item": "24_新设计文件格式Schema与Fixture草案.md",
+      "severity": "error",
+      "ok": true,
+      "path": "24_新设计文件格式Schema与Fixture草案.md",
+      "evidence": [],
+      "gap": [
+        "GAP-DEV-001",
+        "GAP-DEV-007"
+      ],
+      "message": "present"
+    },
+    {
+      "gate": "Documentation",
+      "item": "30_Phase1工程初始化Runbook与Readiness记录模板.md",
+      "severity": "error",
+      "ok": true,
+      "path": "30_Phase1工程初始化Runbook与Readiness记录模板.md",
+      "evidence": [],
+      "gap": [
+        "GAP-DEV-001",
+        "GAP-DEV-007"
+      ],
+      "message": "present"
+    },
+    {
+      "gate": "Documentation",
+      "item": "31_STEP选择ID实际运行记录模板与样本清单.md",
+      "severity": "error",
+      "ok": true,
+      "path": "31_STEP选择ID实际运行记录模板与样本清单.md",
+      "evidence": [],
+      "gap": [
+        "GAP-DEV-001",
+        "GAP-DEV-007"
+      ],
+      "message": "present"
+    },
+    {
+      "gate": "Documentation",
+      "item": "32_Validator实现契约与错误码总表.md",
+      "severity": "error",
+      "ok": true,
+      "path": "32_Validator实现契约与错误码总表.md",
+      "evidence": [],
+      "gap": [
+        "GAP-DEV-001",
+        "GAP-DEV-007"
+      ],
+      "message": "present"
+    },
+    {
+      "gate": "Documentation",
+      "item": "33_Qt6应用SaveOpen与Binding修复契约.md",
+      "severity": "error",
+      "ok": true,
+      "path": "33_Qt6应用SaveOpen与Binding修复契约.md",
+      "evidence": [
+        "E-DEV-018"
+      ],
+      "gap": [
+        "GAP-DEV-001",
+        "GAP-DEV-007"
+      ],
+      "message": "present"
+    },
+    {
+      "gate": "Documentation",
+      "item": "34_Phase1ReadinessGate实际运行记录.md",
+      "severity": "error",
+      "ok": true,
+      "path": "34_Phase1ReadinessGate实际运行记录.md",
+      "evidence": [],
+      "gap": [
+        "GAP-DEV-001",
+        "GAP-DEV-007"
+      ],
+      "message": "present"
+    },
+    {
+      "gate": "Documentation",
+      "item": "99_缺口和待确认项.md",
+      "severity": "error",
+      "ok": true,
+      "path": "99_缺口和待确认项.md",
+      "evidence": [],
+      "gap": [
+        "GAP-DEV-001",
+        "GAP-DEV-007"
+      ],
+      "message": "present"
+    },
+    {
+      "gate": "Fixture",
+      "item": "fixture_a_empty_step",
+      "severity": "error",
+      "ok": true,
+      "path": "fixtures/tsrebar/fixture_a_empty_step/project.tsrebar",
+      "evidence": [
+        "E-DEV-011",
+        "E-DEV-012",
+        "E-DEV-013"
+      ],
+      "gap": [
+        "GAP-DEV-001"
+      ],
+      "message": "present"
+    },
+    {
+      "gate": "Fixture",
+      "item": "fixture_a_empty_step/manifest.json",
+      "severity": "error",
+      "ok": true,
+      "path": "fixtures/tsrebar/fixture_a_empty_step/project.tsrebar/manifest.json",
+      "evidence": [
+        "E-DEV-011",
+        "E-DEV-012",
+        "E-DEV-013"
+      ],
+      "gap": [
+        "GAP-DEV-001"
+      ],
+      "message": "present"
+    },
+    {
+      "gate": "Fixture",
+      "item": "fixture_a_empty_step/project.json",
+      "severity": "error",
+      "ok": true,
+      "path": "fixtures/tsrebar/fixture_a_empty_step/project.tsrebar/project.json",
+      "evidence": [
+        "E-DEV-011",
+        "E-DEV-012",
+        "E-DEV-013"
+      ],
+      "gap": [
+        "GAP-DEV-001"
+      ],
+      "message": "present"
+    },
+    {
+      "gate": "Fixture",
+      "item": "fixture_a_empty_step/geometry/source_step.json",
+      "severity": "error",
+      "ok": true,
+      "path": "fixtures/tsrebar/fixture_a_empty_step/project.tsrebar/geometry/source_step.json",
+      "evidence": [
+        "E-DEV-011",
+        "E-DEV-012",
+        "E-DEV-013"
+      ],
+      "gap": [
+        "GAP-DEV-001"
+      ],
+      "message": "present"
+    },
+    {
+      "gate": "Fixture",
+      "item": "fixture_a_empty_step/geometry/topology_refs.json",
+      "severity": "error",
+      "ok": true,
+      "path": "fixtures/tsrebar/fixture_a_empty_step/project.tsrebar/geometry/topology_refs.json",
+      "evidence": [
+        "E-DEV-011",
+        "E-DEV-012",
+        "E-DEV-013"
+      ],
+      "gap": [
+        "GAP-DEV-001"
+      ],
+      "message": "present"
+    },
+    {
+      "gate": "Fixture",
+      "item": "fixture_a_empty_step/rebar/steel_data.json",
+      "severity": "error",
+      "ok": true,
+      "path": "fixtures/tsrebar/fixture_a_empty_step/project.tsrebar/rebar/steel_data.json",
+      "evidence": [
+        "E-DEV-011",
+        "E-DEV-012",
+        "E-DEV-013"
+      ],
+      "gap": [
+        "GAP-DEV-001"
+      ],
+      "message": "present"
+    },
+    {
+      "gate": "Fixture",
+      "item": "fixture_a_empty_step/rebar/groups.json",
+      "severity": "error",
+      "ok": true,
+      "path": "fixtures/tsrebar/fixture_a_empty_step/project.tsrebar/rebar/groups.json",
+      "evidence": [
+        "E-DEV-011",
+        "E-DEV-012",
+        "E-DEV-013"
+      ],
+      "gap": [
+        "GAP-DEV-001"
+      ],
+      "message": "present"
+    },
+    {
+      "gate": "Fixture",
+      "item": "fixture_a_empty_step/rebar/bars.json",
+      "severity": "error",
+      "ok": true,
+      "path": "fixtures/tsrebar/fixture_a_empty_step/project.tsrebar/rebar/bars.json",
+      "evidence": [
+        "E-DEV-011",
+        "E-DEV-012",
+        "E-DEV-013"
+      ],
+      "gap": [
+        "GAP-DEV-001"
+      ],
+      "message": "present"
+    },
+    {
+      "gate": "Fixture",
+      "item": "fixture_a_empty_step/rebar/segments.json",
+      "severity": "error",
+      "ok": true,
+      "path": "fixtures/tsrebar/fixture_a_empty_step/project.tsrebar/rebar/segments.json",
+      "evidence": [
+        "E-DEV-011",
+        "E-DEV-012",
+        "E-DEV-013"
+      ],
+      "gap": [
+        "GAP-DEV-001"
+      ],
+      "message": "present"
+    },
+    {
+      "gate": "Fixture",
+      "item": "fixture_a_empty_step/drawing/detail_mapping.json",
+      "severity": "error",
+      "ok": true,
+      "path": "fixtures/tsrebar/fixture_a_empty_step/project.tsrebar/drawing/detail_mapping.json",
+      "evidence": [
+        "E-DEV-011",
+        "E-DEV-012",
+        "E-DEV-013"
+      ],
+      "gap": [
+        "GAP-DEV-001"
+      ],
+      "message": "present"
+    },
+    {
+      "gate": "Fixture",
+      "item": "fixture_a_empty_step/evidence/evidence_index.json",
+      "severity": "error",
+      "ok": true,
+      "path": "fixtures/tsrebar/fixture_a_empty_step/project.tsrebar/evidence/evidence_index.json",
+      "evidence": [
+        "E-DEV-011",
+        "E-DEV-012",
+        "E-DEV-013"
+      ],
+      "gap": [
+        "GAP-DEV-001"
+      ],
+      "message": "present"
+    },
+    {
+      "gate": "Fixture",
+      "item": "fixture_a_empty_step/evidence/unresolved_fields.json",
+      "severity": "error",
+      "ok": true,
+      "path": "fixtures/tsrebar/fixture_a_empty_step/project.tsrebar/evidence/unresolved_fields.json",
+      "evidence": [
+        "E-DEV-011",
+        "E-DEV-012",
+        "E-DEV-013"
+      ],
+      "gap": [
+        "GAP-DEV-001"
+      ],
+      "message": "present"
+    },
+    {
+      "gate": "Fixture",
+      "item": "fixture_b_single_group",
+      "severity": "error",
+      "ok": true,
+      "path": "fixtures/tsrebar/fixture_b_single_group/project.tsrebar",
+      "evidence": [
+        "E-DEV-011",
+        "E-DEV-012",
+        "E-DEV-013"
+      ],
+      "gap": [
+        "GAP-DEV-001"
+      ],
+      "message": "present"
+    },
+    {
+      "gate": "Fixture",
+      "item": "fixture_b_single_group/manifest.json",
+      "severity": "error",
+      "ok": true,
+      "path": "fixtures/tsrebar/fixture_b_single_group/project.tsrebar/manifest.json",
+      "evidence": [
+        "E-DEV-011",
+        "E-DEV-012",
+        "E-DEV-013"
+      ],
+      "gap": [
+        "GAP-DEV-001"
+      ],
+      "message": "present"
+    },
+    {
+      "gate": "Fixture",
+      "item": "fixture_b_single_group/project.json",
+      "severity": "error",
+      "ok": true,
+      "path": "fixtures/tsrebar/fixture_b_single_group/project.tsrebar/project.json",
+      "evidence": [
+        "E-DEV-011",
+        "E-DEV-012",
+        "E-DEV-013"
+      ],
+      "gap": [
+        "GAP-DEV-001"
+      ],
+      "message": "present"
+    },
+    {
+      "gate": "Fixture",
+      "item": "fixture_b_single_group/geometry/source_step.json",
+      "severity": "error",
+      "ok": true,
+      "path": "fixtures/tsrebar/fixture_b_single_group/project.tsrebar/geometry/source_step.json",
+      "evidence": [
+        "E-DEV-011",
+        "E-DEV-012",
+        "E-DEV-013"
+      ],
+      "gap": [
+        "GAP-DEV-001"
+      ],
+      "message": "present"
+    },
+    {
+      "gate": "Fixture",
+      "item": "fixture_b_single_group/geometry/topology_refs.json",
+      "severity": "error",
+      "ok": true,
+      "path": "fixtures/tsrebar/fixture_b_single_group/project.tsrebar/geometry/topology_refs.json",
+      "evidence": [
+        "E-DEV-011",
+        "E-DEV-012",
+        "E-DEV-013"
+      ],
+      "gap": [
+        "GAP-DEV-001"
+      ],
+      "message": "present"
+    },
+    {
+      "gate": "Fixture",
+      "item": "fixture_b_single_group/rebar/steel_data.json",
+      "severity": "error",
+      "ok": true,
+      "path": "fixtures/tsrebar/fixture_b_single_group/project.tsrebar/rebar/steel_data.json",
+      "evidence": [
+        "E-DEV-011",
+        "E-DEV-012",
+        "E-DEV-013"
+      ],
+      "gap": [
+        "GAP-DEV-001"
+      ],
+      "message": "present"
+    },
+    {
+      "gate": "Fixture",
+      "item": "fixture_b_single_group/rebar/groups.json",
+      "severity": "error",
+      "ok": true,
+      "path": "fixtures/tsrebar/fixture_b_single_group/project.tsrebar/rebar/groups.json",
+      "evidence": [
+        "E-DEV-011",
+        "E-DEV-012",
+        "E-DEV-013"
+      ],
+      "gap": [
+        "GAP-DEV-001"
+      ],
+      "message": "present"
+    },
+    {
+      "gate": "Fixture",
+      "item": "fixture_b_single_group/rebar/bars.json",
+      "severity": "error",
+      "ok": true,
+      "path": "fixtures/tsrebar/fixture_b_single_group/project.tsrebar/rebar/bars.json",
+      "evidence": [
+        "E-DEV-011",
+        "E-DEV-012",
+        "E-DEV-013"
+      ],
+      "gap": [
+        "GAP-DEV-001"
+      ],
+      "message": "present"
+    },
+    {
+      "gate": "Fixture",
+      "item": "fixture_b_single_group/rebar/segments.json",
+      "severity": "error",
+      "ok": true,
+      "path": "fixtures/tsrebar/fixture_b_single_group/project.tsrebar/rebar/segments.json",
+      "evidence": [
+        "E-DEV-011",
+        "E-DEV-012",
+        "E-DEV-013"
+      ],
+      "gap": [
+        "GAP-DEV-001"
+      ],
+      "message": "present"
+    },
+    {
+      "gate": "Fixture",
+      "item": "fixture_b_single_group/drawing/detail_mapping.json",
+      "severity": "error",
+      "ok": true,
+      "path": "fixtures/tsrebar/fixture_b_single_group/project.tsrebar/drawing/detail_mapping.json",
+      "evidence": [
+        "E-DEV-011",
+        "E-DEV-012",
+        "E-DEV-013"
+      ],
+      "gap": [
+        "GAP-DEV-001"
+      ],
+      "message": "present"
+    },
+    {
+      "gate": "Fixture",
+      "item": "fixture_b_single_group/evidence/evidence_index.json",
+      "severity": "error",
+      "ok": true,
+      "path": "fixtures/tsrebar/fixture_b_single_group/project.tsrebar/evidence/evidence_index.json",
+      "evidence": [
+        "E-DEV-011",
+        "E-DEV-012",
+        "E-DEV-013"
+      ],
+      "gap": [
+        "GAP-DEV-001"
+      ],
+      "message": "present"
+    },
+    {
+      "gate": "Fixture",
+      "item": "fixture_b_single_group/evidence/unresolved_fields.json",
+      "severity": "error",
+      "ok": true,
+      "path": "fixtures/tsrebar/fixture_b_single_group/project.tsrebar/evidence/unresolved_fields.json",
+      "evidence": [
+        "E-DEV-011",
+        "E-DEV-012",
+        "E-DEV-013"
+      ],
+      "gap": [
+        "GAP-DEV-001"
+      ],
+      "message": "present"
+    },
+    {
+      "gate": "Fixture",
+      "item": "fixture_c_pending_legacy",
+      "severity": "error",
+      "ok": true,
+      "path": "fixtures/tsrebar/fixture_c_pending_legacy/project.tsrebar",
+      "evidence": [
+        "E-DEV-011",
+        "E-DEV-012",
+        "E-DEV-013"
+      ],
+      "gap": [
+        "GAP-DEV-001"
+      ],
+      "message": "present"
+    },
+    {
+      "gate": "Fixture",
+      "item": "fixture_c_pending_legacy/manifest.json",
+      "severity": "error",
+      "ok": true,
+      "path": "fixtures/tsrebar/fixture_c_pending_legacy/project.tsrebar/manifest.json",
+      "evidence": [
+        "E-DEV-011",
+        "E-DEV-012",
+        "E-DEV-013"
+      ],
+      "gap": [
+        "GAP-DEV-001"
+      ],
+      "message": "present"
+    },
+    {
+      "gate": "Fixture",
+      "item": "fixture_c_pending_legacy/project.json",
+      "severity": "error",
+      "ok": true,
+      "path": "fixtures/tsrebar/fixture_c_pending_legacy/project.tsrebar/project.json",
+      "evidence": [
+        "E-DEV-011",
+        "E-DEV-012",
+        "E-DEV-013"
+      ],
+      "gap": [
+        "GAP-DEV-001"
+      ],
+      "message": "present"
+    },
+    {
+      "gate": "Fixture",
+      "item": "fixture_c_pending_legacy/geometry/source_step.json",
+      "severity": "error",
+      "ok": true,
+      "path": "fixtures/tsrebar/fixture_c_pending_legacy/project.tsrebar/geometry/source_step.json",
+      "evidence": [
+        "E-DEV-011",
+        "E-DEV-012",
+        "E-DEV-013"
+      ],
+      "gap": [
+        "GAP-DEV-001"
+      ],
+      "message": "present"
+    },
+    {
+      "gate": "Fixture",
+      "item": "fixture_c_pending_legacy/geometry/topology_refs.json",
+      "severity": "error",
+      "ok": true,
+      "path": "fixtures/tsrebar/fixture_c_pending_legacy/project.tsrebar/geometry/topology_refs.json",
+      "evidence": [
+        "E-DEV-011",
+        "E-DEV-012",
+        "E-DEV-013"
+      ],
+      "gap": [
+        "GAP-DEV-001"
+      ],
+      "message": "present"
+    },
+    {
+      "gate": "Fixture",
+      "item": "fixture_c_pending_legacy/rebar/steel_data.json",
+      "severity": "error",
+      "ok": true,
+      "path": "fixtures/tsrebar/fixture_c_pending_legacy/project.tsrebar/rebar/steel_data.json",
+      "evidence": [
+        "E-DEV-011",
+        "E-DEV-012",
+        "E-DEV-013"
+      ],
+      "gap": [
+        "GAP-DEV-001"
+      ],
+      "message": "present"
+    },
+    {
+      "gate": "Fixture",
+      "item": "fixture_c_pending_legacy/rebar/groups.json",
+      "severity": "error",
+      "ok": true,
+      "path": "fixtures/tsrebar/fixture_c_pending_legacy/project.tsrebar/rebar/groups.json",
+      "evidence": [
+        "E-DEV-011",
+        "E-DEV-012",
+        "E-DEV-013"
+      ],
+      "gap": [
+        "GAP-DEV-001"
+      ],
+      "message": "present"
+    },
+    {
+      "gate": "Fixture",
+      "item": "fixture_c_pending_legacy/rebar/bars.json",
+      "severity": "error",
+      "ok": true,
+      "path": "fixtures/tsrebar/fixture_c_pending_legacy/project.tsrebar/rebar/bars.json",
+      "evidence": [
+        "E-DEV-011",
+        "E-DEV-012",
+        "E-DEV-013"
+      ],
+      "gap": [
+        "GAP-DEV-001"
+      ],
+      "message": "present"
+    },
+    {
+      "gate": "Fixture",
+      "item": "fixture_c_pending_legacy/rebar/segments.json",
+      "severity": "error",
+      "ok": true,
+      "path": "fixtures/tsrebar/fixture_c_pending_legacy/project.tsrebar/rebar/segments.json",
+      "evidence": [
+        "E-DEV-011",
+        "E-DEV-012",
+        "E-DEV-013"
+      ],
+      "gap": [
+        "GAP-DEV-001"
+      ],
+      "message": "present"
+    },
+    {
+      "gate": "Fixture",
+      "item": "fixture_c_pending_legacy/drawing/detail_mapping.json",
+      "severity": "error",
+      "ok": true,
+      "path": "fixtures/tsrebar/fixture_c_pending_legacy/project.tsrebar/drawing/detail_mapping.json",
+      "evidence": [
+        "E-DEV-011",
+        "E-DEV-012",
+        "E-DEV-013"
+      ],
+      "gap": [
+        "GAP-DEV-001"
+      ],
+      "message": "present"
+    },
+    {
+      "gate": "Fixture",
+      "item": "fixture_c_pending_legacy/evidence/evidence_index.json",
+      "severity": "error",
+      "ok": true,
+      "path": "fixtures/tsrebar/fixture_c_pending_legacy/project.tsrebar/evidence/evidence_index.json",
+      "evidence": [
+        "E-DEV-011",
+        "E-DEV-012",
+        "E-DEV-013"
+      ],
+      "gap": [
+        "GAP-DEV-001"
+      ],
+      "message": "present"
+    },
+    {
+      "gate": "Fixture",
+      "item": "fixture_c_pending_legacy/evidence/unresolved_fields.json",
+      "severity": "error",
+      "ok": true,
+      "path": "fixtures/tsrebar/fixture_c_pending_legacy/project.tsrebar/evidence/unresolved_fields.json",
+      "evidence": [
+        "E-DEV-011",
+        "E-DEV-012",
+        "E-DEV-013"
+      ],
+      "gap": [
+        "GAP-DEV-001"
+      ],
+      "message": "present"
+    },
+    {
+      "gate": "NegativeFixture",
+      "item": "missing_required_file",
+      "severity": "error",
+      "ok": true,
+      "path": "fixtures/tsrebar/negative/missing_required_file/project.tsrebar",
+      "evidence": [
+        "E-DEV-014"
+      ],
+      "gap": [
+        "GAP-DEV-001"
+      ],
+      "message": "present"
+    },
+    {
+      "gate": "NegativeFixture",
+      "item": "broken_binding",
+      "severity": "error",
+      "ok": true,
+      "path": "fixtures/tsrebar/negative/broken_binding/project.tsrebar",
+      "evidence": [
+        "E-DEV-014"
+      ],
+      "gap": [
+        "GAP-DEV-001"
+      ],
+      "message": "present"
+    },
+    {
+      "gate": "NegativeFixture",
+      "item": "acis_pointer_as_geometry_id",
+      "severity": "error",
+      "ok": true,
+      "path": "fixtures/tsrebar/negative/acis_pointer_as_geometry_id/project.tsrebar",
+      "evidence": [
+        "E-DEV-014"
+      ],
+      "gap": [
+        "GAP-DEV-001"
+      ],
+      "message": "present"
+    },
+    {
+      "gate": "NegativeFixture",
+      "item": "transient_index_only",
+      "severity": "error",
+      "ok": true,
+      "path": "fixtures/tsrebar/negative/transient_index_only/project.tsrebar",
+      "evidence": [
+        "E-DEV-014"
+      ],
+      "gap": [
+        "GAP-DEV-001"
+      ],
+      "message": "present"
+    },
+    {
+      "gate": "NegativeFixture",
+      "item": "forged_evidence",
+      "severity": "error",
+      "ok": true,
+      "path": "fixtures/tsrebar/negative/forged_evidence/project.tsrebar",
+      "evidence": [
+        "E-DEV-014"
+      ],
+      "gap": [
+        "GAP-DEV-001"
+      ],
+      "message": "present"
+    },
+    {
+      "gate": "NegativeFixture",
+      "item": "pending_field_marked_confirmed",
+      "severity": "error",
+      "ok": true,
+      "path": "fixtures/tsrebar/negative/pending_field_marked_confirmed/project.tsrebar",
+      "evidence": [
+        "E-DEV-014"
+      ],
+      "gap": [
+        "GAP-DEV-001"
+      ],
+      "message": "present"
+    },
+    {
+      "gate": "NegativeFixture",
+      "item": "detail_rsd_mismatch",
+      "severity": "error",
+      "ok": true,
+      "path": "fixtures/tsrebar/negative/detail_rsd_mismatch/project.tsrebar",
+      "evidence": [
+        "E-DEV-014"
+      ],
+      "gap": [
+        "GAP-DEV-001"
+      ],
+      "message": "present"
+    },
+    {
+      "gate": "NegativeFixture",
+      "item": "half_written_package",
+      "severity": "error",
+      "ok": true,
+      "path": "fixtures/tsrebar/negative/half_written_package/project.tsrebar",
+      "evidence": [
+        "E-DEV-014"
+      ],
+      "gap": [
+        "GAP-DEV-001"
+      ],
+      "message": "present"
+    },
+    {
+      "gate": "NegativeFixture",
+      "item": "missing_step_diff",
+      "severity": "error",
+      "ok": true,
+      "path": "fixtures/tsrebar/negative/missing_step_diff/project.tsrebar",
+      "evidence": [
+        "E-DEV-014"
+      ],
+      "gap": [
+        "GAP-DEV-001"
+      ],
+      "message": "present"
+    },
+    {
+      "gate": "Validator",
+      "item": "validation_summary_001.md",
+      "severity": "error",
+      "ok": true,
+      "path": "docs/phase1/validator_reports/validation_summary_001.md",
+      "evidence": [
+        "E-DEV-015"
+      ],
+      "gap": [
+        "GAP-DEV-001"
+      ],
+      "message": "present"
+    },
+    {
+      "gate": "Validator",
+      "item": "fixture_a_empty_step_validation_001.json",
+      "severity": "error",
+      "ok": true,
+      "path": "docs/phase1/validator_reports/fixture_a_empty_step_validation_001.json",
+      "evidence": [
+        "E-DEV-015"
+      ],
+      "gap": [
+        "GAP-DEV-001"
+      ],
+      "message": "present"
+    },
+    {
+      "gate": "Validator",
+      "item": "fixture_b_single_group_validation_001.json",
+      "severity": "error",
+      "ok": true,
+      "path": "docs/phase1/validator_reports/fixture_b_single_group_validation_001.json",
+      "evidence": [
+        "E-DEV-015"
+      ],
+      "gap": [
+        "GAP-DEV-001"
+      ],
+      "message": "present"
+    },
+    {
+      "gate": "Validator",
+      "item": "fixture_c_pending_legacy_validation_001.json",
+      "severity": "error",
+      "ok": true,
+      "path": "docs/phase1/validator_reports/fixture_c_pending_legacy_validation_001.json",
+      "evidence": [
+        "E-DEV-015"
+      ],
+      "gap": [
+        "GAP-DEV-001"
+      ],
+      "message": "present"
+    },
+    {
+      "gate": "Validator",
+      "item": "negative_missing_required_file_validation_001.json",
+      "severity": "error",
+      "ok": true,
+      "path": "docs/phase1/validator_reports/negative_missing_required_file_validation_001.json",
+      "evidence": [
+        "E-DEV-015"
+      ],
+      "gap": [
+        "GAP-DEV-001"
+      ],
+      "message": "present"
+    },
+    {
+      "gate": "Validator",
+      "item": "negative_broken_binding_validation_001.json",
+      "severity": "error",
+      "ok": true,
+      "path": "docs/phase1/validator_reports/negative_broken_binding_validation_001.json",
+      "evidence": [
+        "E-DEV-015"
+      ],
+      "gap": [
+        "GAP-DEV-001"
+      ],
+      "message": "present"
+    },
+    {
+      "gate": "StandaloneSaveOpen",
+      "item": "save_open_run_001",
+      "severity": "warning",
+      "ok": true,
+      "path": "docs/phase1/save_open_reports/save_open_run_001.json",
+      "evidence": [
+        "E-DEV-016"
+      ],
+      "gap": [
+        "GAP-DEV-001"
+      ],
+      "message": "decision=standalone-pass"
+    },
+    {
+      "gate": "StepSelection",
+      "item": "test_stp",
+      "severity": "warning",
+      "ok": true,
+      "path": "docs/phase1/step_selection/test_stp/step_selection_diff.json",
+      "evidence": [
+        "E-DEV-017"
+      ],
+      "gap": [
+        "GAP-DEV-002"
+      ],
+      "message": "decision=pass"
+    },
+    {
+      "gate": "StepSelection",
+      "item": "cc001_bspline_edge",
+      "severity": "warning",
+      "ok": true,
+      "path": "docs/phase1/step_selection/cc001_bspline_edge/step_selection_diff.json",
+      "evidence": [
+        "E-DEV-017"
+      ],
+      "gap": [
+        "GAP-DEV-002"
+      ],
+      "message": "decision=pass"
+    },
+    {
+      "gate": "StepSelection",
+      "item": "cc002_bezier_edge",
+      "severity": "warning",
+      "ok": true,
+      "path": "docs/phase1/step_selection/cc002_bezier_edge/step_selection_diff.json",
+      "evidence": [
+        "E-DEV-017"
+      ],
+      "gap": [
+        "GAP-DEV-002"
+      ],
+      "message": "decision=pass"
+    },
+    {
+      "gate": "StepSelection",
+      "item": "cc003_bspline_length",
+      "severity": "warning",
+      "ok": true,
+      "path": "docs/phase1/step_selection/cc003_bspline_length/step_selection_diff.json",
+      "evidence": [
+        "E-DEV-017"
+      ],
+      "gap": [
+        "GAP-DEV-002"
+      ],
+      "message": "decision=pass"
+    },
+    {
+      "gate": "StepSelection",
+      "item": "cc004_hostref_source_curve",
+      "severity": "warning",
+      "ok": true,
+      "path": "docs/phase1/step_selection/cc004_hostref_source_curve/step_selection_diff.json",
+      "evidence": [
+        "E-DEV-017"
+      ],
+      "gap": [
+        "GAP-DEV-002"
+      ],
+      "message": "decision=pass"
+    },
+    {
+      "gate": "StepSelection",
+      "item": "cc005_sampling_policy",
+      "severity": "warning",
+      "ok": true,
+      "path": "docs/phase1/step_selection/cc005_sampling_policy/step_selection_diff.json",
+      "evidence": [
+        "E-DEV-017"
+      ],
+      "gap": [
+        "GAP-DEV-002"
+      ],
+      "message": "decision=pass"
+    },
+    {
+      "gate": "Dependency",
+      "item": "dependency_gate_run_001.md",
+      "severity": "error",
+      "ok": true,
+      "path": "docs/phase1/dependency_gate_run_001.md",
+      "evidence": [
+        "E-TECH-002"
+      ],
+      "gap": [
+        "GAP-TECH-007",
+        "GAP-DEV-007"
+      ],
+      "message": "result=pass"
+    },
+    {
+      "gate": "Dependency",
+      "item": "DEPENDENCIES.md",
+      "severity": "error",
+      "ok": true,
+      "path": "DEPENDENCIES.md",
+      "evidence": [
+        "E-TECH-002"
+      ],
+      "gap": [
+        "GAP-TECH-007",
+        "GAP-DEV-007"
+      ],
+      "message": "present"
+    },
+    {
+      "gate": "Dependency",
+      "item": "THIRD_PARTY_NOTICES.md",
+      "severity": "error",
+      "ok": true,
+      "path": "THIRD_PARTY_NOTICES.md",
+      "evidence": [
+        "E-TECH-002"
+      ],
+      "gap": [
+        "GAP-TECH-007",
+        "GAP-DEV-007"
+      ],
+      "message": "present"
+    },
+    {
+      "gate": "Dependency",
+      "item": "licenses/",
+      "severity": "error",
+      "ok": true,
+      "path": "licenses",
+      "evidence": [
+        "E-TECH-002"
+      ],
+      "gap": [
+        "GAP-TECH-007",
+        "GAP-DEV-007"
+      ],
+      "message": "present"
+    },
+    {
+      "gate": "Dependency",
+      "item": "sbom/project-sbom.spdx.json",
+      "severity": "error",
+      "ok": true,
+      "path": "sbom/project-sbom.spdx.json",
+      "evidence": [
+        "E-TECH-002"
+      ],
+      "gap": [
+        "GAP-TECH-007",
+        "GAP-DEV-007"
+      ],
+      "message": "present"
+    },
+    {
+      "gate": "Qt6Application",
+      "item": "app_save_open_run_001.json",
+      "severity": "error",
+      "ok": true,
+      "path": "docs/phase1/app_save_open_reports/app_save_open_run_001.json",
+      "evidence": [
+        "E-DEV-022"
+      ],
+      "gap": [
+        "GAP-DEV-001",
+        "GAP-DEV-007"
+      ],
+      "message": "decision=qt6-app-pass"
+    },
+    {
+      "gate": "Qt6Application",
+      "item": "binding_repair_run_001.json",
+      "severity": "error",
+      "ok": true,
+      "path": "docs/phase1/app_save_open_reports/binding_repair_run_001.json",
+      "evidence": [
+        "E-DEV-022"
+      ],
+      "gap": [
+        "GAP-DEV-001",
+        "GAP-DEV-007"
+      ],
+      "message": "decision=qt6-binding-repair-pass"
+    },
+    {
+      "gate": "Qt6Application",
+      "item": "binding_repair_preview_001.md",
+      "severity": "error",
+      "ok": true,
+      "path": "docs/phase1/app_save_open_reports/binding_repair_preview_001.md",
+      "evidence": [
+        "E-DEV-022"
+      ],
+      "gap": [
+        "GAP-DEV-001",
+        "GAP-DEV-007"
+      ],
+      "message": "present"
+    },
+    {
+      "gate": "DetailWriter",
+      "item": "detail_writer_l0_l1_run_001.json",
+      "severity": "error",
+      "ok": true,
+      "path": "docs/phase1/detail_writer_reports/detail_writer_l0_l1_run_001.json",
+      "evidence": [
+        "E-DEV-001"
+      ],
+      "gap": [
+        "GAP-DRAW-005",
+        "GAP-DEV-007"
+      ],
+      "message": "decision=l0-l1-pass"
+    },
+    {
+      "gate": "DetailWriter",
+      "item": "detail_writer_summary_001.md",
+      "severity": "error",
+      "ok": true,
+      "path": "docs/phase1/detail_writer_reports/detail_writer_summary_001.md",
+      "evidence": [
+        "E-DEV-001"
+      ],
+      "gap": [
+        "GAP-DRAW-005",
+        "GAP-DEV-007"
+      ],
+      "message": "present"
+    }
+  ],
+  "notes": [
+    "This gate checks evidence artifacts. It does not execute Qt6 application code.",
+    "Missing Qt6 application reports keep GAP-DEV-001 and GAP-DEV-007 open.",
+    "Parent directory source remains reference-only and cannot close business gaps."
+  ]
+}

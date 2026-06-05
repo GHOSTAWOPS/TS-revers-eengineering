@@ -1,0 +1,10 @@
+Qt source availability: D:\Work\vcpkg\downloads\qtbase-everywhere-src-6.10.3.tar.xz
+OCCT source availability: D:\Work\vcpkg\downloads\Open-Cascade-SAS-OCCT-V7_9_3.tar.gz
+Patch files: none
+Local modifications: none
+Contact / internal location: local development machine, D:\Work\vcpkg
+
+Gate note:
+This record freezes local source availability for the M1 dependency candidate.
+If either dependency source is modified later, the patch files and redistribution
+notes must be added here.

@@ -1,0 +1,15 @@
+{
+  "schemaVersion": "geometry-source-step/v1",
+  "sourceStepId": "step-main",
+  "kind": "STEP",
+  "path": "C:/Users/ghost/Desktop/reverse_engineering/test.stp",
+  "sha256": "dfe8f3cd28c9330353e0d0d534f3b150508cf3d60ecc1398261fad346e548ed1",
+  "fileStatus": "exists-on-current-machine",
+  "importKernel": "OCCT",
+  "importStatus": "completed",
+  "stepSelectionDiff": null,
+  "evidence": [
+    "E-DEV-009",
+    "GAP-DEV-002"
+  ]
+}

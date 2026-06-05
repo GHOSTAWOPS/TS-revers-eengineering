@@ -1,0 +1,63 @@
+{
+  "id": "m1_app_003_run_001",
+  "date": "2026-06-05",
+  "decision": "m1-app-003-pass",
+  "appRoot": "C:/Users/ghost/Desktop/reverse_engineering/【03】图石软件/【图石钢筋1比1复刻】/app",
+  "scope": [
+    "LegacySelectionRef",
+    "OccSelectionIndex",
+    "ViewSelectFace/ViewSelectEdge/ViewSelectVertex commands",
+    "OccViewerWidget stable selection summary",
+    "viewer_selection_123"
+  ],
+  "build": {
+    "success": true
+  },
+  "tests": {
+    "success": true,
+    "passed": 7,
+    "failed": 0,
+    "cases": [
+      "command_registry_tests",
+      "legacy_selection_ref_tests",
+      "app_smoke",
+      "viewer_smoke_tests",
+      "domain_rebar_boundary",
+      "step_import_probe_123",
+      "occ_selection_index_123"
+    ]
+  },
+  "viewerSmoke": {
+    "command": "build/tsrebar_app.exe --smoke-display-step \"../../123.stp\"",
+    "exitCode": 0,
+    "meaning": "import 123.stp, initialize AIS viewer, display shapes, FitAll"
+  },
+  "selectionIndex": {
+    "sample": "C:/Users/ghost/Desktop/reverse_engineering/【03】图石软件/123.stp",
+    "schema": "selection-v1",
+    "faces": 3016,
+    "uniqueEdges": 4524,
+    "uniqueVertices": 3016,
+    "rejectsTransientPartId": true
+  },
+  "manualViewerSelectionSmoke": {
+    "command": "build/viewer_selection_tests.exe \"../../123.stp\"",
+    "exitCode": 0,
+    "defaultCTest": false,
+    "reason": "requires real OpenGL window and may show a transient blank test window while loading 123.stp"
+  },
+  "guardrails": {
+    "domainRebarOcctBoundary": "pass",
+    "parentSelectionProtocolReused": true,
+    "parentRebarGenerationChainMigrated": false,
+    "rebarBusinessImplemented": false
+  },
+  "readinessGate": {
+    "decision": "M1-Formal-Ready",
+    "m1FormalAllowed": true,
+    "errorCount": 0,
+    "warningCount": 0,
+    "passCount": 78,
+    "checkCount": 78
+  }
+}

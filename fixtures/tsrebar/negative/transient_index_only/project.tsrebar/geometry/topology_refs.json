@@ -1,0 +1,74 @@
+{
+  "schemaVersion": "geometry-topology-refs/v1",
+  "sourceStepId": "step-main",
+  "geometryRefs": [
+    {
+      "geometryRefId": "geom-face-001",
+      "sourceStepId": "step-main",
+      "kind": "face",
+      "topologyId": "face-001",
+      "kernel": "OCCT",
+      "fingerprint": null,
+      "occtTransientIndexHint": 1,
+      "topologyPathHint": null,
+      "state": "resolved",
+      "evidence": [
+        "E-DEV-009",
+        "GAP-DEV-002"
+      ]
+    },
+    {
+      "geometryRefId": "geom-edge-001",
+      "sourceStepId": "step-main",
+      "kind": "edge",
+      "topologyId": "edge-001",
+      "kernel": "OCCT",
+      "fingerprint": "edge-sha256-fixture-b-edge-001-placeholder",
+      "occtTransientIndexHint": 2,
+      "topologyPathHint": "solid[0]/shell[0]/edge[0]",
+      "state": "resolved",
+      "evidence": [
+        "E-DEV-009",
+        "GAP-DEV-002"
+      ]
+    }
+  ],
+  "topologyRefs": [
+    {
+      "topologyId": "face-001",
+      "shapeType": "face",
+      "sourceStepId": "step-main",
+      "occtTransientIndex": 1,
+      "fingerprint": null,
+      "evidence": [
+        "GAP-DEV-002"
+      ]
+    },
+    {
+      "topologyId": "edge-001",
+      "shapeType": "edge",
+      "sourceStepId": "step-main",
+      "occtTransientIndex": 2,
+      "fingerprint": {
+        "curveType": "line",
+        "length": 12.0,
+        "midPoint": [
+          6.0,
+          0.0,
+          1.0
+        ],
+        "adjacentFaceIds": [
+          "face-001"
+        ]
+      },
+      "evidence": [
+        "GAP-DEV-002"
+      ]
+    }
+  ],
+  "unresolvedGeometry": [],
+  "notes": [
+    "occtTransientIndex is a debug hint only. fingerprint and topologyId are the intended stable references.",
+    "STEP diff has not been run yet."
+  ]
+}

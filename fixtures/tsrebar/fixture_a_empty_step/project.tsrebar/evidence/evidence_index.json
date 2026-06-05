@@ -1,0 +1,71 @@
+{
+  "schemaVersion": "evidence-index/v1",
+  "items": [
+    {
+      "id": "E-DEV-002",
+      "type": "development-contract",
+      "source": "18_新设计文件格式替代SFL策略.md",
+      "summary": "New tsrebar package must carry legacyObject.raw, geometryRef, binding and evidence."
+    },
+    {
+      "id": "E-DEV-003",
+      "type": "development-contract",
+      "source": "25_新设计文件格式SFL_OCCT联合开发任务拆解.md",
+      "summary": "SFL/IDA/Detail drive legacy semantics; OCCT/STEP drives geometry references."
+    },
+    {
+      "id": "E-DEV-004",
+      "type": "development-contract",
+      "source": "24_新设计文件格式Schema与Fixture草案.md",
+      "summary": "Binding contract between legacy object paths and geometry references."
+    },
+    {
+      "id": "E-DEV-005",
+      "type": "development-contract",
+      "source": "26_首期可验证联合格式Fixture与Validator执行清单.md",
+      "summary": "Fixture and validator execution checklist."
+    },
+    {
+      "id": "E-DEV-007",
+      "type": "development-contract",
+      "source": "29_首期tsrebar实际Fixture包清单与Golden断言.md",
+      "summary": "Fixture A/B/C package list and golden assertions."
+    },
+    {
+      "id": "E-DEV-009",
+      "type": "development-contract",
+      "source": "31_STEP选择ID实际运行记录模板与样本清单.md",
+      "summary": "STEP selection ID run template and sample list."
+    },
+    {
+      "id": "E-DEV-010",
+      "type": "development-contract",
+      "source": "32_Validator实现契约与错误码总表.md",
+      "summary": "Validator implementation contract, error codes and report schema."
+    },
+    {
+      "id": "E-DEV-011",
+      "type": "actual-artifact",
+      "source": "fixtures/tsrebar/fixture_a_empty_step/project.tsrebar/",
+      "summary": "Fixture A actual package skeleton and pending readiness record exist."
+    },
+    {
+      "id": "GAP-DEV-001",
+      "type": "gap",
+      "source": "99_缺口和待确认项.md",
+      "summary": "Actual fixture packages, validators, binding validation and Save/Open tests are still incomplete."
+    },
+    {
+      "id": "GAP-DEV-002",
+      "type": "gap",
+      "source": "99_缺口和待确认项.md",
+      "summary": "Real STEP multi-run diff has not been produced."
+    },
+    {
+      "id": "GAP-DEV-007",
+      "type": "gap",
+      "source": "99_缺口和待确认项.md",
+      "summary": "Actual Phase 1 readiness run is not complete."
+    }
+  ]
+}

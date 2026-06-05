@@ -1,0 +1,61 @@
+{
+    "createdAt": "2026-06-05T03:57:51+08:00",
+    "decision": "warning-only",
+    "errorCount": 0,
+    "findings": [
+        {
+            "errorCode": "EVW001_PENDING_LEGACY_FIELD",
+            "severity": "warning"
+        },
+        {
+            "errorCode": "EVW001_PENDING_LEGACY_FIELD",
+            "severity": "warning"
+        },
+        {
+            "errorCode": "EVW001_PENDING_LEGACY_FIELD",
+            "severity": "warning"
+        },
+        {
+            "errorCode": "EVW001_PENDING_LEGACY_FIELD",
+            "severity": "warning"
+        },
+        {
+            "errorCode": "EVW001_PENDING_LEGACY_FIELD",
+            "severity": "warning"
+        },
+        {
+            "errorCode": "EVW001_PENDING_LEGACY_FIELD",
+            "severity": "warning"
+        },
+        {
+            "errorCode": "EVW001_PENDING_LEGACY_FIELD",
+            "severity": "warning"
+        },
+        {
+            "errorCode": "EVW001_PENDING_LEGACY_FIELD",
+            "severity": "warning"
+        },
+        {
+            "errorCode": "EVW001_PENDING_LEGACY_FIELD",
+            "severity": "warning"
+        },
+        {
+            "errorCode": "EVW001_PENDING_LEGACY_FIELD",
+            "severity": "warning"
+        },
+        {
+            "errorCode": "EVW001_PENDING_LEGACY_FIELD",
+            "severity": "warning"
+        },
+        {
+            "errorCode": "EVW001_PENDING_LEGACY_FIELD",
+            "severity": "warning"
+        },
+        {
+            "errorCode": "EVW001_PENDING_LEGACY_FIELD",
+            "severity": "warning"
+        }
+    ],
+    "schemaVersion": "tsrebar-validator-report/v1",
+    "warningCount": 13
+}

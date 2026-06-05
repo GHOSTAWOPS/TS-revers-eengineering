@@ -1,0 +1,46 @@
+{
+  "spdxVersion": "SPDX-2.3",
+  "dataLicense": "CC0-1.0",
+  "SPDXID": "SPDXRef-DOCUMENT",
+  "name": "tushi-rebar-project-sbom",
+  "documentNamespace": "https://local.tushi-rebar/sbom/2026-06-05-vcpkg-x64-windows",
+  "creationInfo": {
+    "created": "2026-06-05T00:00:00+08:00",
+    "creators": [
+      "Organization: tushi-rebar-local",
+      "Tool: Build.DependencyGate"
+    ]
+  },
+  "packages": [
+    {
+      "name": "Qt",
+      "SPDXID": "SPDXRef-Package-Qt",
+      "versionInfo": "6.10.3#1",
+      "downloadLocation": "file:///D:/Work/vcpkg/downloads/qtbase-everywhere-src-6.10.3.tar.xz",
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "See D:/Work/vcpkg/installed/x64-windows/share/qtbase/copyright"
+    },
+    {
+      "name": "Open CASCADE Technology",
+      "SPDXID": "SPDXRef-Package-OCCT",
+      "versionInfo": "7.9.3#1",
+      "downloadLocation": "file:///D:/Work/vcpkg/downloads/Open-Cascade-SAS-OCCT-V7_9_3.tar.gz",
+      "licenseConcluded": "LGPL-2.1-only WITH OCCT-exception-1.0",
+      "licenseDeclared": "LGPL-2.1-only WITH OCCT-exception-1.0",
+      "copyrightText": "See D:/Work/vcpkg/installed/x64-windows/share/opencascade/copyright"
+    }
+  ],
+  "relationships": [
+    {
+      "spdxElementId": "SPDXRef-DOCUMENT",
+      "relationshipType": "DESCRIBES",
+      "relatedSpdxElement": "SPDXRef-Package-Qt"
+    },
+    {
+      "spdxElementId": "SPDXRef-DOCUMENT",
+      "relationshipType": "DESCRIBES",
+      "relatedSpdxElement": "SPDXRef-Package-OCCT"
+    }
+  ]
+}

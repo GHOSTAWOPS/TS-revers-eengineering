@@ -1,0 +1,41 @@
+{
+    "bindingStateBeforeSave": "repairAppliedPendingSave",
+    "bindings": [
+        {
+            "bindingIndex": 0,
+            "candidateGeometryPath": "geometry/topology_refs.json#/topologyRefs/0",
+            "decision": "apply",
+            "evidence": [
+                "E-DEV-017",
+                "E-DEV-018",
+                "E-DEV-022"
+            ],
+            "geometryRefId": "geom-face-001",
+            "matchState": "match",
+            "objectFile": "rebar/groups.json",
+            "objectId": "group-001",
+            "objectIndex": 0,
+            "oldGeometryPath": "geometry/topology_refs.json#/topologyRefs/999",
+            "role": "sourceFace",
+            "topologyId": "face-001"
+        }
+    ],
+    "candidatePackage": "C:/Users/ghost/Desktop/reverse_engineering/【03】图石软件/【图石钢筋1比1复刻】/fixtures/tsrebar/fixture_b_single_group/project.tsrebar",
+    "createdAt": "2026-06-05T03:57:51+08:00",
+    "decision": "qt6-binding-repair-pass",
+    "dirtyAfter": false,
+    "guardrails": {
+        "ambiguousCandidatesBlocked": true,
+        "fullSaveTransactionRequired": true,
+        "onlyMatchedCandidatesApplied": true,
+        "silentRebindForbidden": true
+    },
+    "m1FormalCandidate": true,
+    "reportId": "binding_repair_run_001",
+    "runtime": "Qt6 C++ runtime gate",
+    "saveDecision": "SaveSucceeded",
+    "savedPackage": "C:/Users/ghost/Desktop/reverse_engineering/【03】图石软件/【图石钢筋1比1复刻】/docs/phase1/app_save_open_reports/_work/current_broken.tsrebar",
+    "schemaVersion": "binding-repair-run/v1",
+    "sourcePackage": "C:/Users/ghost/Desktop/reverse_engineering/【03】图石软件/【图石钢筋1比1复刻】/fixtures/tsrebar/negative/broken_binding/project.tsrebar",
+    "validationDecisionAfterApply": "warning-only"
+}

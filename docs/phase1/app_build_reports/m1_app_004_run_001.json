@@ -1,0 +1,66 @@
+{
+  "id": "m1_app_004_run_001",
+  "date": "2026-06-05",
+  "decision": "m1-app-004-pass",
+  "appRoot": "C:/Users/ghost/Desktop/reverse_engineering/【03】图石软件/【图石钢筋1比1复刻】/app",
+  "scope": [
+    "LegacyGeometry DTO",
+    "OccLegacyGeometryAdapter",
+    "edgeGeometry",
+    "faceGeometry",
+    "legacy_geometry_adapter_123"
+  ],
+  "build": {
+    "success": true
+  },
+  "tests": {
+    "success": true,
+    "passed": 8,
+    "failed": 0,
+    "cases": [
+      "command_registry_tests",
+      "legacy_selection_ref_tests",
+      "app_smoke",
+      "viewer_smoke_tests",
+      "domain_rebar_boundary",
+      "step_import_probe_123",
+      "occ_selection_index_123",
+      "legacy_geometry_adapter_123"
+    ]
+  },
+  "adapterP0": {
+    "edgeFields": [
+      "stableId",
+      "curveKind",
+      "length",
+      "firstParameter",
+      "lastParameter",
+      "startPoint",
+      "endPoint",
+      "closed"
+    ],
+    "faceFields": [
+      "stableId",
+      "surfaceKind",
+      "area",
+      "samplePoint",
+      "normal",
+      "boundaryEdgeCount"
+    ],
+    "sample": "C:/Users/ghost/Desktop/reverse_engineering/【03】图石软件/123.stp"
+  },
+  "guardrails": {
+    "domainRebarOcctBoundary": "pass",
+    "parentGeometryQueryPatternReused": true,
+    "parentRebarGenerationChainMigrated": false,
+    "rebarBusinessImplemented": false
+  },
+  "readinessGate": {
+    "decision": "M1-Formal-Ready",
+    "m1FormalAllowed": true,
+    "errorCount": 0,
+    "warningCount": 0,
+    "passCount": 78,
+    "checkCount": 78
+  }
+}

@@ -1,0 +1,78 @@
+{
+  "schemaVersion": "step-selection-diff/v1",
+  "sampleId": "test_stp",
+  "sourceStep": "/mnt/c/users/ghost/desktop/reverse_engineering/test.stp",
+  "sourceSha256": "sha256:dfe8f3cd28c9330353e0d0d534f3b150508cf3d60ecc1398261fad346e548ed1",
+  "probeRunCount": 5,
+  "decision": "pass",
+  "occtSource": "visualts_step_probe via StepImportService",
+  "runs": [
+    "/mnt/c/Users/ghost/Desktop/reverse_engineering/【03】图石软件/【图石钢筋1比1复刻】/docs/phase1/step_selection/test_stp/step_selection_run_r1.json",
+    "/mnt/c/Users/ghost/Desktop/reverse_engineering/【03】图石软件/【图石钢筋1比1复刻】/docs/phase1/step_selection/test_stp/step_selection_run_r2.json",
+    "/mnt/c/Users/ghost/Desktop/reverse_engineering/【03】图石软件/【图石钢筋1比1复刻】/docs/phase1/step_selection/test_stp/step_selection_run_r3.json",
+    "/mnt/c/Users/ghost/Desktop/reverse_engineering/【03】图石软件/【图石钢筋1比1复刻】/docs/phase1/step_selection/test_stp/step_selection_run_r4.json",
+    "/mnt/c/Users/ghost/Desktop/reverse_engineering/【03】图石软件/【图石钢筋1比1复刻】/docs/phase1/step_selection/test_stp/step_selection_run_r5.json"
+  ],
+  "runInputs": [
+    "/mnt/c/users/ghost/desktop/reverse_engineering/test.stp",
+    "/mnt/c/users/ghost/desktop/reverse_engineering/test.stp",
+    "/mnt/c/users/ghost/desktop/reverse_engineering/test.stp",
+    "/mnt/c/users/ghost/desktop/reverse_engineering/test.stp",
+    "/mnt/c/Users/ghost/Desktop/reverse_engineering/【03】图石软件/【图石钢筋1比1复刻】/docs/phase1/step_selection/test_stp/test_stp_copied_input.stp"
+  ],
+  "probeResults": [
+    {
+      "returnCode": 0,
+      "stdout": "file: /mnt/c/users/ghost/desktop/reverse_engineering/test.stp\nread_ok: true\ntransfer_ok: true\nroots: 1\nfree_shapes: 1\nassemblies: 0\nreferences: 0\nsimple_shapes: 1\nlocated_instances: 0\nsolids: 5\nfaces: 75\nedges: 390\nvertices: 780\nlength_units: millimetre\nangle_units: radian\nsolid_angle_units: steradian\ntree_preview:\n  - depth=0, entry=0:1:1:1, occurrence=0:1:1:1, name=3D 形状00431013, type=compound, role=simple_shape\n",
+      "stderr": ""
+    },
+    {
+      "returnCode": 0,
+      "stdout": "file: /mnt/c/users/ghost/desktop/reverse_engineering/test.stp\nread_ok: true\ntransfer_ok: true\nroots: 1\nfree_shapes: 1\nassemblies: 0\nreferences: 0\nsimple_shapes: 1\nlocated_instances: 0\nsolids: 5\nfaces: 75\nedges: 390\nvertices: 780\nlength_units: millimetre\nangle_units: radian\nsolid_angle_units: steradian\ntree_preview:\n  - depth=0, entry=0:1:1:1, occurrence=0:1:1:1, name=3D 形状00431013, type=compound, role=simple_shape\n",
+      "stderr": ""
+    },
+    {
+      "returnCode": 0,
+      "stdout": "file: /mnt/c/users/ghost/desktop/reverse_engineering/test.stp\nread_ok: true\ntransfer_ok: true\nroots: 1\nfree_shapes: 1\nassemblies: 0\nreferences: 0\nsimple_shapes: 1\nlocated_instances: 0\nsolids: 5\nfaces: 75\nedges: 390\nvertices: 780\nlength_units: millimetre\nangle_units: radian\nsolid_angle_units: steradian\ntree_preview:\n  - depth=0, entry=0:1:1:1, occurrence=0:1:1:1, name=3D 形状00431013, type=compound, role=simple_shape\n",
+      "stderr": ""
+    },
+    {
+      "returnCode": 0,
+      "stdout": "file: /mnt/c/users/ghost/desktop/reverse_engineering/test.stp\nread_ok: true\ntransfer_ok: true\nroots: 1\nfree_shapes: 1\nassemblies: 0\nreferences: 0\nsimple_shapes: 1\nlocated_instances: 0\nsolids: 5\nfaces: 75\nedges: 390\nvertices: 780\nlength_units: millimetre\nangle_units: radian\nsolid_angle_units: steradian\ntree_preview:\n  - depth=0, entry=0:1:1:1, occurrence=0:1:1:1, name=3D 形状00431013, type=compound, role=simple_shape\n",
+      "stderr": ""
+    },
+    {
+      "returnCode": 0,
+      "stdout": "file: /mnt/c/Users/ghost/Desktop/reverse_engineering/【03】图石软件/【图石钢筋1比1复刻】/docs/phase1/step_selection/test_stp/test_stp_copied_input.stp\nread_ok: true\ntransfer_ok: true\nroots: 1\nfree_shapes: 1\nassemblies: 0\nreferences: 0\nsimple_shapes: 1\nlocated_instances: 0\nsolids: 5\nfaces: 75\nedges: 390\nvertices: 780\nlength_units: millimetre\nangle_units: radian\nsolid_angle_units: steradian\ntree_preview:\n  - depth=0, entry=0:1:1:1, occurrence=0:1:1:1, name=3D 形状00431013, type=compound, role=simple_shape\n",
+      "stderr": ""
+    }
+  ],
+  "comparisons": [
+    {
+      "kind": "faces",
+      "baselineCount": 75,
+      "minMatchRate": 1.0,
+      "duplicateCount": 0,
+      "mismatchedRuns": []
+    },
+    {
+      "kind": "edges",
+      "baselineCount": 195,
+      "minMatchRate": 1.0,
+      "duplicateCount": 0,
+      "mismatchedRuns": []
+    },
+    {
+      "kind": "vertices",
+      "baselineCount": 130,
+      "minMatchRate": 1.0,
+      "duplicateCount": 0,
+      "mismatchedRuns": []
+    }
+  ],
+  "remainingLimitations": [
+    "This proves stable selection-v1 refs for the tested STEP sample only.",
+    "It does not prove old Tushi SFL geometry compatibility.",
+    "It does not replace Qt6 application Save/Open or binding repair tests."
+  ]
+}

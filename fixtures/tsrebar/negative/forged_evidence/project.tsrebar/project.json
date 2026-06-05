@@ -1,0 +1,37 @@
+{
+  "schemaVersion": "project/v1",
+  "projectId": "proj-negative-forged_evidence",
+  "name": "negative_forged_evidence",
+  "sourceModelId": "step-main",
+  "status": "negative-forged_evidence",
+  "dirtyFlags": {
+    "projectDirty": false,
+    "geometryDirty": false,
+    "rebarDirty": false,
+    "drawingDirty": false
+  },
+  "models": {
+    "structure": "geometry/source_step.json",
+    "topologyRefs": "geometry/topology_refs.json",
+    "steelData": "rebar/steel_data.json",
+    "groups": "rebar/groups.json",
+    "bars": "rebar/bars.json",
+    "segments": "rebar/segments.json",
+    "detailMapping": "drawing/detail_mapping.json",
+    "evidenceIndex": "evidence/evidence_index.json",
+    "unresolvedFields": "evidence/unresolved_fields.json"
+  },
+  "evidence": [
+    "E-DEV-007",
+    "E-DEV-010",
+    "E-DEV-012",
+    "E-DEV-014"
+  ],
+  "gaps": [
+    "GAP-DEV-001",
+    "GAP-DEV-002",
+    "GAP-SFL-003",
+    "GAP-SFL-004",
+    "GAP-SFL-005"
+  ]
+}

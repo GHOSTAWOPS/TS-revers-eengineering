@@ -1,0 +1,44 @@
+{
+  "format": "tsrebar",
+  "formatVersion": 1,
+  "schemaVersion": "2026-06-05-draft",
+  "packageKind": "negative-fixture",
+  "fixtureId": "negative-half_written_package",
+  "fixtureStatus": "actual-negative",
+  "validationStatus": "expected-fail-not-run",
+  "createdAt": "2026-06-05T00:00:00+08:00",
+  "saveTransaction": {
+    "state": "partial",
+    "dirtyCleared": true,
+    "auditId": "fixture-b-created-from-docs",
+    "note": "Negative fixture: package is intentionally half-written and must not open as a formal saved project."
+  },
+  "requiredFiles": [
+    "project.json",
+    "geometry/source_step.json",
+    "geometry/topology_refs.json",
+    "rebar/steel_data.json",
+    "rebar/groups.json",
+    "rebar/bars.json",
+    "rebar/segments.json",
+    "drawing/detail_mapping.json",
+    "evidence/evidence_index.json",
+    "evidence/unresolved_fields.json"
+  ],
+  "evidence": [
+    "E-DEV-002",
+    "E-DEV-004",
+    "E-DEV-007",
+    "E-DEV-009",
+    "E-DEV-010",
+    "E-DEV-012",
+    "GAP-DEV-001",
+    "E-DEV-014"
+  ],
+  "negativeCase": {
+    "name": "half_written_package",
+    "primaryValidator": "PackageValidator/TransactionValidator",
+    "expectedErrorCode": "PV004_SAVE_TRANSACTION_INCOMPLETE/TXV001_TEMP_PACKAGE_INVALID/TXV006_HALF_WRITTEN_PACKAGE_OPENED_AS_FORMAL",
+    "saveAfterFailure": "must-not-overwrite-old-package-or-clear-dirty"
+  }
+}

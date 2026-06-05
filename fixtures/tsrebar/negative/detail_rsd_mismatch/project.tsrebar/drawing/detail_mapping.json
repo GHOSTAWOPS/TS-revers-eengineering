@@ -1,0 +1,31 @@
+{
+  "schemaVersion": "drawing-detail-mapping/v1",
+  "groups": [
+    {
+      "rebarGroupId": "group-001",
+      "stbGroupId": "detail-group-001",
+      "groupId": "detail-group-001",
+      "rsdId": "rsd-001"
+    }
+  ],
+  "segments": [
+    {
+      "rebarSegmentId": "segment-001",
+      "stbGeoSegId": "segment-001",
+      "sourceCurveRef": "curve-seg-001"
+    }
+  ],
+  "tables": [
+    {
+      "sourceGroupId": "group-001",
+      "rsdId": "rsd-mismatch-999"
+    }
+  ],
+  "evidence": [
+    "E-IDA-018",
+    "E-IDA-019",
+    "E-DETAIL-001",
+    "E-DETAIL-002",
+    "E-DEV-010"
+  ]
+}

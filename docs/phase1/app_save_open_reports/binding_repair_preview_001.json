@@ -1,0 +1,40 @@
+{
+    "bindingStateAfter": "repairPreview",
+    "bindingStateBefore": "repairRequired",
+    "bindings": [
+        {
+            "bindingIndex": 0,
+            "candidateGeometryPath": "geometry/topology_refs.json#/topologyRefs/0",
+            "decision": "apply",
+            "evidence": [
+                "E-DEV-017",
+                "E-DEV-018",
+                "E-DEV-022"
+            ],
+            "geometryRefId": "geom-face-001",
+            "matchState": "match",
+            "objectFile": "rebar/groups.json",
+            "objectId": "group-001",
+            "objectIndex": 0,
+            "oldGeometryPath": "geometry/topology_refs.json#/topologyRefs/999",
+            "role": "sourceFace",
+            "topologyId": "face-001"
+        }
+    ],
+    "candidatePackage": "C:/Users/ghost/Desktop/reverse_engineering/【03】图石软件/【图石钢筋1比1复刻】/fixtures/tsrebar/fixture_b_single_group/project.tsrebar",
+    "createdAt": "2026-06-05T03:57:51+08:00",
+    "guardrails": {
+        "formalPackageUnchanged": true,
+        "previewOnly": true,
+        "silentRebindForbidden": true
+    },
+    "reportId": "binding_repair_preview_001",
+    "runtime": "Qt6 C++ runtime gate",
+    "schemaVersion": "binding-repair-preview/v1",
+    "sourcePackage": "C:/Users/ghost/Desktop/reverse_engineering/【03】图石软件/【图石钢筋1比1复刻】/fixtures/tsrebar/negative/broken_binding/project.tsrebar",
+    "summary": {
+        "ambiguousCount": 0,
+        "matchCount": 1,
+        "missingCount": 0
+    }
+}

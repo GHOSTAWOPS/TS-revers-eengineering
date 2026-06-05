@@ -1,0 +1,175 @@
+{
+  "schemaVersion": "dependency-gate/v1",
+  "reportId": "dependency_gate_run_001",
+  "createdAt": "2026-06-05T03:28:55+08:00",
+  "scope": "Qt6 + OCCT dependency compliance gate",
+  "summary": {
+    "decision": "pass",
+    "m1FormalAllowed": true,
+    "errorCount": 0,
+    "warningCount": 1,
+    "passCount": 16,
+    "checkCount": 17,
+    "blockerGaps": []
+  },
+  "findings": [
+    {
+      "checkId": "DEPENDENCIES_EXISTS",
+      "severity": "error",
+      "ok": true,
+      "file": "DEPENDENCIES.md",
+      "evidence": "DEPENDENCIES.md",
+      "decision": "present"
+    },
+    {
+      "checkId": "NOTICES_EXISTS",
+      "severity": "error",
+      "ok": true,
+      "file": "THIRD_PARTY_NOTICES.md",
+      "evidence": "THIRD_PARTY_NOTICES.md",
+      "decision": "present"
+    },
+    {
+      "checkId": "QT_LICENSE_EXISTS",
+      "severity": "error",
+      "ok": true,
+      "file": "licenses/QT_LICENSES.txt",
+      "evidence": "Qt license record",
+      "decision": "present"
+    },
+    {
+      "checkId": "OCCT_LICENSE_EXISTS",
+      "severity": "error",
+      "ok": true,
+      "file": "licenses/OCCT_LICENSE.txt",
+      "evidence": "OCCT license record",
+      "decision": "present"
+    },
+    {
+      "checkId": "SOURCE_OFFER_EXISTS",
+      "severity": "error",
+      "ok": true,
+      "file": "licenses/SOURCE_OFFER.txt",
+      "evidence": "source availability record",
+      "decision": "present"
+    },
+    {
+      "checkId": "SBOM_EXISTS",
+      "severity": "error",
+      "ok": true,
+      "file": "sbom/project-sbom.spdx.json",
+      "evidence": "SPDX SBOM",
+      "decision": "present"
+    },
+    {
+      "checkId": "DEP_VERSION_FREEZE",
+      "severity": "error",
+      "ok": true,
+      "file": "DEPENDENCIES.md",
+      "evidence": "no prep markers",
+      "decision": "dependency versions frozen"
+    },
+    {
+      "checkId": "DEP_VERSION_FREEZE",
+      "severity": "error",
+      "ok": true,
+      "file": "THIRD_PARTY_NOTICES.md",
+      "evidence": "no prep markers",
+      "decision": "dependency versions frozen"
+    },
+    {
+      "checkId": "DEP_VERSION_FREEZE",
+      "severity": "error",
+      "ok": true,
+      "file": "licenses/QT_LICENSES.txt",
+      "evidence": "no prep markers",
+      "decision": "dependency versions frozen"
+    },
+    {
+      "checkId": "DEP_VERSION_FREEZE",
+      "severity": "error",
+      "ok": true,
+      "file": "licenses/OCCT_LICENSE.txt",
+      "evidence": "no prep markers",
+      "decision": "dependency versions frozen"
+    },
+    {
+      "checkId": "DEP_VERSION_FREEZE",
+      "severity": "error",
+      "ok": true,
+      "file": "licenses/SOURCE_OFFER.txt",
+      "evidence": "no prep markers",
+      "decision": "dependency versions frozen"
+    },
+    {
+      "checkId": "NOTICE_SOURCE_MODIFIED",
+      "severity": "error",
+      "ok": true,
+      "file": "THIRD_PARTY_NOTICES.md",
+      "evidence": "Source modified: no",
+      "decision": "source modification state recorded"
+    },
+    {
+      "checkId": "QT_SOURCE_MODIFIED",
+      "severity": "error",
+      "ok": true,
+      "file": "licenses/QT_LICENSES.txt",
+      "evidence": "Source modified: no",
+      "decision": "source modification state recorded"
+    },
+    {
+      "checkId": "OCCT_SOURCE_MODIFIED",
+      "severity": "error",
+      "ok": true,
+      "file": "licenses/OCCT_LICENSE.txt",
+      "evidence": "Source modified: no",
+      "decision": "source modification state recorded"
+    },
+    {
+      "checkId": "SBOM_REQUIRED_PACKAGES",
+      "severity": "error",
+      "ok": true,
+      "file": "sbom/project-sbom.spdx.json",
+      "evidence": "Qt and OCCT packages present",
+      "decision": "required packages present"
+    },
+    {
+      "checkId": "SBOM_VERSION_FREEZE",
+      "severity": "error",
+      "ok": true,
+      "file": "sbom/project-sbom.spdx.json",
+      "evidence": "no prep markers",
+      "decision": "SBOM versions frozen"
+    },
+    {
+      "checkId": "CMAKE_SCAN",
+      "severity": "warning",
+      "ok": false,
+      "file": "CMakeLists.txt",
+      "evidence": "missing",
+      "decision": "CMake project not created yet; dependency module scan skipped"
+    }
+  ],
+  "linkedRequirements": [
+    "REQ-TECH-001",
+    "REQ-TECH-002"
+  ],
+  "linkedEvidence": [
+    "E-TECH-001",
+    "E-TECH-002",
+    "E-TECH-003",
+    "E-TECH-004",
+    "E-TECH-005"
+  ],
+  "linkedGaps": [
+    "GAP-TECH-001",
+    "GAP-TECH-002",
+    "GAP-TECH-007",
+    "GAP-DEV-007"
+  ],
+  "notes": [
+    "TBD/not frozen markers are allowed only in M1-Prep.",
+    "Qt and OCCT versions must be frozen before M1-Formal.",
+    "This gate scans CMake only after the Qt6 + OCCT project exists."
+  ]
+}

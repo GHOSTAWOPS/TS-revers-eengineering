@@ -1,0 +1,13 @@
+{
+  "schemaVersion": "drawing-detail-mapping/v1",
+  "groups": [],
+  "segments": [],
+  "tables": [],
+  "evidence": [
+    "E-DEV-007",
+    "E-DEV-010"
+  ],
+  "notes": [
+    "Fixture A has no rebar objects, so Detail mapping is intentionally empty."
+  ]
+}

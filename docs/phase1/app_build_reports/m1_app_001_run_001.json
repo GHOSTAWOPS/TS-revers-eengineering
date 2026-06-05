@@ -1,0 +1,60 @@
+{
+  "id": "m1_app_001_run_001",
+  "date": "2026-06-05",
+  "decision": "m1-app-001-pass",
+  "appRoot": "C:/Users/ghost/Desktop/reverse_engineering/【03】图石软件/【图石钢筋1比1复刻】/app",
+  "cmake": {
+    "configured": true,
+    "generator": "Ninja",
+    "cmakeExecutable": "D:/Work/vcpkg/downloads/tools/cmake-4.3.2-windows/cmake-4.3.2-windows-x86_64/bin/cmake.exe",
+    "note": "Visual Studio bundled CMake 4.2.3-msvc3 returned early in this workspace; standalone CMake 4.3.2 from vcpkg downloads was used for the successful configure/build."
+  },
+  "build": {
+    "success": true,
+    "targets": [
+      "tsrebar_core",
+      "tsrebar_occ_import",
+      "tsrebar_app",
+      "command_registry_tests",
+      "step_import_probe"
+    ]
+  },
+  "tests": {
+    "success": true,
+    "passed": 4,
+    "failed": 0,
+    "cases": [
+      "command_registry_tests",
+      "app_smoke",
+      "domain_rebar_boundary",
+      "step_import_probe_123"
+    ]
+  },
+  "stepSample": {
+    "path": "C:/Users/ghost/Desktop/reverse_engineering/【03】图石软件/123.stp",
+    "ok": true,
+    "readOk": true,
+    "transferOk": true,
+    "roots": 1,
+    "freeShapes": 1,
+    "solids": 754,
+    "faces": 3016,
+    "edges": 9048,
+    "vertices": 18096,
+    "lengthUnit": "METRE"
+  },
+  "guardrails": {
+    "domainRebarOcctBoundary": "pass",
+    "qtPlatformPluginDeployment": "pass",
+    "unimplementedCommandsReturnNotImplemented": "pass",
+    "parentRebarGenerationChainMigrated": false
+  },
+  "readinessGate": {
+    "decision": "M1-Formal-Ready",
+    "m1FormalAllowed": true,
+    "errorCount": 0,
+    "warningCount": 0,
+    "passCount": 78,
+    "checkCount": 78
+  }
+}

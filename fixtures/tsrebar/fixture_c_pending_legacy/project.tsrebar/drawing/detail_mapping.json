@@ -1,0 +1,37 @@
+{
+  "schemaVersion": "drawing-detail-mapping/v1",
+  "exportStatus": "blocked-unresolvedGeometry",
+  "blockedReason": "Fixture C contains unresolvedGeometry and pendingLegacyEvidence. Detail writer must not emit a final Detail.xml + DetailNN.stl package until repair or confirmation closes the binding.",
+  "groups": [
+    {
+      "rebarGroupId": "group-legacy-c-001",
+      "stbGroupId": "detail-group-legacy-c-001",
+      "groupId": "detail-group-legacy-c-001",
+      "rsdId": "rsd-legacy-c-001",
+      "mappingStatus": "pendingLegacyEvidence"
+    }
+  ],
+  "segments": [
+    {
+      "rebarSegmentId": "segment-legacy-c-001",
+      "stbGeoSegId": null,
+      "sourceCurveRef": null,
+      "mappingStatus": "blocked-unresolvedGeometry"
+    }
+  ],
+  "tables": [
+    {
+      "sourceGroupId": "group-legacy-c-001",
+      "rsdId": "rsd-legacy-c-001",
+      "mappingStatus": "pendingLegacyEvidence"
+    }
+  ],
+  "evidence": [
+    "E-IDA-018",
+    "E-IDA-019",
+    "E-DETAIL-001",
+    "E-DETAIL-002",
+    "E-DEV-010",
+    "GAP-IDA-007"
+  ]
+}

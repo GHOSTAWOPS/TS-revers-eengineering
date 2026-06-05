@@ -1,0 +1,44 @@
+{
+  "format": "tsrebar",
+  "formatVersion": 1,
+  "schemaVersion": "2026-06-05-draft",
+  "packageKind": "negative-fixture",
+  "fixtureId": "negative-missing_required_file",
+  "fixtureStatus": "actual-negative",
+  "validationStatus": "expected-fail-not-run",
+  "createdAt": "2026-06-05T00:00:00+08:00",
+  "saveTransaction": {
+    "state": "complete",
+    "dirtyCleared": true,
+    "auditId": "fixture-b-created-from-docs",
+    "note": "Fixture B carries one RebarGroup/Rebar/RebarSegment with legacyObject.raw, geometryRef, binding and Detail mapping. Validator code and reports are not implemented yet."
+  },
+  "requiredFiles": [
+    "project.json",
+    "geometry/source_step.json",
+    "geometry/topology_refs.json",
+    "rebar/steel_data.json",
+    "rebar/groups.json",
+    "rebar/bars.json",
+    "rebar/segments.json",
+    "drawing/detail_mapping.json",
+    "evidence/evidence_index.json",
+    "evidence/unresolved_fields.json"
+  ],
+  "evidence": [
+    "E-DEV-002",
+    "E-DEV-004",
+    "E-DEV-007",
+    "E-DEV-009",
+    "E-DEV-010",
+    "E-DEV-012",
+    "GAP-DEV-001",
+    "E-DEV-014"
+  ],
+  "negativeCase": {
+    "name": "missing_required_file",
+    "primaryValidator": "PackageValidator",
+    "expectedErrorCode": "PV001_REQUIRED_FILE_MISSING",
+    "saveAfterFailure": "must-not-overwrite-old-package-or-clear-dirty"
+  }
+}

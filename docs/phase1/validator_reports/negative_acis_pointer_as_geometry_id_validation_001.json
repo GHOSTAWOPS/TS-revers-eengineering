@@ -1,0 +1,181 @@
+{
+  "schemaVersion": "validation-report/v1",
+  "reportId": "acis_pointer_as_geometry_id_validation_001",
+  "packagePath": "C:/Users/ghost/Desktop/reverse_engineering/【03】图石软件/【图石钢筋1比1复刻】/fixtures/tsrebar/negative/acis_pointer_as_geometry_id/project.tsrebar",
+  "packageHash": "sha256:2d83f3610adcf047c64fef419b2098e98a17559ac9641e802e7fe436323cd76a",
+  "createdAt": "2026-06-05T01:18:51+08:00",
+  "runnerVersion": "tsrebar-validator/0.1",
+  "decision": "fail",
+  "errorCount": 1,
+  "warningCount": 13,
+  "findings": [
+    {
+      "validatorName": "GeometryRefValidator",
+      "objectId": "",
+      "packageFile": "rebar/groups.json",
+      "jsonPath": "#/items/0/geometryRef/topologyRefs/0",
+      "errorCode": "GRV004_ACIS_POINTER_USED_AS_STABLE_ID",
+      "message": "ACIS pointer or memory address is used as a stable geometry ID",
+      "evidenceHint": [
+        "GAP-TECH-003"
+      ],
+      "severity": "error"
+    },
+    {
+      "validatorName": "EvidenceValidator",
+      "objectId": "",
+      "packageFile": "rebar/steel_data.json",
+      "jsonPath": "#/items/0/legacyObject/raw/fields/int72",
+      "errorCode": "EVW001_PENDING_LEGACY_FIELD",
+      "message": "pending legacy field is preserved and listed in unresolved_fields",
+      "evidenceHint": [
+        "GAP-SFL-003"
+      ],
+      "severity": "warning"
+    },
+    {
+      "validatorName": "EvidenceValidator",
+      "objectId": "",
+      "packageFile": "rebar/steel_data.json",
+      "jsonPath": "#/items/0/legacyObject/raw/fields/int76",
+      "errorCode": "EVW001_PENDING_LEGACY_FIELD",
+      "message": "pending legacy field is preserved and listed in unresolved_fields",
+      "evidenceHint": [
+        "GAP-SFL-003"
+      ],
+      "severity": "warning"
+    },
+    {
+      "validatorName": "EvidenceValidator",
+      "objectId": "",
+      "packageFile": "rebar/steel_data.json",
+      "jsonPath": "#/items/0/legacyObject/raw/fields/int80",
+      "errorCode": "EVW001_PENDING_LEGACY_FIELD",
+      "message": "pending legacy field is preserved and listed in unresolved_fields",
+      "evidenceHint": [
+        "GAP-SFL-003"
+      ],
+      "severity": "warning"
+    },
+    {
+      "validatorName": "EvidenceValidator",
+      "objectId": "",
+      "packageFile": "rebar/steel_data.json",
+      "jsonPath": "#/items/0/legacyObject/raw/fields/real84_120",
+      "errorCode": "EVW001_PENDING_LEGACY_FIELD",
+      "message": "pending legacy field is preserved and listed in unresolved_fields",
+      "evidenceHint": [
+        "GAP-SFL-003"
+      ],
+      "severity": "warning"
+    },
+    {
+      "validatorName": "EvidenceValidator",
+      "objectId": "",
+      "packageFile": "rebar/groups.json",
+      "jsonPath": "#/items/0/legacyObject/raw/fields/refs80_112",
+      "errorCode": "EVW001_PENDING_LEGACY_FIELD",
+      "message": "pending legacy field is preserved and listed in unresolved_fields",
+      "evidenceHint": [
+        "GAP-SFL-004"
+      ],
+      "severity": "warning"
+    },
+    {
+      "validatorName": "EvidenceValidator",
+      "objectId": "",
+      "packageFile": "rebar/groups.json",
+      "jsonPath": "#/items/0/legacyObject/raw/fields/vector144",
+      "errorCode": "EVW001_PENDING_LEGACY_FIELD",
+      "message": "pending legacy field is preserved and listed in unresolved_fields",
+      "evidenceHint": [
+        "GAP-SFL-004"
+      ],
+      "severity": "warning"
+    },
+    {
+      "validatorName": "EvidenceValidator",
+      "objectId": "",
+      "packageFile": "rebar/groups.json",
+      "jsonPath": "#/items/0/legacyObject/raw/fields/positions168_192",
+      "errorCode": "EVW001_PENDING_LEGACY_FIELD",
+      "message": "pending legacy field is preserved and listed in unresolved_fields",
+      "evidenceHint": [
+        "GAP-SFL-004"
+      ],
+      "severity": "warning"
+    },
+    {
+      "validatorName": "EvidenceValidator",
+      "objectId": "",
+      "packageFile": "rebar/bars.json",
+      "jsonPath": "#/items/0/legacyObject/raw/fields/ref72",
+      "errorCode": "EVW001_PENDING_LEGACY_FIELD",
+      "message": "pending legacy field is preserved and listed in unresolved_fields",
+      "evidenceHint": [
+        "GAP-SFL-005"
+      ],
+      "severity": "warning"
+    },
+    {
+      "validatorName": "EvidenceValidator",
+      "objectId": "",
+      "packageFile": "rebar/bars.json",
+      "jsonPath": "#/items/0/legacyObject/raw/fields/ref80",
+      "errorCode": "EVW001_PENDING_LEGACY_FIELD",
+      "message": "pending legacy field is preserved and listed in unresolved_fields",
+      "evidenceHint": [
+        "GAP-SFL-005"
+      ],
+      "severity": "warning"
+    },
+    {
+      "validatorName": "EvidenceValidator",
+      "objectId": "",
+      "packageFile": "rebar/bars.json",
+      "jsonPath": "#/items/0/legacyObject/raw/fields/ref88",
+      "errorCode": "EVW001_PENDING_LEGACY_FIELD",
+      "message": "pending legacy field is preserved and listed in unresolved_fields",
+      "evidenceHint": [
+        "GAP-SFL-005"
+      ],
+      "severity": "warning"
+    },
+    {
+      "validatorName": "EvidenceValidator",
+      "objectId": "",
+      "packageFile": "rebar/segments.json",
+      "jsonPath": "#/items/0/legacyObject/raw/fields/ptr80",
+      "errorCode": "EVW001_PENDING_LEGACY_FIELD",
+      "message": "pending legacy field is preserved and listed in unresolved_fields",
+      "evidenceHint": [
+        "GAP-SFL-005"
+      ],
+      "severity": "warning"
+    },
+    {
+      "validatorName": "EvidenceValidator",
+      "objectId": "",
+      "packageFile": "rebar/segments.json",
+      "jsonPath": "#/items/0/legacyObject/raw/fields/ptr96",
+      "errorCode": "EVW001_PENDING_LEGACY_FIELD",
+      "message": "pending legacy field is preserved and listed in unresolved_fields",
+      "evidenceHint": [
+        "GAP-SFL-005"
+      ],
+      "severity": "warning"
+    },
+    {
+      "validatorName": "EvidenceValidator",
+      "objectId": "",
+      "packageFile": "rebar/segments.json",
+      "jsonPath": "#/items/0/legacyObject/raw/fields/ptr88",
+      "errorCode": "EVW001_PENDING_LEGACY_FIELD",
+      "message": "pending legacy field is preserved and listed in unresolved_fields",
+      "evidenceHint": [
+        "GAP-SFL-005"
+      ],
+      "severity": "warning"
+    }
+  ]
+}

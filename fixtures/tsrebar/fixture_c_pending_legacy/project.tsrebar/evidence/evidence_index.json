@@ -1,0 +1,125 @@
+{
+  "schemaVersion": "evidence-index/v1",
+  "items": [
+    {
+      "id": "E-DEV-002",
+      "type": "development-contract",
+      "source": "18_新设计文件格式替代SFL策略.md, 24_新设计文件格式Schema与Fixture草案.md",
+      "summary": "New tsrebar package contract: legacyObject.raw + geometryRef + binding + evidence."
+    },
+    {
+      "id": "E-IDA-013",
+      "type": "ida",
+      "source": "16_seg_steelbargroup字段地图初稿.md",
+      "summary": "seg_steelbargroup runtime and field-map context."
+    },
+    {
+      "id": "E-IDA-015",
+      "type": "ida",
+      "source": "03_IDA命令证据.md",
+      "summary": "Legacy save skeleton for steelData, steelbar and steelbargroup."
+    },
+    {
+      "id": "E-IDA-016",
+      "type": "ida",
+      "source": "03_IDA命令证据.md",
+      "summary": "Legacy read/write order for steelData, steelbargroup and seg_steelbargroup."
+    },
+    {
+      "id": "E-IDA-017",
+      "type": "ida",
+      "source": "03_IDA命令证据.md",
+      "summary": "steelbar and seg_steelbargroup read order."
+    },
+    {
+      "id": "E-IDA-018",
+      "type": "ida",
+      "source": "13_Detail字段映射矩阵.md",
+      "summary": "Detail StbGroup/Std/StbGeo write chain."
+    },
+    {
+      "id": "E-IDA-019",
+      "type": "ida",
+      "source": "13_Detail字段映射矩阵.md",
+      "summary": "Detail StbTable and MaterialTable write chain."
+    },
+    {
+      "id": "E-DETAIL-001",
+      "type": "detail",
+      "source": "05_Detail工程图包证据.md",
+      "summary": "DetailNN.stl is DrawingRoot XML."
+    },
+    {
+      "id": "E-DETAIL-002",
+      "type": "detail",
+      "source": "05_Detail工程图包证据.md",
+      "summary": "StbTable and MaterialTable fields exist."
+    },
+    {
+      "id": "E-DEV-004",
+      "type": "development-contract",
+      "source": "24_新设计文件格式Schema与Fixture草案.md",
+      "summary": "Binding contract between legacy object paths and geometry references."
+    },
+    {
+      "id": "E-DEV-007",
+      "type": "development-contract",
+      "source": "29_首期tsrebar实际Fixture包清单与Golden断言.md",
+      "summary": "Fixture A/B/C package list and golden assertions."
+    },
+    {
+      "id": "E-DEV-009",
+      "type": "development-contract",
+      "source": "31_STEP选择ID实际运行记录模板与样本清单.md",
+      "summary": "STEP selection ID run template and sample list."
+    },
+    {
+      "id": "E-DEV-010",
+      "type": "development-contract",
+      "source": "32_Validator实现契约与错误码总表.md",
+      "summary": "Validator implementation contract, error codes and report schema."
+    },
+    {
+      "id": "E-DEV-013",
+      "type": "actual-artifact",
+      "source": "fixtures/tsrebar/fixture_c_pending_legacy/project.tsrebar/",
+      "summary": "Fixture C actual package skeleton exists with complex legacy raw fields, pendingLegacyEvidence, unresolvedGeometry and repairRequired open mode."
+    },
+    {
+      "id": "GAP-DEV-001",
+      "type": "gap",
+      "source": "99_缺口和待确认项.md",
+      "summary": "Actual fixture packages, validators, binding validation and Save/Open tests are still incomplete."
+    },
+    {
+      "id": "GAP-DEV-002",
+      "type": "gap",
+      "source": "99_缺口和待确认项.md",
+      "summary": "Real STEP multi-run diff has not been produced."
+    },
+    {
+      "id": "GAP-SFL-003",
+      "type": "gap",
+      "source": "99_缺口和待确认项.md",
+      "summary": "steelData field business names are not fully closed."
+    },
+    {
+      "id": "GAP-SFL-004",
+      "type": "gap",
+      "source": "99_缺口和待确认项.md",
+      "summary": "steelbargroup field business names are not fully closed."
+    },
+    {
+      "id": "GAP-SFL-005",
+      "type": "gap",
+      "source": "99_缺口和待确认项.md",
+      "summary": "steelbar and seg_steelbargroup field business names are not fully closed."
+    },
+    {
+      "id": "GAP-IDA-007",
+      "type": "gap",
+      "source": "99_缺口和待确认项.md",
+      "summary": "seg_steelbargroup field names remain partially unresolved."
+    }
+  ]
+}

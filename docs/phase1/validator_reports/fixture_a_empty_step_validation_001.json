@@ -1,0 +1,12 @@
+{
+  "schemaVersion": "validation-report/v1",
+  "reportId": "fixture_a_empty_step_validation_001",
+  "packagePath": "C:/Users/ghost/Desktop/reverse_engineering/【03】图石软件/【图石钢筋1比1复刻】/fixtures/tsrebar/fixture_a_empty_step/project.tsrebar",
+  "packageHash": "sha256:2ee950c4a3a01bd7cd02bd22bb033e505059d0fac163295740fe2c18dad02ef7",
+  "createdAt": "2026-06-05T01:18:51+08:00",
+  "runnerVersion": "tsrebar-validator/0.1",
+  "decision": "pass",
+  "errorCount": 0,
+  "warningCount": 0,
+  "findings": []
+}

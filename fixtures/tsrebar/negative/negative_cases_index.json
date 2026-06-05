@@ -1,0 +1,93 @@
+{
+  "schemaVersion": "negative-fixture-index/v1",
+  "evidence": [
+    "E-DEV-005",
+    "E-DEV-007",
+    "E-DEV-010",
+    "E-DEV-014",
+    "GAP-DEV-001"
+  ],
+  "cases": [
+    {
+      "id": "negative-missing-required-file",
+      "name": "missing_required_file",
+      "packagePath": "fixtures/tsrebar/negative/missing_required_file/project.tsrebar/",
+      "brokenRule": "manifest.requiredFiles contains geometry/source_step.json, but the file is absent.",
+      "primaryValidator": "PackageValidator",
+      "expectedErrorCodes": ["PV001_REQUIRED_FILE_MISSING"],
+      "saveAfterFailure": "must-not-overwrite-old-package-or-clear-dirty"
+    },
+    {
+      "id": "negative-broken-binding",
+      "name": "broken_binding",
+      "packagePath": "fixtures/tsrebar/negative/broken_binding/project.tsrebar/",
+      "brokenRule": "groups[0].binding.items[0].geometryPath points to a missing topology path.",
+      "primaryValidator": "LegacyGeometryBindingValidator",
+      "expectedErrorCodes": ["LGV004_GEOMETRY_PATH_BROKEN"],
+      "saveAfterFailure": "must-not-overwrite-old-package-or-clear-dirty"
+    },
+    {
+      "id": "negative-acis-pointer-as-geometry-id",
+      "name": "acis_pointer_as_geometry_id",
+      "packagePath": "fixtures/tsrebar/negative/acis_pointer_as_geometry_id/project.tsrebar/",
+      "brokenRule": "group.geometryRef.topologyRefs uses an ACIS memory pointer string as a stable geometry ID.",
+      "primaryValidator": "GeometryRefValidator",
+      "expectedErrorCodes": ["GRV004_ACIS_POINTER_USED_AS_STABLE_ID"],
+      "saveAfterFailure": "must-not-overwrite-old-package-or-clear-dirty"
+    },
+    {
+      "id": "negative-transient-index-only",
+      "name": "transient_index_only",
+      "packagePath": "fixtures/tsrebar/negative/transient_index_only/project.tsrebar/",
+      "brokenRule": "topology_refs[0] has an OCCT transient index but no stable fingerprint.",
+      "primaryValidator": "GeometryRefValidator",
+      "expectedErrorCodes": ["GRV005_TRANSIENT_INDEX_USED_AS_ONLY_ID"],
+      "saveAfterFailure": "must-not-overwrite-old-package-or-clear-dirty"
+    },
+    {
+      "id": "negative-forged-evidence",
+      "name": "forged_evidence",
+      "packagePath": "fixtures/tsrebar/negative/forged_evidence/project.tsrebar/",
+      "brokenRule": "RebarGroup evidence references E-FAKE-999, which does not exist in evidence_index.json.",
+      "primaryValidator": "EvidenceValidator",
+      "expectedErrorCodes": ["EV001_EVIDENCE_ID_NOT_FOUND", "PRV004_EVIDENCE_REF_BROKEN"],
+      "saveAfterFailure": "must-not-overwrite-old-package-or-clear-dirty"
+    },
+    {
+      "id": "negative-pending-field-marked-confirmed",
+      "name": "pending_field_marked_confirmed",
+      "packagePath": "fixtures/tsrebar/negative/pending_field_marked_confirmed/project.tsrebar/",
+      "brokenRule": "seg_steelbargroup.ptr80 is marked confirmed while it is still listed as unresolved and only backed by a GAP.",
+      "primaryValidator": "EvidenceValidator",
+      "expectedErrorCodes": ["EV003_PENDING_MARKED_CONFIRMED", "EV004_CONFIRMED_WITHOUT_EVIDENCE"],
+      "saveAfterFailure": "must-not-overwrite-old-package-or-clear-dirty"
+    },
+    {
+      "id": "negative-detail-rsd-mismatch",
+      "name": "detail_rsd_mismatch",
+      "packagePath": "fixtures/tsrebar/negative/detail_rsd_mismatch/project.tsrebar/",
+      "brokenRule": "detail_mapping.tables[0].rsdId differs from the source RebarGroup.rsdId.",
+      "primaryValidator": "DetailMappingValidator",
+      "expectedErrorCodes": ["DMV002_RSD_ID_MISMATCH"],
+      "saveAfterFailure": "must-not-overwrite-old-package-or-clear-dirty"
+    },
+    {
+      "id": "negative-half-written-package",
+      "name": "half_written_package",
+      "packagePath": "fixtures/tsrebar/negative/half_written_package/project.tsrebar/",
+      "brokenRule": "manifest.saveTransaction.state is partial.",
+      "primaryValidator": "PackageValidator / TransactionValidator",
+      "expectedErrorCodes": ["PV004_SAVE_TRANSACTION_INCOMPLETE", "TXV001_TEMP_PACKAGE_INVALID", "TXV006_HALF_WRITTEN_PACKAGE_OPENED_AS_FORMAL"],
+      "saveAfterFailure": "must-not-overwrite-old-package-or-clear-dirty"
+    },
+    {
+      "id": "negative-missing-step-diff",
+      "name": "missing_step_diff",
+      "packagePath": "fixtures/tsrebar/negative/missing_step_diff/project.tsrebar/",
+      "brokenRule": "resolved geometry is marked imported, but geometry/source_step.json has no STEP selection diff report.",
+      "primaryValidator": "GeometryRefValidator",
+      "expectedErrorCodes": ["GRV006_STEP_DIFF_MISSING"],
+      "saveAfterFailure": "must-not-overwrite-old-package-or-clear-dirty"
+    }
+  ]
+}

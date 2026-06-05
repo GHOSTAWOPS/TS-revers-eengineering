@@ -1,0 +1,96 @@
+{
+  "schemaVersion": "rebar-groups/v1",
+  "items": [
+    {
+      "id": "group-001",
+      "kind": "RebarGroup",
+      "groupId": "detail-group-001",
+      "rsdId": "rsd-001",
+      "steelDataId": "steel-data-001",
+      "barIds": [
+        "bar-001"
+      ],
+      "segmentIds": [
+        "segment-001"
+      ],
+      "legacyObject": {
+        "type": "steelbargroup",
+        "raw": {
+          "schema": "legacy-steelbargroup-v1",
+          "fields": {
+            "name72": "fixture-b-single-group",
+            "refs80_112": {
+              "value": [
+                "bar-001",
+                "segment-001"
+              ],
+              "confidence": "pending",
+              "evidence": [
+                "GAP-SFL-004"
+              ]
+            },
+            "vector144": {
+              "value": [
+                0.0,
+                0.0,
+                1.0
+              ],
+              "confidence": "pending",
+              "evidence": [
+                "GAP-SFL-004"
+              ]
+            },
+            "positions168_192": {
+              "value": [
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  12.0,
+                  0.0,
+                  1.0
+                ]
+              ],
+              "confidence": "pending",
+              "evidence": [
+                "GAP-SFL-004"
+              ]
+            }
+          }
+        }
+      },
+      "geometryRef": {
+        "kernel": "OCCT",
+        "sourceStepId": "step-main",
+        "topologyRefs": [
+          "face-001"
+        ]
+      },
+      "binding": {
+        "state": "resolved",
+        "items": [
+          {
+            "role": "sourceFace",
+            "legacyPath": "rebar/groups.json#/items/0/legacyObject/raw/fields/positions168_192",
+            "geometryPath": "geometry/topology_refs.json#/topologyRefs/999",
+            "geometryRefId": "geom-face-001",
+            "topologyId": "face-001",
+            "evidence": [
+              "E-DEV-004",
+              "GAP-DEV-002"
+            ]
+          }
+        ]
+      },
+      "evidence": [
+        "E-IDA-015",
+        "E-IDA-016",
+        "E-IDA-018",
+        "E-DETAIL-001",
+        "GAP-SFL-004"
+      ]
+    }
+  ]
+}

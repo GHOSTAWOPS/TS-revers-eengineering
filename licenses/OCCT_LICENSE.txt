@@ -1,0 +1,25 @@
+OCCT Version: 7.9.3#1
+OCCT Source: vcpkg opencascade package with local source archive
+vcpkg package: opencascade:x64-windows
+vcpkg root: D:\Work\vcpkg
+Install root: D:\Work\vcpkg\installed\x64-windows
+Source archive: D:\Work\vcpkg\downloads\Open-Cascade-SAS-OCCT-V7_9_3.tar.gz
+License: LGPL 2.1 with Open CASCADE exception, as recorded by the installed vcpkg copyright file
+Toolkit / capability groups:
+  - Kernel / Foundation
+  - Modeling Data
+  - Modeling Algorithms
+  - Shape Healing
+  - Data Exchange: STEP
+  - Visualization / AIS
+Runtime DLLs: recorded in docs/phase1/dependency_probe_run_001.md
+Official license URL: https://dev.opencascade.org/resources/licensing/
+Installed vcpkg copyright file: D:\Work\vcpkg\installed\x64-windows\share\opencascade\copyright
+Installed vcpkg SPDX file: D:\Work\vcpkg\installed\x64-windows\share\opencascade\vcpkg.spdx.json
+Source modified: no
+Commercial components used: no
+
+Gate note:
+This record freezes the local OCCT dependency candidate for M1. Installed
+toolkits outside the approved capability groups require explicit review before
+they can be linked by the project.

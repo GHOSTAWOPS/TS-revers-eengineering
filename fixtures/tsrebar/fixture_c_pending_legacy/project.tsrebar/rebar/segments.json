@@ -1,0 +1,66 @@
+{
+  "schemaVersion": "rebar-segments/v1",
+  "items": [
+    {
+      "id": "segment-legacy-c-001",
+      "kind": "RebarSegment",
+      "groupId": "group-legacy-c-001",
+      "barId": "bar-legacy-c-001",
+      "openMode": "repairRequired",
+      "unresolvedReason": "Legacy pointer fields are preserved but no stable STEP edge has been confirmed.",
+      "legacyObject": {
+        "type": "seg_steelbargroup",
+        "raw": {
+          "schema": "legacy-seg-steelbargroup-v1",
+          "legacyWriteOrder": ["int68", "string72", "ptr80", "ptr96", "ptr88", "int64"],
+          "fields": {
+            "int68": { "value": 0, "confidence": "confirmed", "evidence": ["E-IDA-016"] },
+            "string72DisplayName": "fixture-c-segment-legacy-c-001",
+            "ptr80": { "value": "legacy-ptr80-preserved", "confidence": "pending", "evidence": ["GAP-IDA-007"] },
+            "ptr96": { "value": "legacy-ptr96-preserved", "confidence": "pending", "evidence": ["GAP-IDA-007"] },
+            "ptr88": { "value": "legacy-ptr88-preserved", "confidence": "pending", "evidence": ["GAP-IDA-007"] },
+            "int64RoleOrState": { "value": 0, "confidence": "pending", "evidence": ["GAP-IDA-007"] }
+          }
+        }
+      },
+      "geometryRef": {
+        "kernel": "OCCT",
+        "sourceStepId": "step-main",
+        "curveRefs": []
+      },
+      "binding": {
+        "state": "unresolvedGeometry",
+        "items": [
+          {
+            "role": "sourceEdge",
+            "legacyPath": "rebar/segments.json#/items/0/legacyObject/raw/fields/string72DisplayName",
+            "geometryPath": null,
+            "geometryRefId": "geom-edge-missing-c-001",
+            "topologyId": "edge-missing-c-001",
+            "unresolvedReason": "The old segment exists and raw pointer fields are preserved, but no STEP edge binding is confirmed.",
+            "openMode": "repairRequired",
+            "evidence": [
+              "E-DEV-004",
+              "GAP-DEV-002",
+              "GAP-IDA-007"
+            ]
+          }
+        ]
+      },
+      "rules": {
+        "minCreateDistance": 0.002,
+        "minEdgeLength": 0.01,
+        "nearEndpointDistance": 0.1,
+        "trimDelta": -0.03,
+        "safeCurveParams": [0.001, 0.999],
+        "splineSampleCountRule": "max(5, length * 50)"
+      },
+      "evidence": [
+        "E-IDA-013",
+        "E-IDA-016",
+        "E-IDA-017",
+        "GAP-IDA-007"
+      ]
+    }
+  ]
+}

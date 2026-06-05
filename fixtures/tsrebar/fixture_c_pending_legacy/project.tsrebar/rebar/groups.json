@@ -1,0 +1,76 @@
+{
+  "schemaVersion": "rebar-groups/v1",
+  "items": [
+    {
+      "id": "group-legacy-c-001",
+      "kind": "RebarGroup",
+      "groupId": "detail-group-legacy-c-001",
+      "rsdId": "rsd-legacy-c-001",
+      "steelDataId": "steel-data-legacy-c-001",
+      "barIds": ["bar-legacy-c-001"],
+      "segmentIds": ["segment-legacy-c-001"],
+      "openMode": "repairRequired",
+      "legacyObject": {
+        "type": "steelbargroup",
+        "raw": {
+          "schema": "legacy-steelbargroup-v1",
+          "fields": {
+            "name72": "fixture-c-pending-legacy-group",
+            "refs80_112": { "value": ["bar-legacy-c-001", "segment-legacy-c-001"], "confidence": "pending", "evidence": ["GAP-SFL-004"] },
+            "vector144": { "value": [0.0, 0.0, 1.0], "confidence": "pending", "evidence": ["GAP-SFL-004"] },
+            "positions168_192": { "value": [[1.0, 1.0, 2.0], [16.0, 1.0, 2.0]], "confidence": "pending", "evidence": ["GAP-SFL-004"] },
+            "variesShanghLzBlock": {
+              "value": {
+                "rawName": "Varies_ShangH_LZ",
+                "rawBytesHex": "000000000000f03f00000000000000400000000000000840",
+                "decodedPreview": [1.0, 2.0, 3.0]
+              },
+              "confidence": "pending",
+              "evidence": ["GAP-SFL-004"]
+            },
+            "indexOrNumberFields328_360": {
+              "value": [0, 1, 2, 0, 0, 0, 12, 24, 36],
+              "confidence": "pending",
+              "evidence": ["GAP-SFL-004"]
+            },
+            "flags364_380": {
+              "value": [1, 0, 1, 0, 0],
+              "confidence": "pending",
+              "evidence": ["GAP-SFL-004"]
+            }
+          }
+        }
+      },
+      "geometryRef": {
+        "kernel": "OCCT",
+        "sourceStepId": "step-main",
+        "topologyRefs": ["face-legacy-c-001"]
+      },
+      "binding": {
+        "state": "pendingLegacyEvidence",
+        "items": [
+          {
+            "role": "sourceFaceCandidate",
+            "legacyPath": "rebar/groups.json#/items/0/legacyObject/raw/fields/positions168_192",
+            "geometryPath": "geometry/topology_refs.json#/topologyRefs/0",
+            "geometryRefId": "geom-face-legacy-c-001",
+            "topologyId": "face-legacy-c-001",
+            "pendingReason": "The face candidate exists, but the steelbargroup raw fields that explain placement and numbering are not fully named.",
+            "evidence": [
+              "E-DEV-004",
+              "GAP-DEV-002",
+              "GAP-SFL-004"
+            ]
+          }
+        ]
+      },
+      "evidence": [
+        "E-IDA-015",
+        "E-IDA-016",
+        "E-IDA-018",
+        "E-DETAIL-001",
+        "GAP-SFL-004"
+      ]
+    }
+  ]
+}
