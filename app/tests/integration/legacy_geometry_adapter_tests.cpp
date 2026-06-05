@@ -4,6 +4,7 @@
 
 #include <cmath>
 #include <iostream>
+#include <vector>
 
 namespace {
 
@@ -324,6 +325,58 @@ int main(int argc, char* argv[])
     expect(outsideProjection.value.distance > 1.0,
            "outside projection must report non-zero distance");
 
+    const std::vector<tsrebar::LegacySelectionRef> singleEdgeGroup{edgeRefs.front()};
+    const auto groupDistance =
+        adapter.pointToEdgeGroupDistance(middlePoint.value, singleEdgeGroup, 0.002);
+    expect(groupDistance.ok, groupDistance.diagnostic.toUtf8().constData());
+    expect(groupDistance.value.inputPoint.x == middlePoint.value.x,
+           "edge group distance must preserve input point");
+    expect(groupDistance.value.threshold == 0.002,
+           "edge group distance must preserve threshold");
+    expect(groupDistance.value.hasNearest,
+           "edge group distance must expose nearest candidate");
+    expect(groupDistance.value.nearest.edgeStableId == edgeRefs.front().stableId,
+           "edge group distance nearest edge stable id must match candidate");
+    expect(groupDistance.value.nearest.edgeParameterValid,
+           "edge group distance nearest candidate must carry edge parameter");
+    expect(groupDistance.value.candidates.size() == 1,
+           "single edge group distance must expose one candidate");
+    expect(groupDistance.value.minDistance < 1.0e-6,
+           "point on edge must have near-zero group distance");
+    expect(groupDistance.value.tooClose,
+           "point on edge must hit 0.002 legacy creation threshold");
+    expect(distance(groupDistance.value.nearest.pointOnEdge, middlePoint.value) < 1.0e-6,
+           "edge group nearest point must match point on edge");
+
+    std::vector<tsrebar::LegacySelectionRef> multiEdgeGroup{edgeRefs.front()};
+    if (edgeRefs.size() > 1) {
+        multiEdgeGroup.push_back(edgeRefs.at(1));
+    }
+    const auto multiGroupDistance =
+        adapter.pointToEdgeGroupDistance(middlePoint.value, multiEdgeGroup, 0.002);
+    expect(multiGroupDistance.ok, multiGroupDistance.diagnostic.toUtf8().constData());
+    expect(multiGroupDistance.value.candidates.size() == multiEdgeGroup.size(),
+           "multi edge group distance must keep every valid candidate summary");
+    expect(multiGroupDistance.value.nearest.edgeStableId == edgeRefs.front().stableId,
+           "multi edge group distance must choose the nearest edge stable id");
+    expect(multiGroupDistance.value.minDistance < 1.0e-6,
+           "multi edge group nearest distance must be near zero for source edge");
+
+    const auto outsideGroupDistance =
+        adapter.pointToEdgeGroupDistance(outsidePoint, singleEdgeGroup, 0.002);
+    expect(outsideGroupDistance.ok, outsideGroupDistance.diagnostic.toUtf8().constData());
+    expect(outsideGroupDistance.value.minDistance > 1.0,
+           "outside point must be farther than creation threshold");
+    expect(!outsideGroupDistance.value.tooClose,
+           "outside point must not hit 0.002 legacy creation threshold");
+
+    const std::vector<tsrebar::LegacySelectionRef> emptyGroup;
+    const auto emptyGroupDistance =
+        adapter.pointToEdgeGroupDistance(middlePoint.value, emptyGroup, 0.002);
+    expect(!emptyGroupDistance.ok, "edge group distance must reject empty groups");
+    expect(emptyGroupDistance.diagnostic.contains(QStringLiteral("empty")),
+           "empty edge group distance diagnostic must be stable");
+
     const auto wrongType = adapter.edgeGeometry(faceRefs.front());
     expect(!wrongType.ok, "edgeGeometry must reject face refs");
     expect(wrongType.diagnostic.contains(QStringLiteral("expected an edge ref")),
@@ -333,6 +386,13 @@ int main(int argc, char* argv[])
     expect(!wrongTypeProjection.ok, "edgeProjectPoint must reject face refs");
     expect(wrongTypeProjection.diagnostic.contains(QStringLiteral("expected an edge ref")),
            "edgeProjectPoint wrong type diagnostic must be stable");
+
+    const std::vector<tsrebar::LegacySelectionRef> wrongTypeGroup{faceRefs.front()};
+    const auto wrongTypeGroupDistance =
+        adapter.pointToEdgeGroupDistance(middlePoint.value, wrongTypeGroup, 0.002);
+    expect(!wrongTypeGroupDistance.ok, "edge group distance must reject face refs");
+    expect(wrongTypeGroupDistance.diagnostic.contains(QStringLiteral("expected an edge ref")),
+           "edge group distance wrong type diagnostic must be stable");
 
     const tsrebar::LegacySelectionRef missingPart =
         tsrebar::makeLegacySelectionRef(QStringLiteral("missing-part"),
@@ -349,6 +409,13 @@ int main(int argc, char* argv[])
     expect(!missingPartProjection.ok, "edgeProjectPoint must reject missing part refs");
     expect(missingPartProjection.diagnostic.contains(QStringLiteral("not in current document")),
            "edgeProjectPoint missing part diagnostic must be stable");
+
+    const std::vector<tsrebar::LegacySelectionRef> missingPartGroup{missingPart};
+    const auto missingPartGroupDistance =
+        adapter.pointToEdgeGroupDistance(middlePoint.value, missingPartGroup, 0.002);
+    expect(!missingPartGroupDistance.ok, "edge group distance must reject missing part refs");
+    expect(missingPartGroupDistance.diagnostic.contains(QStringLiteral("not in current document")),
+           "edge group distance missing part diagnostic must be stable");
 
     const tsrebar::LegacySelectionRef outOfRange =
         tsrebar::makeLegacySelectionRef(QString::fromStdString(edgeRefs.front().partEntry),

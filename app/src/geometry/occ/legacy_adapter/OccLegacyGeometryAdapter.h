@@ -51,6 +51,10 @@ public:
         double delta,
         int endFlag,
         int sampleCount) const;
+    [[nodiscard]] LegacyGeometryQueryResult<LegacyEdgeGroupDistance> pointToEdgeGroupDistance(
+        LegacyPoint3d point,
+        const std::vector<LegacySelectionRef>& edgeRefs,
+        double threshold) const;
 
 private:
     OccSelectionIndex m_selectionIndex;

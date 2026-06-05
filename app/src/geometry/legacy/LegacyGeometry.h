@@ -117,6 +117,27 @@ struct LegacyEdgeEndpointTrim
     LegacyCurveInterval interval;
 };
 
+struct LegacyEdgeGroupDistanceCandidate
+{
+    std::string edgeStableId;
+    double distance = 0.0;
+    LegacyPoint3d pointOnEdge;
+    double edgeParameter = 0.0;
+    bool edgeParameterValid = false;
+    bool inside = false;
+};
+
+struct LegacyEdgeGroupDistance
+{
+    LegacyPoint3d inputPoint;
+    double threshold = 0.0;
+    double minDistance = 0.0;
+    bool tooClose = false;
+    bool hasNearest = false;
+    LegacyEdgeGroupDistanceCandidate nearest;
+    std::vector<LegacyEdgeGroupDistanceCandidate> candidates;
+};
+
 enum class LegacyCurveKind {
     Unknown,
     Line,

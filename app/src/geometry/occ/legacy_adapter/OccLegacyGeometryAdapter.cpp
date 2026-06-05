@@ -1235,4 +1235,77 @@ LegacyGeometryQueryResult<LegacyEdgeEndpointTrim> OccLegacyGeometryAdapter::edge
     return result;
 }
 
+LegacyGeometryQueryResult<LegacyEdgeGroupDistance>
+OccLegacyGeometryAdapter::pointToEdgeGroupDistance(
+    LegacyPoint3d point,
+    const std::vector<LegacySelectionRef>& edgeRefs,
+    double threshold) const
+{
+    LegacyGeometryQueryResult<LegacyEdgeGroupDistance> result;
+    if (!pointFinite(point)) {
+        result.diagnostic = QStringLiteral("edge group distance input point must be finite");
+        return result;
+    }
+    if (!std::isfinite(threshold) || threshold < 0.0) {
+        result.diagnostic =
+            QStringLiteral("edge group distance threshold must be finite and non-negative");
+        return result;
+    }
+    if (edgeRefs.empty()) {
+        result.diagnostic = QStringLiteral("edge group distance candidate list is empty");
+        return result;
+    }
+
+    LegacyEdgeGroupDistance groupDistance;
+    groupDistance.inputPoint = point;
+    groupDistance.threshold = threshold;
+    groupDistance.minDistance = std::numeric_limits<double>::infinity();
+    groupDistance.candidates.reserve(edgeRefs.size());
+
+    for (std::size_t index = 0; index < edgeRefs.size(); ++index) {
+        const LegacySelectionRef& edgeRef = edgeRefs[index];
+        if (edgeRef.shapeKind != LegacyShapeKind::Edge) {
+            result.diagnostic =
+                QStringLiteral("edge group distance candidate %1 expected an edge ref")
+                    .arg(static_cast<qulonglong>(index));
+            return result;
+        }
+
+        const auto projection = edgeProjectPoint(edgeRef, point);
+        if (!projection.ok) {
+            result.diagnostic =
+                QStringLiteral("edge group distance candidate %1 projection failed: %2")
+                    .arg(static_cast<qulonglong>(index))
+                    .arg(projection.diagnostic);
+            return result;
+        }
+
+        LegacyEdgeGroupDistanceCandidate candidate;
+        candidate.edgeStableId = edgeRef.stableId;
+        candidate.distance = projection.value.distance;
+        candidate.pointOnEdge = projection.value.projectedPoint;
+        candidate.edgeParameter = projection.value.parameter;
+        candidate.edgeParameterValid = projection.value.parameterValid;
+        candidate.inside = projection.value.inside;
+        groupDistance.candidates.push_back(candidate);
+
+        if (!groupDistance.hasNearest ||
+            candidate.distance < groupDistance.minDistance) {
+            groupDistance.hasNearest = true;
+            groupDistance.minDistance = candidate.distance;
+            groupDistance.nearest = candidate;
+        }
+    }
+
+    if (!groupDistance.hasNearest || !std::isfinite(groupDistance.minDistance)) {
+        result.diagnostic = QStringLiteral("edge group distance has no valid candidates");
+        return result;
+    }
+
+    groupDistance.tooClose = groupDistance.minDistance <= threshold;
+    result.value = groupDistance;
+    result.ok = true;
+    return result;
+}
+
 } // namespace tsrebar
