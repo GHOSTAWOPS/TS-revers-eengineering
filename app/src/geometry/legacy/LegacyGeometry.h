@@ -148,6 +148,22 @@ enum class LegacyCurveKind {
     Other
 };
 
+struct LegacySplineCurveBuild
+{
+    std::vector<LegacyPoint3d> inputPoints;
+    int inputPointCount = 0;
+    int requestedSampleCount = 0;
+    int effectiveSampleCount = 0;
+    int legacySuggestedSampleCount = 0;
+    double sourcePolylineLength = 0.0;
+    double length = 0.0;
+    LegacyCurveKind curveKind = LegacyCurveKind::Unknown;
+    LegacyBoundingBox bounds;
+    std::vector<LegacyPoint3d> samplePoints;
+    bool buildable = false;
+    std::string failureReason;
+};
+
 enum class LegacySurfaceKind {
     Unknown,
     Plane,

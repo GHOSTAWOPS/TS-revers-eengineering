@@ -11,10 +11,14 @@
 #include <Extrema_POnCurv.hxx>
 #include <GCPnts_AbscissaPoint.hxx>
 #include <GProp_GProps.hxx>
+#include <GeomAPI_PointsToBSpline.hxx>
+#include <GeomAdaptor_Curve.hxx>
+#include <Geom_BSplineCurve.hxx>
 #include <GeomAbs_CurveType.hxx>
 #include <GeomAbs_SurfaceType.hxx>
 #include <Precision.hxx>
 #include <Standard_Failure.hxx>
+#include <TColgp_Array1OfPnt.hxx>
 #include <TopAbs_Orientation.hxx>
 #include <TopExp.hxx>
 #include <TopExp_Explorer.hxx>
@@ -235,6 +239,35 @@ double polylineLength(const std::vector<tsrebar::LegacyPoint3d>& points)
         length += std::sqrt(dx * dx + dy * dy + dz * dz);
     }
     return length;
+}
+
+int legacySplineSuggestedSampleCount(double length)
+{
+    if (!std::isfinite(length) || length <= 0.0) {
+        return 5;
+    }
+    const double legacyCount = std::ceil(length * 50.0);
+    if (!std::isfinite(legacyCount) || legacyCount < 5.0) {
+        return 5;
+    }
+    if (legacyCount > static_cast<double>(std::numeric_limits<int>::max())) {
+        return std::numeric_limits<int>::max();
+    }
+    return static_cast<int>(legacyCount);
+}
+
+bool hasCollapsedConsecutivePoints(const std::vector<tsrebar::LegacyPoint3d>& points)
+{
+    for (std::size_t index = 1; index < points.size(); ++index) {
+        const gp_Pnt previous(points[index - 1].x,
+                              points[index - 1].y,
+                              points[index - 1].z);
+        const gp_Pnt current(points[index].x, points[index].y, points[index].z);
+        if (pointsClose(previous, current, Precision::Confusion())) {
+            return true;
+        }
+    }
+    return false;
 }
 
 void appendPoint(std::ostringstream& output, const tsrebar::LegacyPoint3d& point)
@@ -1306,6 +1339,109 @@ OccLegacyGeometryAdapter::pointToEdgeGroupDistance(
     result.value = groupDistance;
     result.ok = true;
     return result;
+}
+
+LegacyGeometryQueryResult<LegacySplineCurveBuild>
+OccLegacyGeometryAdapter::buildSplineFromPoints(
+    const std::vector<LegacyPoint3d>& points,
+    int sampleCount) const
+{
+    LegacyGeometryQueryResult<LegacySplineCurveBuild> result;
+    LegacySplineCurveBuild build;
+    build.inputPoints = points;
+    build.inputPointCount = static_cast<int>(points.size());
+    build.requestedSampleCount = sampleCount;
+    build.effectiveSampleCount = std::max(5, sampleCount);
+    build.sourcePolylineLength = polylineLength(points);
+    build.legacySuggestedSampleCount =
+        legacySplineSuggestedSampleCount(build.sourcePolylineLength);
+
+    auto reject = [&result, &build](QString diagnostic) {
+        build.failureReason = diagnostic.toStdString();
+        result.value = build;
+        result.diagnostic = std::move(diagnostic);
+        return result;
+    };
+
+    if (sampleCount <= 0) {
+        return reject(QStringLiteral("spline sample count must be positive"));
+    }
+    if (points.size() < 3) {
+        return reject(QStringLiteral("spline point list must contain at least 3 points"));
+    }
+    for (const LegacyPoint3d& point : points) {
+        if (!pointFinite(point)) {
+            return reject(QStringLiteral("spline point list must contain finite points"));
+        }
+    }
+    if (build.sourcePolylineLength <= Precision::Confusion()) {
+        return reject(QStringLiteral("spline point list length too short"));
+    }
+    if (hasCollapsedConsecutivePoints(points)) {
+        return reject(QStringLiteral("spline point list has duplicate consecutive points"));
+    }
+
+    try {
+        TColgp_Array1OfPnt pointArray(1, static_cast<Standard_Integer>(points.size()));
+        for (std::size_t index = 0; index < points.size(); ++index) {
+            pointArray.SetValue(static_cast<Standard_Integer>(index + 1),
+                                gp_Pnt(points[index].x, points[index].y, points[index].z));
+        }
+
+        GeomAPI_PointsToBSpline splineBuilder(pointArray);
+        if (!splineBuilder.IsDone()) {
+            return reject(QStringLiteral("OCCT spline rebuild did not converge"));
+        }
+
+        const Handle(Geom_BSplineCurve) curve = splineBuilder.Curve();
+        if (curve.IsNull()) {
+            return reject(QStringLiteral("OCCT spline rebuild returned null curve"));
+        }
+
+        const double first = curve->FirstParameter();
+        const double last = curve->LastParameter();
+        if (!std::isfinite(first) || !std::isfinite(last) || first >= last) {
+            return reject(QStringLiteral("OCCT spline parameter range is not finite"));
+        }
+
+        build.samplePoints.reserve(static_cast<std::size_t>(build.effectiveSampleCount));
+        for (int index = 0; index < build.effectiveSampleCount; ++index) {
+            const double ratio =
+                build.effectiveSampleCount == 1
+                    ? 0.5
+                    : static_cast<double>(index) /
+                          static_cast<double>(build.effectiveSampleCount - 1);
+            const double parameter = first + (last - first) * ratio;
+            build.samplePoints.push_back(toLegacyPoint(curve->Value(parameter)));
+        }
+        build.samplePoints.front() = points.front();
+        build.samplePoints.back() = points.back();
+
+        GeomAdaptor_Curve curveAdaptor(curve);
+        build.length = GCPnts_AbscissaPoint::Length(
+            curveAdaptor,
+            first,
+            last,
+            Precision::Confusion());
+        if (!std::isfinite(build.length) || build.length <= 0.0) {
+            build.length = polylineLength(build.samplePoints);
+        }
+        if (!std::isfinite(build.length) || build.length <= Precision::Confusion()) {
+            return reject(QStringLiteral("spline rebuilt curve length too short"));
+        }
+
+        build.bounds = makeBounds(build.samplePoints);
+        build.curveKind = LegacyCurveKind::BSpline;
+        build.buildable = true;
+        result.value = build;
+        result.ok = true;
+        return result;
+    } catch (const Standard_Failure& failure) {
+        return reject(QStringLiteral("OCCT spline rebuild failed: %1")
+                          .arg(QString::fromUtf8(failure.GetMessageString())));
+    } catch (...) {
+        return reject(QStringLiteral("OCCT spline rebuild failed: unknown exception."));
+    }
 }
 
 } // namespace tsrebar

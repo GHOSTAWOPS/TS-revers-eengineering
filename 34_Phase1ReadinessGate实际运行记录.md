@@ -123,6 +123,14 @@ E-DEV-036
      49_M1-App-012LegacyGeometryAdapterP3D实现记录.md
      docs/phase1/app_build_reports/m1_app_012_run_001.md
      docs/phase1/app_build_reports/m1_app_012_run_001.json
+
+E-DEV-037
+  -> M1-App-013 LegacyGeometryAdapter P3E、point list spline rebuild summary 报告
+  -> 来源：
+     app/
+     50_M1-App-013LegacyGeometryAdapterP3E实现记录.md
+     docs/phase1/app_build_reports/m1_app_013_run_001.md
+     docs/phase1/app_build_reports/m1_app_013_run_001.json
 ```
 
 注意：
@@ -170,6 +178,7 @@ Blocker GAPs: none
 - `LegacyGeometryAdapter P3B` 已落地并通过 M1-App-010：默认 CTest 8/8 pass，可把输入点投影到 edge 参数并按投影点拆成前后两个 `LegacyCurveInterval`；该阶段不是 topology split、trim 或钢筋生成。
 - `LegacyGeometryAdapter P3C` 已落地并通过 M1-App-011：默认 CTest 8/8 pass，可按旧 `delta=-0.03,endFlag=0/1` 输出端点 inward trim 后的 `LegacyCurveInterval`；该阶段不是 topology trim、curve mutation 或钢筋生成。
 - `LegacyGeometryAdapter P3D` 已落地并通过 M1-App-012：默认 CTest 8/8 pass，可对输入点和候选 edge refs 返回组内最小距离、nearest stableId 和 `0.002` 阈值命中标记；该阶段不是旧 group 链表完整复刻或钢筋生成。
+- `LegacyGeometryAdapter P3E` 已落地并通过 M1-App-013：默认 CTest 8/8 pass，可把点列重建为 BSpline legacy summary，记录输入点数、采样数、`max(5,length*50)` 建议值、长度、bbox 和失败原因；该阶段不是旧 ACIS `api_curve_spline` topology mutation 或钢筋生成。
 - Detail writer L0/L1 离线 gate 已落地并通过，不再作为当前 M1 阻塞。
 - `GAP-DEV-001/GAP-DEV-007` 不再阻塞进入 Qt6 + OCCT 开发入口，但旧图石业务复刻缺口仍按功能专项继续闭合。
 
@@ -235,4 +244,4 @@ none
 2. 保留 Qt6 runtime gate，防止 Save/Open 和 binding repair 报告退回 simulation。
 3. 保留 Detail writer L0/L1 报告；AutoCAD L2 导入另走工程图专项。
 4. 新增真实工程 STEP 样本时继续跑 STEP selection gate。
-5. 后续开发仍按旧图石运行、IDA、SFL、Detail 证据闭合业务缺口；下一步建议按 `TODO-013` 补点列 spline 重建，或先补 `TODO-020` IDA 证据。
+5. 后续开发仍按旧图石运行、IDA、SFL、Detail 证据闭合业务缺口；下一步建议按 `TODO-014` 补 `LegacyWireChain` 边链语义，或先补 `TODO-020` IDA 证据。

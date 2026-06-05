@@ -4,6 +4,7 @@
 
 #include <cmath>
 #include <iostream>
+#include <string>
 #include <vector>
 
 namespace {
@@ -118,6 +119,53 @@ int main(int argc, char* argv[])
            "first sample must match start point");
     expect(distance(samples.value.back(), edgeResult.value.endPoint) < 1.0e-6,
            "last sample must match end point");
+
+    const auto spline = adapter.buildSplineFromPoints(samples.value, 7);
+    expect(spline.ok, spline.diagnostic.toUtf8().constData());
+    expect(spline.value.buildable, "spline build summary must be marked buildable");
+    expect(spline.value.inputPointCount == 5,
+           "spline build summary must preserve input point count");
+    expect(spline.value.samplePoints.size() == 7,
+           "spline build summary sample count must match request");
+    expect(spline.value.legacySuggestedSampleCount >= 5,
+           "spline build summary must expose legacy max(5, length * 50) sample count");
+    expect(spline.value.curveKind == tsrebar::LegacyCurveKind::BSpline,
+           "spline build summary must classify generated curve as BSpline");
+    expect(spline.value.length > 0.0, "spline build summary length must be positive");
+    expectValidBox(spline.value.bounds, "spline build summary bbox must be available");
+    expect(distance(spline.value.samplePoints.front(), samples.value.front()) < 1.0e-6,
+           "spline build first sample must match input start point");
+    expect(distance(spline.value.samplePoints.back(), samples.value.back()) < 1.0e-6,
+           "spline build last sample must match input end point");
+
+    const auto splineWithProtectedSampleCount =
+        adapter.buildSplineFromPoints(samples.value, 1);
+    expect(splineWithProtectedSampleCount.ok,
+           splineWithProtectedSampleCount.diagnostic.toUtf8().constData());
+    expect(splineWithProtectedSampleCount.value.samplePoints.size() == 5,
+           "spline build must protect sample count with legacy minimum");
+    expect(splineWithProtectedSampleCount.value.requestedSampleCount == 1,
+           "spline build summary must preserve requested sample count");
+    expect(splineWithProtectedSampleCount.value.effectiveSampleCount == 5,
+           "spline build summary must expose effective legacy sample count");
+
+    std::vector<tsrebar::LegacyPoint3d> insufficientSplinePoints{samples.value.front(),
+                                                                 samples.value.back()};
+    const auto insufficientSpline =
+        adapter.buildSplineFromPoints(insufficientSplinePoints, 5);
+    expect(!insufficientSpline.ok, "spline build must reject insufficient point count");
+    expect(insufficientSpline.diagnostic.contains(QStringLiteral("at least 3")),
+           "insufficient spline point diagnostic must be stable");
+    expect(!insufficientSpline.value.failureReason.empty(),
+           "insufficient spline failure must be carried in DTO");
+
+    std::vector<tsrebar::LegacyPoint3d> collapsedSplinePoints(3, samples.value.front());
+    const auto collapsedSpline = adapter.buildSplineFromPoints(collapsedSplinePoints, 5);
+    expect(!collapsedSpline.ok, "spline build must reject collapsed point lists");
+    expect(collapsedSpline.diagnostic.contains(QStringLiteral("length too short")),
+           "collapsed spline diagnostic must be stable");
+    expect(collapsedSpline.value.failureReason.find("length too short") != std::string::npos,
+           "collapsed spline failure reason must be carried in DTO");
 
     const auto faceRefs = selectionIndex.refs(tsrebar::LegacyShapeKind::Face);
     expect(!faceRefs.isEmpty(), "test STEP must have selectable faces");

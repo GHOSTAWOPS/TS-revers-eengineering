@@ -55,6 +55,9 @@ public:
         LegacyPoint3d point,
         const std::vector<LegacySelectionRef>& edgeRefs,
         double threshold) const;
+    [[nodiscard]] LegacyGeometryQueryResult<LegacySplineCurveBuild> buildSplineFromPoints(
+        const std::vector<LegacyPoint3d>& points,
+        int sampleCount) const;
 
 private:
     OccSelectionIndex m_selectionIndex;
