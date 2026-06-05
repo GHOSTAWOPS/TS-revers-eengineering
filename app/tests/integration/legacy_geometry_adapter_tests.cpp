@@ -195,6 +195,71 @@ int main(int argc, char* argv[])
     expect(!faceResult.value.boundaryLoops.front().edgeStableIds.empty(),
            "outer boundary loop edge stable ids must be available");
 
+    std::vector<tsrebar::LegacySelectionRef> boundaryEdgeRefs;
+    boundaryEdgeRefs.reserve(faceResult.value.boundaryLoops.front().edgeStableIds.size());
+    for (const std::string& stableId : faceResult.value.boundaryLoops.front().edgeStableIds) {
+        const auto parsedRef =
+            tsrebar::parseStableSelectionString(QString::fromStdString(stableId));
+        expect(parsedRef.has_value(), "boundary wire edge stable id must be parseable");
+        boundaryEdgeRefs.push_back(*parsedRef);
+    }
+    const auto boundaryWire = adapter.buildWireChain(boundaryEdgeRefs);
+    expect(boundaryWire.ok, boundaryWire.diagnostic.toUtf8().constData());
+    expect(boundaryWire.value.inputEdgeCount == static_cast<int>(boundaryEdgeRefs.size()),
+           "boundary wire chain must preserve input edge count");
+    expect(boundaryWire.value.orderedEdgeCount == boundaryWire.value.inputEdgeCount,
+           "boundary wire chain must order every input edge");
+    expect(boundaryWire.value.connected, "boundary wire chain must be connected");
+    expect(boundaryWire.value.closed, "face boundary wire chain must be closed");
+    expect(boundaryWire.value.totalLength > 0.0,
+           "boundary wire chain total length must be positive");
+    expectValidBox(boundaryWire.value.bounds, "boundary wire chain bbox must be available");
+    expect(!boundaryWire.value.orderedEdges.empty(),
+           "boundary wire chain must expose ordered edge summaries");
+    expect(distance(boundaryWire.value.startPoint, boundaryWire.value.endPoint) < 1.0e-5,
+           "closed boundary wire chain endpoints must meet");
+
+    const std::vector<tsrebar::LegacySelectionRef> singleWireEdges{edgeRefs.front()};
+    const auto singleWire = adapter.buildWireChain(singleWireEdges);
+    expect(singleWire.ok, singleWire.diagnostic.toUtf8().constData());
+    expect(singleWire.value.inputEdgeCount == 1,
+           "single edge wire chain must preserve input count");
+    expect(singleWire.value.orderedEdgeCount == 1,
+           "single edge wire chain must expose one ordered edge");
+    expect(singleWire.value.connected, "single edge wire chain must be connected");
+    expect(!singleWire.value.closed, "non-collapsed single edge wire chain must be open");
+    expect(singleWire.value.totalLength == edgeResult.value.length,
+           "single edge wire chain length must match edge length");
+    expect(distance(singleWire.value.startPoint, edgeResult.value.startPoint) < 1.0e-6,
+           "single edge wire chain start must match edge start");
+    expect(distance(singleWire.value.endPoint, edgeResult.value.endPoint) < 1.0e-6,
+           "single edge wire chain end must match edge end");
+
+    std::vector<tsrebar::LegacySelectionRef> disconnectedWireEdges{edgeRefs.front()};
+    for (qsizetype index = 1; index < edgeRefs.size(); ++index) {
+        const auto candidate = adapter.edgeGeometry(edgeRefs.at(index));
+        expect(candidate.ok, candidate.diagnostic.toUtf8().constData());
+        const bool disjoint =
+            distance(candidate.value.startPoint, edgeResult.value.startPoint) > 1.0 &&
+            distance(candidate.value.startPoint, edgeResult.value.endPoint) > 1.0 &&
+            distance(candidate.value.endPoint, edgeResult.value.startPoint) > 1.0 &&
+            distance(candidate.value.endPoint, edgeResult.value.endPoint) > 1.0;
+        if (disjoint) {
+            disconnectedWireEdges.push_back(edgeRefs.at(index));
+            break;
+        }
+    }
+    expect(disconnectedWireEdges.size() == 2,
+           "test STEP must provide a disconnected edge pair");
+    const auto disconnectedWire = adapter.buildWireChain(disconnectedWireEdges);
+    expect(!disconnectedWire.ok, "wire chain must reject disconnected edge refs");
+    expect(disconnectedWire.diagnostic.contains(QStringLiteral("not connected")),
+           "disconnected wire chain diagnostic must be stable");
+    expect(!disconnectedWire.value.connected,
+           "disconnected wire chain DTO must expose connected=false");
+    expect(disconnectedWire.value.failureReason.find("not connected") != std::string::npos,
+           "disconnected wire chain failure reason must be carried in DTO");
+
     const auto selfDistance = adapter.distanceBetween(edgeRefs.front(), edgeRefs.front());
     expect(selfDistance.ok, selfDistance.diagnostic.toUtf8().constData());
     expect(std::fabs(selfDistance.value.distance) < 1.0e-6,
@@ -442,6 +507,11 @@ int main(int argc, char* argv[])
     expect(wrongTypeGroupDistance.diagnostic.contains(QStringLiteral("expected an edge ref")),
            "edge group distance wrong type diagnostic must be stable");
 
+    const auto wrongTypeWire = adapter.buildWireChain(wrongTypeGroup);
+    expect(!wrongTypeWire.ok, "wire chain must reject face refs");
+    expect(wrongTypeWire.diagnostic.contains(QStringLiteral("expected an edge ref")),
+           "wire chain wrong type diagnostic must be stable");
+
     const tsrebar::LegacySelectionRef missingPart =
         tsrebar::makeLegacySelectionRef(QStringLiteral("missing-part"),
                                         false,
@@ -464,6 +534,11 @@ int main(int argc, char* argv[])
     expect(!missingPartGroupDistance.ok, "edge group distance must reject missing part refs");
     expect(missingPartGroupDistance.diagnostic.contains(QStringLiteral("not in current document")),
            "edge group distance missing part diagnostic must be stable");
+
+    const auto missingPartWire = adapter.buildWireChain(missingPartGroup);
+    expect(!missingPartWire.ok, "wire chain must reject missing part refs");
+    expect(missingPartWire.diagnostic.contains(QStringLiteral("not in current document")),
+           "wire chain missing part diagnostic must be stable");
 
     const tsrebar::LegacySelectionRef outOfRange =
         tsrebar::makeLegacySelectionRef(QString::fromStdString(edgeRefs.front().partEntry),

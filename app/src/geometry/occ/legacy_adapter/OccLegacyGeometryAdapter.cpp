@@ -32,6 +32,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <deque>
 #include <iomanip>
 #include <limits>
 #include <sstream>
@@ -223,6 +224,41 @@ tsrebar::LegacyBoundingBox makeBounds(const std::vector<tsrebar::LegacyPoint3d>&
     }
     bounds.valid = true;
     return bounds;
+}
+
+void mergeBounds(tsrebar::LegacyBoundingBox* target,
+                 const tsrebar::LegacyBoundingBox& source)
+{
+    if (target == nullptr || !source.valid) {
+        return;
+    }
+    if (!target->valid) {
+        *target = source;
+        return;
+    }
+
+    target->minPoint.x = std::min(target->minPoint.x, source.minPoint.x);
+    target->minPoint.y = std::min(target->minPoint.y, source.minPoint.y);
+    target->minPoint.z = std::min(target->minPoint.z, source.minPoint.z);
+    target->maxPoint.x = std::max(target->maxPoint.x, source.maxPoint.x);
+    target->maxPoint.y = std::max(target->maxPoint.y, source.maxPoint.y);
+    target->maxPoint.z = std::max(target->maxPoint.z, source.maxPoint.z);
+}
+
+double legacyPointSquaredDistance(const tsrebar::LegacyPoint3d& lhs,
+                                  const tsrebar::LegacyPoint3d& rhs)
+{
+    const double dx = lhs.x - rhs.x;
+    const double dy = lhs.y - rhs.y;
+    const double dz = lhs.z - rhs.z;
+    return dx * dx + dy * dy + dz * dz;
+}
+
+bool legacyPointsClose(const tsrebar::LegacyPoint3d& lhs,
+                       const tsrebar::LegacyPoint3d& rhs,
+                       double tolerance)
+{
+    return legacyPointSquaredDistance(lhs, rhs) <= tolerance * tolerance;
 }
 
 double polylineLength(const std::vector<tsrebar::LegacyPoint3d>& points)
@@ -1442,6 +1478,140 @@ OccLegacyGeometryAdapter::buildSplineFromPoints(
     } catch (...) {
         return reject(QStringLiteral("OCCT spline rebuild failed: unknown exception."));
     }
+}
+
+LegacyGeometryQueryResult<LegacyWireChain>
+OccLegacyGeometryAdapter::buildWireChain(
+    const std::vector<LegacySelectionRef>& edgeRefs) const
+{
+    struct EdgeRecord
+    {
+        LegacyEdgeGeometry geometry;
+        int inputOrdinal = 0;
+    };
+
+    LegacyGeometryQueryResult<LegacyWireChain> result;
+    LegacyWireChain chain;
+    chain.inputEdgeCount = static_cast<int>(edgeRefs.size());
+    chain.inputEdgeStableIds.reserve(edgeRefs.size());
+
+    auto reject = [&result, &chain](QString diagnostic) {
+        chain.failureReason = diagnostic.toStdString();
+        result.value = chain;
+        result.diagnostic = std::move(diagnostic);
+        return result;
+    };
+
+    if (edgeRefs.empty()) {
+        return reject(QStringLiteral("wire chain edge list is empty"));
+    }
+
+    std::vector<EdgeRecord> records;
+    records.reserve(edgeRefs.size());
+    for (std::size_t index = 0; index < edgeRefs.size(); ++index) {
+        const LegacySelectionRef& edgeRef = edgeRefs[index];
+        chain.inputEdgeStableIds.push_back(edgeRef.stableId);
+        if (edgeRef.shapeKind != LegacyShapeKind::Edge) {
+            return reject(QStringLiteral("wire chain edge %1 expected an edge ref")
+                              .arg(static_cast<qulonglong>(index)));
+        }
+
+        const auto geometry = edgeGeometry(edgeRef);
+        if (!geometry.ok) {
+            return reject(QStringLiteral("wire chain edge %1 geometry failed: %2")
+                              .arg(static_cast<qulonglong>(index))
+                              .arg(geometry.diagnostic));
+        }
+        if (geometry.value.length <= Precision::Confusion()) {
+            return reject(QStringLiteral("wire chain edge %1 length too short")
+                              .arg(static_cast<qulonglong>(index)));
+        }
+
+        chain.totalLength += geometry.value.length;
+        mergeBounds(&chain.bounds, geometry.value.bounds);
+        records.push_back({geometry.value, static_cast<int>(index)});
+    }
+
+    auto makeOrderedEdge = [](const EdgeRecord& record, bool reversed) {
+        LegacyWireChainEdge edge;
+        edge.edgeStableId = record.geometry.stableId;
+        edge.inputOrdinal = record.inputOrdinal;
+        edge.length = record.geometry.length;
+        edge.reversed = reversed;
+        edge.startPoint = reversed ? record.geometry.endPoint : record.geometry.startPoint;
+        edge.endPoint = reversed ? record.geometry.startPoint : record.geometry.endPoint;
+        return edge;
+    };
+
+    std::deque<LegacyWireChainEdge> ordered;
+    ordered.push_back(makeOrderedEdge(records.front(), false));
+    std::vector<bool> used(records.size(), false);
+    used.front() = true;
+
+    constexpr double connectionTolerance = 1.0e-6;
+    int usedCount = 1;
+    while (usedCount < static_cast<int>(records.size())) {
+        bool matched = false;
+        for (std::size_t index = 1; index < records.size(); ++index) {
+            if (used[index]) {
+                continue;
+            }
+
+            const EdgeRecord& candidate = records[index];
+            const LegacyPoint3d currentStart = ordered.front().startPoint;
+            const LegacyPoint3d currentEnd = ordered.back().endPoint;
+
+            if (legacyPointsClose(currentEnd,
+                                  candidate.geometry.startPoint,
+                                  connectionTolerance)) {
+                ordered.push_back(makeOrderedEdge(candidate, false));
+            } else if (legacyPointsClose(currentEnd,
+                                         candidate.geometry.endPoint,
+                                         connectionTolerance)) {
+                ordered.push_back(makeOrderedEdge(candidate, true));
+            } else if (legacyPointsClose(currentStart,
+                                         candidate.geometry.endPoint,
+                                         connectionTolerance)) {
+                ordered.push_front(makeOrderedEdge(candidate, false));
+            } else if (legacyPointsClose(currentStart,
+                                         candidate.geometry.startPoint,
+                                         connectionTolerance)) {
+                ordered.push_front(makeOrderedEdge(candidate, true));
+            } else {
+                continue;
+            }
+
+            used[index] = true;
+            ++usedCount;
+            matched = true;
+            break;
+        }
+
+        if (!matched) {
+            chain.orderedEdges.assign(ordered.begin(), ordered.end());
+            chain.orderedEdgeCount = static_cast<int>(chain.orderedEdges.size());
+            chain.connected = false;
+            if (!chain.orderedEdges.empty()) {
+                chain.startPoint = chain.orderedEdges.front().startPoint;
+                chain.endPoint = chain.orderedEdges.back().endPoint;
+            }
+            return reject(QStringLiteral("wire chain edges are not connected"));
+        }
+    }
+
+    chain.orderedEdges.assign(ordered.begin(), ordered.end());
+    chain.orderedEdgeCount = static_cast<int>(chain.orderedEdges.size());
+    chain.startPoint = chain.orderedEdges.front().startPoint;
+    chain.endPoint = chain.orderedEdges.back().endPoint;
+    chain.connected = true;
+    chain.closed = legacyPointsClose(chain.startPoint,
+                                     chain.endPoint,
+                                     connectionTolerance) ||
+                   (records.size() == 1 && records.front().geometry.closed);
+
+    result.value = chain;
+    result.ok = true;
+    return result;
 }
 
 } // namespace tsrebar

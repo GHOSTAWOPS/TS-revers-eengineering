@@ -1,0 +1,86 @@
+{
+  "id": "m1_app_014_run_001",
+  "date": "2026-06-05",
+  "decision": "m1-app-014-pass",
+  "appRoot": "C:/Users/ghost/Desktop/reverse_engineering/【03】图石软件/【图石钢筋1比1复刻】/app",
+  "scope": [
+    "LegacyGeometry DTO M1-App-014",
+    "OccLegacyGeometryAdapter wire chain summary",
+    "edge refs to ordered wire chain",
+    "face boundary loop closed chain",
+    "disconnected chain diagnostics"
+  ],
+  "sample": {
+    "path": "C:/Users/ghost/Desktop/reverse_engineering/【03】图石软件/123.stp",
+    "sizeBytes": 87746388,
+    "sha256": "6a3c4f2044c2cc1f1123f0f58c61b2c869fbad3110a3585fdab49e69daf52a2a",
+    "knownStats": {
+      "solids": 754,
+      "faces": 3016,
+      "uniqueEdges": 4524,
+      "uniqueVertices": 3016,
+      "rawEdges": 9048,
+      "rawVertices": 18096,
+      "lengthUnit": "METRE"
+    }
+  },
+  "red": {
+    "verified": true,
+    "failure": "error C2039: buildWireChain is not a member of OccLegacyGeometryAdapter"
+  },
+  "build": {
+    "success": true,
+    "target": "legacy_geometry_adapter_tests"
+  },
+  "tests": {
+    "success": true,
+    "passed": 8,
+    "failed": 0,
+    "totalSeconds": 126.51,
+    "cases": [
+      "command_registry_tests",
+      "legacy_selection_ref_tests",
+      "app_smoke",
+      "viewer_smoke_tests",
+      "domain_rebar_boundary",
+      "step_import_probe_123",
+      "occ_selection_index_123",
+      "legacy_geometry_adapter_123"
+    ]
+  },
+  "wireChain": {
+    "queries": [
+      "buildWireChain"
+    ],
+    "assertions": [
+      "face boundary loop edge refs rebuild to a closed wire chain summary",
+      "single edge input returns an open connected chain",
+      "single edge chain length and endpoints match edgeGeometry",
+      "disconnected edge refs are rejected with stable diagnostics",
+      "wrong type and missing ref diagnostics are stable",
+      "ordered edges, total length, endpoints, bbox, connected and closed are exposed"
+    ],
+    "approximation": "summary only; no TopoDS_Wire topology mutation or full ENTITY_LIST recreation"
+  },
+  "ida": {
+    "attempted": true,
+    "result": "unavailable",
+    "diagnostic": "No database bound for this context"
+  },
+  "guardrails": {
+    "domainRebarOcctBoundary": "pass",
+    "parentRebarGenerationChainMigrated": false,
+    "rebarBusinessImplemented": false,
+    "todo015Implemented": false,
+    "topologyMutationImplemented": false,
+    "entityListRecreated": false
+  },
+  "readinessGate": {
+    "decision": "M1-Formal-Ready",
+    "m1FormalAllowed": true,
+    "errorCount": 0,
+    "warningCount": 0,
+    "passCount": 78,
+    "checkCount": 78
+  }
+}

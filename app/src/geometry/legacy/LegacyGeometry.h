@@ -164,6 +164,31 @@ struct LegacySplineCurveBuild
     std::string failureReason;
 };
 
+struct LegacyWireChainEdge
+{
+    std::string edgeStableId;
+    int inputOrdinal = 0;
+    double length = 0.0;
+    LegacyPoint3d startPoint;
+    LegacyPoint3d endPoint;
+    bool reversed = false;
+};
+
+struct LegacyWireChain
+{
+    std::vector<std::string> inputEdgeStableIds;
+    std::vector<LegacyWireChainEdge> orderedEdges;
+    int inputEdgeCount = 0;
+    int orderedEdgeCount = 0;
+    double totalLength = 0.0;
+    LegacyPoint3d startPoint;
+    LegacyPoint3d endPoint;
+    LegacyBoundingBox bounds;
+    bool connected = false;
+    bool closed = false;
+    std::string failureReason;
+};
+
 enum class LegacySurfaceKind {
     Unknown,
     Plane,

@@ -8,13 +8,13 @@
 
 ### 短期 Goal（推荐本轮复制）
 
-目标：只完成 `TODO-014 / M1-App-014` 这个短期阶段，不自动进入后续长期开发。
+目标：只完成 `TODO-015 / M1-App-015` 这个短期阶段，不自动进入后续长期开发。
 
-本轮要在正式 `app` 中完成 `LegacyWireChain`：
+本轮要在正式 `app` 中完成 `LegacyGeometryAdapter offset 曲线能力 spike`：
 
 ```text
-边链 / wire chain 语义
-edge list / wire chain summary
+offset 曲线能力
+curve offset preview summary
 ```
 
 目标语义：
@@ -22,12 +22,12 @@ edge list / wire chain summary
 ```text
 对齐旧 VisualTS / ACIS 链路：
 
-旧 EDGE / ENTITY_LIST / face boundary loop 语义
-  -> 多段 edge ref 输入
-  -> 按顺序计算 edge chain
-  -> 判断是否连通 / 是否闭合
-  -> 汇总总长度、端点、bbox、edge stableId 列表
-  -> 给后续线筋、圈筋、面周边和边界筋算法提供旧式边链语义
+旧几何偏移能力
+  -> 输入 edge ref / wire chain summary
+  -> 输入 offset distance / direction hint
+  -> 由 OCCT 尝试生成 offset preview
+  -> 返回 samplePoints / length / bbox / diagnostic
+  -> 先验证能力边界，不写钢筋排布业务
 ```
 
 本轮只做几何兼容层能力，不做钢筋创建业务。
@@ -47,6 +47,9 @@ TODO-012 / M1-App-012 = done
 
 TODO-013 / M1-App-013 = done
   -> buildSplineFromPoints
+
+TODO-014 / M1-App-014 = done
+  -> buildWireChain
 ```
 
 工作目录：
@@ -81,8 +84,9 @@ C:\Users\ghost\Desktop\reverse_engineering\【03】图石软件
 16. `【图石钢筋1比1复刻】\48_M1-App-011LegacyGeometryAdapterP3C实现记录.md`
 17. `【图石钢筋1比1复刻】\49_M1-App-012LegacyGeometryAdapterP3D实现记录.md`
 18. `【图石钢筋1比1复刻】\50_M1-App-013LegacyGeometryAdapterP3E实现记录.md`
-19. `【图石钢筋1比1复刻】\99_缺口和待确认项.md`
-20. `【图石钢筋1比1复刻】\todo.csv`
+19. `【图石钢筋1比1复刻】\51_M1-App-014LegacyWireChain实现记录.md`
+20. `【图石钢筋1比1复刻】\99_缺口和待确认项.md`
+21. `【图石钢筋1比1复刻】\todo.csv`
 
 本轮允许修改：
 
@@ -104,35 +108,35 @@ C:\Users\ghost\Desktop\reverse_engineering\【03】图石软件
 
 本轮验收标准：
 
-1. 新增边链 / wire chain 相关 legacy DTO，命名可在实现时微调，但必须表达：
-   - 输入 edge refs。
-   - 有序 edge stableId 列表。
-   - 总长度。
-   - 起点 / 终点。
+1. 新增 offset 曲线 preview 相关 legacy DTO，命名可在实现时微调，但必须表达：
+   - 输入 edge stableId 或 wire chain 来源。
+   - offset distance。
+   - 是否成功。
+   - 生成曲线基础摘要。
+   - samplePoints。
+   - length。
    - bbox。
-   - 是否连通。
-   - 是否闭合。
    - 失败原因。
 2. 新增 adapter API，命名可在实现时微调，例如：
-   - `buildWireChain(edgeRefs)`
-   - 或 `wireChainFromEdges(edgeRefs)`
-3. API 输入必须是 `std::vector<LegacySelectionRef>` 或等价 legacy edge 引用列表，不能引入钢筋业务对象。
+   - `offsetEdgePreview(edgeRef, distance, sampleCount)`
+   - 或 `offsetWirePreview(wireChain, distance, sampleCount)`
+3. API 输入必须是 legacy edge ref / wire chain DTO 或等价 legacy 几何对象，不能引入钢筋业务对象。
 4. 真实 `123.stp` 上至少覆盖：
-   - 从 face boundary loop 的 edge stableId 构造 wire chain summary。
-   - 单 edge / 多 edge 输入可返回总长度、端点和 bbox。
-   - 断链或非连通输入能返回稳定 diagnostic。
-   - wrong type / missing ref 能返回稳定 diagnostic。
+   - 至少一条直线 edge offset preview 成功，返回 samplePoints / length / bbox。
+   - 至少一条非直线或复杂 edge offset 失败时返回稳定 diagnostic，不能崩。
+   - distance 为 0 / 非有限数时稳定拒绝。
+   - wrong type / missing ref 返回稳定 diagnostic。
 5. 默认 CTest 通过。
 6. readiness gate 严格模式通过，或记录明确失败原因。
-7. 新增 `51_M1-App-014LegacyWireChain实现记录.md`。
-8. 新增 `docs/phase1/app_build_reports/m1_app_014_run_001.md` 和必要 JSON。
+7. 新增 `52_M1-App-015LegacyGeometryAdapterOffsetSpike实现记录.md`。
+8. 新增 `docs/phase1/app_build_reports/m1_app_015_run_001.md` 和必要 JSON。
 9. 更新：
    - `00_总览.md`
    - `11_需求证据追溯矩阵.md`
    - `34_Phase1ReadinessGate实际运行记录.md`
    - `99_缺口和待确认项.md`
    - `todo.csv`
-10. `todo.csv` 中 `TODO-014` 改为 `done`；只把下一个明确可执行任务改为 `next`，但不继续实现。
+10. `todo.csv` 中 `TODO-015` 改为 `done`；只把下一个明确可执行任务改为 `next`，但不继续实现。
 
 本轮完成后必须停止，输出阶段复盘：
 
@@ -140,10 +144,10 @@ C:\Users\ghost\Desktop\reverse_engineering\【03】图石软件
 完成了什么
 验证了什么
 还缺什么
-下一阶段建议做 TODO-015 / TODO-016 / TODO-020 中哪一个
+下一阶段建议做 TODO-016 / TODO-017 / TODO-020 中哪一个
 ```
 
-不要在同一个 goal 内继续做 `TODO-015`、钢筋领域模型、Detail writer 或 UI 复刻。
+不要在同一个 goal 内继续做 `TODO-016`、钢筋领域模型、Detail writer 或 UI 复刻。
 
 ### 长期方向（只作护栏，不作为本轮 Goal）
 
@@ -243,10 +247,11 @@ Detail / 新设计文件格式输出层
 24. `【图石钢筋1比1复刻】\48_M1-App-011LegacyGeometryAdapterP3C实现记录.md`
 25. `【图石钢筋1比1复刻】\49_M1-App-012LegacyGeometryAdapterP3D实现记录.md`
 26. `【图石钢筋1比1复刻】\50_M1-App-013LegacyGeometryAdapterP3E实现记录.md`
+27. `【图石钢筋1比1复刻】\51_M1-App-014LegacyWireChain实现记录.md`
     - 看 adapter 已有能力，避免重复实现。
-27. `【图石钢筋1比1复刻】\99_缺口和待确认项.md`
+28. `【图石钢筋1比1复刻】\99_缺口和待确认项.md`
     - 看当前缺口，所有不确定项必须回写这里。
-28. `【图石钢筋1比1复刻】\todo.csv`
+29. `【图石钢筋1比1复刻】\todo.csv`
     - 看当前任务看板，只执行 `status=next` 或最高优先级可执行任务。
 
 ### 按任务补读的参考文档
@@ -303,6 +308,7 @@ Detail / 新设计文件格式输出层
 - `48_M1-App-011LegacyGeometryAdapterP3C实现记录.md`
 - `49_M1-App-012LegacyGeometryAdapterP3D实现记录.md`
 - `50_M1-App-013LegacyGeometryAdapterP3E实现记录.md`
+- `51_M1-App-014LegacyWireChain实现记录.md`
 
 ### 当前已知状态
 
@@ -321,6 +327,7 @@ Detail / 新设计文件格式输出层
 - `M1-App-011`：`LegacyGeometryAdapter P3C`，endpoint inward trim summary。
 - `M1-App-012`：`LegacyGeometryAdapter P3D`，point to edge group minimum distance summary。
 - `M1-App-013`：`LegacyGeometryAdapter P3E`，point list spline rebuild summary。
+- `M1-App-014`：`LegacyWireChain`，edge refs to wire chain summary。
 
 当前最新验证状态：
 
@@ -333,18 +340,17 @@ domain/rebar OCCT 边界 = pass
 当前下一步：
 
 ```text
-TODO-014 / M1-App-014
-  -> LegacyWireChain
-  -> 边链 / wire chain 语义
+TODO-015 / M1-App-015
+  -> LegacyGeometryAdapter offset 曲线能力 spike
+  -> offset preview summary
 ```
 
 原因：
 
 ```text
-旧图石算法不只处理单根 EDGE，也会处理 ENTITY_LIST、face boundary
-和多段边链。P3E 已补点列 spline summary，下一步需要把多段 edge
-包装成可追踪的 legacy wire chain，供线筋、圈筋、面周边和边界筋
-后续算法使用。
+偏移是旧钢筋创建、边界筋、面周边、裁剪和避让流程很容易碰到的
+几何能力。wire chain 已补完后，下一步先验证 OCCT offset 是否能稳定
+替代旧 ACIS 偏移能力；如果复杂曲线不稳定，要明确写入 gap。
 ```
 
 ### 执行规则
@@ -403,18 +409,18 @@ TODO-014 / M1-App-014
 
 ## CSE v2 Control Contract
 
-- **Primary Setpoint**：本轮只完成 `TODO-014 / M1-App-014`，让 `LegacyGeometryAdapter` 具备边链 / wire chain summary 的 legacy 几何语义。
-- **Acceptance**：wire chain DTO/API、真实 `123.stp` 集成测试、默认 CTest、readiness gate、实现记录、build report、`todo.csv` 和追溯文档全部闭合。
+- **Primary Setpoint**：本轮只完成 `TODO-015 / M1-App-015`，让 `LegacyGeometryAdapter` 具备 offset 曲线 preview summary 的能力边界。
+- **Acceptance**：offset preview DTO/API、真实 `123.stp` 集成测试、默认 CTest、readiness gate、实现记录、build report、`todo.csv` 和追溯文档全部闭合。
 - **Guardrail Metrics**：不能让 OCCT 细节泄漏进 `domain/rebar`；不能把父目录钢筋生成器当业务真相；不能用“OCCT 能做什么”替代“旧图石怎么做”。
 - **Sampling Plan**：先跑/补 integration test，再改 adapter；实现后运行默认 CTest；最后运行 readiness gate；完成后更新 evidence / gap / todo。
 - **Known Delays**：IDA MCP 当前可能没有绑定数据库；旧图石运行确认依赖用户操作；真实 golden 对照要等旧软件可稳定导出。
 - **Recovery Target**：发现路线偏移时，停止继续开发钢筋业务，先回到文档和 adapter 边界修正。
 - **Rollback Trigger**：`domain/rebar` 出现 OCCT include、父目录 rebar 业务被迁入、测试失败但继续堆功能、旧逻辑无证据却写成确定结论。
 - **Constraints**：不使用 ACIS / HOOPS / Codejock 等商业库；不读取完整私有 SFL 作为新主格式；新工程格式结合 SFL 业务语义和 OCCT 几何引用设计。
-- **Boundary**：本轮只允许修改 geometry legacy DTO、OCCT adapter、adapter 集成测试、M1-App-014 文档和任务看板；父目录只读参考。
+- **Boundary**：本轮只允许修改 geometry legacy DTO、OCCT adapter、adapter 集成测试、M1-App-015 文档和任务看板；父目录只读参考。
 - **Coupling Notes**：`LegacyGeometryAdapter` 是几何能力边界；`domain/rebar` 是业务对象边界；`DetailWriter` 和新设计文件格式是输出 / 持久化边界。
-- **Approximation Validity**：当前 adapter 的 split / interval / spline / wire chain 都是 legacy summary，不等价于真实 topology mutation；必须在文档中标明能力等级。
-- **Actuator Budget**：本轮只推进 `TODO-014`。完成后停止复盘，不自动进入 `TODO-015`。
+- **Approximation Validity**：当前 adapter 的 split / interval / spline / wire chain / offset preview 都是 legacy summary 或能力 spike，不等价于真实 topology mutation；必须在文档中标明能力等级。
+- **Actuator Budget**：本轮只推进 `TODO-015`。完成后停止复盘，不自动进入 `TODO-016`。
 - **Risks**：旧图石业务逻辑证据不足；OCCT 几何结果和 ACIS 存在细节差异；没有 golden 时只能先做结构正确和证据闭环。
 
 ## Todo CSV 使用方式
@@ -441,11 +447,11 @@ TODO-014 / M1-App-014
 下一步优先执行：
 
 ```text
-TODO-014 / M1-App-014
-  -> LegacyWireChain 边链 / wire chain 语义
-  -> 对齐旧 EDGE / ENTITY_LIST / face boundary loop 链
+TODO-015 / M1-App-015
+  -> LegacyGeometryAdapter offset 曲线能力 spike
+  -> 验证 OCCT 是否能替代旧偏移能力
 ```
 
-原因很简单：旧图石后续业务不会永远只拿单根 edge。线筋、圈筋、
-面周边和边界类功能都需要“多段边按旧语义组成一条链”的能力。
-这个不补，后续业务层就容易直接拿 OCCT wire/edge 做判断，路线会再次偏。
+原因很简单：旧图石后续钢筋创建和编辑很容易需要“从一条边或一条边链
+偏出一定距离”的能力。这个能力不先做 spike，后面业务层就会被迫直接
+写 OCCT offset 细节，路线会再次偏。

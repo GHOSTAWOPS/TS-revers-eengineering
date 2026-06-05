@@ -58,6 +58,8 @@ public:
     [[nodiscard]] LegacyGeometryQueryResult<LegacySplineCurveBuild> buildSplineFromPoints(
         const std::vector<LegacyPoint3d>& points,
         int sampleCount) const;
+    [[nodiscard]] LegacyGeometryQueryResult<LegacyWireChain> buildWireChain(
+        const std::vector<LegacySelectionRef>& edgeRefs) const;
 
 private:
     OccSelectionIndex m_selectionIndex;
