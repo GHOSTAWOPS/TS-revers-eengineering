@@ -256,25 +256,30 @@ TODO-023 / M1-App-022 = done
   -> 新设计文件格式 runtime P1，TsRebarProjectRuntime 可保存 /
      读取 STEP 来源、selection-v1 refs、rebar groups、binding、
      evidence 和 unresolved 字段。
+
+TODO-024 / M1-App-023 = done
+  -> DetailWriter P1，DetailWriter 可把 domain SteelData /
+     SteelBarGroup / SteelBar / SteelBarSegment 映射为 Detail.xml +
+     Detail01.stl 首批字段，并覆盖失败恢复旧 Detail 包。
 ```
 
 当前最新验证基线：
 
 ```text
-app 默认 CTest = 12/12 pass
+app 默认 CTest = 13/13 pass
 readiness gate = M1-Formal-Ready, 78/78 pass
-domain/rebar + project/runtime OCCT 边界 = pass
+domain/rebar + drawing + project OCCT 边界 = pass
 
-latest completed tag = m1-app-021/rebar-ais-display-mapping
-planned tag = m1-app-022/tsrebar-runtime-p1
+latest completed tag = m1-app-023/detail-writer-p1
+planned tag = m1-app-024/stp-sample-witness
 ```
 
 当前下一步：
 
 ```text
-TODO-024 / M1-App-023
-  -> DetailWriter P1 接入 domain rebar
-  -> 把 domain 钢筋组映射为 Detail.xml + DetailNN.stl 首批字段。
+TODO-025 / Evidence
+  -> 旧图石输出钢筋 STP 样本入库验证
+  -> 固定 123.stp 的 hash、OCCT 导入统计和样本 witness 报告。
 ```
 
 长期执行循环：
@@ -518,30 +523,27 @@ commit / tag / push 状态
 
 ### 短期 Goal（推荐本轮复制）
 
-目标：只完成 `TODO-024 / M1-App-023` 这个短期阶段，不自动进入后续长期开发。
+目标：只完成 `TODO-025 / 旧图石输出钢筋 STP 样本入库验证` 这个短期阶段，不自动进入后续长期开发。
 
-本轮要在正式 `app` 中实现 DetailWriter P1 接入 domain rebar：
+本轮要把旧图石导出的钢筋 STEP 样本 `123.stp` 固定成可重复 witness：
 
 ```text
-Domain SteelData / SteelBarGroup / SteelBar / SteelBarSegment
-  -> DetailWriter P1
-  -> Detail.xml + DetailNN.stl 首批字段
-  -> 服务旧 AutoCAD 插件兼容包
+旧图石 SFL
+  -> 旧图石导出钢筋 STP
+  -> 123.stp
+  -> hash / 文件大小 / OCCT 导入统计 / selection 稳定性摘要
+  -> 后续钢筋几何 golden 辅助证据
 ```
 
 目标语义：
 
 ```text
-按 05 / 13 / 20 的 Detail 工程图包证据，把已冻结的 domain 钢筋对象映射为旧 AutoCAD 插件能消费的首批 Detail 包字段：
-
-SteelData / SteelBarGroup / SteelBar / SteelBarSegment
-  -> Detail.xml
-  -> Detail01.stl 或等价首批几何文件
-  -> StbGroup / StbGeo / StbTable / MaterialTable 首批映射
-  -> 输出事务失败时不覆盖旧包
+123.stp 是旧图石真实导出的钢筋几何 witness。
+它只有几何，没有旧参数和命令历史，不能替代 IDA / SFL / Detail 业务证据。
+本轮只把它入库为可重复验证样本，供后续几何输出和 golden 辅助对照。
 ```
 
-本轮只做 DetailWriter P1 接入 domain rebar，不做 AutoCAD L2 动态导入，不做完整工程图生成，不做钢筋创建 / 编辑算法扩展。
+本轮只做样本入库验证和报告，不做新钢筋创建算法，不做 Detail writer 扩展，不做 AutoCAD L2 动态导入，不把 STP 当完整业务真相。
 
 当前已完成前置：
 
@@ -566,6 +568,9 @@ TODO-022 / M1-App-021 = done
 
 TODO-023 / M1-App-022 = done
   -> 新设计文件格式 runtime P1，可保存 / 读取 domain 钢筋对象、binding 和 evidence。
+
+TODO-024 / M1-App-023 = done
+  -> DetailWriter P1，可把 domain 钢筋组映射为 Detail.xml + Detail01.stl 首批字段。
 ```
 
 工作目录：
@@ -583,23 +588,23 @@ C:\Users\ghost\Desktop\reverse_engineering\【03】图石软件
 本轮必须先读这些参考文档：
 
 1. `【图石钢筋1比1复刻】\00_总览.md`
-2. `【图石钢筋1比1复刻】\05_Detail工程图包证据.md`
+2. `【图石钢筋1比1复刻】\04_SFL样本证据.md`
 3. `【图石钢筋1比1复刻】\11_需求证据追溯矩阵.md`
-4. `【图石钢筋1比1复刻】\13_Detail字段映射矩阵.md`
-5. `【图石钢筋1比1复刻】\20_DetailWriter输出事务契约.md`
-6. `【图石钢筋1比1复刻】\55_M1-App-018RebarDomainModelFreezeP1实现记录.md`
-7. `【图石钢筋1比1复刻】\58_M1-App-020旧线筋弧筋创建算法P0实现记录.md`
-8. `【图石钢筋1比1复刻】\60_M1-App-022新设计文件格式RuntimeP1实现记录.md`
+4. `【图石钢筋1比1复刻】\12_运行确认日志.md`
+5. `【图石钢筋1比1复刻】\31_STEP选择ID实际运行记录模板与样本清单.md`
+6. `【图石钢筋1比1复刻】\39_M1-App-003选择系统实现记录.md`
+7. `【图石钢筋1比1复刻】\60_M1-App-022新设计文件格式RuntimeP1实现记录.md`
+8. `【图石钢筋1比1复刻】\61_M1-App-023DetailWriterP1实现记录.md`
 9. `【图石钢筋1比1复刻】\99_缺口和待确认项.md`
 10. `【图石钢筋1比1复刻】\todo.csv`
 
 本轮允许修改：
 
-- `app/src/drawing/*` 或正式 app drawing / export 目录
-- `app/tests/*`
-- 必要的 `app/CMakeLists.txt`
-- `61_M1-App-023DetailWriterP1实现记录.md`
-- `docs/phase1/app_build_reports/m1_app_023_run_001.md/json`
+- 样本报告和 STEP selection / STP witness 相关文档
+- 必要的只读样本统计脚本或现有 gate 报告输出
+- `docs/phase1/step_selection/` 下对应 `123.stp` witness 报告
+- `62_TODO-025旧图石输出钢筋STP样本入库验证记录.md`
+- `docs/phase1/app_build_reports/m1_app_024_run_001.md/json` 或等价 evidence run report
 - `11_需求证据追溯矩阵.md`
 - `34_Phase1ReadinessGate实际运行记录.md`
 - `99_缺口和待确认项.md`
@@ -616,25 +621,22 @@ C:\Users\ghost\Desktop\reverse_engineering\【03】图石软件
 - 任何 OCCT 直接造钢筋业务逻辑
 - `domain/rebar` 中引入 AIS / OCCT
 - `domain/rebar` 中引入 `TopoDS_ / AIS_ / BRep / TopAbs_`
-- Detail 派生产物反向覆盖 domain 主数据
+- 把 `123.stp` 当作完整旧业务参数证据
 - AutoCAD L2 动态导入同轮实现
+- 钢筋创建 / 编辑 / 统计 / Detail writer 同轮扩展
 
 本轮验收标准：
 
-1. 先补失败测试，再实现。
-2. 新增 DetailWriter P1 或等价 drawing/export writer，把 domain `SteelData / SteelBarGroup / SteelBar / SteelBarSegment` 映射为 Detail 首批包。
-3. 单测至少覆盖：
-   - `groupID / rsdID / stbNum` 映射。
-   - `StbGeo / segment` 首批几何映射。
-   - `StbTable / StbRow` 首批下料表字段映射。
-   - `MaterialTable` 可输出或明确 deferred diagnostic。
-   - 输出失败不覆盖已有 Detail 包。
-4. `domain/rebar` 不出现 `TopoDS_ / AIS_ / BRep / TopAbs_`。
-5. 默认 CTest 通过。
-6. readiness gate 严格模式通过。
-7. commit 前必须执行 xhigh 只读 review；Critical / Important 必须修复或写明技术反驳理由。
-8. 更新实现记录、build report、`11 / 99 / 46 / todo.csv`。
-9. `todo.csv` 中 `TODO-024` 改为 `done`；只把下一个明确可执行任务改为 `next`，但不继续实现。
+1. 读取并确认 `123.stp` 文件存在、大小、sha256。
+2. 记录源 SFL、导出来源和当前已知运行确认关系，不能把未知项写成确定。
+3. 用现有 STEP import / selection gate 或等价工具统计 solids / faces / edges / vertices / unit。
+4. 形成可重复报告，包含命令、输出、hash、OCCT 版本或导入器信息。
+5. 若 gate 失败，记录失败原因和 GAP，不继续堆新功能。
+6. 默认 CTest 通过。
+7. readiness gate 严格模式通过。
+8. 若涉及代码、测试、构建脚本，commit 前必须执行 xhigh 只读 review；纯样本报告节点可记录不需要 xhigh 的理由。
+9. 更新实现记录、build report、`11 / 99 / 46 / todo.csv`。
+10. `todo.csv` 中 `TODO-025` 改为 `done`；只把下一个明确可执行任务改为 `next`，但不继续实现。
 
 本轮完成后必须停止，输出阶段复盘：
 
@@ -642,11 +644,11 @@ C:\Users\ghost\Desktop\reverse_engineering\【03】图石软件
 完成了什么
 验证了什么
 还缺什么
-下一阶段建议做 TODO-025 还是先补旧图石运行证据
+下一阶段建议做 TODO-026 还是先补旧图石运行证据
 commit / tag / push 状态
 ```
 
-不要在同一个 goal 内继续做 `TODO-025`、AutoCAD L2 动态导入、完整工程图生成或钢筋编辑 / 统计专项。
+不要在同一个 goal 内继续做 AutoCAD L2 动态导入、完整工程图生成、钢筋编辑 / 统计专项或新钢筋创建算法。
 ### 长期方向（只作护栏，不作为本轮 Goal）
 
 目标：持续推进《图石钢筋 1 比 1 复刻》正式 `app` 开发，直到具备按旧 VisualTS 证据复刻钢筋创建、编辑、统计、出图的工程条件。
@@ -839,28 +841,29 @@ Detail / 新设计文件格式输出层
 - `M1-App-020`：旧线筋 / 弧筋创建算法 P0，RebarGroupCreator 可输出 domain SteelBarGroup。
 - `M1-App-021`：AIS 钢筋显示映射 P0，RebarAisPresentationAdapter 可输出 AIS_Shape。
 - `M1-App-022`：新设计文件格式 runtime P1，TsRebarProjectRuntime 可保存 / 读取 STEP 来源、selection-v1 refs、rebar groups、binding 和 evidence。
+- `M1-App-023`：DetailWriter P1，DetailWriter 可把 domain SteelData / SteelBarGroup / SteelBar / SteelBarSegment 映射为 Detail.xml + Detail01.stl 首批字段。
 
 当前最新验证状态：
 
 ```text
-app 默认 CTest = 12/12 pass
+app 默认 CTest = 13/13 pass
 readiness gate = M1-Formal-Ready, 78/78 pass
-domain/rebar + project/runtime OCCT 边界 = pass
+domain/rebar + drawing + project OCCT 边界 = pass
 ```
 
 当前下一步：
 
 ```text
-TODO-024 / M1-App-023
-  -> DetailWriter P1 接入 domain rebar
-  -> 把 domain 钢筋组映射为 Detail.xml + DetailNN.stl 首批字段
+TODO-025 / Evidence
+  -> 旧图石输出钢筋 STP 样本入库验证
+  -> 固定 123.stp 的 hash、OCCT 导入统计和样本 witness 报告
 ```
 
 原因：
 
 ```text
-TODO-023 已能保存 / 读取 domain 钢筋对象、binding 和 evidence。
-下一步需要把这些对象输出为旧 AutoCAD 插件兼容的首批 Detail 包。
+TODO-024 已能把 domain 钢筋对象输出为旧 AutoCAD 插件兼容方向的首批 Detail 包。
+下一步需要把旧图石真实导出的钢筋 STP 样本固定成几何 witness。
 ```
 
 ### 执行规则
@@ -925,19 +928,19 @@ TODO-023 已能保存 / 读取 domain 钢筋对象、binding 和 evidence。
 
 ## CSE v2 Control Contract
 
-- **Primary Setpoint**：下一轮只完成 `TODO-024 / M1-App-023`，把 domain 钢筋组映射为 `Detail.xml + DetailNN.stl` 首批字段，服务旧 AutoCAD 插件兼容包。
-- **Acceptance**：新增 DetailWriter P1 代码和测试；覆盖 `groupID / rsdID / stbNum`、`StbGeo / segment`、`StbTable / StbRow`、`MaterialTable` 输出或 deferred diagnostic、失败不覆盖旧包；默认 CTest、readiness gate、domain/rebar OCCT 泄漏检查通过；代码节点 commit 前执行 xhigh 只读 review。
-- **Guardrail Metrics**：不能把 Detail 派生产物反向覆盖 domain 主数据；不能把 TODO-024 扩成 AutoCAD L2 动态导入或完整工程图生成；不能用 OCCT 直接重写钢筋业务。
-- **Sampling Plan**：先读 `05/13/20/55/58/60/99/todo.csv`；先补 DetailWriter 单测；再实现 drawing/export writer；验证后执行 xhigh 只读 review；最后更新实现记录、build report、追溯矩阵、缺口和 todo。
-- **Known Delays**：AutoCAD 插件动态导入仍需用户 CAD 环境后验；旧统计公式和编号合并规则仍有 GAP。
-- **Recovery Target**：如果 Detail 字段映射和既有证据冲突，先收缩到可证明的首批字段并把未确认项写入 `99_缺口和待确认项.md`，不继续堆完整工程图。
-- **Rollback Trigger**：domain/rebar 出现 `TopoDS_ / AIS_ / BRep / TopAbs_`；writer 修改钢筋业务主数据；TODO-024 顺手进入 AutoCAD L2 / 完整工程图；xhigh Critical / Important 未处理就 commit。
-- **Constraints**：不使用 ACIS / HOOPS / Codejock 等商业库；Detail 输出只消费 domain/rebar 和已知映射证据；旧逻辑不确定时优先查 IDA MCP 或旧图石运行确认。
-- **Boundary**：下一轮允许修改正式 app 的 drawing/export 层、必要 tests、CMake、实现记录、build report、追溯矩阵、缺口、46 和 todo；禁止修改父目录 rebar 业务、钢筋创建算法或让 domain 直接 include OCCT/AIS。
-- **Coupling Notes**：`domain/rebar` 是业务对象边界；`DetailWriter` 是输出边界；`TsRebarProjectRuntime` 是持久化边界；TODO-024 只把已有 domain 对象输出为 Detail 首批字段，不改变线筋 / 弧筋创建规则。
-- **Approximation Validity**：TODO-024 是 DetailWriter P1 离线输出，不等价 AutoCAD L2 导入通过、完整工程图生成、下料统计全规则闭合或旧图石 golden 闭合。
-- **Actuator Budget**：下一轮只推进 `TODO-024`。完成后停止复盘，不自动进入 `TODO-025`。
-- **Risks**：Detail 字段名和旧插件消费口径可能不完全闭合；STL 几何文件首批只能覆盖当前 domain segment 能证明的输出。
+- **Primary Setpoint**：下一轮只完成 `TODO-025 / 旧图石输出钢筋 STP 样本入库验证`，把 `123.stp` 固定为可重复的旧图石钢筋几何 witness。
+- **Acceptance**：记录 `123.stp` 的 sha256、文件大小、源样本关系、OCCT 导入统计、selection / STEP gate 摘要和可重复报告；默认 CTest、readiness gate、domain/rebar OCCT 泄漏检查通过。
+- **Guardrail Metrics**：不能把 STP 当完整业务真相；不能把 TODO-025 扩成新钢筋生成、Detail writer 扩展或 AutoCAD L2；不能用 STP 几何结果替代 IDA / SFL / Detail 字段证据。
+- **Sampling Plan**：先读 `04/11/12/31/39/60/61/99/todo.csv`；再统计样本 hash 和 OCCT 导入结果；必要时复用 STEP selection gate；最后更新实现记录、build report、追溯矩阵、缺口和 todo。
+- **Known Delays**：`123.stp` 只有几何，没有旧图石参数、命令历史和字段值；复杂样本和 golden 仍需后续用户运行确认。
+- **Recovery Target**：如果样本缺失或导入失败，先记录失败和 GAP，不继续扩展业务功能。
+- **Rollback Trigger**：把 STP 当作完整钢筋业务证据；TODO-025 顺手进入钢筋创建、Detail writer 或 AutoCAD L2；测试或 gate 失败仍继续堆功能。
+- **Constraints**：不使用 ACIS / HOOPS / Codejock 等商业库；只读样本；旧逻辑不确定时优先查 IDA MCP 或旧图石运行确认。
+- **Boundary**：下一轮允许修改样本报告、STEP witness 报告、实现记录、build report、追溯矩阵、缺口、46 和 todo；禁止修改钢筋业务代码，除非只是补充只读统计测试且需要 xhigh review。
+- **Coupling Notes**：`123.stp` 是几何 witness；`domain/rebar` 是业务对象边界；`DetailWriter` 是输出边界；TODO-025 不改变任何业务对象或 writer 规则。
+- **Approximation Validity**：TODO-025 的 STP witness 只证明旧图石导出的几何可被 OCCT 稳定读取，不证明新系统已 1:1 生成同样钢筋，也不证明旧参数、统计或工程图闭合。
+- **Actuator Budget**：下一轮只推进 `TODO-025`。完成后停止复盘，不自动进入 `TODO-026`。
+- **Risks**：STP 导出器和 OCCT 导入对边/面拆分存在差异；没有命令历史时只能作为几何辅助证据。
 ## Todo CSV 使用方式
 
 `todo.csv` 是后续执行看板。建议每次 goal 模式只拿 `status=next` 或最高优先级 `pending` 的任务推进。
@@ -962,10 +965,10 @@ TODO-023 已能保存 / 读取 domain 钢筋对象、binding 和 evidence。
 下一步优先执行：
 
 ```text
-TODO-024 / M1-App-023
-  -> DetailWriter P1 接入 domain rebar
-  -> 把 domain 钢筋组映射为 Detail.xml + DetailNN.stl 首批字段
+TODO-025 / Evidence
+  -> 旧图石输出钢筋 STP 样本入库验证
+  -> 固定 123.stp 的 hash、OCCT 导入统计和样本 witness 报告
 ```
 
-原因很简单：TODO-023 已能保存 / 读取 domain 钢筋对象、binding 和 evidence。
-下一步要让这些对象能输出为旧 AutoCAD 插件兼容的首批 Detail 包。
+原因很简单：TODO-024 已能输出 Detail 首批字段。
+下一步需要把旧图石真实导出的钢筋几何样本固定下来，给后续几何输出和 golden 辅助对照留硬证据。

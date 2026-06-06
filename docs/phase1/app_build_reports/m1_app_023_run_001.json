@@ -1,0 +1,94 @@
+{
+  "id": "m1_app_023_run_001",
+  "date": "2026-06-07",
+  "decision": "m1-app-023-pass",
+  "appRoot": "C:/Users/ghost/Desktop/reverse_engineering/【03】图石软件/【图石钢筋1比1复刻】/app",
+  "scope": [
+    "DetailWriter P1",
+    "domain rebar to Detail package",
+    "Detail.xml",
+    "Detail01.stl",
+    "transaction rollback"
+  ],
+  "tests": {
+    "success": true,
+    "passed": 13,
+    "failed": 0,
+    "totalSeconds": 126.35,
+    "cases": [
+      "command_registry_tests",
+      "legacy_selection_ref_tests",
+      "rebar_domain_model_tests",
+      "rebar_group_creator_tests",
+      "rebar_ais_presentation_tests",
+      "project_runtime_tests",
+      "detail_writer_tests",
+      "app_smoke",
+      "viewer_smoke_tests",
+      "domain_rebar_boundary",
+      "step_import_probe_123",
+      "occ_selection_index_123",
+      "legacy_geometry_adapter_123"
+    ]
+  },
+  "readinessGate": {
+    "decision": "M1-Formal-Ready",
+    "m1FormalAllowed": true,
+    "passCount": 78,
+    "checkCount": 78,
+    "errorCount": 0,
+    "warningCount": 0
+  },
+  "detailWriter": {
+    "decision": "l0-l1-pass",
+    "outputs": [
+      "Detail.xml",
+      "Detail01.stl"
+    ],
+    "l0": "passed",
+    "l1": "passed",
+    "l2": "not_run",
+    "warningCodes": [
+      "DW-WARN-MATERIAL_MASS_FORMULA_DEFERRED"
+    ],
+    "errorCodesCovered": [
+      "DW003_ID_CROSS_REFERENCE_FAILED",
+      "DW004_REQUIRED_FIELD_MISSING",
+      "DW008_REPLACE_FAILED"
+    ],
+    "oldPackageRollbackCovered": true
+  },
+  "ida": {
+    "addedThisRound": true,
+    "database": "visualts_i64_todo024",
+    "file": "VisualTS.exe.i64",
+    "confirmedFunctions": [
+      "sub_14061F830",
+      "sub_14063E910",
+      "sub_14063B010",
+      "sub_140605B20",
+      "sub_140602F90"
+    ],
+    "scope": "Detail first field write chain only"
+  },
+  "xhighReview": {
+    "required": true,
+    "round1Verdict": "block",
+    "round1Fixed": true,
+    "round2Verdict": "block",
+    "round2Fixed": true,
+    "round3Verdict": "allow_commit",
+    "criticalAfterFix": "none",
+    "importantAfterFix": "none",
+    "agentClosed": true
+  },
+  "guardrails": {
+    "parentRebarGenerationChainMigrated": false,
+    "domainRebarOcctBoundary": "pass",
+    "drawingProjectLeakScan": "pass",
+    "autoCadL2Claimed": false,
+    "materialMassFormulaClaimed": false,
+    "oldBusinessRuleChanged": false
+  },
+  "next": "TODO-025"
+}

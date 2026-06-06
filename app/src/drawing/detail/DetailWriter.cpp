@@ -1,0 +1,854 @@
+#include "drawing/detail/DetailWriter.h"
+
+#include <QCryptographicHash>
+#include <QDir>
+#include <QDirIterator>
+#include <QFile>
+#include <QFileInfo>
+#include <QSaveFile>
+#include <QXmlStreamReader>
+#include <QXmlStreamWriter>
+
+#include <algorithm>
+#include <map>
+#include <cmath>
+#include <functional>
+#include <set>
+#include <stdexcept>
+
+namespace tsrebar {
+namespace {
+
+constexpr auto kRequiredFieldMissing = "DW004_REQUIRED_FIELD_MISSING";
+constexpr auto kXmlWriteFailed = "DW005_XML_WRITE_FAILED";
+constexpr auto kXmlParseFailed = "DW006_XML_PARSE_FAILED";
+constexpr auto kPackageValidationFailed = "DW007_PACKAGE_VALIDATION_FAILED";
+constexpr auto kReplaceFailed = "DW008_REPLACE_FAILED";
+constexpr auto kCrossReferenceFailed = "DW003_ID_CROSS_REFERENCE_FAILED";
+constexpr auto kMaterialDeferred = "DW-WARN-MATERIAL_MASS_FORMULA_DEFERRED";
+
+QString qstr(const std::string& value)
+{
+    return QString::fromStdString(value);
+}
+
+QString stableIdOrAlias(const std::string& primary, const std::string& alias)
+{
+    return qstr(primary.empty() ? alias : primary);
+}
+
+QString formatNumber(double value)
+{
+    if (std::abs(value) < 1.0e-12) {
+        value = 0.0;
+    }
+    return QString::number(value, 'g', 15);
+}
+
+QString slashPath(const QString& path)
+{
+    return QDir::fromNativeSeparators(path);
+}
+
+QString directoryHash(const QString& path)
+{
+    QFileInfo info(path);
+    if (!info.exists()) {
+        return QStringLiteral("sha256:missing");
+    }
+    if (info.isFile()) {
+        QFile file(path);
+        if (!file.open(QIODevice::ReadOnly)) {
+            return QStringLiteral("sha256:unreadable");
+        }
+        return QStringLiteral("sha256:") +
+            QString::fromLatin1(QCryptographicHash::hash(file.readAll(),
+                                                         QCryptographicHash::Sha256)
+                                    .toHex());
+    }
+
+    QStringList files;
+    QDirIterator iterator(path, QDir::Files, QDirIterator::Subdirectories);
+    const QDir root(path);
+    while (iterator.hasNext()) {
+        const QString item = iterator.next();
+        files.append(slashPath(root.relativeFilePath(item)));
+    }
+    std::sort(files.begin(), files.end());
+
+    QCryptographicHash hash(QCryptographicHash::Sha256);
+    for (const QString& rel : files) {
+        QFile file(root.filePath(rel));
+        if (!file.open(QIODevice::ReadOnly)) {
+            return QStringLiteral("sha256:unreadable");
+        }
+        hash.addData(rel.toUtf8());
+        hash.addData("\0", 1);
+        hash.addData(file.readAll());
+        hash.addData("\0", 1);
+    }
+    return QStringLiteral("sha256:") + QString::fromLatin1(hash.result().toHex());
+}
+
+bool removeDirIfExists(const QString& path)
+{
+    QFileInfo info(path);
+    if (!info.exists()) {
+        return true;
+    }
+    if (!info.isDir()) {
+        return QFile::remove(path);
+    }
+    return QDir(path).removeRecursively();
+}
+
+void ensureParentDir(const QString& path)
+{
+    const QString parent = QFileInfo(path).absolutePath();
+    if (!QDir().mkpath(parent)) {
+        throw std::runtime_error(QStringLiteral("cannot create parent dir: %1")
+                                     .arg(parent)
+                                     .toStdString());
+    }
+}
+
+void writeXmlFile(const QString& path, const std::function<void(QXmlStreamWriter&)>& write)
+{
+    ensureParentDir(path);
+    QSaveFile file(path);
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+        throw std::runtime_error(QStringLiteral("cannot write xml: %1")
+                                     .arg(path)
+                                     .toStdString());
+    }
+    QXmlStreamWriter writer(&file);
+    writer.setAutoFormatting(true);
+    writer.writeStartDocument(QStringLiteral("1.0"));
+    write(writer);
+    writer.writeEndDocument();
+    if (!file.commit()) {
+        throw std::runtime_error(QStringLiteral("cannot commit xml: %1")
+                                     .arg(path)
+                                     .toStdString());
+    }
+}
+
+std::map<QString, const SteelBar*> barsById(const SteelData& steelData)
+{
+    std::map<QString, const SteelBar*> result;
+    for (const SteelBar& bar : steelData.bars) {
+        result.emplace(stableIdOrAlias(bar.barId, bar.id), &bar);
+    }
+    return result;
+}
+
+std::map<QString, const SteelBarSegment*> segmentsById(const SteelData& steelData)
+{
+    std::map<QString, const SteelBarSegment*> result;
+    for (const SteelBarSegment& segment : steelData.segments) {
+        result.emplace(stableIdOrAlias(segment.segmentId, segment.id), &segment);
+    }
+    return result;
+}
+
+std::vector<const SteelBar*> groupBars(const SteelBarGroup& group,
+                                       const std::map<QString, const SteelBar*>& byId)
+{
+    std::vector<const SteelBar*> result;
+    for (const std::string& barId : group.barIds) {
+        const auto it = byId.find(qstr(barId));
+        if (it != byId.end()) {
+            result.push_back(it->second);
+        }
+    }
+    return result;
+}
+
+std::vector<QString> missingGroupBarIds(const SteelBarGroup& group,
+                                        const std::map<QString, const SteelBar*>& byId)
+{
+    std::vector<QString> result;
+    for (const std::string& barId : group.barIds) {
+        const QString id = qstr(barId);
+        if (byId.find(id) == byId.end()) {
+            result.push_back(id);
+        }
+    }
+    return result;
+}
+
+std::vector<const SteelBarSegment*> barSegments(
+    const SteelBar& bar,
+    const std::map<QString, const SteelBarSegment*>& byId)
+{
+    std::vector<const SteelBarSegment*> result;
+    for (const std::string& segmentId : bar.segmentIds) {
+        const auto it = byId.find(qstr(segmentId));
+        if (it != byId.end()) {
+            result.push_back(it->second);
+        }
+    }
+    return result;
+}
+
+std::vector<QString> missingBarSegmentIds(const SteelBar& bar,
+                                          const std::map<QString, const SteelBarSegment*>& byId)
+{
+    std::vector<QString> result;
+    for (const std::string& segmentId : bar.segmentIds) {
+        const QString id = qstr(segmentId);
+        if (byId.find(id) == byId.end()) {
+            result.push_back(id);
+        }
+    }
+    return result;
+}
+
+double barLength(const SteelBar& bar,
+                 const std::map<QString, const SteelBarSegment*>& segmentIndex)
+{
+    if (bar.length > 0.0) {
+        return bar.length;
+    }
+    double total = 0.0;
+    for (const SteelBarSegment* segment : barSegments(bar, segmentIndex)) {
+        total += segment->length;
+    }
+    return total;
+}
+
+int segmentCountFor(const SteelBarGroup& group,
+                    const std::vector<const SteelBar*>& bars,
+                    const std::map<QString, const SteelBarSegment*>& segmentIndex)
+{
+    if (group.segmentCount > 0) {
+        return group.segmentCount;
+    }
+    if (bars.empty()) {
+        return 0;
+    }
+    return static_cast<int>(barSegments(*bars.front(), segmentIndex).size());
+}
+
+int barCountFor(const SteelBarGroup& group, int actualBarRefs)
+{
+    return group.barCount > 0 ? group.barCount : actualBarRefs;
+}
+
+QString detailShapeCode(const SteelBarSegment& segment)
+{
+    return qstr(segment.detailShapeTypeCode());
+}
+
+void appendDiagnostic(DetailWriteResult& result,
+                      const QString& code,
+                      const QString& file,
+                      const QString& message)
+{
+    result.diagnostics.push_back({code, file, message});
+    if (!result.errorCodes.contains(code)) {
+        result.errorCodes.append(code);
+    }
+}
+
+bool numberedNodeName(const QString& name, const QString& prefix)
+{
+    if (!name.startsWith(prefix) || name.size() == prefix.size()) {
+        return false;
+    }
+    for (int index = prefix.size(); index < name.size(); ++index) {
+        if (!name.at(index).isDigit()) {
+            return false;
+        }
+    }
+    return true;
+}
+
+DetailWriteResult validateInput(const SteelData& steelData)
+{
+    DetailWriteResult result;
+    const auto barIndex = barsById(steelData);
+    const auto segmentIndex = segmentsById(steelData);
+    if (steelData.groups.empty()) {
+        appendDiagnostic(result,
+                         QString::fromLatin1(kRequiredFieldMissing),
+                         QStringLiteral("Detail01.stl"),
+                         QStringLiteral("SteelData.groups is empty"));
+        return result;
+    }
+
+    for (const SteelBarGroup& group : steelData.groups) {
+        const QString groupId = stableIdOrAlias(group.groupId, group.id);
+        if (groupId.isEmpty()) {
+            appendDiagnostic(result,
+                             QString::fromLatin1(kRequiredFieldMissing),
+                             QStringLiteral("Detail01.stl"),
+                             QStringLiteral("StbGroup.groupID is required"));
+        }
+        if (group.rsdId.empty()) {
+            appendDiagnostic(result,
+                             QString::fromLatin1(kRequiredFieldMissing),
+                             QStringLiteral("Detail01.stl"),
+                             QStringLiteral("StbGroup.rsdID is required"));
+        }
+        if (group.diameter <= 0.0) {
+            appendDiagnostic(result,
+                             QString::fromLatin1(kRequiredFieldMissing),
+                             QStringLiteral("Detail01.stl"),
+                             QStringLiteral("StbGroup.diameter is required"));
+        }
+
+        const std::vector<const SteelBar*> bars = groupBars(group, barIndex);
+        for (const QString& missingBarId : missingGroupBarIds(group, barIndex)) {
+            appendDiagnostic(result,
+                             QString::fromLatin1(kCrossReferenceFailed),
+                             QStringLiteral("Detail01.stl"),
+                             QStringLiteral("StbGroup references missing SteelBar %1")
+                                 .arg(missingBarId));
+        }
+        if (bars.empty()) {
+            appendDiagnostic(result,
+                             QString::fromLatin1(kRequiredFieldMissing),
+                             QStringLiteral("Detail01.stl"),
+                             QStringLiteral("StbGroup must reference at least one SteelBar"));
+            continue;
+        }
+
+        for (const SteelBar* bar : bars) {
+            for (const QString& missingSegmentId : missingBarSegmentIds(*bar, segmentIndex)) {
+                appendDiagnostic(result,
+                                 QString::fromLatin1(kCrossReferenceFailed),
+                                 QStringLiteral("Detail01.stl"),
+                                 QStringLiteral("SteelBar references missing segment %1")
+                                     .arg(missingSegmentId));
+            }
+            const std::vector<const SteelBarSegment*> segments = barSegments(*bar, segmentIndex);
+            if (segments.empty()) {
+                appendDiagnostic(result,
+                                 QString::fromLatin1(kRequiredFieldMissing),
+                                 QStringLiteral("Detail01.stl"),
+                                 QStringLiteral("SteelBar must reference at least one segment"));
+            }
+            for (const SteelBarSegment* segment : segments) {
+                const QString segmentId = stableIdOrAlias(segment->segmentId, segment->id);
+                if (segmentId.isEmpty()) {
+                    appendDiagnostic(result,
+                                     QString::fromLatin1(kRequiredFieldMissing),
+                                     QStringLiteral("Detail01.stl"),
+                                     QStringLiteral("StbGeo.segID is required"));
+                }
+                if (detailShapeCode(*segment).isEmpty()) {
+                    appendDiagnostic(result,
+                                     QString::fromLatin1(kRequiredFieldMissing),
+                                     QStringLiteral("Detail01.stl"),
+                                     QStringLiteral("StbGeo.shapeType is required"));
+                }
+            }
+        }
+    }
+    return result;
+}
+
+void writeStyleXml(const QString& path, const SteelData& steelData)
+{
+    writeXmlFile(path, [&steelData](QXmlStreamWriter& writer) {
+        writer.writeStartElement(QStringLiteral("StyleRoot"));
+        writer.writeAttribute(QStringLiteral("CurrPos"), QStringLiteral("1"));
+        writer.writeStartElement(QStringLiteral("Styles"));
+        writer.writeStartElement(QStringLiteral("Style1"));
+        writer.writeAttribute(QStringLiteral("Name"),
+                              steelData.gradeName.empty()
+                                  ? QStringLiteral("default")
+                                  : qstr(steelData.gradeName));
+        const double diameter = steelData.diameterSet.empty()
+            ? (!steelData.groups.empty() ? steelData.groups.front().diameter : 0.0)
+            : steelData.diameterSet.front();
+        writer.writeAttribute(QStringLiteral("dia"), formatNumber(diameter));
+        writer.writeAttribute(QStringLiteral("type"),
+                              steelData.level.empty() ? QStringLiteral("HRB") : qstr(steelData.level));
+        writer.writeAttribute(QStringLiteral("source"), QStringLiteral("E-DETAIL-001"));
+        writer.writeEndElement();
+        writer.writeEndElement();
+        writer.writeEndElement();
+    });
+}
+
+void writePointAttributes(QXmlStreamWriter& writer,
+                          const QString& prefix,
+                          const DomainPoint3d& point)
+{
+    writer.writeAttribute(prefix + QStringLiteral("_x"), formatNumber(point.x));
+    writer.writeAttribute(prefix + QStringLiteral("_y"), formatNumber(point.y));
+    writer.writeAttribute(prefix + QStringLiteral("_z"), formatNumber(point.z));
+}
+
+void writeSegmentGeo(QXmlStreamWriter& writer,
+                     const SteelBarSegment& segment,
+                     int sequence)
+{
+    writer.writeStartElement(QStringLiteral("StbGeo%1").arg(sequence));
+    writer.writeAttribute(QStringLiteral("segID"), stableIdOrAlias(segment.segmentId, segment.id));
+    writer.writeAttribute(QStringLiteral("stbSeqNum"),
+                          QString::number(segment.sequenceNo > 0 ? segment.sequenceNo : sequence));
+    writer.writeAttribute(QStringLiteral("shapeType"), detailShapeCode(segment));
+    writePointAttributes(writer, QStringLiteral("start"), segment.startPoint);
+    writePointAttributes(writer, QStringLiteral("middle"), segment.middlePoint);
+    writePointAttributes(writer, QStringLiteral("end"), segment.endPoint);
+    writer.writeAttribute(QStringLiteral("start_r"), formatNumber(segment.startRadius));
+    writer.writeAttribute(QStringLiteral("end_r"), formatNumber(segment.endRadius));
+    writePointAttributes(writer, QStringLiteral("offset"), segment.offset);
+    writer.writeAttribute(QStringLiteral("length"), formatNumber(segment.length));
+    writer.writeEndElement();
+}
+
+void writeScheduleSegment(QXmlStreamWriter& writer,
+                          const SteelBarSegment& segment,
+                          int sequence)
+{
+    writer.writeStartElement(QStringLiteral("StbSeg%1").arg(sequence));
+    writer.writeAttribute(QStringLiteral("lenRange"), formatNumber(segment.length));
+    writer.writeAttribute(QStringLiteral("deltaLen"), QStringLiteral("0"));
+    writer.writeAttribute(QStringLiteral("shapeType"), detailShapeCode(segment));
+    if (segment.shapeType == SteelBarSegmentShape::Arc) {
+        writer.writeEmptyElement(QStringLiteral("Arc"));
+        writer.writeAttribute(QStringLiteral("start_x"), formatNumber(segment.startPoint.x));
+        writer.writeAttribute(QStringLiteral("start_y"), formatNumber(segment.startPoint.y));
+        writer.writeAttribute(QStringLiteral("middle_x"), formatNumber(segment.middlePoint.x));
+        writer.writeAttribute(QStringLiteral("middle_y"), formatNumber(segment.middlePoint.y));
+        writer.writeAttribute(QStringLiteral("end_x"), formatNumber(segment.endPoint.x));
+        writer.writeAttribute(QStringLiteral("end_y"), formatNumber(segment.endPoint.y));
+        writer.writeAttribute(QStringLiteral("start_rad"), formatNumber(segment.startRadius));
+        writer.writeAttribute(QStringLiteral("end_rad"), formatNumber(segment.endRadius));
+    } else {
+        writer.writeEmptyElement(QStringLiteral("Line"));
+        writer.writeAttribute(QStringLiteral("start_x"), formatNumber(segment.startPoint.x));
+        writer.writeAttribute(QStringLiteral("start_y"), formatNumber(segment.startPoint.y));
+        writer.writeAttribute(QStringLiteral("end_x"), formatNumber(segment.endPoint.x));
+        writer.writeAttribute(QStringLiteral("end_y"), formatNumber(segment.endPoint.y));
+    }
+    writer.writeEndElement();
+}
+
+void writeDrawingXml(const QString& path,
+                     const SteelData& steelData,
+                     const DetailWriteOptions& options)
+{
+    const auto barIndex = barsById(steelData);
+    const auto segmentIndex = segmentsById(steelData);
+
+    writeXmlFile(path, [&](QXmlStreamWriter& writer) {
+        writer.writeStartElement(QStringLiteral("DrawingRoot"));
+
+        writer.writeStartElement(QStringLiteral("StbTables"));
+        writer.writeStartElement(QStringLiteral("StbTable"));
+        writer.writeAttribute(QStringLiteral("count"), QString::number(steelData.groups.size()));
+
+        int rowSequence = 0;
+        for (const SteelBarGroup& group : steelData.groups) {
+            const std::vector<const SteelBar*> bars = groupBars(group, barIndex);
+            const SteelBar& firstBar = *bars.front();
+            const std::vector<const SteelBarSegment*> segments = barSegments(firstBar, segmentIndex);
+            const double length = barLength(firstBar, segmentIndex);
+            const int barCount = barCountFor(group, static_cast<int>(bars.size()));
+            const int segmentCount = segmentCountFor(group, bars, segmentIndex);
+
+            writer.writeStartElement(QStringLiteral("StbRow%1").arg(++rowSequence));
+            writer.writeAttribute(QStringLiteral("rsdID"), qstr(group.rsdId));
+            writer.writeAttribute(QStringLiteral("ComponentName"), qstr(group.componentName));
+            writer.writeAttribute(QStringLiteral("SteelWay"), qstr(group.steelWay));
+            writer.writeAttribute(QStringLiteral("diameter"), formatNumber(group.diameter));
+            writer.writeAttribute(QStringLiteral("length"), formatNumber(length));
+            writer.writeAttribute(QStringLiteral("segNum"), QString::number(segmentCount));
+            writer.writeAttribute(QStringLiteral("sameGrpNum"), QStringLiteral("1"));
+            writer.writeAttribute(QStringLiteral("stbNumSum"), QString::number(barCount));
+            writer.writeAttribute(QStringLiteral("lenSum"), formatNumber(length * barCount));
+            writer.writeAttribute(QStringLiteral("stbLevel"), qstr(group.steelLevel));
+            writer.writeAttribute(QStringLiteral("stbLayer"), qstr(group.layer));
+            writer.writeAttribute(QStringLiteral("stbProfile"), qstr(group.profile));
+            writer.writeAttribute(QStringLiteral("stbUse"), qstr(group.use));
+            int scheduleSegSequence = 0;
+            for (const SteelBarSegment* segment : segments) {
+                writeScheduleSegment(writer, *segment, ++scheduleSegSequence);
+            }
+            writer.writeEndElement();
+        }
+        writer.writeEndElement();
+
+        writer.writeStartElement(QStringLiteral("MaterialTable"));
+        writer.writeAttribute(QStringLiteral("rowCount"), QStringLiteral("1"));
+        writer.writeAttribute(QStringLiteral("Mass"), QStringLiteral("0"));
+        writer.writeAttribute(QStringLiteral("Volume722"), QStringLiteral("0"));
+        writer.writeAttribute(QStringLiteral("MassNum"), QStringLiteral("0"));
+        double totalLength = 0.0;
+        int totalCount = 0;
+        double firstDiameter = 0.0;
+        QString firstLevel;
+        for (const SteelBarGroup& group : steelData.groups) {
+            const std::vector<const SteelBar*> bars = groupBars(group, barIndex);
+            if (bars.empty()) {
+                continue;
+            }
+            const int barCount = barCountFor(group, static_cast<int>(bars.size()));
+            totalLength += barLength(*bars.front(), segmentIndex) * barCount;
+            totalCount += barCount;
+            if (firstDiameter == 0.0) {
+                firstDiameter = group.diameter;
+                firstLevel = qstr(group.steelLevel);
+            }
+        }
+        writer.writeStartElement(QStringLiteral("MatRow1"));
+        writer.writeAttribute(QStringLiteral("diameter"), formatNumber(firstDiameter));
+        writer.writeAttribute(QStringLiteral("lenSum"), formatNumber(totalLength));
+        writer.writeAttribute(QStringLiteral("countSum"), QString::number(totalCount));
+        writer.writeAttribute(QStringLiteral("singleMass"), QStringLiteral("0"));
+        writer.writeAttribute(QStringLiteral("massSum"), QStringLiteral("0"));
+        writer.writeAttribute(QStringLiteral("stbLevel"), firstLevel);
+        writer.writeEndElement();
+        writer.writeEndElement();
+        writer.writeEndElement();
+
+        writer.writeStartElement(QStringLiteral("HViewPorts"));
+        writer.writeStartElement(QStringLiteral("ViewPort"));
+        writer.writeAttribute(QStringLiteral("id"), QStringLiteral("view_000001"));
+        writer.writeStartElement(QStringLiteral("PartDetailDrawing"));
+        writer.writeStartElement(QStringLiteral("General-Info"));
+        writer.writeAttribute(QStringLiteral("Model_FileName"), options.modelFileName);
+        writer.writeAttribute(QStringLiteral("DrawingName"), options.drawingName);
+        writer.writeAttribute(QStringLiteral("DrawingUnit"), options.drawingUnit);
+        writer.writeAttribute(QStringLiteral("DrawingScale"), options.drawingScale);
+        writer.writeAttribute(QStringLiteral("GeneralScale"), options.drawingScale);
+        writer.writeEndElement();
+        writer.writeEndElement();
+
+        writer.writeStartElement(QStringLiteral("StbDetailDrawing"));
+        writer.writeStartElement(QStringLiteral("StbGroups"));
+        writer.writeAttribute(QStringLiteral("stbGroupCount"), QString::number(steelData.groups.size()));
+
+        int groupSequence = 0;
+        for (const SteelBarGroup& group : steelData.groups) {
+            const std::vector<const SteelBar*> bars = groupBars(group, barIndex);
+            const std::vector<const SteelBarSegment*> segments = barSegments(*bars.front(), segmentIndex);
+            const int barCount = barCountFor(group, static_cast<int>(bars.size()));
+            const int segmentCount = segmentCountFor(group, bars, segmentIndex);
+
+            writer.writeStartElement(QStringLiteral("StbGroup%1").arg(++groupSequence));
+            writer.writeAttribute(QStringLiteral("rsdID"), qstr(group.rsdId));
+            writer.writeAttribute(QStringLiteral("groupID"), stableIdOrAlias(group.groupId, group.id));
+            writer.writeAttribute(QStringLiteral("diameter"), formatNumber(group.diameter));
+            writer.writeAttribute(QStringLiteral("diameter2"), formatNumber(group.secondaryDiameter));
+            writer.writeAttribute(QStringLiteral("interval"), formatNumber(group.interval));
+            writer.writeAttribute(QStringLiteral("barcount"), QString::number(barCount));
+            writer.writeAttribute(QStringLiteral("segcount"), QString::number(segmentCount));
+            writer.writeAttribute(QStringLiteral("stbNum"), qstr(group.displayNumber));
+            writer.writeAttribute(QStringLiteral("stbNumAct"), qstr(group.actualNumber));
+            writer.writeAttribute(QStringLiteral("stbLevel"), qstr(group.steelLevel));
+            writer.writeAttribute(QStringLiteral("stbLayer"), qstr(group.layer));
+            writer.writeAttribute(QStringLiteral("stbProfile"), qstr(group.profile));
+            writer.writeAttribute(QStringLiteral("stbUse"), qstr(group.use));
+            writer.writeAttribute(QStringLiteral("RangeLess180"), group.rangeLess180 ? QStringLiteral("T") : QStringLiteral("F"));
+            writer.writeAttribute(QStringLiteral("ComponentName"), qstr(group.componentName));
+            writer.writeAttribute(QStringLiteral("PJSteelName"), qstr(group.projectSteelName));
+            writer.writeAttribute(QStringLiteral("SteelWay"), qstr(group.steelWay));
+            writer.writeAttribute(QStringLiteral("stbType"), qstr(group.rebarType));
+            writer.writeAttribute(QStringLiteral("stbOffsetInOut"), formatNumber(group.offsetInOut));
+
+            writer.writeStartElement(QStringLiteral("Std1"));
+            writer.writeAttribute(QStringLiteral("segCount"), QString::number(segments.size()));
+            int segmentSequence = 0;
+            for (const SteelBarSegment* segment : segments) {
+                writeSegmentGeo(writer, *segment, ++segmentSequence);
+            }
+            writer.writeEndElement();
+            writer.writeEndElement();
+        }
+
+        writer.writeEndElement();
+        writer.writeEndElement();
+        writer.writeEndElement();
+        writer.writeEndElement();
+
+        writer.writeEndElement();
+    });
+}
+
+QString firstRootName(const QString& path)
+{
+    QFile file(path);
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        return {};
+    }
+    QXmlStreamReader reader(&file);
+    while (!reader.atEnd()) {
+        reader.readNext();
+        if (reader.isStartElement()) {
+            return reader.name().toString();
+        }
+    }
+    return {};
+}
+
+void validateL0(const QString& dir, DetailWriteResult& result)
+{
+    const std::map<QString, QString> expected{
+        {QStringLiteral("Detail.xml"), QStringLiteral("StyleRoot")},
+        {QStringLiteral("Detail01.stl"), QStringLiteral("DrawingRoot")},
+    };
+    for (const auto& item : expected) {
+        const QString path = QDir(dir).filePath(item.first);
+        if (!QFileInfo::exists(path)) {
+            appendDiagnostic(result,
+                             QString::fromLatin1(kRequiredFieldMissing),
+                             item.first,
+                             QStringLiteral("required Detail file missing"));
+            continue;
+        }
+        const QString root = firstRootName(path);
+        if (root != item.second) {
+            appendDiagnostic(result,
+                             QString::fromLatin1(kXmlParseFailed),
+                             item.first,
+                             QStringLiteral("root is %1, expected %2")
+                                 .arg(root, item.second));
+        }
+    }
+}
+
+void validateL1(const QString& dir, DetailWriteResult& result)
+{
+    QFile file(QDir(dir).filePath(QStringLiteral("Detail01.stl")));
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        appendDiagnostic(result,
+                         QString::fromLatin1(kXmlParseFailed),
+                         QStringLiteral("Detail01.stl"),
+                         QStringLiteral("cannot open generated Detail01.stl"));
+        return;
+    }
+
+    QXmlStreamReader reader(&file);
+    std::set<QString> groupRsdIds;
+    std::set<QString> rowRsdIds;
+    std::set<QString> segmentIds;
+    std::map<QString, int> stdExpected;
+    std::map<QString, int> stdActual;
+    QString currentStd;
+
+    while (!reader.atEnd()) {
+        reader.readNext();
+        if (reader.isStartElement()) {
+            const QString name = reader.name().toString();
+            const auto attrs = reader.attributes();
+            if (numberedNodeName(name, QStringLiteral("StbGroup"))) {
+                groupRsdIds.insert(attrs.value(QStringLiteral("rsdID")).toString());
+            } else if (numberedNodeName(name, QStringLiteral("StbRow"))) {
+                rowRsdIds.insert(attrs.value(QStringLiteral("rsdID")).toString());
+            } else if (numberedNodeName(name, QStringLiteral("Std"))) {
+                currentStd = name;
+                stdExpected[currentStd] = attrs.value(QStringLiteral("segCount")).toInt();
+                stdActual[currentStd] = 0;
+            } else if (numberedNodeName(name, QStringLiteral("StbGeo"))) {
+                const QString segmentId = attrs.value(QStringLiteral("segID")).toString();
+                if (segmentIds.count(segmentId) != 0) {
+                    appendDiagnostic(result,
+                                     QString::fromLatin1(kPackageValidationFailed),
+                                     QStringLiteral("Detail01.stl"),
+                                     QStringLiteral("duplicate StbGeo.segID %1").arg(segmentId));
+                }
+                segmentIds.insert(segmentId);
+                if (!currentStd.isEmpty()) {
+                    ++stdActual[currentStd];
+                }
+            }
+        } else if (reader.isEndElement() &&
+                   numberedNodeName(reader.name().toString(), QStringLiteral("Std"))) {
+            currentStd.clear();
+        }
+    }
+
+    if (reader.hasError()) {
+        appendDiagnostic(result,
+                         QString::fromLatin1(kXmlParseFailed),
+                         QStringLiteral("Detail01.stl"),
+                         reader.errorString());
+    }
+    if (groupRsdIds != rowRsdIds) {
+        appendDiagnostic(result,
+                         QString::fromLatin1(kPackageValidationFailed),
+                         QStringLiteral("Detail01.stl"),
+                         QStringLiteral("StbGroup.rsdID and StbRow.rsdID mismatch"));
+    }
+    for (const auto& item : stdExpected) {
+        if (item.second != stdActual[item.first]) {
+            appendDiagnostic(result,
+                             QString::fromLatin1(kPackageValidationFailed),
+                             QStringLiteral("Detail01.stl"),
+                             QStringLiteral("%1 segCount mismatch").arg(item.first));
+        }
+    }
+}
+
+void copyFileReplacing(const QString& src, const QString& dst)
+{
+    if (QFileInfo::exists(dst) && !QFile::remove(dst)) {
+        throw std::runtime_error(QStringLiteral("cannot remove target before restore/copy: %1")
+                                     .arg(dst)
+                                     .toStdString());
+    }
+    if (!QFile::copy(src, dst)) {
+        throw std::runtime_error(QStringLiteral("cannot copy %1 to %2")
+                                     .arg(src, dst)
+                                     .toStdString());
+    }
+}
+
+void removeTargetDetailFiles(const QString& outputDir)
+{
+    QDir out(outputDir);
+    const QFileInfoList detailFiles =
+        out.entryInfoList(QStringList{QStringLiteral("Detail.xml"), QStringLiteral("Detail*.stl")},
+                          QDir::Files);
+    for (const QFileInfo& info : detailFiles) {
+        QFile::remove(info.absoluteFilePath());
+    }
+}
+
+void replacePackage(const QString& outputDir,
+                    const QString& candidateDir,
+                    const DetailWriteOptions& options)
+{
+    QDir().mkpath(outputDir);
+    QDir out(outputDir);
+    const QString backupDir = outputDir + QStringLiteral(".detail_backup_tmp");
+    removeDirIfExists(backupDir);
+    QDir().mkpath(backupDir);
+
+    const QFileInfoList existing =
+        out.entryInfoList(QStringList{QStringLiteral("Detail.xml"), QStringLiteral("Detail*.stl")},
+                          QDir::Files);
+    QStringList backedUpNames;
+    try {
+        for (const QFileInfo& info : existing) {
+            const QString backupPath = QDir(backupDir).filePath(info.fileName());
+            copyFileReplacing(info.absoluteFilePath(), backupPath);
+            backedUpNames.append(info.fileName());
+        }
+    } catch (...) {
+        removeDirIfExists(backupDir);
+        throw;
+    }
+
+    try {
+        int copiedCount = 0;
+        for (const QString& fileName : {QStringLiteral("Detail.xml"), QStringLiteral("Detail01.stl")}) {
+            const QString src = QDir(candidateDir).filePath(fileName);
+            const QString dst = QDir(outputDir).filePath(fileName);
+            copyFileReplacing(src, dst);
+            ++copiedCount;
+            if (options.testInjectInstallFailureAfterFirstCopy && copiedCount == 1) {
+                throw std::runtime_error("test injected Detail package install failure");
+            }
+        }
+
+        for (const QFileInfo& info : existing) {
+            if (info.fileName() == QStringLiteral("Detail.xml") ||
+                info.fileName() == QStringLiteral("Detail01.stl")) {
+                continue;
+            }
+            if (!QFile::remove(info.absoluteFilePath())) {
+                throw std::runtime_error(QStringLiteral("cannot remove stale Detail file: %1")
+                                             .arg(info.absoluteFilePath())
+                                             .toStdString());
+            }
+        }
+        removeDirIfExists(backupDir);
+    } catch (...) {
+        removeTargetDetailFiles(outputDir);
+        for (const QString& fileName : backedUpNames) {
+            const QString backupPath = QDir(backupDir).filePath(fileName);
+            const QString dst = QDir(outputDir).filePath(fileName);
+            if (QFileInfo::exists(backupPath)) {
+                copyFileReplacing(backupPath, dst);
+            }
+        }
+        removeDirIfExists(backupDir);
+        throw;
+    }
+}
+
+} // namespace
+
+DetailWriteResult DetailWriter::writePackage(
+    const QString& outputDir,
+    const SteelData& steelData,
+    const DetailWriteOptions& options) const
+{
+    const QString root = QDir::cleanPath(QFileInfo(outputDir).absoluteFilePath());
+    const QString candidate = root + QStringLiteral(".candidate_tmp");
+    const QString oldHash = directoryHash(root);
+
+    DetailWriteResult inputValidation = validateInput(steelData);
+    if (!inputValidation.errorCodes.isEmpty()) {
+        inputValidation.ok = false;
+        inputValidation.decision = QStringLiteral("fail");
+        inputValidation.l0 = QStringLiteral("not_run");
+        inputValidation.l1 = QStringLiteral("not_run");
+        inputValidation.oldPackagePreserved = directoryHash(root) == oldHash;
+        inputValidation.dirtyAfter = true;
+        return inputValidation;
+    }
+
+    DetailWriteResult result;
+    result.candidatePackagePath = slashPath(candidate);
+    result.warnings.append(QString::fromLatin1(kMaterialDeferred));
+
+    try {
+        removeDirIfExists(candidate);
+        QDir().mkpath(candidate);
+        writeStyleXml(QDir(candidate).filePath(QStringLiteral("Detail.xml")), steelData);
+        writeDrawingXml(QDir(candidate).filePath(QStringLiteral("Detail01.stl")), steelData, options);
+
+        validateL0(candidate, result);
+        result.l0 = result.errorCodes.isEmpty() ? QStringLiteral("passed") : QStringLiteral("failed");
+        if (result.errorCodes.isEmpty()) {
+            validateL1(candidate, result);
+        }
+        result.l1 = result.errorCodes.isEmpty() ? QStringLiteral("passed") : QStringLiteral("failed");
+        if (!result.errorCodes.isEmpty()) {
+            result.ok = false;
+            result.decision = QStringLiteral("fail");
+            result.oldPackagePreserved = directoryHash(root) == oldHash;
+            removeDirIfExists(candidate);
+            return result;
+        }
+
+        replacePackage(root, candidate, options);
+        removeDirIfExists(candidate);
+        result.ok = true;
+        result.decision = QStringLiteral("l0-l1-pass");
+        result.l0 = QStringLiteral("passed");
+        result.l1 = QStringLiteral("passed");
+        result.l2 = QStringLiteral("not_run");
+        result.files = {QStringLiteral("Detail.xml"), QStringLiteral("Detail01.stl")};
+        result.dirtyAfter = false;
+        result.oldPackagePreserved = true;
+        return result;
+    } catch (const std::exception& exc) {
+        const QString code = result.l0 == QStringLiteral("passed") &&
+                result.l1 == QStringLiteral("passed")
+            ? QString::fromLatin1(kReplaceFailed)
+            : QString::fromLatin1(kXmlWriteFailed);
+        appendDiagnostic(result,
+                         code,
+                         QStringLiteral("Detail package"),
+                         QString::fromStdString(exc.what()));
+        removeDirIfExists(candidate);
+        result.ok = false;
+        result.decision = QStringLiteral("fail");
+        result.l0 = result.l0 == QStringLiteral("not_run") ? QStringLiteral("failed") : result.l0;
+        result.l1 = result.l1 == QStringLiteral("not_run") ? QStringLiteral("failed") : result.l1;
+        result.oldPackagePreserved = directoryHash(root) == oldHash;
+        result.dirtyAfter = true;
+        return result;
+    }
+}
+
+} // namespace tsrebar

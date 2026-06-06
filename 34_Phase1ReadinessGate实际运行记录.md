@@ -203,6 +203,14 @@ E-DEV-046
      docs/phase1/app_build_reports/m1_app_022_run_001.md
      docs/phase1/app_build_reports/m1_app_022_run_001.json
      docs/phase1/validator_reports/runtime_m1_app_022/build_validation_001.json
+
+E-DEV-047
+  -> M1-App-023 DetailWriter P1 报告
+  -> 来源：
+     app/
+     61_M1-App-023DetailWriterP1实现记录.md
+     docs/phase1/app_build_reports/m1_app_023_run_001.md
+     docs/phase1/app_build_reports/m1_app_023_run_001.json
 ```
 
 注意：
@@ -261,6 +269,7 @@ Blocker GAPs: none
 - `旧线筋 / 弧筋创建算法 P0` 已落地并通过 M1-App-020：默认 CTest 10/10 pass，可通过 `RebarGroupCreator` 把 legacy edge ref / old parameters 输出到 `SteelData -> SteelBarGroup -> SteelBar -> SteelBarSegment`，并显式调用 `SegmentCurveNormalizer P0` 接口；该阶段不是 AIS 显示、Detail writer、完整旧 UI/golden 或裁剪编辑算法。
 - `AIS 钢筋显示映射 P0` 已落地并通过 M1-App-021：默认 CTest 11/11 pass，可通过 `RebarAisPresentationAdapter` 把 domain `SteelBarGroup / SteelBarSegment` 映射成 presentation/occ 层 `AIS_Shape`；该阶段不是旧 HOOPS 显示样式 1:1、UI handler、Detail writer 或新设计文件 runtime。
 - `新设计文件格式 runtime P1` 已落地并通过 M1-App-022：默认 CTest 12/12 pass，可通过 `TsRebarProjectRuntime` 保存 / 读取 STEP 来源、selection-v1 refs、rebar groups、legacyObject.raw、geometryRef、binding、evidence 和 unresolved 字段；runtime 导出包外部 validator 为 warning-only / 0 error；该阶段不是完整 UI Save/Open、旧 SFL 兼容或 Detail writer。
+- `DetailWriter P1` 已落地并通过 M1-App-023：默认 CTest 13/13 pass，可通过 `DetailWriter` 把 domain `SteelData / SteelBarGroup / SteelBar / SteelBarSegment` 输出为 `Detail.xml + Detail01.stl` 首批字段；安装失败会恢复旧 Detail 包；MaterialTable 质量公式 deferred；该阶段不是 AutoCAD L2 动态导入、完整工程图或完整下料统计公式。
 - Detail writer L0/L1 离线 gate 已落地并通过，不再作为当前 M1 阻塞。
 - `GAP-DEV-001/GAP-DEV-007` 不再阻塞进入 Qt6 + OCCT 开发入口，但旧图石业务复刻缺口仍按功能专项继续闭合。
 
@@ -326,4 +335,4 @@ none
 2. 保留 Qt6 runtime gate，防止 Save/Open 和 binding repair 报告退回 simulation。
 3. 保留 Detail writer L0/L1 报告；AutoCAD L2 导入另走工程图专项。
 4. 新增真实工程 STEP 样本时继续跑 STEP selection gate。
-5. 后续开发仍按旧图石运行、IDA、SFL、Detail 证据闭合业务缺口；下一步建议按 `TODO-024` 做 DetailWriter P1，并继续让 Detail 输出服务旧 AutoCAD 插件兼容包，不反向改写业务主数据。
+5. 后续开发仍按旧图石运行、IDA、SFL、Detail 证据闭合业务缺口；下一步建议按 `TODO-025` 做旧图石输出钢筋 STP 样本入库验证，把 `123.stp` 的 hash、导入统计和 witness 报告固定下来。

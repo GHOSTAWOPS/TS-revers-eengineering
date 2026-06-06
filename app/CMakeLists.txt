@@ -73,6 +73,8 @@ add_library(tsrebar_core STATIC
     src/command/CommandId.h
     src/command/LegacyUiCommandMap.cpp
     src/command/LegacyUiCommandMap.h
+    src/drawing/detail/DetailWriter.cpp
+    src/drawing/detail/DetailWriter.h
     src/geometry/legacy/LegacyGeometry.h
     src/geometry/legacy/LegacySelectionRef.cpp
     src/domain/rebar/RebarGroupCreator.cpp
@@ -222,6 +224,11 @@ add_executable(project_runtime_tests
 
 target_link_libraries(project_runtime_tests PRIVATE tsrebar_core)
 
+add_executable(detail_writer_tests
+    tests/unit/detail_writer_tests.cpp)
+
+target_link_libraries(detail_writer_tests PRIVATE tsrebar_core)
+
 add_executable(step_import_probe
     src/step/StepImportProbe.cpp)
 
@@ -253,6 +260,7 @@ add_test(NAME rebar_domain_model_tests COMMAND rebar_domain_model_tests)
 add_test(NAME rebar_group_creator_tests COMMAND rebar_group_creator_tests)
 add_test(NAME rebar_ais_presentation_tests COMMAND rebar_ais_presentation_tests)
 add_test(NAME project_runtime_tests COMMAND project_runtime_tests)
+add_test(NAME detail_writer_tests COMMAND detail_writer_tests)
 add_test(NAME app_smoke COMMAND tsrebar_app --smoke)
 set_tests_properties(app_smoke PROPERTIES
     ENVIRONMENT "QT_QPA_PLATFORM=minimal;QT_QPA_PLATFORM_PLUGIN_PATH=${TSREBAR_QT_PLATFORM_PLUGIN_PATH}")
