@@ -234,6 +234,23 @@ struct LegacyFacePlaneSectionPreview
     std::string failureReason;
 };
 
+struct LegacyCircularSweepPreview
+{
+    std::string sourceEdgeStableId;
+    double radius = 0.0;
+    int requestedSampleCount = 0;
+    int effectiveSampleCount = 0;
+    LegacyCurveKind sourceCurveKind = LegacyCurveKind::Unknown;
+    double pathLength = 0.0;
+    LegacyBoundingBox bounds;
+    std::vector<LegacyPoint3d> samplePoints;
+    int shapeFaceCount = 0;
+    int shapeEdgeCount = 0;
+    int shapeVertexCount = 0;
+    bool sweepable = false;
+    std::string failureReason;
+};
+
 enum class LegacySurfaceKind {
     Unknown,
     Plane,

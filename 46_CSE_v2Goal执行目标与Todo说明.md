@@ -167,8 +167,10 @@ C:\Users\ghost\Desktop\reverse_engineering\【03】图石软件
 26. `【图石钢筋1比1复刻】\50_M1-App-013LegacyGeometryAdapterP3E实现记录.md`
 27. `【图石钢筋1比1复刻】\51_M1-App-014LegacyWireChain实现记录.md`
 28. `【图石钢筋1比1复刻】\52_M1-App-015LegacyGeometryAdapterOffsetSpike实现记录.md`
-29. `【图石钢筋1比1复刻】\99_缺口和待确认项.md`
-30. `【图石钢筋1比1复刻】\todo.csv`
+29. `【图石钢筋1比1复刻】\53_M1-App-016LegacyGeometryAdapterSectionSpike实现记录.md`
+30. `【图石钢筋1比1复刻】\54_M1-App-017LegacyGeometryAdapterSweepBoundary实现记录.md`
+31. `【图石钢筋1比1复刻】\99_缺口和待确认项.md`
+32. `【图石钢筋1比1复刻】\todo.csv`
 
 当前已完成状态：
 
@@ -222,6 +224,9 @@ M1-App-015 = done
 
 M1-App-016 = done
   -> facePlaneSectionPreview。
+
+M1-App-017 = done
+  -> edgeCircularSweepPreview。
 ```
 
 当前最新验证基线：
@@ -231,16 +236,16 @@ app 默认 CTest = 8/8 pass
 readiness gate = M1-Formal-Ready, 78/78 pass
 domain/rebar OCCT 边界 = pass
 
-latest commit = 本文件所在 TODO-016 节点提交
-latest tag = m1-app-016/section-intersection-spike
+latest commit = 本文件所在 TODO-017 节点提交
+latest tag = m1-app-017/sweep-pipe-preview
 ```
 
 当前下一步：
 
 ```text
-TODO-017 / M1-App-017
-  -> LegacyGeometryAdapter sweep / 扫掠能力边界
-  -> 验证 OCCT sweep / pipe 是否可作为钢筋实体显示和输出的几何基础
+TODO-018 / M1-App-018
+  -> 钢筋领域模型冻结 P1
+  -> 把 SteelBar / SteelBarSegment / SteelBarGroup 字段按旧证据固化成可编码模型
 ```
 
 长期执行循环：
@@ -484,29 +489,30 @@ commit / tag / push 状态
 
 ### 短期 Goal（推荐本轮复制）
 
-目标：只完成 `TODO-017 / M1-App-017` 这个短期阶段，不自动进入后续长期开发。
+目标：只完成 `TODO-018 / M1-App-018` 这个短期阶段，不自动进入后续长期开发。
 
-本轮要在正式 `app` 中完成 `LegacyGeometryAdapter sweep / 扫掠能力边界`：
+本轮要在正式 `app` 中完成 `钢筋领域模型冻结 P1`：
 
 ```text
-sweep / pipe 能力边界
-edge path + circular profile sweep preview summary
-failure diagnostic / capability boundary
+SteelBar
+SteelBarSegment
+SteelBarGroup
+SteelData
 ```
 
 目标语义：
 
 ```text
-对齐旧 VisualTS / ACIS 链路：
+对齐旧 VisualTS / Detail / SFL 证据：
 
-旧钢筋实体显示 / 输出的前置几何能力
-  -> 输入 edge path / 半径 / 采样数等 legacy 几何参数
-  -> 由 OCCT 在 adapter 内部尝试 sweep / pipe
-  -> 返回 shape summary / samplePoints / bbox / length / diagnostic
-  -> 先验证能力边界，不创建业务钢筋对象
+旧 steelbar / steelbargroup / seg_steelbargroup / steelData 字段线索
+  -> Detail StbGroup / StbGeo / StbTable 字段映射
+  -> 新 domain/rebar DTO 字段和 ID 关系
+  -> 单测验证字段默认值、引用关系和无 OCCT 泄漏
+  -> 只冻结可编码领域模型，不实现钢筋创建算法
 ```
 
-本轮只做几何兼容层能力，不做钢筋创建业务，不做工程图业务。
+本轮只做领域模型字段和测试，不做线筋 / 弧筋创建业务，不做 UI，不做 Detail writer。
 
 当前已完成前置：
 
@@ -532,6 +538,9 @@ TODO-015 / M1-App-015 = done
 
 TODO-016 / M1-App-016 = done
   -> facePlaneSectionPreview
+
+TODO-017 / M1-App-017 = done
+  -> edgeCircularSweepPreview
 ```
 
 工作目录：
@@ -569,15 +578,20 @@ C:\Users\ghost\Desktop\reverse_engineering\【03】图石软件
 19. `【图石钢筋1比1复刻】\51_M1-App-014LegacyWireChain实现记录.md`
 20. `【图石钢筋1比1复刻】\52_M1-App-015LegacyGeometryAdapterOffsetSpike实现记录.md`
 21. `【图石钢筋1比1复刻】\53_M1-App-016LegacyGeometryAdapterSectionSpike实现记录.md`
-22. `【图石钢筋1比1复刻】\99_缺口和待确认项.md`
-23. `【图石钢筋1比1复刻】\todo.csv`
+22. `【图石钢筋1比1复刻】\54_M1-App-017LegacyGeometryAdapterSweepBoundary实现记录.md`
+23. `【图石钢筋1比1复刻】\09_钢筋领域模型草案.md`
+24. `【图石钢筋1比1复刻】\13_Detail字段映射矩阵.md`
+25. `【图石钢筋1比1复刻】\99_缺口和待确认项.md`
+26. `【图石钢筋1比1复刻】\todo.csv`
 
 本轮允许修改：
 
-- `app/src/geometry/legacy/LegacyGeometry.h`
-- `app/src/geometry/occ/legacy_adapter/OccLegacyGeometryAdapter.h`
-- `app/src/geometry/occ/legacy_adapter/OccLegacyGeometryAdapter.cpp`
-- `app/tests/integration/legacy_geometry_adapter_tests.cpp`
+- `app/src/domain/rebar/SteelData.h`
+- `app/src/domain/rebar/SteelBar.h`
+- `app/src/domain/rebar/SteelBarSegment.h`
+- `app/src/domain/rebar/SteelBarGroup.h`
+- `app/tests/unit/`
+- 必要时修改 `app/CMakeLists.txt` 以接入领域模型单测
 - `【图石钢筋1比1复刻】` 下对应实现记录、build report、追溯矩阵、缺口文档和 `todo.csv`
 
 本轮禁止修改或迁移：
@@ -589,37 +603,39 @@ C:\Users\ghost\Desktop\reverse_engineering\【03】图石软件
 - 父目录 `PolylineRebarGenerator`
 - 任何 OCCT 直接造钢筋业务逻辑
 - `domain/rebar` 中引入 `TopoDS_`、`AIS_`、`BRep*`、`TopAbs_`
+- 线筋 / 弧筋 / 面筋创建算法
+- Detail writer 输出逻辑
+- UI 菜单和命令 handler
 
 本轮验收标准：
 
-1. 新增 sweep / pipe 相关 legacy DTO，命名可在实现时微调，但必须表达：
-   - sweep 输入来源。
-   - path edge / profile / radius 的 legacy 参数或引用。
-   - 是否成功。
-   - swept shape summary / samplePoints。
-   - length / bbox / hit count。
-   - 失败原因。
-2. 新增 adapter API，命名可在实现时微调，例如：
-   - `sweepEdgePreview(...)`
-   - `pipeAlongEdgePreview(...)`
-   - `edgeCircularSweepPreview(...)`
-3. API 输入必须是 legacy ref / legacy geometry DTO 或等价 legacy 几何对象，不能引入钢筋业务对象。
-4. 真实 `123.stp` 上至少覆盖：
-   - 直线 edge + 合法半径 sweep 返回稳定 summary，包含 bbox / samplePoints / length 或等价摘要。
-   - 非直线 edge 要么稳定返回 summary，要么稳定返回 failure DTO，不能崩。
-   - 半径为 0、非有限半径、sampleCount 非法返回稳定 diagnostic。
-   - wrong type / missing ref 返回稳定 diagnostic。
+1. `domain/rebar` 中的 SteelData / SteelBar / SteelBarSegment / SteelBarGroup 字段与 `09/13/16` 的证据口径对齐。
+2. 字段需要区分：
+   - 已有高置信字段。
+   - 低置信但需要保留的 legacy raw / unresolved 字段。
+   - Detail writer 需要的映射字段。
+3. 领域模型只依赖 STL / Qt 基础类型或本项目纯领域类型，不依赖 OCCT / AIS。
+4. 新增或补强单测，覆盖：
+   - 默认值。
+   - group -> bar -> segment 引用关系。
+   - Detail 关键字段映射所需 ID / 数量 / 直径 / 间距 / 长度 / 类型字段。
+   - 低置信字段必须能标注 unresolved / evidence。
 5. 默认 CTest 通过。
 6. readiness gate 严格模式通过，或记录明确失败原因。
-7. 新增 `54_M1-App-017LegacyGeometryAdapterSweepBoundary实现记录.md`。
-8. 新增 `docs/phase1/app_build_reports/m1_app_017_run_001.md` 和必要 JSON。
-9. 更新：
+7. domain/rebar OCCT 泄漏检查通过。
+8. 涉及代码、测试、构建脚本时，commit 前必须执行 xhigh 只读 review，并关闭已完成子代理。
+9. 新增 `55_M1-App-018RebarDomainModelFreezeP1实现记录.md`。
+10. 新增 `docs/phase1/app_build_reports/m1_app_018_run_001.md` 和必要 JSON。
+11. 更新：
    - `00_总览.md`
+   - `09_钢筋领域模型草案.md`
    - `11_需求证据追溯矩阵.md`
+   - `13_Detail字段映射矩阵.md`
    - `34_Phase1ReadinessGate实际运行记录.md`
    - `99_缺口和待确认项.md`
+   - `46_CSE_v2Goal执行目标与Todo说明.md`
    - `todo.csv`
-10. `todo.csv` 中 `TODO-017` 改为 `done`；只把下一个明确可执行任务改为 `next`，但不继续实现。
+12. `todo.csv` 中 `TODO-018` 改为 `done`；只把下一个明确可执行任务改为 `next`，但不继续实现。
 
 本轮完成后必须停止，输出阶段复盘：
 
@@ -627,10 +643,10 @@ C:\Users\ghost\Desktop\reverse_engineering\【03】图石软件
 完成了什么
 验证了什么
 还缺什么
-下一阶段建议做 TODO-018 / TODO-020 / TODO-025 中哪一个
+下一阶段建议做 TODO-019 / TODO-020 / TODO-021 中哪一个
 ```
 
-不要在同一个 goal 内继续做 `TODO-018`、钢筋领域模型、Detail writer 或 UI 复刻。
+不要在同一个 goal 内继续做 `TODO-019`、旧命令契约、钢筋创建算法、Detail writer 或 UI 复刻。
 
 ### 长期方向（只作护栏，不作为本轮 Goal）
 
@@ -792,6 +808,9 @@ Detail / 新设计文件格式输出层
 - `49_M1-App-012LegacyGeometryAdapterP3D实现记录.md`
 - `50_M1-App-013LegacyGeometryAdapterP3E实现记录.md`
 - `51_M1-App-014LegacyWireChain实现记录.md`
+- `52_M1-App-015LegacyGeometryAdapterOffsetSpike实现记录.md`
+- `53_M1-App-016LegacyGeometryAdapterSectionSpike实现记录.md`
+- `54_M1-App-017LegacyGeometryAdapterSweepBoundary实现记录.md`
 
 ### 当前已知状态
 
@@ -813,6 +832,7 @@ Detail / 新设计文件格式输出层
 - `M1-App-014`：`LegacyWireChain`，edge refs to wire chain summary。
 - `M1-App-015`：`LegacyGeometryAdapter offset preview`，edge ref to offset curve preview summary。
 - `M1-App-016`：`LegacyGeometryAdapter section preview`，face-plane section preview summary。
+- `M1-App-017`：`LegacyGeometryAdapter sweep preview`，edge circular sweep preview summary。
 
 当前最新验证状态：
 
@@ -825,19 +845,18 @@ domain/rebar OCCT 边界 = pass
 当前下一步：
 
 ```text
-TODO-017 / M1-App-017
-  -> LegacyGeometryAdapter sweep / 扫掠能力边界
-  -> edge path + circular profile sweep preview summary
-  -> failure diagnostic / capability boundary
+TODO-018 / M1-App-018
+  -> 钢筋领域模型冻结 P1
+  -> SteelBar / SteelBarSegment / SteelBarGroup / SteelData 字段可编码
 ```
 
 原因：
 
 ```text
-钢筋实体显示、STEP 输出和后续工程图几何都绕不开 sweep / pipe。
-section preview 已补完后，下一步先验证 OCCT sweep 能否被 adapter
-稳定包成旧 VisualTS 可用的几何能力；如果只能做 preview，必须明确
-写入 gap，避免业务层直接依赖 OCCT 细节。
+LegacyGeometryAdapter 的首批几何能力边界已覆盖到 sweep / pipe preview。
+继续堆 adapter spike 的收益下降。下一步应把旧 steelbar / steelbargroup /
+seg_steelbargroup / steelData 证据沉到 domain/rebar 领域模型里，
+为后续线筋 / 弧筋创建算法提供稳定对象边界。
 ```
 
 ### 执行规则
@@ -902,18 +921,18 @@ section preview 已补完后，下一步先验证 OCCT sweep 能否被 adapter
 
 ## CSE v2 Control Contract
 
-- **Primary Setpoint**：本轮只完成 `TODO-017 / M1-App-017`，让 `LegacyGeometryAdapter` 具备 sweep / pipe preview summary 的能力边界。
-- **Acceptance**：sweep / pipe DTO/API、真实 `123.stp` 集成测试、默认 CTest、readiness gate、xhigh 只读 review、实现记录、build report、`todo.csv` 和追溯文档全部闭合。
+- **Primary Setpoint**：本轮只完成 `TODO-018 / M1-App-018`，让 `domain/rebar` 的 SteelData / SteelBar / SteelBarSegment / SteelBarGroup 字段按旧证据冻结到 P1。
+- **Acceptance**：领域模型 DTO、单测、默认 CTest、readiness gate、domain/rebar OCCT 泄漏检查、xhigh 只读 review、实现记录、build report、`todo.csv` 和追溯文档全部闭合。
 - **Guardrail Metrics**：不能让 OCCT 细节泄漏进 `domain/rebar`；不能把父目录钢筋生成器当业务真相；不能用“OCCT 能做什么”替代“旧图石怎么做”。
-- **Sampling Plan**：先跑/补 integration test，再改 adapter；实现后运行默认 CTest；运行 readiness gate；代码节点 commit 前执行 xhigh 只读 review；完成后更新 evidence / gap / todo。
+- **Sampling Plan**：先读 `09/13/16` 字段证据，再补 domain/rebar 单测；实现后运行默认 CTest；运行 readiness gate；运行 domain/rebar OCCT 泄漏检查；代码节点 commit 前执行 xhigh 只读 review；完成后更新 evidence / gap / todo。
 - **Known Delays**：IDA MCP 当前可能没有绑定数据库；旧图石运行确认依赖用户操作；真实 golden 对照要等旧软件可稳定导出。
 - **Recovery Target**：发现路线偏移时，停止继续开发钢筋业务，先回到文档和 adapter 边界修正。
 - **Rollback Trigger**：`domain/rebar` 出现 OCCT include、父目录 rebar 业务被迁入、测试失败但继续堆功能、旧逻辑无证据却写成确定结论、代码节点跳过 xhigh 只读 review。
 - **Constraints**：不使用 ACIS / HOOPS / Codejock 等商业库；不读取完整私有 SFL 作为新主格式；新工程格式结合 SFL 业务语义和 OCCT 几何引用设计。
-- **Boundary**：本轮只允许修改 geometry legacy DTO、OCCT adapter、adapter 集成测试、M1-App-017 文档和任务看板；父目录只读参考；xhigh agent 只读 review，不负责修改。
+- **Boundary**：本轮只允许修改 domain/rebar DTO、领域模型单测、必要 CMake 测试接入、M1-App-018 文档和任务看板；父目录只读参考；xhigh agent 只读 review，不负责修改。
 - **Coupling Notes**：`LegacyGeometryAdapter` 是几何能力边界；`domain/rebar` 是业务对象边界；`DetailWriter` 和新设计文件格式是输出 / 持久化边界。
-- **Approximation Validity**：当前 adapter 的 split / interval / spline / wire chain / offset preview / section preview / sweep preview 都是 legacy summary 或能力 spike，不等价于真实 topology mutation；必须在文档中标明能力等级。
-- **Actuator Budget**：本轮只推进 `TODO-017`。完成后停止复盘，不自动进入 `TODO-018`。
+- **Approximation Validity**：本轮领域模型冻结 P1 只确认可编码字段、ID 关系和低置信字段承载方式；不代表旧图石所有业务字段语义完全闭合，也不代表线筋 / 弧筋创建算法已实现。
+- **Actuator Budget**：本轮只推进 `TODO-018`。完成后停止复盘，不自动进入 `TODO-019`。
 - **Risks**：旧图石业务逻辑证据不足；OCCT 几何结果和 ACIS 存在细节差异；没有 golden 时只能先做结构正确和证据闭环。
 
 ## Todo CSV 使用方式
@@ -940,11 +959,11 @@ section preview 已补完后，下一步先验证 OCCT sweep 能否被 adapter
 下一步优先执行：
 
 ```text
-TODO-017 / M1-App-017
-  -> LegacyGeometryAdapter sweep / 扫掠能力边界
-  -> 验证 OCCT sweep / pipe 是否可作为钢筋实体显示和输出的几何基础
+TODO-018 / M1-App-018
+  -> 钢筋领域模型冻结 P1
+  -> 把 SteelBar / SteelBarSegment / SteelBarGroup / SteelData 字段按旧证据固化
 ```
 
-原因很简单：钢筋实体显示、STEP 输出和后续 Detail 几何都绕不开 sweep /
-pipe。这个能力不先封进 LegacyGeometryAdapter，后面业务层就会被迫
-直接写 OCCT 扫掠细节，路线会再次偏。
+原因很简单：几何 adapter 的首批能力边界已经够支撑下一步建业务对象。
+如果不先冻结领域模型，后面线筋 / 弧筋创建、Detail writer 和新工程格式
+都会各自发明字段，路线会变成多套事实源。

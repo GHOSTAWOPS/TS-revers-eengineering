@@ -327,6 +327,31 @@ int main(int argc, char* argv[])
     expect(distance(offsetPreview.value.samplePoints.front(), lineEdgeGeometry.startPoint) > 1.0,
            "edge offset preview first sample must move away from source edge");
 
+    const auto sweepPreview = adapter.edgeCircularSweepPreview(lineEdgeRef, 25.0, 5);
+    expect(sweepPreview.ok, sweepPreview.diagnostic.toUtf8().constData());
+    expect(sweepPreview.value.sourceEdgeStableId == lineEdgeRef.stableId,
+           "edge circular sweep preview must preserve source edge stable id");
+    expect(sweepPreview.value.radius == 25.0,
+           "edge circular sweep preview must preserve radius");
+    expect(sweepPreview.value.requestedSampleCount == 5,
+           "edge circular sweep preview must preserve requested sample count");
+    expect(sweepPreview.value.effectiveSampleCount == 5,
+           "edge circular sweep preview effective sample count must match request");
+    expect(sweepPreview.value.sourceCurveKind == tsrebar::LegacyCurveKind::Line,
+           "edge circular sweep preview must expose source curve kind");
+    expect(sweepPreview.value.sweepable,
+           "edge circular sweep preview must mark successful pipe as sweepable");
+    expect(sweepPreview.value.pathLength > 0.0,
+           "edge circular sweep preview must expose source path length");
+    expect(sweepPreview.value.samplePoints.size() == 5,
+           "edge circular sweep preview sample count must match request");
+    expect(sweepPreview.value.shapeFaceCount > 0,
+           "edge circular sweep preview must expose generated face count");
+    expect(sweepPreview.value.shapeEdgeCount > 0,
+           "edge circular sweep preview must expose generated edge count");
+    expectValidBox(sweepPreview.value.bounds,
+                   "edge circular sweep preview bbox must be available");
+
     tsrebar::LegacySelectionRef nonLineEdgeRef = edgeRefs.front();
     bool foundNonLineEdge = false;
     for (const auto& candidateRef : edgeRefs) {
@@ -355,6 +380,50 @@ int main(int argc, char* argv[])
         expect(!nonLineOffsetPreview.value.offsettable,
                "failed non-line offset preview must be marked not offsettable");
     }
+
+    const auto nonLineSweepPreview =
+        adapter.edgeCircularSweepPreview(nonLineEdgeRef, 25.0, 5);
+    expect(nonLineSweepPreview.ok || !nonLineSweepPreview.value.failureReason.empty(),
+           "non-line circular sweep preview must either succeed or return stable failure DTO");
+    if (nonLineSweepPreview.ok) {
+        expect(nonLineSweepPreview.value.sweepable,
+               "successful non-line circular sweep preview must be marked sweepable");
+        expect(nonLineSweepPreview.value.samplePoints.size() == 5,
+               "successful non-line circular sweep preview sample count must match request");
+        expectValidBox(nonLineSweepPreview.value.bounds,
+                       "successful non-line circular sweep preview bbox must be available");
+    } else {
+        expect(nonLineSweepPreview.diagnostic.contains(QStringLiteral("sweep")) ||
+                   nonLineSweepPreview.diagnostic.contains(QStringLiteral("pipe")),
+               "non-line circular sweep preview failure diagnostic must be stable");
+        expect(!nonLineSweepPreview.value.sweepable,
+               "failed non-line circular sweep preview must be marked not sweepable");
+    }
+
+    const auto zeroRadiusSweepPreview =
+        adapter.edgeCircularSweepPreview(edgeRefs.front(), 0.0, 5);
+    expect(!zeroRadiusSweepPreview.ok,
+           "edge circular sweep preview must reject zero radius");
+    expect(zeroRadiusSweepPreview.diagnostic.contains(QStringLiteral("radius")),
+           "zero radius sweep diagnostic must be stable");
+    expect(!zeroRadiusSweepPreview.value.failureReason.empty(),
+           "zero radius sweep failure must be carried in DTO");
+
+    const auto nonFiniteRadiusSweepPreview =
+        adapter.edgeCircularSweepPreview(edgeRefs.front(),
+                                         std::numeric_limits<double>::infinity(),
+                                         5);
+    expect(!nonFiniteRadiusSweepPreview.ok,
+           "edge circular sweep preview must reject non-finite radius");
+    expect(nonFiniteRadiusSweepPreview.diagnostic.contains(QStringLiteral("finite")),
+           "non-finite sweep radius diagnostic must be stable");
+
+    const auto invalidSampleSweepPreview =
+        adapter.edgeCircularSweepPreview(edgeRefs.front(), 25.0, 0);
+    expect(!invalidSampleSweepPreview.ok,
+           "edge circular sweep preview must reject invalid sample count");
+    expect(invalidSampleSweepPreview.diagnostic.contains(QStringLiteral("sample")),
+           "invalid sweep sample count diagnostic must be stable");
 
     const auto zeroOffsetPreview = adapter.offsetEdgePreview(edgeRefs.front(), 0.0, 5);
     expect(!zeroOffsetPreview.ok, "edge offset preview must reject zero distance");
@@ -692,6 +761,12 @@ int main(int argc, char* argv[])
     expect(wrongTypeOffsetPreview.diagnostic.contains(QStringLiteral("expected an edge ref")),
            "edge offset preview wrong type diagnostic must be stable");
 
+    const auto wrongTypeSweepPreview =
+        adapter.edgeCircularSweepPreview(faceRefs.front(), 25.0, 5);
+    expect(!wrongTypeSweepPreview.ok, "edge circular sweep preview must reject face refs");
+    expect(wrongTypeSweepPreview.diagnostic.contains(QStringLiteral("expected an edge ref")),
+           "edge circular sweep preview wrong type diagnostic must be stable");
+
     const auto wrongTypeSectionPreview =
         adapter.facePlaneSectionPreview(edgeRefs.front(), sectionPlane, 5);
     expect(!wrongTypeSectionPreview.ok, "face section preview must reject edge refs");
@@ -740,6 +815,13 @@ int main(int argc, char* argv[])
            "edge offset preview must reject missing part refs");
     expect(missingPartOffsetPreview.diagnostic.contains(QStringLiteral("not in current document")),
            "edge offset preview missing part diagnostic must be stable");
+
+    const auto missingPartSweepPreview =
+        adapter.edgeCircularSweepPreview(missingPart, 25.0, 5);
+    expect(!missingPartSweepPreview.ok,
+           "edge circular sweep preview must reject missing part refs");
+    expect(missingPartSweepPreview.diagnostic.contains(QStringLiteral("not in current document")),
+           "edge circular sweep preview missing part diagnostic must be stable");
 
     const tsrebar::LegacySelectionRef missingFacePart =
         tsrebar::makeLegacySelectionRef(QStringLiteral("missing-part"),

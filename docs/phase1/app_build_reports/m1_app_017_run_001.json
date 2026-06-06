@@ -1,0 +1,96 @@
+{
+  "id": "m1_app_017_run_001",
+  "date": "2026-06-06",
+  "decision": "m1-app-017-pass",
+  "appRoot": "C:/Users/ghost/Desktop/reverse_engineering/【03】图石软件/【图石钢筋1比1复刻】/app",
+  "scope": [
+    "LegacyGeometry DTO M1-App-017",
+    "OccLegacyGeometryAdapter circular sweep preview summary",
+    "edge ref plus circular radius to pipe preview",
+    "sweep failure diagnostic boundary"
+  ],
+  "sample": {
+    "path": "C:/Users/ghost/Desktop/reverse_engineering/【03】图石软件/123.stp",
+    "sizeBytes": 87746388,
+    "sha256": "6a3c4f2044c2cc1f1123f0f58c61b2c869fbad3110a3585fdab49e69daf52a2a",
+    "knownStats": {
+      "solids": 754,
+      "faces": 3016,
+      "uniqueEdges": 4524,
+      "uniqueVertices": 3016,
+      "rawEdges": 9048,
+      "rawVertices": 18096,
+      "lengthUnit": "METRE"
+    }
+  },
+  "red": {
+    "verified": true,
+    "failure": "error C2039: edgeCircularSweepPreview is not a member of OccLegacyGeometryAdapter"
+  },
+  "build": {
+    "success": true,
+    "target": "legacy_geometry_adapter_tests"
+  },
+  "tests": {
+    "success": true,
+    "passed": 8,
+    "failed": 0,
+    "totalSeconds": 130.88,
+    "cases": [
+      "command_registry_tests",
+      "legacy_selection_ref_tests",
+      "app_smoke",
+      "viewer_smoke_tests",
+      "domain_rebar_boundary",
+      "step_import_probe_123",
+      "occ_selection_index_123",
+      "legacy_geometry_adapter_123"
+    ]
+  },
+  "sweepPreview": {
+    "query": "edgeCircularSweepPreview",
+    "dto": "LegacyCircularSweepPreview",
+    "assertions": [
+      "line edge plus legal radius returns sweepable summary",
+      "summary preserves source edge stableId and radius",
+      "summary exposes source curve kind and path length",
+      "summary exposes samplePoints and bbox",
+      "summary exposes swept shape face-edge-vertex counts",
+      "non-line edge either succeeds or returns stable failure DTO",
+      "zero radius is rejected",
+      "non-finite radius is rejected",
+      "invalid sample count is rejected",
+      "wrong type and missing ref diagnostics are stable"
+    ],
+    "approximation": "summary only; no topology mutation, no steelbar business, and no full ACIS sweep equivalence"
+  },
+  "xhighReview": {
+    "required": true,
+    "critical": "none",
+    "important": "none",
+    "minor": "effectiveSampleCount == 1 branch is unreachable because effectiveSampleCount = max(2, sampleCount); tests do not separately assert shapeVertexCount",
+    "verdict": "allow_commit",
+    "agentClosed": true
+  },
+  "ida": {
+    "attempted": false,
+    "result": "not-required-for-this-adapter-capability-boundary",
+    "diagnostic": "TODO-017 did not add old business logic; old sweep/profile/export semantics remain pending for later IDA or runtime confirmation"
+  },
+  "guardrails": {
+    "domainRebarOcctBoundary": "pass",
+    "parentRebarGenerationChainMigrated": false,
+    "rebarBusinessImplemented": false,
+    "todo018Implemented": false,
+    "topologyMutationImplemented": false,
+    "acisSweepEquivalenceClaimed": false
+  },
+  "readinessGate": {
+    "decision": "M1-Formal-Ready",
+    "m1FormalAllowed": true,
+    "errorCount": 0,
+    "warningCount": 0,
+    "passCount": 78,
+    "checkCount": 78
+  }
+}

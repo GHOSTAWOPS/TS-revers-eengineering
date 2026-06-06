@@ -69,6 +69,11 @@ public:
         const LegacySelectionRef& faceRef,
         LegacyPlane plane,
         int sampleCount) const;
+    [[nodiscard]] LegacyGeometryQueryResult<LegacyCircularSweepPreview>
+    edgeCircularSweepPreview(
+        const LegacySelectionRef& edgeRef,
+        double radius,
+        int sampleCount) const;
 
 private:
     OccSelectionIndex m_selectionIndex;

@@ -4,14 +4,18 @@
 #include <BRepBndLib.hxx>
 #include <BRepAdaptor_Curve.hxx>
 #include <BRepAdaptor_Surface.hxx>
+#include <BRepBuilderAPI_MakeEdge.hxx>
+#include <BRepBuilderAPI_MakeWire.hxx>
 #include <BRepExtrema_DistShapeShape.hxx>
 #include <BRepGProp.hxx>
+#include <BRepOffsetAPI_MakePipe.hxx>
 #include <BRep_Tool.hxx>
 #include <BRepTools.hxx>
 #include <Bnd_Box.hxx>
 #include <Extrema_ExtPC.hxx>
 #include <Extrema_POnCurv.hxx>
 #include <GCPnts_AbscissaPoint.hxx>
+#include <GC_MakeCircle.hxx>
 #include <GProp_GProps.hxx>
 #include <GeomAPI_PointsToBSpline.hxx>
 #include <GeomAdaptor_Curve.hxx>
@@ -31,6 +35,7 @@
 #include <TopoDS_Edge.hxx>
 #include <TopoDS_Face.hxx>
 #include <TopoDS_Wire.hxx>
+#include <gp_Ax2.hxx>
 #include <gp_Dir.hxx>
 #include <gp_Pln.hxx>
 #include <gp_Pnt.hxx>
@@ -387,6 +392,52 @@ bool makeStableOffsetNormal(BRepAdaptor_Curve& curve,
         }
     }
     return false;
+}
+
+int countSubShapes(const TopoDS_Shape& shape, TopAbs_ShapeEnum shapeType)
+{
+    TopTools_IndexedMapOfShape subShapes;
+    TopExp::MapShapes(shape, shapeType, subShapes);
+    return subShapes.Extent();
+}
+
+bool makeSweepProfileFrame(BRepAdaptor_Curve& curve,
+                           double parameter,
+                           gp_Ax2* frame)
+{
+    if (frame == nullptr) {
+        return false;
+    }
+
+    gp_Pnt point;
+    gp_Vec firstDerivative;
+    curve.D1(parameter, point, firstDerivative);
+    if (firstDerivative.Magnitude() <= Precision::Confusion()) {
+        return false;
+    }
+
+    const gp_Dir pathDirection(firstDerivative);
+    gp_Dir candidateX(1.0, 0.0, 0.0);
+    if (std::abs(pathDirection.Dot(candidateX)) > 0.95) {
+        candidateX = gp_Dir(0.0, 1.0, 0.0);
+    }
+
+    gp_Vec yVector(pathDirection);
+    yVector.Cross(gp_Vec(candidateX));
+    if (yVector.Magnitude() <= Precision::Confusion()) {
+        return false;
+    }
+    const gp_Dir yDirection(yVector);
+
+    gp_Vec xVector(yDirection);
+    xVector.Cross(gp_Vec(pathDirection));
+    if (xVector.Magnitude() <= Precision::Confusion()) {
+        return false;
+    }
+    const gp_Dir xDirection(xVector);
+
+    *frame = gp_Ax2(point, pathDirection, xDirection);
+    return true;
 }
 
 tsrebar::LegacySectionEdge sampleSectionEdge(const TopoDS_Edge& edge,
@@ -1999,6 +2050,135 @@ OccLegacyGeometryAdapter::facePlaneSectionPreview(
     } catch (...) {
         return reject(
             QStringLiteral("OCCT face-plane section preview failed: unknown exception."));
+    }
+}
+
+LegacyGeometryQueryResult<LegacyCircularSweepPreview>
+OccLegacyGeometryAdapter::edgeCircularSweepPreview(
+    const LegacySelectionRef& edgeRef,
+    double radius,
+    int sampleCount) const
+{
+    LegacyGeometryQueryResult<LegacyCircularSweepPreview> result;
+    LegacyCircularSweepPreview preview;
+    preview.sourceEdgeStableId = edgeRef.stableId;
+    preview.radius = radius;
+    preview.requestedSampleCount = sampleCount;
+    preview.effectiveSampleCount = std::max(2, sampleCount);
+
+    auto reject = [&result, &preview](QString diagnostic) {
+        preview.failureReason = diagnostic.toStdString();
+        result.value = preview;
+        result.diagnostic = std::move(diagnostic);
+        return result;
+    };
+
+    if (edgeRef.shapeKind != LegacyShapeKind::Edge) {
+        return reject(QStringLiteral("LegacyGeometryAdapter expected an edge ref."));
+    }
+    if (!std::isfinite(radius)) {
+        return reject(QStringLiteral("edge circular sweep radius must be finite"));
+    }
+    if (radius <= Precision::Confusion()) {
+        return reject(QStringLiteral("edge circular sweep radius must be positive"));
+    }
+    if (sampleCount <= 0) {
+        return reject(QStringLiteral("edge circular sweep sample count must be positive"));
+    }
+
+    try {
+        const OccSelectionResolveResult resolved = m_selectionIndex.resolve(edgeRef);
+        if (!resolved.found) {
+            return reject(resolved.diagnostic);
+        }
+
+        const TopoDS_Edge edge = TopoDS::Edge(resolved.shape);
+        if (edge.IsNull()) {
+            return reject(QStringLiteral("SelectionRef did not resolve to an edge."));
+        }
+
+        BRepAdaptor_Curve sourceAdaptor(edge);
+        const double first = sourceAdaptor.FirstParameter();
+        const double last = sourceAdaptor.LastParameter();
+        if (!std::isfinite(first) || !std::isfinite(last) || first >= last) {
+            return reject(QStringLiteral("edge circular sweep source parameter range is not finite"));
+        }
+
+        preview.sourceCurveKind = toLegacyCurveKind(sourceAdaptor.GetType());
+        preview.pathLength = curveLength(sourceAdaptor, first, last);
+        if (!std::isfinite(preview.pathLength) ||
+            preview.pathLength <= Precision::Confusion()) {
+            return reject(QStringLiteral("edge circular sweep source length too short"));
+        }
+
+        preview.samplePoints.reserve(static_cast<std::size_t>(preview.effectiveSampleCount));
+        for (int index = 0; index < preview.effectiveSampleCount; ++index) {
+            const double ratio =
+                preview.effectiveSampleCount == 1
+                    ? 0.5
+                    : static_cast<double>(index) /
+                          static_cast<double>(preview.effectiveSampleCount - 1);
+            const double parameter = first + (last - first) * ratio;
+            preview.samplePoints.push_back(toLegacyPoint(sourceAdaptor.Value(parameter)));
+        }
+
+        gp_Ax2 profileFrame;
+        if (!makeSweepProfileFrame(sourceAdaptor, first, &profileFrame)) {
+            return reject(QStringLiteral("edge circular sweep profile frame could not be computed"));
+        }
+
+        GC_MakeCircle circleMaker(profileFrame, radius);
+        if (!circleMaker.IsDone() || circleMaker.Value().IsNull()) {
+            return reject(QStringLiteral("edge circular sweep profile circle could not be built"));
+        }
+
+        BRepBuilderAPI_MakeEdge profileEdgeMaker(circleMaker.Value());
+        if (!profileEdgeMaker.IsDone()) {
+            return reject(QStringLiteral("edge circular sweep profile edge could not be built"));
+        }
+
+        BRepBuilderAPI_MakeWire profileWireMaker(profileEdgeMaker.Edge());
+        if (!profileWireMaker.IsDone()) {
+            return reject(QStringLiteral("edge circular sweep profile wire could not be built"));
+        }
+
+        BRepBuilderAPI_MakeWire spineWireMaker(edge);
+        if (!spineWireMaker.IsDone()) {
+            return reject(QStringLiteral("edge circular sweep spine wire could not be built"));
+        }
+
+        BRepOffsetAPI_MakePipe pipeMaker(spineWireMaker.Wire(), profileWireMaker.Wire());
+        pipeMaker.Build();
+        if (!pipeMaker.IsDone()) {
+            return reject(QStringLiteral("OCCT edge circular sweep pipe did not finish"));
+        }
+
+        const TopoDS_Shape sweptShape = pipeMaker.Shape();
+        if (sweptShape.IsNull()) {
+            return reject(QStringLiteral("OCCT edge circular sweep returned null shape"));
+        }
+
+        preview.bounds = makeBounds(sweptShape);
+        if (!preview.bounds.valid) {
+            return reject(QStringLiteral("edge circular sweep bbox could not be computed"));
+        }
+        preview.shapeFaceCount = countSubShapes(sweptShape, TopAbs_FACE);
+        preview.shapeEdgeCount = countSubShapes(sweptShape, TopAbs_EDGE);
+        preview.shapeVertexCount = countSubShapes(sweptShape, TopAbs_VERTEX);
+        if (preview.shapeFaceCount <= 0 || preview.shapeEdgeCount <= 0) {
+            return reject(QStringLiteral("edge circular sweep produced empty shape summary"));
+        }
+
+        preview.sweepable = true;
+        result.value = preview;
+        result.ok = true;
+        return result;
+    } catch (const Standard_Failure& failure) {
+        return reject(QStringLiteral("OCCT edge circular sweep preview failed: %1")
+                          .arg(QString::fromUtf8(failure.GetMessageString())));
+    } catch (...) {
+        return reject(
+            QStringLiteral("OCCT edge circular sweep preview failed: unknown exception."));
     }
 }
 

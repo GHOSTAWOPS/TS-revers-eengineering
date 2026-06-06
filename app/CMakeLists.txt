@@ -50,6 +50,7 @@ set(TSREBAR_OCCT_STEP_LIBS
     TKBRep
     TKGeomAlgo
     TKTopAlgo
+    TKOffset
     TKShHealing
     TKMesh
     TKCDF
