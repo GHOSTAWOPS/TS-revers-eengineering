@@ -41,6 +41,7 @@ docs/phase1/step_selection/**/*_copied_input.*
 docs/phase1/app_save_open_reports/_work/
 
 # Temporary files
+review_packages/
 __pycache__/
 **/__pycache__/
 *.py[cod]

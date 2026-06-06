@@ -1,5 +1,6 @@
 #include "geometry/occ/legacy_adapter/OccLegacyGeometryAdapter.h"
 
+#include <BRepAlgoAPI_Section.hxx>
 #include <BRepBndLib.hxx>
 #include <BRepAdaptor_Curve.hxx>
 #include <BRepAdaptor_Surface.hxx>
@@ -30,6 +31,8 @@
 #include <TopoDS_Edge.hxx>
 #include <TopoDS_Face.hxx>
 #include <TopoDS_Wire.hxx>
+#include <gp_Dir.hxx>
+#include <gp_Pln.hxx>
 #include <gp_Pnt.hxx>
 #include <gp_Vec.hxx>
 
@@ -125,6 +128,51 @@ bool pointsClose(const gp_Pnt& lhs, const gp_Pnt& rhs, double tolerance)
 bool pointFinite(const tsrebar::LegacyPoint3d& point)
 {
     return std::isfinite(point.x) && std::isfinite(point.y) && std::isfinite(point.z);
+}
+
+bool vectorFinite(const tsrebar::LegacyVector3d& vector)
+{
+    return std::isfinite(vector.x) && std::isfinite(vector.y) &&
+           std::isfinite(vector.z);
+}
+
+double vectorMagnitude(const tsrebar::LegacyVector3d& vector)
+{
+    return std::sqrt(vector.x * vector.x +
+                     vector.y * vector.y +
+                     vector.z * vector.z);
+}
+
+gp_Pnt toGpPoint(const tsrebar::LegacyPoint3d& point)
+{
+    return gp_Pnt(point.x, point.y, point.z);
+}
+
+gp_Vec toGpVec(const tsrebar::LegacyVector3d& vector)
+{
+    return gp_Vec(vector.x, vector.y, vector.z);
+}
+
+bool planeValid(const tsrebar::LegacyPlane& plane)
+{
+    return pointFinite(plane.origin) && plane.normal.valid &&
+           vectorFinite(plane.normal) &&
+           vectorMagnitude(plane.normal) > Precision::Confusion();
+}
+
+double signedDistanceToPlane(const tsrebar::LegacyPlane& plane,
+                             const tsrebar::LegacyPoint3d& point)
+{
+    const double magnitude = vectorMagnitude(plane.normal);
+    if (magnitude <= Precision::Confusion()) {
+        return std::numeric_limits<double>::infinity();
+    }
+
+    const double dx = point.x - plane.origin.x;
+    const double dy = point.y - plane.origin.y;
+    const double dz = point.z - plane.origin.z;
+    return (dx * plane.normal.x + dy * plane.normal.y + dz * plane.normal.z) /
+           magnitude;
 }
 
 double splitGuard(double first, double last)
@@ -339,6 +387,67 @@ bool makeStableOffsetNormal(BRepAdaptor_Curve& curve,
         }
     }
     return false;
+}
+
+tsrebar::LegacySectionEdge sampleSectionEdge(const TopoDS_Edge& edge,
+                                             int ordinal,
+                                             std::string sourceEdgeStableId,
+                                             int sampleCount)
+{
+    tsrebar::LegacySectionEdge sectionEdge;
+    sectionEdge.ordinal = ordinal;
+    sectionEdge.sourceEdgeStableId = std::move(sourceEdgeStableId);
+    if (edge.IsNull() || sampleCount <= 0) {
+        return sectionEdge;
+    }
+
+    BRepAdaptor_Curve curve(edge);
+    const double first = curve.FirstParameter();
+    const double last = curve.LastParameter();
+    if (!std::isfinite(first) || !std::isfinite(last) || first >= last) {
+        return sectionEdge;
+    }
+
+    sectionEdge.samplePoints.reserve(static_cast<std::size_t>(sampleCount));
+    for (int index = 0; index < sampleCount; ++index) {
+        const double ratio =
+            sampleCount == 1
+                ? 0.5
+                : static_cast<double>(index) / static_cast<double>(sampleCount - 1);
+        const double parameter = first + (last - first) * ratio;
+        sectionEdge.samplePoints.push_back(toLegacyPoint(curve.Value(parameter)));
+    }
+
+    sectionEdge.length = curveLength(curve, first, last);
+    if (!std::isfinite(sectionEdge.length) ||
+        sectionEdge.length <= Precision::Confusion()) {
+        sectionEdge.length = polylineLength(sectionEdge.samplePoints);
+    }
+    sectionEdge.bounds = makeBounds(edge);
+    if (!sectionEdge.bounds.valid) {
+        sectionEdge.bounds = makeBounds(sectionEdge.samplePoints);
+    }
+    return sectionEdge;
+}
+
+bool edgeSamplesOnPlane(const TopoDS_Edge& edge,
+                        const tsrebar::LegacyPlane& plane,
+                        int sampleCount)
+{
+    const tsrebar::LegacySectionEdge sectionEdge =
+        sampleSectionEdge(edge, 0, std::string(), sampleCount);
+    if (sectionEdge.samplePoints.empty() ||
+        sectionEdge.length <= Precision::Confusion()) {
+        return false;
+    }
+
+    constexpr double tolerance = 1.0e-5;
+    for (const tsrebar::LegacyPoint3d& point : sectionEdge.samplePoints) {
+        if (std::abs(signedDistanceToPlane(plane, point)) > tolerance) {
+            return false;
+        }
+    }
+    return true;
 }
 
 void appendPoint(std::ostringstream& output, const tsrebar::LegacyPoint3d& point)
@@ -1770,6 +1879,126 @@ OccLegacyGeometryAdapter::offsetEdgePreview(
                           .arg(QString::fromUtf8(failure.GetMessageString())));
     } catch (...) {
         return reject(QStringLiteral("OCCT edge offset preview failed: unknown exception."));
+    }
+}
+
+LegacyGeometryQueryResult<LegacyFacePlaneSectionPreview>
+OccLegacyGeometryAdapter::facePlaneSectionPreview(
+    const LegacySelectionRef& faceRef,
+    LegacyPlane plane,
+    int sampleCount) const
+{
+    LegacyGeometryQueryResult<LegacyFacePlaneSectionPreview> result;
+    LegacyFacePlaneSectionPreview preview;
+    preview.sourceFaceStableId = faceRef.stableId;
+    preview.plane = plane;
+    preview.requestedSampleCount = sampleCount;
+    preview.effectiveSampleCount = std::max(2, sampleCount);
+
+    auto reject = [&result, &preview](QString diagnostic) {
+        preview.failureReason = diagnostic.toStdString();
+        result.value = preview;
+        result.diagnostic = std::move(diagnostic);
+        return result;
+    };
+
+    if (faceRef.shapeKind != LegacyShapeKind::Face) {
+        return reject(QStringLiteral("LegacyGeometryAdapter expected a face ref."));
+    }
+    if (sampleCount <= 0) {
+        return reject(QStringLiteral("face section sample count must be positive"));
+    }
+    if (!planeValid(plane)) {
+        return reject(QStringLiteral(
+            "face section plane must have finite origin and valid normal"));
+    }
+
+    try {
+        const OccSelectionResolveResult resolved = m_selectionIndex.resolve(faceRef);
+        if (!resolved.found) {
+            return reject(resolved.diagnostic);
+        }
+
+        const TopoDS_Face face = TopoDS::Face(resolved.shape);
+        if (face.IsNull()) {
+            return reject(QStringLiteral("SelectionRef did not resolve to a face."));
+        }
+
+        const gp_Pln sectionPlane(toGpPoint(plane.origin), gp_Dir(toGpVec(plane.normal)));
+        BRepAlgoAPI_Section section(face, sectionPlane, Standard_True);
+        section.ComputePCurveOn1(Standard_False);
+        section.Approximation(Standard_True);
+        if (!section.IsDone()) {
+            return reject(QStringLiteral("OCCT face-plane section did not finish"));
+        }
+
+        auto appendSectionEdge = [&preview](const TopoDS_Edge& edge,
+                                            std::string sourceEdgeStableId) {
+            LegacySectionEdge sectionEdge =
+                sampleSectionEdge(edge,
+                                  static_cast<int>(preview.sectionEdges.size() + 1),
+                                  std::move(sourceEdgeStableId),
+                                  preview.effectiveSampleCount);
+            if (sectionEdge.samplePoints.empty() ||
+                sectionEdge.length <= Precision::Confusion()) {
+                return;
+            }
+
+            preview.totalLength += sectionEdge.length;
+            mergeBounds(&preview.bounds, sectionEdge.bounds);
+            preview.samplePoints.insert(preview.samplePoints.end(),
+                                        sectionEdge.samplePoints.begin(),
+                                        sectionEdge.samplePoints.end());
+            preview.sectionEdges.push_back(std::move(sectionEdge));
+        };
+
+        const TopoDS_Shape sectionShape = section.Shape();
+        for (TopExp_Explorer explorer(sectionShape, TopAbs_EDGE);
+             explorer.More();
+             explorer.Next()) {
+            appendSectionEdge(TopoDS::Edge(explorer.Current()), std::string());
+        }
+
+        if (preview.sectionEdges.empty()) {
+            TopTools_IndexedMapOfShape boundaryEdges;
+            TopExp::MapShapes(face, TopAbs_EDGE, boundaryEdges);
+            for (int edgeIndex = 1; edgeIndex <= boundaryEdges.Extent(); ++edgeIndex) {
+                const TopoDS_Edge boundaryEdge =
+                    TopoDS::Edge(boundaryEdges.FindKey(edgeIndex));
+                if (!edgeSamplesOnPlane(boundaryEdge,
+                                        plane,
+                                        preview.effectiveSampleCount)) {
+                    continue;
+                }
+
+                std::string stableId;
+                const std::optional<LegacySelectionRef> boundaryRef =
+                    m_selectionIndex.refForShape(boundaryEdge);
+                if (boundaryRef.has_value()) {
+                    stableId = boundaryRef->stableId;
+                }
+                appendSectionEdge(boundaryEdge, std::move(stableId));
+            }
+        }
+
+        preview.hitCount = static_cast<int>(preview.sectionEdges.size());
+        if (!preview.bounds.valid) {
+            preview.bounds = makeBounds(preview.samplePoints);
+        }
+        preview.sectionable =
+            preview.hitCount > 0 &&
+            preview.totalLength > Precision::Confusion() &&
+            !preview.samplePoints.empty();
+
+        result.value = preview;
+        result.ok = true;
+        return result;
+    } catch (const Standard_Failure& failure) {
+        return reject(QStringLiteral("OCCT face-plane section preview failed: %1")
+                          .arg(QString::fromUtf8(failure.GetMessageString())));
+    } catch (...) {
+        return reject(
+            QStringLiteral("OCCT face-plane section preview failed: unknown exception."));
     }
 }
 

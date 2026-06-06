@@ -1,0 +1,94 @@
+{
+  "id": "m1_app_016_run_001",
+  "date": "2026-06-06",
+  "decision": "m1-app-016-pass",
+  "appRoot": "C:/Users/ghost/Desktop/reverse_engineering/【03】图石软件/【图石钢筋1比1复刻】/app",
+  "scope": [
+    "LegacyGeometry DTO M1-App-016",
+    "OccLegacyGeometryAdapter section preview summary",
+    "face ref plus legacy plane to section preview",
+    "edge-face intersection empty set coverage"
+  ],
+  "sample": {
+    "path": "C:/Users/ghost/Desktop/reverse_engineering/【03】图石软件/123.stp",
+    "sizeBytes": 87746388,
+    "sha256": "6a3c4f2044c2cc1f1123f0f58c61b2c869fbad3110a3585fdab49e69daf52a2a",
+    "knownStats": {
+      "solids": 754,
+      "faces": 3016,
+      "uniqueEdges": 4524,
+      "uniqueVertices": 3016,
+      "rawEdges": 9048,
+      "rawVertices": 18096,
+      "lengthUnit": "METRE"
+    }
+  },
+  "red": {
+    "verified": true,
+    "failure": "error C2039: LegacyPlane is not a member of tsrebar; error C2039: facePlaneSectionPreview is not a member of OccLegacyGeometryAdapter"
+  },
+  "build": {
+    "success": true,
+    "target": "legacy_geometry_adapter_tests"
+  },
+  "tests": {
+    "success": true,
+    "passed": 8,
+    "failed": 0,
+    "totalSeconds": 157.10,
+    "cases": [
+      "command_registry_tests",
+      "legacy_selection_ref_tests",
+      "app_smoke",
+      "viewer_smoke_tests",
+      "domain_rebar_boundary",
+      "step_import_probe_123",
+      "occ_selection_index_123",
+      "legacy_geometry_adapter_123"
+    ]
+  },
+  "sectionPreview": {
+    "queries": [
+      "facePlaneSectionPreview",
+      "edgeFaceIntersections"
+    ],
+    "assertions": [
+      "face sample point and face normal plane section returns sectionable summary",
+      "far plane returns stable empty preview",
+      "invalid plane is rejected",
+      "wrong type and missing ref diagnostics are stable",
+      "boundary edge-face pair returns overlap or representative points",
+      "non-touching edge-face pair returns empty intersection set"
+    ],
+    "approximation": "summary only; no topology mutation and no full ACIS section equivalence"
+  },
+  "xhighReview": {
+    "required": true,
+    "critical": "none",
+    "important": "none",
+    "minor": "BRepAlgoAPI_Section Approximation(true) after PerformNow=true is non-blocking; edgeSamplesOnPlane uses sampling for coplanar fallback and is acceptable for this spike",
+    "verdict": "allow_commit",
+    "agentClosed": true
+  },
+  "ida": {
+    "attempted": true,
+    "result": "no-open-session",
+    "diagnostic": "idb_list returned sessions=[] count=0"
+  },
+  "guardrails": {
+    "domainRebarOcctBoundary": "pass",
+    "parentRebarGenerationChainMigrated": false,
+    "rebarBusinessImplemented": false,
+    "todo017Implemented": false,
+    "topologyMutationImplemented": false,
+    "acisSectionEquivalenceClaimed": false
+  },
+  "readinessGate": {
+    "decision": "M1-Formal-Ready",
+    "m1FormalAllowed": true,
+    "errorCount": 0,
+    "warningCount": 0,
+    "passCount": 78,
+    "checkCount": 78
+  }
+}

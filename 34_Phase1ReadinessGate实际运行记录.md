@@ -147,6 +147,14 @@ E-DEV-039
      52_M1-App-015LegacyGeometryAdapterOffsetSpike实现记录.md
      docs/phase1/app_build_reports/m1_app_015_run_001.md
      docs/phase1/app_build_reports/m1_app_015_run_001.json
+
+E-DEV-040
+  -> M1-App-016 LegacyGeometryAdapter section / 剖切 preview summary 报告
+  -> 来源：
+     app/
+     53_M1-App-016LegacyGeometryAdapterSectionSpike实现记录.md
+     docs/phase1/app_build_reports/m1_app_016_run_001.md
+     docs/phase1/app_build_reports/m1_app_016_run_001.json
 ```
 
 注意：
@@ -197,6 +205,7 @@ Blocker GAPs: none
 - `LegacyGeometryAdapter P3E` 已落地并通过 M1-App-013：默认 CTest 8/8 pass，可把点列重建为 BSpline legacy summary，记录输入点数、采样数、`max(5,length*50)` 建议值、长度、bbox 和失败原因；该阶段不是旧 ACIS `api_curve_spline` topology mutation 或钢筋生成。
 - `LegacyWireChain` 已落地并通过 M1-App-014：默认 CTest 8/8 pass，可把 edge refs 构造成 ordered wire chain summary，并记录总长度、起止点、bbox、connected、closed 和断链诊断；该阶段不是旧 `ENTITY_LIST` 对象完整复刻、OCCT wire mutation 或钢筋生成。
 - `LegacyGeometryAdapter offset preview` 已落地并通过 M1-App-015：默认 CTest 8/8 pass，可把 edge ref 生成 offset curve preview summary，并记录 samplePoints、length、bbox、sourceCurveKind、sourceLength、offsettable 和失败诊断；该阶段不是完整 ACIS offset 等价、OCCT topology mutation 或钢筋生成。
+- `LegacyGeometryAdapter section preview` 已落地并通过 M1-App-016：默认 CTest 8/8 pass，可把 face ref + legacy plane 生成 section preview summary，并补充 far plane empty、invalid plane、wrong type/missing ref 和 edge-face empty intersection set 覆盖；该阶段不是完整 ACIS section 等价、OCCT topology mutation、剖切面 UI 或钢筋生成。
 - Detail writer L0/L1 离线 gate 已落地并通过，不再作为当前 M1 阻塞。
 - `GAP-DEV-001/GAP-DEV-007` 不再阻塞进入 Qt6 + OCCT 开发入口，但旧图石业务复刻缺口仍按功能专项继续闭合。
 

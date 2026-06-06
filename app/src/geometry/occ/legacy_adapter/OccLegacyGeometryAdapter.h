@@ -64,6 +64,11 @@ public:
         const LegacySelectionRef& edgeRef,
         double offsetDistance,
         int sampleCount) const;
+    [[nodiscard]] LegacyGeometryQueryResult<LegacyFacePlaneSectionPreview>
+    facePlaneSectionPreview(
+        const LegacySelectionRef& faceRef,
+        LegacyPlane plane,
+        int sampleCount) const;
 
 private:
     OccSelectionIndex m_selectionIndex;

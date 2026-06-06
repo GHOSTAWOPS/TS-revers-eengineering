@@ -220,6 +220,60 @@ int main(int argc, char* argv[])
     expect(distance(boundaryWire.value.startPoint, boundaryWire.value.endPoint) < 1.0e-5,
            "closed boundary wire chain endpoints must meet");
 
+    const tsrebar::LegacyPlane sectionPlane{
+        faceResult.value.samplePoint,
+        faceResult.value.normal
+    };
+    const auto sectionPreview =
+        adapter.facePlaneSectionPreview(faceRefs.front(), sectionPlane, 5);
+    expect(sectionPreview.ok, sectionPreview.diagnostic.toUtf8().constData());
+    expect(sectionPreview.value.sourceFaceStableId == faceRefs.front().stableId,
+           "face section preview must preserve source face stable id");
+    expect(sectionPreview.value.requestedSampleCount == 5,
+           "face section preview must preserve requested sample count");
+    expect(sectionPreview.value.effectiveSampleCount == 5,
+           "face section preview effective sample count must match request");
+    expect(sectionPreview.value.sectionable,
+           "face section preview must mark successful sections as sectionable");
+    expect(sectionPreview.value.hitCount >= 1,
+           "face section through sample point must produce at least one section edge");
+    expect(sectionPreview.value.totalLength > 0.0,
+           "face section preview total length must be positive");
+    expect(!sectionPreview.value.sectionEdges.empty(),
+           "face section preview must expose section edge summaries");
+    expect(!sectionPreview.value.samplePoints.empty(),
+           "face section preview must expose representative sample points");
+    expectValidBox(sectionPreview.value.bounds,
+                   "face section preview bbox must be available");
+
+    const tsrebar::LegacyPlane farSectionPlane{
+        {faceResult.value.samplePoint.x + faceResult.value.normal.x * 100000.0,
+         faceResult.value.samplePoint.y + faceResult.value.normal.y * 100000.0,
+         faceResult.value.samplePoint.z + faceResult.value.normal.z * 100000.0},
+        faceResult.value.normal
+    };
+    const auto farSectionPreview =
+        adapter.facePlaneSectionPreview(faceRefs.front(), farSectionPlane, 5);
+    expect(farSectionPreview.ok,
+           farSectionPreview.diagnostic.toUtf8().constData());
+    expect(!farSectionPreview.value.sectionable,
+           "far face section preview must be marked not sectionable");
+    expect(farSectionPreview.value.hitCount == 0,
+           "far face section preview must expose zero hits");
+    expect(farSectionPreview.value.sectionEdges.empty(),
+           "far face section preview must expose no section edges");
+
+    const tsrebar::LegacyPlane invalidSectionPlane{
+        faceResult.value.samplePoint,
+        {0.0, 0.0, 0.0, false}
+    };
+    const auto invalidPlaneSectionPreview =
+        adapter.facePlaneSectionPreview(faceRefs.front(), invalidSectionPlane, 5);
+    expect(!invalidPlaneSectionPreview.ok,
+           "face section preview must reject invalid planes");
+    expect(invalidPlaneSectionPreview.diagnostic.contains(QStringLiteral("plane")),
+           "invalid face section plane diagnostic must be stable");
+
     const std::vector<tsrebar::LegacySelectionRef> singleWireEdges{edgeRefs.front()};
     const auto singleWire = adapter.buildWireChain(singleWireEdges);
     expect(singleWire.ok, singleWire.diagnostic.toUtf8().constData());
@@ -387,6 +441,34 @@ int main(int argc, char* argv[])
            "boundary edge-face intersection must expose representative points");
     expect(edgeFaceIntersections.value.points.front().edgeParameterValid,
            "intersection point must carry edge parameter when projected");
+
+    tsrebar::LegacySelectionRef nonTouchingEdgeRef = edgeRefs.front();
+    bool foundNonTouchingEdge = false;
+    const int edgeScanLimit = std::min(edgeRefs.size(), qsizetype{128});
+    for (int index = 0; index < edgeScanLimit; ++index) {
+        const auto distanceToFace = adapter.distanceBetween(edgeRefs.at(index),
+                                                            faceRefs.front());
+        expect(distanceToFace.ok, distanceToFace.diagnostic.toUtf8().constData());
+        if (distanceToFace.value.distance > 1.0) {
+            nonTouchingEdgeRef = edgeRefs.at(index);
+            foundNonTouchingEdge = true;
+            break;
+        }
+    }
+    expect(foundNonTouchingEdge,
+           "test STEP must provide a non-touching edge-face pair for empty intersection");
+    const auto emptyEdgeFaceIntersections =
+        adapter.edgeFaceIntersections(nonTouchingEdgeRef, faceRefs.front());
+    expect(emptyEdgeFaceIntersections.ok,
+           emptyEdgeFaceIntersections.diagnostic.toUtf8().constData());
+    expect(emptyEdgeFaceIntersections.value.edgeStableId == nonTouchingEdgeRef.stableId,
+           "empty intersection result must preserve edge stable id");
+    expect(emptyEdgeFaceIntersections.value.faceStableId == faceRefs.front().stableId,
+           "empty intersection result must preserve face stable id");
+    expect(!emptyEdgeFaceIntersections.value.overlap,
+           "non-touching edge-face pair must not be marked overlap");
+    expect(emptyEdgeFaceIntersections.value.points.empty(),
+           "non-touching edge-face pair must expose empty intersection points");
 
     const double quarterParameter =
         edgeResult.value.firstParameter +
@@ -610,6 +692,20 @@ int main(int argc, char* argv[])
     expect(wrongTypeOffsetPreview.diagnostic.contains(QStringLiteral("expected an edge ref")),
            "edge offset preview wrong type diagnostic must be stable");
 
+    const auto wrongTypeSectionPreview =
+        adapter.facePlaneSectionPreview(edgeRefs.front(), sectionPlane, 5);
+    expect(!wrongTypeSectionPreview.ok, "face section preview must reject edge refs");
+    expect(wrongTypeSectionPreview.diagnostic.contains(QStringLiteral("expected a face ref")),
+           "face section preview wrong type diagnostic must be stable");
+
+    const auto wrongTypeEdgeFaceIntersections =
+        adapter.edgeFaceIntersections(faceRefs.front(), faceRefs.front());
+    expect(!wrongTypeEdgeFaceIntersections.ok,
+           "edge-face intersections must reject face refs as first input");
+    expect(wrongTypeEdgeFaceIntersections.diagnostic.contains(
+               QStringLiteral("expected an edge ref")),
+           "edge-face intersections wrong first type diagnostic must be stable");
+
     const tsrebar::LegacySelectionRef missingPart =
         tsrebar::makeLegacySelectionRef(QStringLiteral("missing-part"),
                                         false,
@@ -644,6 +740,27 @@ int main(int argc, char* argv[])
            "edge offset preview must reject missing part refs");
     expect(missingPartOffsetPreview.diagnostic.contains(QStringLiteral("not in current document")),
            "edge offset preview missing part diagnostic must be stable");
+
+    const tsrebar::LegacySelectionRef missingFacePart =
+        tsrebar::makeLegacySelectionRef(QStringLiteral("missing-part"),
+                                        false,
+                                        0,
+                                        tsrebar::LegacyShapeKind::Face,
+                                        1);
+    const auto missingPartSectionPreview =
+        adapter.facePlaneSectionPreview(missingFacePart, sectionPlane, 5);
+    expect(!missingPartSectionPreview.ok,
+           "face section preview must reject missing part refs");
+    expect(missingPartSectionPreview.diagnostic.contains(QStringLiteral("not in current document")),
+           "face section preview missing part diagnostic must be stable");
+
+    const auto missingPartEdgeFaceIntersections =
+        adapter.edgeFaceIntersections(missingPart, faceRefs.front());
+    expect(!missingPartEdgeFaceIntersections.ok,
+           "edge-face intersections must reject missing edge refs");
+    expect(missingPartEdgeFaceIntersections.diagnostic.contains(
+               QStringLiteral("not in current document")),
+           "edge-face intersections missing edge diagnostic must be stable");
 
     const tsrebar::LegacySelectionRef outOfRange =
         tsrebar::makeLegacySelectionRef(QString::fromStdString(edgeRefs.front().partEntry),

@@ -204,6 +204,36 @@ struct LegacyOffsetCurvePreview
     std::string failureReason;
 };
 
+struct LegacyPlane
+{
+    LegacyPoint3d origin;
+    LegacyVector3d normal;
+};
+
+struct LegacySectionEdge
+{
+    int ordinal = 0;
+    std::string sourceEdgeStableId;
+    double length = 0.0;
+    LegacyBoundingBox bounds;
+    std::vector<LegacyPoint3d> samplePoints;
+};
+
+struct LegacyFacePlaneSectionPreview
+{
+    std::string sourceFaceStableId;
+    LegacyPlane plane;
+    int requestedSampleCount = 0;
+    int effectiveSampleCount = 0;
+    int hitCount = 0;
+    double totalLength = 0.0;
+    LegacyBoundingBox bounds;
+    std::vector<LegacySectionEdge> sectionEdges;
+    std::vector<LegacyPoint3d> samplePoints;
+    bool sectionable = false;
+    std::string failureReason;
+};
+
 enum class LegacySurfaceKind {
     Unknown,
     Plane,
