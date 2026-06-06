@@ -261,6 +261,11 @@ TODO-024 / M1-App-023 = done
   -> DetailWriter P1，DetailWriter 可把 domain SteelData /
      SteelBarGroup / SteelBar / SteelBarSegment 映射为 Detail.xml +
      Detail01.stl 首批字段，并覆盖失败恢复旧 Detail 包。
+
+TODO-025 / Evidence = done
+  -> 旧图石输出钢筋 STP 样本入库验证，`123.stp` 已固定为
+     `tushi_rebar_123_stp` 几何 witness，记录源 SFL、hash、
+     OCCT import probe 和既有 5 轮 STEP selection gate 摘要。
 ```
 
 当前最新验证基线：
@@ -271,15 +276,16 @@ readiness gate = M1-Formal-Ready, 78/78 pass
 domain/rebar + drawing + project OCCT 边界 = pass
 
 latest completed tag = m1-app-023/detail-writer-p1
-planned tag = m1-app-024/stp-sample-witness
+latest evidence tag = m1-app-024/stp-sample-witness
+planned tag = m2-ui-001/legacy-ui-entry-p1
 ```
 
 当前下一步：
 
 ```text
-TODO-025 / Evidence
-  -> 旧图石输出钢筋 STP 样本入库验证
-  -> 固定 123.stp 的 hash、OCCT 导入统计和样本 witness 报告。
+TODO-027 / M2-UI
+  -> 旧 UI 功能入口 1:1 复刻 P1
+  -> 新 UI 可以更好看，但功能入口、命令、参数和状态按旧图石对齐。
 ```
 
 长期执行循环：
@@ -523,27 +529,28 @@ commit / tag / push 状态
 
 ### 短期 Goal（推荐本轮复制）
 
-目标：只完成 `TODO-025 / 旧图石输出钢筋 STP 样本入库验证` 这个短期阶段，不自动进入后续长期开发。
+目标：只完成 `TODO-027 / 旧 UI 功能入口 1:1 复刻 P1` 这个短期阶段，不自动进入后续长期开发。
 
-本轮要把旧图石导出的钢筋 STEP 样本 `123.stp` 固定成可重复 witness：
+本轮要把旧图石首批功能入口落到正式 Qt6 app 的可追溯入口上：
 
 ```text
-旧图石 SFL
-  -> 旧图石导出钢筋 STP
-  -> 123.stp
-  -> hash / 文件大小 / OCCT 导入统计 / selection 稳定性摘要
-  -> 后续钢筋几何 golden 辅助证据
+旧图石 UI 图片 / 功能矩阵 / 命令证据
+  -> Qt6 页签 / 分组 / 按钮 / 状态栏入口
+  -> LegacyUiCommandMap
+  -> CommandRegistry
+  -> NotImplemented 或已有 handler
+  -> evidence / gap 可追溯
 ```
 
 目标语义：
 
 ```text
-123.stp 是旧图石真实导出的钢筋几何 witness。
-它只有几何，没有旧参数和命令历史，不能替代 IDA / SFL / Detail 业务证据。
-本轮只把它入库为可重复验证样本，供后续几何输出和 golden 辅助对照。
+新 UI 可以比老图石更现代、更清楚。
+但首批菜单入口、命令语义、参数状态和状态栏口径必须能追溯到旧图石。
+本轮只做 UI 功能入口和命令契约对齐，不实现新的钢筋业务算法。
 ```
 
-本轮只做样本入库验证和报告，不做新钢筋创建算法，不做 Detail writer 扩展，不做 AutoCAD L2 动态导入，不把 STP 当完整业务真相。
+本轮只做 UI 入口 / 命令契约 / smoke，不做钢筋创建算法扩展，不做 Detail writer 扩展，不做 AutoCAD L2 动态导入，不采集 golden。
 
 当前已完成前置：
 
@@ -571,6 +578,12 @@ TODO-023 / M1-App-022 = done
 
 TODO-024 / M1-App-023 = done
   -> DetailWriter P1，可把 domain 钢筋组映射为 Detail.xml + Detail01.stl 首批字段。
+
+TODO-025 / Evidence = done
+  -> 旧图石输出钢筋 STP 样本入库验证，`123.stp` 已固定为几何 witness。
+
+TODO-026 / Golden = pending
+  -> 用户明确说 golden 先不要，所以本轮不进入 golden 采集。
 ```
 
 工作目录：
@@ -588,23 +601,25 @@ C:\Users\ghost\Desktop\reverse_engineering\【03】图石软件
 本轮必须先读这些参考文档：
 
 1. `【图石钢筋1比1复刻】\00_总览.md`
-2. `【图石钢筋1比1复刻】\04_SFL样本证据.md`
-3. `【图石钢筋1比1复刻】\11_需求证据追溯矩阵.md`
-4. `【图石钢筋1比1复刻】\12_运行确认日志.md`
-5. `【图石钢筋1比1复刻】\31_STEP选择ID实际运行记录模板与样本清单.md`
-6. `【图石钢筋1比1复刻】\39_M1-App-003选择系统实现记录.md`
-7. `【图石钢筋1比1复刻】\60_M1-App-022新设计文件格式RuntimeP1实现记录.md`
-8. `【图石钢筋1比1复刻】\61_M1-App-023DetailWriterP1实现记录.md`
-9. `【图石钢筋1比1复刻】\99_缺口和待确认项.md`
-10. `【图石钢筋1比1复刻】\todo.csv`
+2. `【图石钢筋1比1复刻】\01_功能操作矩阵.md`
+3. `【图石钢筋1比1复刻】\02_界面窗口参数矩阵.md`
+4. `【图石钢筋1比1复刻】\03_IDA命令证据.md`
+5. `【图石钢筋1比1复刻】\08_开发命令契约.md`
+6. `【图石钢筋1比1复刻】\11_需求证据追溯矩阵.md`
+7. `【图石钢筋1比1复刻】\17_一期按钮追溯与命令占位矩阵.md`
+8. `【图石钢筋1比1复刻】\35_Qt6_UI与LegacyGeometryAdapter复刻开发方案.md`
+9. `【图石钢筋1比1复刻】\56_M1-App-019LegacyCommandContractP1实现记录.md`
+10. `【图石钢筋1比1复刻】\62_TODO-025旧图石输出钢筋STP样本入库验证记录.md`
+11. `【图石钢筋1比1复刻】\99_缺口和待确认项.md`
+12. `【图石钢筋1比1复刻】\todo.csv`
 
 本轮允许修改：
 
-- 样本报告和 STEP selection / STP witness 相关文档
-- 必要的只读样本统计脚本或现有 gate 报告输出
-- `docs/phase1/step_selection/` 下对应 `123.stp` witness 报告
-- `62_TODO-025旧图石输出钢筋STP样本入库验证记录.md`
-- `docs/phase1/app_build_reports/m1_app_024_run_001.md/json` 或等价 evidence run report
+- `app/src/ui/` 下旧 UI 入口、命令定义、命令注册和状态栏相关实现
+- `app/tests/` 下 UI command map / registry / smoke 测试
+- 必要的 Qt6 UI smoke 支撑代码
+- `63_M2-UI-001旧UI功能入口P1实现记录.md`
+- `docs/phase1/app_build_reports/m2_ui_001_run_001.md/json` 或等价 build report
 - `11_需求证据追溯矩阵.md`
 - `34_Phase1ReadinessGate实际运行记录.md`
 - `99_缺口和待确认项.md`
@@ -621,22 +636,24 @@ C:\Users\ghost\Desktop\reverse_engineering\【03】图石软件
 - 任何 OCCT 直接造钢筋业务逻辑
 - `domain/rebar` 中引入 AIS / OCCT
 - `domain/rebar` 中引入 `TopoDS_ / AIS_ / BRep / TopAbs_`
-- 把 `123.stp` 当作完整旧业务参数证据
 - AutoCAD L2 动态导入同轮实现
 - 钢筋创建 / 编辑 / 统计 / Detail writer 同轮扩展
+- golden 采集同轮实现
+- 把缺证按钮语义写成确定结论
 
 本轮验收标准：
 
-1. 读取并确认 `123.stp` 文件存在、大小、sha256。
-2. 记录源 SFL、导出来源和当前已知运行确认关系，不能把未知项写成确定。
-3. 用现有 STEP import / selection gate 或等价工具统计 solids / faces / edges / vertices / unit。
-4. 形成可重复报告，包含命令、输出、hash、OCCT 版本或导入器信息。
-5. 若 gate 失败，记录失败原因和 GAP，不继续堆新功能。
+1. 首批旧 UI 功能入口从 `01/17/35/56` 映射到 Qt6 app 可查询入口。
+2. 新 UI 可以现代化，但 CommandId、legacy command、ui path、evidence、gap、implementation state 可追溯。
+3. 已实现业务 handler 的入口必须连接已有 handler；未实现业务必须保持稳定 `NotImplemented` 或 disabled 状态，不能假装完成。
+4. 不确定的按钮文字、参数窗口、状态栏提示必须进入 `99_缺口和待确认项.md`。
+5. 新增或更新 UI / command map 测试，先看 RED，再实现 GREEN。
 6. 默认 CTest 通过。
 7. readiness gate 严格模式通过。
-8. 若涉及代码、测试、构建脚本，commit 前必须执行 xhigh 只读 review；纯样本报告节点可记录不需要 xhigh 的理由。
-9. 更新实现记录、build report、`11 / 99 / 46 / todo.csv`。
-10. `todo.csv` 中 `TODO-025` 改为 `done`；只把下一个明确可执行任务改为 `next`，但不继续实现。
+8. domain/rebar + drawing + project OCCT / AIS 泄漏扫描通过。
+9. 涉及代码、测试、构建脚本，commit 前必须执行 xhigh 只读 review；Critical / Important 必须修复或写明技术反驳理由。
+10. 更新实现记录、build report、`11 / 34 / 99 / 46 / todo.csv`。
+11. `todo.csv` 中 `TODO-027` 改为 `done`；只把下一个明确可执行任务改为 `next`，但不继续实现。
 
 本轮完成后必须停止，输出阶段复盘：
 
@@ -644,11 +661,11 @@ C:\Users\ghost\Desktop\reverse_engineering\【03】图石软件
 完成了什么
 验证了什么
 还缺什么
-下一阶段建议做 TODO-026 还是先补旧图石运行证据
+下一阶段建议做 TODO-028 还是先补 IDA / 旧图石运行证据
 commit / tag / push 状态
 ```
 
-不要在同一个 goal 内继续做 AutoCAD L2 动态导入、完整工程图生成、钢筋编辑 / 统计专项或新钢筋创建算法。
+不要在同一个 goal 内继续做 golden 采集、AutoCAD L2 动态导入、完整工程图生成、钢筋编辑 / 统计专项或新钢筋创建算法。
 ### 长期方向（只作护栏，不作为本轮 Goal）
 
 目标：持续推进《图石钢筋 1 比 1 复刻》正式 `app` 开发，直到具备按旧 VisualTS 证据复刻钢筋创建、编辑、统计、出图的工程条件。
@@ -842,6 +859,7 @@ Detail / 新设计文件格式输出层
 - `M1-App-021`：AIS 钢筋显示映射 P0，RebarAisPresentationAdapter 可输出 AIS_Shape。
 - `M1-App-022`：新设计文件格式 runtime P1，TsRebarProjectRuntime 可保存 / 读取 STEP 来源、selection-v1 refs、rebar groups、binding 和 evidence。
 - `M1-App-023`：DetailWriter P1，DetailWriter 可把 domain SteelData / SteelBarGroup / SteelBar / SteelBarSegment 映射为 Detail.xml + Detail01.stl 首批字段。
+- `TODO-025 / M1-App-024`：旧图石输出钢筋 STP 样本入库验证，`123.stp` 已固定为旧图石钢筋几何 witness；该证据只证明几何可被 OCCT 稳定读取，不证明旧业务算法或新系统可生成同样几何。
 
 当前最新验证状态：
 
@@ -854,16 +872,17 @@ domain/rebar + drawing + project OCCT 边界 = pass
 当前下一步：
 
 ```text
-TODO-025 / Evidence
-  -> 旧图石输出钢筋 STP 样本入库验证
-  -> 固定 123.stp 的 hash、OCCT 导入统计和样本 witness 报告
+TODO-027 / M2-UI
+  -> 旧 UI 功能入口 1:1 复刻 P1
+  -> 对齐首批菜单 / 页签 / 按钮 / 状态栏入口和旧命令契约
 ```
 
 原因：
 
 ```text
-TODO-024 已能把 domain 钢筋对象输出为旧 AutoCAD 插件兼容方向的首批 Detail 包。
-下一步需要把旧图石真实导出的钢筋 STP 样本固定成几何 witness。
+TODO-025 已把旧图石真实导出的钢筋 STP 样本固定成几何 witness。
+golden 采集 TODO-026 暂按用户要求保持 pending。
+下一步应把旧图石 UI 功能入口落到正式 Qt6 app 的可追溯入口上。
 ```
 
 ### 执行规则
@@ -928,19 +947,19 @@ TODO-024 已能把 domain 钢筋对象输出为旧 AutoCAD 插件兼容方向的
 
 ## CSE v2 Control Contract
 
-- **Primary Setpoint**：下一轮只完成 `TODO-025 / 旧图石输出钢筋 STP 样本入库验证`，把 `123.stp` 固定为可重复的旧图石钢筋几何 witness。
-- **Acceptance**：记录 `123.stp` 的 sha256、文件大小、源样本关系、OCCT 导入统计、selection / STEP gate 摘要和可重复报告；默认 CTest、readiness gate、domain/rebar OCCT 泄漏检查通过。
-- **Guardrail Metrics**：不能把 STP 当完整业务真相；不能把 TODO-025 扩成新钢筋生成、Detail writer 扩展或 AutoCAD L2；不能用 STP 几何结果替代 IDA / SFL / Detail 字段证据。
-- **Sampling Plan**：先读 `04/11/12/31/39/60/61/99/todo.csv`；再统计样本 hash 和 OCCT 导入结果；必要时复用 STEP selection gate；最后更新实现记录、build report、追溯矩阵、缺口和 todo。
-- **Known Delays**：`123.stp` 只有几何，没有旧图石参数、命令历史和字段值；复杂样本和 golden 仍需后续用户运行确认。
-- **Recovery Target**：如果样本缺失或导入失败，先记录失败和 GAP，不继续扩展业务功能。
-- **Rollback Trigger**：把 STP 当作完整钢筋业务证据；TODO-025 顺手进入钢筋创建、Detail writer 或 AutoCAD L2；测试或 gate 失败仍继续堆功能。
-- **Constraints**：不使用 ACIS / HOOPS / Codejock 等商业库；只读样本；旧逻辑不确定时优先查 IDA MCP 或旧图石运行确认。
-- **Boundary**：下一轮允许修改样本报告、STEP witness 报告、实现记录、build report、追溯矩阵、缺口、46 和 todo；禁止修改钢筋业务代码，除非只是补充只读统计测试且需要 xhigh review。
-- **Coupling Notes**：`123.stp` 是几何 witness；`domain/rebar` 是业务对象边界；`DetailWriter` 是输出边界；TODO-025 不改变任何业务对象或 writer 规则。
-- **Approximation Validity**：TODO-025 的 STP witness 只证明旧图石导出的几何可被 OCCT 稳定读取，不证明新系统已 1:1 生成同样钢筋，也不证明旧参数、统计或工程图闭合。
-- **Actuator Budget**：下一轮只推进 `TODO-025`。完成后停止复盘，不自动进入 `TODO-026`。
-- **Risks**：STP 导出器和 OCCT 导入对边/面拆分存在差异；没有命令历史时只能作为几何辅助证据。
+- **Primary Setpoint**：下一轮只完成 `TODO-027 / 旧 UI 功能入口 1:1 复刻 P1`，让正式 Qt6 app 的首批功能入口、命令契约和状态栏口径可追溯到旧图石证据。
+- **Acceptance**：首批 UI 入口可查询 / 可测试；CommandId、legacy command、旧 UI path、evidence、gap、implementation state 完整；默认 CTest、readiness gate、domain/rebar + drawing + project OCCT 泄漏检查通过；代码节点有 xhigh 只读 review。
+- **Guardrail Metrics**：不能因为 UI 现代化改变旧命令语义；不能把未实现业务显示成已完成；不能把 TODO-027 扩成钢筋创建、编辑、统计、Detail writer 或 golden 采集。
+- **Sampling Plan**：先读 `01/02/03/08/11/17/35/56/62/99/todo.csv`；补 UI command map / registry 测试；实现最小 UI 入口对齐；运行 CTest、readiness gate、泄漏扫描；xhigh 只读 review；最后更新实现记录、build report、追溯矩阵、缺口和 todo。
+- **Known Delays**：旧图石部分按钮的真实弹窗、状态栏提示和参数窗口缺运行确认；用户说 golden 先不要；旧 UI 很丑，新 UI 允许现代化但入口语义不能乱改。
+- **Recovery Target**：如果旧 UI 入口证据不足，先将对应入口标为 GAP / disabled / NotImplemented，不继续写业务算法。
+- **Rollback Trigger**：UI 入口绕过 LegacyUiCommandMap；未确认按钮写成确定功能；domain/rebar 引入 Qt/AIS/OCCT；TODO-027 顺手进入钢筋算法；测试或 gate 失败仍继续堆功能；代码节点跳过 xhigh。
+- **Constraints**：不使用 ACIS / HOOPS / Codejock 等商业库；旧逻辑不确定时优先查 IDA MCP 或旧图石运行确认；xhigh 只读，修改由主流程 agent 完成。
+- **Boundary**：下一轮允许修改 Qt6 UI / command map / command registry / UI smoke 测试、实现记录、build report、追溯矩阵、缺口、46 和 todo；禁止修改钢筋业务算法和 Detail writer。
+- **Coupling Notes**：`LegacyUiCommandMap` 是 UI 到旧命令的边界；`CommandRegistry` 是 handler 注册边界；`domain/rebar` 是业务对象边界；TODO-027 不改变业务对象和几何 adapter。
+- **Approximation Validity**：TODO-027 的 UI 入口对齐只能证明入口和命令契约可追溯，不证明旧弹窗字段、旧状态栏提示、业务算法或输出结果已经 1:1。
+- **Actuator Budget**：下一轮只推进 `TODO-027`。完成后停止复盘，不自动进入 `TODO-028`。
+- **Risks**：旧图石界面证据不完整；截图和 IDA 命令入口可能只覆盖一部分按钮；UI 现代化容易误改操作语义，必须用 evidence/gap 字段压住。
 ## Todo CSV 使用方式
 
 `todo.csv` 是后续执行看板。建议每次 goal 模式只拿 `status=next` 或最高优先级 `pending` 的任务推进。
@@ -965,10 +984,11 @@ TODO-024 已能把 domain 钢筋对象输出为旧 AutoCAD 插件兼容方向的
 下一步优先执行：
 
 ```text
-TODO-025 / Evidence
-  -> 旧图石输出钢筋 STP 样本入库验证
-  -> 固定 123.stp 的 hash、OCCT 导入统计和样本 witness 报告
+TODO-027 / M2-UI
+  -> 旧 UI 功能入口 1:1 复刻 P1
+  -> 对齐首批菜单 / 页签 / 按钮 / 状态栏入口和旧命令契约
 ```
 
-原因很简单：TODO-024 已能输出 Detail 首批字段。
-下一步需要把旧图石真实导出的钢筋几何样本固定下来，给后续几何输出和 golden 辅助对照留硬证据。
+原因很简单：TODO-025 已把旧图石真实导出的钢筋几何样本固定下来。
+TODO-026 golden 采集暂按用户要求保持 pending。
+下一步应该把正式 Qt6 app 的功能入口继续往旧图石 1:1 操作方向收齐。

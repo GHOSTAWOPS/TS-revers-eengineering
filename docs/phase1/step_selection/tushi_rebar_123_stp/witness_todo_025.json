@@ -1,0 +1,96 @@
+{
+  "schemaVersion": "tushi-rebar-stp-witness/v1",
+  "sampleId": "tushi_rebar_123_stp",
+  "decision": "witness-pass",
+  "createdAt": "2026-06-07T03:41:43+08:00",
+  "sourceSfl": {
+    "path": "C:/Users/ghost/Desktop/reverse_engineering/【03】图石软件/消力池下游侧带齿槽底板结构图石钢筋模型.sfl",
+    "sizeBytes": 563051,
+    "sha256": "sha256:a5645635ff77346e1dacccbac57b7f594d1278d74bf70f4be762dd93ced90515"
+  },
+  "exportedStep": {
+    "path": "C:/Users/ghost/Desktop/reverse_engineering/【03】图石软件/123.stp",
+    "sizeBytes": 87746388,
+    "sha256": "sha256:6a3c4f2044c2cc1f1123f0f58c61b2c869fbad3110a3585fdab49e69daf52a2a",
+    "lastWriteTime": "2026-06-05T10:02:17+08:00",
+    "header": {
+      "fileDescription": "STEP AP214",
+      "fileName": "123.stp",
+      "fileTimestamp": "2026-06-05T02:02:12",
+      "exporter": "Spatial InterOp 3D",
+      "schema": "AUTOMOTIVE_DESIGN { 1 0 10303 214 1 1 1 1 }"
+    }
+  },
+  "oldRunEvidence": {
+    "uiPath": "开始 / 文件 / 输出钢筋",
+    "runLog": "12_运行确认日志.md#RUN-20260605-001",
+    "requirements": [
+      "REQ-PROJ-005",
+      "REQ-PROJ-001",
+      "REQ-TECH-002"
+    ],
+    "evidence": [
+      "E-RUN-002",
+      "E-DEV-023",
+      "E-DEV-048"
+    ],
+    "gaps": [
+      "GAP-IDA-008",
+      "GAP-DEV-002"
+    ]
+  },
+  "currentImportProbe": {
+    "command": "app/build/step_import_probe.exe ../123.stp",
+    "ok": true,
+    "readOk": true,
+    "transferOk": true,
+    "roots": 1,
+    "freeShapes": 1,
+    "solids": 754,
+    "faces": 3016,
+    "rawEdges": 9048,
+    "rawVertices": 18096,
+    "lengthUnit": "METRE"
+  },
+  "selectionGate": {
+    "reportJson": "docs/phase1/step_selection/tushi_rebar_123_stp/step_selection_diff.json",
+    "reportMd": "docs/phase1/step_selection/tushi_rebar_123_stp/step_selection_diff.md",
+    "decision": "pass",
+    "probeRunCount": 5,
+    "copyPathRunIncluded": true,
+    "stableRefs": {
+      "faces": {
+        "baselineCount": 3016,
+        "minMatchRate": 1.0,
+        "duplicateCount": 0,
+        "mismatchedRuns": []
+      },
+      "edges": {
+        "baselineCount": 4524,
+        "minMatchRate": 1.0,
+        "duplicateCount": 0,
+        "mismatchedRuns": []
+      },
+      "vertices": {
+        "baselineCount": 3016,
+        "minMatchRate": 1.0,
+        "duplicateCount": 0,
+        "mismatchedRuns": []
+      }
+    }
+  },
+  "boundary": {
+    "proves": [
+      "old Tushi exported a rebar STP sample",
+      "current OCCT import path can read and transfer this sample",
+      "selection-v1 refs are stable for this sample across existing 5-run gate"
+    ],
+    "doesNotProve": [
+      "old rebar creation rules",
+      "old command parameters",
+      "schedule or material formulas",
+      "Detail output correctness",
+      "new system can already generate matching geometry"
+    ]
+  }
+}

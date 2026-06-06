@@ -1,0 +1,86 @@
+{
+  "id": "m1_app_024_run_001",
+  "date": "2026-06-07",
+  "decision": "m1-app-024-pass",
+  "scope": [
+    "TODO-025",
+    "old Tushi exported rebar STP witness",
+    "123.stp",
+    "OCCT import statistics",
+    "selection gate evidence"
+  ],
+  "sample": {
+    "sampleId": "tushi_rebar_123_stp",
+    "sourceSfl": {
+      "path": "C:/Users/ghost/Desktop/reverse_engineering/【03】图石软件/消力池下游侧带齿槽底板结构图石钢筋模型.sfl",
+      "sizeBytes": 563051,
+      "sha256": "sha256:a5645635ff77346e1dacccbac57b7f594d1278d74bf70f4be762dd93ced90515"
+    },
+    "sourceStep": {
+      "path": "C:/Users/ghost/Desktop/reverse_engineering/【03】图石软件/123.stp",
+      "sizeBytes": 87746388,
+      "sha256": "sha256:6a3c4f2044c2cc1f1123f0f58c61b2c869fbad3110a3585fdab49e69daf52a2a",
+      "exporter": "Spatial InterOp 3D",
+      "schema": "STEP AP214 / AUTOMOTIVE_DESIGN",
+      "lengthUnit": "METRE"
+    }
+  },
+  "currentImportProbe": {
+    "command": "app/build/step_import_probe.exe ../123.stp",
+    "ok": true,
+    "readOk": true,
+    "transferOk": true,
+    "roots": 1,
+    "freeShapes": 1,
+    "solids": 754,
+    "faces": 3016,
+    "rawEdges": 9048,
+    "rawVertices": 18096
+  },
+  "selectionGate": {
+    "decision": "pass",
+    "probeRunCount": 5,
+    "copyPathRunIncluded": true,
+    "report": "docs/phase1/step_selection/tushi_rebar_123_stp/step_selection_diff.json",
+    "stableRefs": {
+      "faces": {
+        "baselineCount": 3016,
+        "minMatchRate": 1.0,
+        "duplicateCount": 0
+      },
+      "edges": {
+        "baselineCount": 4524,
+        "minMatchRate": 1.0,
+        "duplicateCount": 0
+      },
+      "vertices": {
+        "baselineCount": 3016,
+        "minMatchRate": 1.0,
+        "duplicateCount": 0
+      }
+    }
+  },
+  "tests": {
+    "success": true,
+    "passed": 13,
+    "failed": 0,
+    "totalSeconds": 125.71
+  },
+  "readinessGate": {
+    "decision": "M1-Formal-Ready",
+    "m1FormalAllowed": true,
+    "passCount": 78,
+    "checkCount": 78,
+    "errorCount": 0,
+    "warningCount": 0
+  },
+  "guardrails": {
+    "codeChanged": false,
+    "xhighRequired": false,
+    "xhighReason": "documentation and read-only witness report only; no code, tests, or build scripts changed",
+    "stpTreatedAsBusinessTruth": false,
+    "autoCadL2Claimed": false,
+    "domainRebarOcctBoundary": "pass"
+  },
+  "next": "TODO-027"
+}
