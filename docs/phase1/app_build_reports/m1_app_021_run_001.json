@@ -1,0 +1,81 @@
+{
+  "id": "m1_app_021_run_001",
+  "date": "2026-06-07",
+  "decision": "m1-app-021-pass",
+  "appRoot": "C:/Users/ghost/Desktop/reverse_engineering/【03】图石软件/【图石钢筋1比1复刻】/app",
+  "scope": [
+    "AIS rebar presentation mapping P0",
+    "domain SteelBarGroup to presentation/occ display items",
+    "line segment to AIS_Shape",
+    "arc segment to AIS_Shape",
+    "stable diagnostics for missing or empty groups"
+  ],
+  "red": {
+    "verified": true,
+    "failure": "rebar_ais_presentation_tests compile failure: presentation/occ/RebarAisPresentationAdapter.h was missing"
+  },
+  "build": {
+    "success": true,
+    "target": "rebar_ais_presentation_tests"
+  },
+  "tests": {
+    "success": true,
+    "passed": 11,
+    "failed": 0,
+    "totalSeconds": 124.85,
+    "cases": [
+      "command_registry_tests",
+      "legacy_selection_ref_tests",
+      "rebar_domain_model_tests",
+      "rebar_group_creator_tests",
+      "rebar_ais_presentation_tests",
+      "app_smoke",
+      "viewer_smoke_tests",
+      "domain_rebar_boundary",
+      "step_import_probe_123",
+      "occ_selection_index_123",
+      "legacy_geometry_adapter_123"
+    ]
+  },
+  "presentationMapping": {
+    "objects": [
+      "RebarAisPresentationAdapter",
+      "RebarAisPresentationResult",
+      "RebarAisDisplayItem"
+    ],
+    "assertions": [
+      "line segment maps to AIS_Shape and OCCT line edge",
+      "arc segment maps to AIS_Shape and OCCT circular edge",
+      "missing group returns stable diagnostic",
+      "empty group returns stable diagnostic",
+      "AIS and OCCT stay in presentation/occ"
+    ],
+    "approximation": "AIS presentation mapping only; no complete HOOPS visual equivalence, no UI command handler and no Detail writer output"
+  },
+  "xhighReview": {
+    "required": true,
+    "critical": "none",
+    "important": "none",
+    "minor": "RebarAisPresentationAdapter.cpp should explicitly include <utility> for std::move",
+    "minorFixed": true,
+    "routeDrift": "none",
+    "verdict": "allow_commit",
+    "agentClosed": true
+  },
+  "guardrails": {
+    "domainRebarOcctBoundary": "pass",
+    "parentRebarGenerationChainMigrated": false,
+    "rebarBusinessImplemented": false,
+    "detailWriterImplemented": false,
+    "newDesignFileRuntimeImplemented": false,
+    "uiCommandHandlerImplemented": false
+  },
+  "readinessGate": {
+    "decision": "M1-Formal-Ready",
+    "m1FormalAllowed": true,
+    "errorCount": 0,
+    "warningCount": 0,
+    "passCount": 78,
+    "checkCount": 78
+  }
+}

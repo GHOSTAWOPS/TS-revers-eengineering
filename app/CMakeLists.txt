@@ -134,6 +134,20 @@ target_link_libraries(tsrebar_occ_legacy_adapter PUBLIC
     tsrebar_occ_selection
     ${TSREBAR_OCCT_STEP_LIBS})
 
+add_library(tsrebar_occ_rebar_presentation STATIC
+    src/presentation/occ/RebarAisPresentationAdapter.cpp
+    src/presentation/occ/RebarAisPresentationAdapter.h)
+
+target_include_directories(tsrebar_occ_rebar_presentation PUBLIC
+    src
+    "${TSREBAR_OCCT_INCLUDE_DIR}")
+
+target_link_libraries(tsrebar_occ_rebar_presentation PUBLIC
+    Qt6::Core
+    tsrebar_core
+    ${TSREBAR_OCCT_STEP_LIBS}
+    ${TSREBAR_OCCT_VIEWER_LIBS})
+
 add_library(tsrebar_occ_viewer STATIC
     src/presentation/occ/OccViewerWidget.cpp
     src/presentation/occ/OccViewerWidget.h)
@@ -192,6 +206,15 @@ add_executable(rebar_group_creator_tests
 
 target_link_libraries(rebar_group_creator_tests PRIVATE tsrebar_core)
 
+add_executable(rebar_ais_presentation_tests
+    tests/unit/rebar_ais_presentation_tests.cpp)
+
+target_include_directories(rebar_ais_presentation_tests PRIVATE
+    src
+    "${TSREBAR_OCCT_INCLUDE_DIR}")
+
+target_link_libraries(rebar_ais_presentation_tests PRIVATE tsrebar_occ_rebar_presentation)
+
 add_executable(step_import_probe
     src/step/StepImportProbe.cpp)
 
@@ -221,6 +244,7 @@ add_test(NAME command_registry_tests COMMAND command_registry_tests)
 add_test(NAME legacy_selection_ref_tests COMMAND legacy_selection_ref_tests)
 add_test(NAME rebar_domain_model_tests COMMAND rebar_domain_model_tests)
 add_test(NAME rebar_group_creator_tests COMMAND rebar_group_creator_tests)
+add_test(NAME rebar_ais_presentation_tests COMMAND rebar_ais_presentation_tests)
 add_test(NAME app_smoke COMMAND tsrebar_app --smoke)
 set_tests_properties(app_smoke PROPERTIES
     ENVIRONMENT "QT_QPA_PLATFORM=minimal;QT_QPA_PLATFORM_PLUGIN_PATH=${TSREBAR_QT_PLATFORM_PLUGIN_PATH}")

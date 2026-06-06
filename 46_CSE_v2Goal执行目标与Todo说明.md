@@ -1,4 +1,4 @@
-# CSE v2 Goal 执行目标与 Todo 说明
+﻿# CSE v2 Goal 执行目标与 Todo 说明
 
 ## 一句话结论
 
@@ -251,21 +251,20 @@ TODO-021 / M1-App-020 = done
 当前最新验证基线：
 
 ```text
-app 默认 CTest = 10/10 pass
+app 默认 CTest = 11/11 pass
 readiness gate = M1-Formal-Ready, 78/78 pass
 domain/rebar OCCT 边界 = pass
 
 latest commit = 本文件所在 TODO-021 节点提交
-latest tag = m1-app-020/rebar-line-arc-creator-p0
+planned tag = m1-app-021/rebar-ais-display-mapping
 ```
 
 当前下一步：
 
 ```text
-TODO-022 / M1-App-021
-  -> AIS 钢筋显示映射
-  -> 把 domain SteelBarGroup 渲染到 OCCT AIS，
-     但不让 AIS / OCCT 反向污染 domain/rebar。
+TODO-023 / M1-App-022
+  -> 新设计文件格式 runtime P1
+  -> 把 tsrebar 保存 / 读取接入正式 app，保存 STEP 来源、selection-v1 refs、rebar groups、binding 和 evidence。
 ```
 
 长期执行循环：
@@ -509,30 +508,29 @@ commit / tag / push 状态
 
 ### 短期 Goal（推荐本轮复制）
 
-目标：只完成 `TODO-022 / M1-App-021` 这个短期阶段，不自动进入后续长期开发。
+目标：只完成 `TODO-023 / M1-App-022` 这个短期阶段，不自动进入后续长期开发。
 
-本轮要在正式 `app` 中实现 AIS 钢筋显示映射：
+本轮要在正式 `app` 中实现新设计文件格式 runtime P1：
 
 ```text
-RebarAisPresentationAdapter
-domain SteelBarGroup -> AIS_Shape / AIS presentation
-viewer 可显示线筋 / 弧筋 P0 输出
+Project.Save / Project.Open runtime P1
+保存 STEP 来源、selection-v1 refs、rebar groups、binding、evidence
+打开后恢复工程状态并保留 binding repair 状态
 ```
 
 目标语义：
 
 ```text
-按 TODO-021 已落地的 domain SteelBarGroup，把第一批线筋 / 弧筋对象显示到
-OCCT AIS：
+按 18 / 24 / 32 / 33 的新工程格式契约，把正式 app 中的首批工程状态保存为 tsrebar：
 
-domain SteelBarGroup / SteelBar / SteelBarSegment
-  -> presentation adapter
-  -> OCCT AIS shape / display handle
-  -> viewer 显示 / 高亮 / 可选 smoke
-  -> domain/rebar 仍不依赖 AIS / OCCT
+STEP 来源 / selection-v1 refs / rebar groups / binding / evidence
+  -> 新设计文件格式 runtime
+  -> Save / Open / Repair 状态可测试
+  -> 不把 tsrebar 做成纯 OCCT 文件
+  -> 保留 SFL/IDA/Detail 反推的业务语义承载位
 ```
 
-本轮只做 AIS 显示映射，不做 Detail writer，不做新工程格式 runtime，不做完整 UI 参数窗口，不把显示层反向写进业务层。
+本轮只做新设计文件格式 runtime P1，不做 Detail writer，不做完整 UI 参数窗口，不做钢筋编辑 / 统计 / 出图算法。
 
 当前已完成前置：
 
@@ -586,6 +584,10 @@ C:\Users\ghost\Desktop\reverse_engineering\【03】图石软件
 - 必要的 `app/tests/*`
 - 必要的 viewer / presentation adapter 文件
 - `59_M1-App-021AIS钢筋显示映射实现记录.md`
+- `18_新设计文件格式替代SFL策略.md`
+- `24_新设计文件格式Schema与Fixture草案.md`
+- `32_Validator实现契约与错误码总表.md`
+- `33_Qt6应用SaveOpen与Binding修复契约.md`
 - `docs/phase1/app_build_reports/m1_app_021_run_001.md/json`
 - `11_需求证据追溯矩阵.md`
 - `99_缺口和待确认项.md`
@@ -619,7 +621,7 @@ C:\Users\ghost\Desktop\reverse_engineering\【03】图石软件
 6. readiness gate 严格模式通过。
 7. commit 前必须执行 xhigh 只读 review；Critical / Important 必须修复或写明技术反驳理由。
 8. 更新实现记录、build report、`11 / 99 / 46 / todo.csv`。
-9. `todo.csv` 中 `TODO-022` 改为 `done`；只把下一个明确可执行任务改为 `next`，但不继续实现。
+9. `todo.csv` 中 `TODO-023` 改为 `done`；只把下一个明确可执行任务改为 `next`，但不继续实现。
 
 本轮完成后必须停止，输出阶段复盘：
 
@@ -627,11 +629,11 @@ C:\Users\ghost\Desktop\reverse_engineering\【03】图石软件
 完成了什么
 验证了什么
 还缺什么
-下一阶段建议做 TODO-023 还是先补旧图石运行证据
+下一阶段建议做 TODO-024 还是先补旧图石运行证据
 commit / tag / push 状态
 ```
 
-不要在同一个 goal 内继续做 `TODO-023`、Detail writer 或新工程格式 runtime。
+不要在同一个 goal 内继续做 `TODO-024`、Detail writer 或工程图输出。
 ### 长期方向（只作护栏，不作为本轮 Goal）
 
 目标：持续推进《图石钢筋 1 比 1 复刻》正式 `app` 开发，直到具备按旧 VisualTS 证据复刻钢筋创建、编辑、统计、出图的工程条件。
@@ -822,11 +824,12 @@ Detail / 新设计文件格式输出层
 - `M1-App-019`：旧命令契约绑定 P1，LineGroup / ArcGroup / TrimByLine / TrimByFace 可查询、可注册稳定 NotImplemented placeholder。
 - `TODO-020`：IDA MCP 旧线筋 / 弧筋链补证据，形成 `E-IDA-022`，可支撑 `TODO-021` 的 P0 业务创建 spike。
 - `M1-App-020`：旧线筋 / 弧筋创建算法 P0，RebarGroupCreator 可输出 domain SteelBarGroup。
+- `M1-App-021`：AIS 钢筋显示映射 P0，RebarAisPresentationAdapter 可输出 AIS_Shape。
 
 当前最新验证状态：
 
 ```text
-app 默认 CTest = 10/10 pass
+app 默认 CTest = 11/11 pass
 readiness gate = M1-Formal-Ready, 78/78 pass
 domain/rebar OCCT 边界 = pass
 ```
@@ -834,17 +837,16 @@ domain/rebar OCCT 边界 = pass
 当前下一步：
 
 ```text
-TODO-022 / M1-App-021
-  -> AIS 钢筋显示映射
-  -> 把 domain SteelBarGroup 渲染到 OCCT AIS 显示
+TODO-023 / M1-App-022
+  -> 新设计文件格式 runtime P1
+  -> 保存 / 读取 STEP 来源、selection-v1 refs、rebar groups、binding 和 evidence
 ```
 
 原因：
 
 ```text
-旧线筋 / 弧筋 P0 creator 已能输出 domain SteelBarGroup。
-下一步可以把 domain 对象接到 presentation/occ 显示层，但 AIS / OCCT
-不能反向进入 domain/rebar。
+旧线筋 / 弧筋 P0 creator 已能输出 domain SteelBarGroup，AIS 显示映射 P0 已完成。
+下一步需要把这些对象接入正式 app 的新工程格式保存 / 读取 runtime。
 ```
 
 ### 执行规则
@@ -909,19 +911,19 @@ TODO-022 / M1-App-021
 
 ## CSE v2 Control Contract
 
-- **Primary Setpoint**：下一轮只完成 `TODO-022 / M1-App-021`，把 domain `SteelBarGroup` / `SteelBarSegment` 映射到 OCCT AIS 显示层，同时保持 `domain/rebar` 不依赖 AIS / OCCT。
-- **Acceptance**：新增 presentation adapter / 测试；覆盖 line / arc segment 显示映射、空对象稳定诊断、默认 CTest、readiness gate、domain/rebar OCCT 泄漏检查；代码节点 commit 前执行 xhigh 只读 review。
-- **Guardrail Metrics**：不能让 AIS / OCCT 反向进入业务层；不能用显示结果定义钢筋业务真相；不能把 TODO-022 扩成 Detail writer 或完整 UI。
-- **Sampling Plan**：先读 `38/39/55/58/99/todo.csv`；先补 presentation 层测试；再实现 AIS 显示 adapter；验证后执行 xhigh 只读 review；最后更新实现记录、build report、追溯矩阵、缺口和 todo。
-- **Known Delays**：OpenGL 弹窗空白影响自动化；AIS 真实视觉验证可能需要手动 smoke；旧图石运行确认仍依赖用户操作。
-- **Recovery Target**：如果真实 viewer 不稳定，默认测试只验证 presentation mapping 和 smoke，不用弹窗测试替代业务验收。
-- **Rollback Trigger**：domain/rebar 出现 `TopoDS_ / AIS_ / BRep / TopAbs_`；presentation adapter 反向修改业务模型；TODO-022 顺手进入 Detail writer / 新工程格式 runtime；xhigh Critical / Important 未处理就 commit。
+- **Primary Setpoint**：下一轮只完成 `TODO-023 / M1-App-022`，把 `*.tsrebar` 保存 / 读取接入正式 app，保存 STEP 来源、selection-v1 refs、rebar groups、binding 和 evidence。
+- **Acceptance**：新增 app runtime Save/Open 代码和测试；覆盖保存 STEP 来源、selection refs、rebar groups、binding、evidence，打开后恢复工程状态并保留 binding repair 状态；默认 CTest、readiness gate、domain/rebar OCCT 泄漏检查通过；代码节点 commit 前执行 xhigh 只读 review。
+- **Guardrail Metrics**：不能把新格式做成纯 OCCT 文件；不能丢失 SFL/IDA/Detail 反推的 legacyObject.raw、geometryRef、binding 和 evidence；不能把 TODO-023 扩成 Detail writer 或完整 UI。
+- **Sampling Plan**：先读 `18/24/32/33/55/58/59/99/todo.csv`；先补 Save/Open runtime 测试；再实现正式 app 新格式 runtime；验证后执行 xhigh 只读 review；最后更新实现记录、build report、追溯矩阵、缺口和 todo。
+- **Known Delays**：binding repair 行为容易和既有 fixture / validator 口径漂移；旧图石运行确认仍依赖用户操作。
+- **Recovery Target**：如果 runtime Save/Open 与既有 validator/gate 口径冲突，先收缩到最小可验证工程包并更新缺口，不继续堆 Detail writer。
+- **Rollback Trigger**：domain/rebar 出现 `TopoDS_ / AIS_ / BRep / TopAbs_`；新格式丢失 binding/evidence；TODO-023 顺手进入 Detail writer / 工程图输出；xhigh Critical / Important 未处理就 commit。
 - **Constraints**：不使用 ACIS / HOOPS / Codejock 等商业库；AIS 只能在 presentation / viewer 层；新工程格式结合 SFL 业务语义和 OCCT 几何引用设计。
-- **Boundary**：下一轮允许修改 `app/src/presentation/occ`、必要 tests、实现记录、build report、追溯矩阵、缺口、46 和 todo；禁止修改父目录 rebar 业务或让 domain 直接 include OCCT/AIS。
-- **Coupling Notes**：`domain/rebar` 是业务对象边界；`presentation/occ` 是显示边界；TODO-022 只消费 TODO-021 输出，不改变线筋 / 弧筋创建规则。
-- **Approximation Validity**：TODO-022 是 AIS 显示映射，不等价旧 HOOPS 显示完全一致、旧 UI 交互或工程图输出。
-- **Actuator Budget**：下一轮只推进 `TODO-022`。完成后停止复盘，不自动进入 `TODO-023`。
-- **Risks**：自动化环境的 OpenGL/AIS 渲染稳定性；arc segment 的真实显示曲率后续可能需要更多旧图石/golden 对照。
+- **Boundary**：下一轮允许修改正式 app 的项目 runtime / IO / 必要 tests、实现记录、build report、追溯矩阵、缺口、46 和 todo；禁止修改父目录 rebar 业务、Detail writer 或让 domain 直接 include OCCT/AIS。
+- **Coupling Notes**：`domain/rebar` 是业务对象边界；新设计文件格式是持久化边界；TODO-023 只保存 / 读取已有 STEP、selection refs、rebar groups、binding 和 evidence，不改变线筋 / 弧筋创建规则。
+- **Approximation Validity**：TODO-023 是正式 app runtime P1，不等价完整旧 SFL 兼容、AutoCAD Detail 输出或 golden 闭合。
+- **Actuator Budget**：下一轮只推进 `TODO-023`。完成后停止复盘，不自动进入 `TODO-024`。
+- **Risks**：binding 失效和几何引用漂移；现有 fixture / validator 与正式 app runtime 口径需要保持一致。
 ## Todo CSV 使用方式
 
 `todo.csv` 是后续执行看板。建议每次 goal 模式只拿 `status=next` 或最高优先级 `pending` 的任务推进。
@@ -946,10 +948,10 @@ TODO-022 / M1-App-021
 下一步优先执行：
 
 ```text
-TODO-022 / M1-App-021
-  -> AIS 钢筋显示映射
-  -> 把 domain SteelBarGroup 渲染到 OCCT AIS 显示
+TODO-023 / M1-App-022
+  -> 新设计文件格式 runtime P1
+  -> 保存 / 读取 STEP 来源、selection-v1 refs、rebar groups、binding 和 evidence
 ```
 
-原因很简单：旧线筋 / 弧筋 P0 业务对象已经能生成。
-下一步可以让用户在 viewer 中看到这些 domain 钢筋对象，但必须保持显示层和业务层分离。
+原因很简单：旧线筋 / 弧筋 P0 业务对象已经能生成，AIS 显示映射已经完成。
+下一步要让这些对象能随新工程格式保存 / 读取，并保留 binding / evidence。
