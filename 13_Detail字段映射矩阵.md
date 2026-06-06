@@ -102,6 +102,12 @@ IDA 补证：
 - `rsdID / groupID / stbNum / StbGeo.segID / StbTable.rsdID` 必须同源。
 - Detail writer 不能重新生成一套与模型无关的钢筋编号。
 
+M1-App-018 状态：
+
+- `SteelBarGroup` P1 已可表达 `rsdID / groupID / diameter / diameter2 / interval / barcount / segcount / stbNum / stbNumAct / stbLevel / stbLayer / stbProfile / stbUse / RangeLess180 / ComponentName / PJSteelName / SteelWay / stbType / stbOffsetInOut`。
+- `rsdID` 在代码中使用 string 承载，避免把 `Y%d / Z%d / %d%c` 等旧分支误压成 int。
+- Detail writer 仍未接入 `domain/rebar`；本状态只说明字段可编码，不说明写出值公式或 AutoCAD 导入已闭合。
+
 ## StbGeo -> RebarSegment
 
 | Detail 字段 | 新模型字段 | 状态 | 说明 |
@@ -115,6 +121,12 @@ IDA 补证：
 | `start_r` | `RebarSegment.startRadius` | 部分确认 | 起点半径。 |
 | `end_r` | `RebarSegment.endRadius` | 部分确认 | 终点半径。 |
 | `offset_x/y/z` | `RebarSegment.offset` | 部分确认 | 偏移。 |
+
+M1-App-018 状态：
+
+- `SteelBarSegment` P1 已可表达 `segID / stbSeqNum / shapeType / startPoint / endPoint / middlePoint / startRadius / endRadius / offset / length`。
+- `shapeType` 使用 `SteelBarSegmentShape`，并提供 `detailShapeTypeCode()` 输出 `L / A / C`。
+- `startRadius / endRadius / offset` 字段已存在，但旧值来源、半径公式和点状 `C` 的完整语义仍未闭合。
 
 ## StbRow -> ScheduleRow
 

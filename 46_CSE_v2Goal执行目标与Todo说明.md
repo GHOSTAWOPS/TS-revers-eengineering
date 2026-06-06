@@ -169,8 +169,9 @@ C:\Users\ghost\Desktop\reverse_engineering\【03】图石软件
 28. `【图石钢筋1比1复刻】\52_M1-App-015LegacyGeometryAdapterOffsetSpike实现记录.md`
 29. `【图石钢筋1比1复刻】\53_M1-App-016LegacyGeometryAdapterSectionSpike实现记录.md`
 30. `【图石钢筋1比1复刻】\54_M1-App-017LegacyGeometryAdapterSweepBoundary实现记录.md`
-31. `【图石钢筋1比1复刻】\99_缺口和待确认项.md`
-32. `【图石钢筋1比1复刻】\todo.csv`
+31. `【图石钢筋1比1复刻】\55_M1-App-018RebarDomainModelFreezeP1实现记录.md`
+32. `【图石钢筋1比1复刻】\99_缺口和待确认项.md`
+33. `【图石钢筋1比1复刻】\todo.csv`
 
 当前已完成状态：
 
@@ -227,25 +228,28 @@ M1-App-016 = done
 
 M1-App-017 = done
   -> edgeCircularSweepPreview。
+
+M1-App-018 = done
+  -> domain/rebar 钢筋领域模型冻结 P1。
 ```
 
 当前最新验证基线：
 
 ```text
-app 默认 CTest = 8/8 pass
+app 默认 CTest = 9/9 pass
 readiness gate = M1-Formal-Ready, 78/78 pass
 domain/rebar OCCT 边界 = pass
 
-latest commit = 本文件所在 TODO-017 节点提交
-latest tag = m1-app-017/sweep-pipe-preview
+latest commit = 本文件所在 TODO-018 节点提交
+latest tag = m1-app-018/rebar-domain-model-p1
 ```
 
 当前下一步：
 
 ```text
-TODO-018 / M1-App-018
-  -> 钢筋领域模型冻结 P1
-  -> 把 SteelBar / SteelBarSegment / SteelBarGroup 字段按旧证据固化成可编码模型
+TODO-019 / M1-App-019
+  -> 旧命令契约绑定 P1
+  -> 把线筋 / 弧筋 / 裁剪等首批旧命令接入 LegacyUiCommandMap 和 command registry
 ```
 
 长期执行循环：
@@ -489,30 +493,30 @@ commit / tag / push 状态
 
 ### 短期 Goal（推荐本轮复制）
 
-目标：只完成 `TODO-018 / M1-App-018` 这个短期阶段，不自动进入后续长期开发。
+目标：只完成 `TODO-019 / M1-App-019` 这个短期阶段，不自动进入后续长期开发。
 
-本轮要在正式 `app` 中完成 `钢筋领域模型冻结 P1`：
+本轮要在正式 `app` 中完成 `旧命令契约绑定 P1`：
 
 ```text
-SteelBar
-SteelBarSegment
-SteelBarGroup
-SteelData
+LegacyUiCommandMap
+CommandRegistry
+首批旧钢筋命令契约
+NotImplemented / handler 占位边界
 ```
 
 目标语义：
 
 ```text
-对齐旧 VisualTS / Detail / SFL 证据：
+对齐旧 VisualTS / UI / IDA 证据：
 
-旧 steelbar / steelbargroup / seg_steelbargroup / steelData 字段线索
-  -> Detail StbGroup / StbGeo / StbTable 字段映射
-  -> 新 domain/rebar DTO 字段和 ID 关系
-  -> 单测验证字段默认值、引用关系和无 OCCT 泄漏
-  -> 只冻结可编码领域模型，不实现钢筋创建算法
+旧 Ribbon / 菜单 / 命令字符串 / command id
+  -> 新 LegacyUiCommandMap command key
+  -> CommandRegistry 可查、可执行、可返回 NotImplemented 或明确 handler
+  -> 命令契约记录选择类型、输入参数、状态机和后续业务入口
+  -> 只绑定命令入口，不实现线筋 / 弧筋 / 裁剪创建算法
 ```
 
-本轮只做领域模型字段和测试，不做线筋 / 弧筋创建业务，不做 UI，不做 Detail writer。
+本轮只做命令契约和测试，不做线筋 / 弧筋创建业务，不做 Detail writer，不做 AIS 钢筋显示。
 
 当前已完成前置：
 
@@ -541,6 +545,9 @@ TODO-016 / M1-App-016 = done
 
 TODO-017 / M1-App-017 = done
   -> edgeCircularSweepPreview
+
+TODO-018 / M1-App-018 = done
+  -> domain/rebar 钢筋领域模型冻结 P1
 ```
 
 工作目录：
@@ -579,19 +586,20 @@ C:\Users\ghost\Desktop\reverse_engineering\【03】图石软件
 20. `【图石钢筋1比1复刻】\52_M1-App-015LegacyGeometryAdapterOffsetSpike实现记录.md`
 21. `【图石钢筋1比1复刻】\53_M1-App-016LegacyGeometryAdapterSectionSpike实现记录.md`
 22. `【图石钢筋1比1复刻】\54_M1-App-017LegacyGeometryAdapterSweepBoundary实现记录.md`
-23. `【图石钢筋1比1复刻】\09_钢筋领域模型草案.md`
-24. `【图石钢筋1比1复刻】\13_Detail字段映射矩阵.md`
-25. `【图石钢筋1比1复刻】\99_缺口和待确认项.md`
-26. `【图石钢筋1比1复刻】\todo.csv`
+23. `【图石钢筋1比1复刻】\55_M1-App-018RebarDomainModelFreezeP1实现记录.md`
+24. `【图石钢筋1比1复刻】\01_功能操作矩阵.md`
+25. `【图石钢筋1比1复刻】\03_IDA命令证据.md`
+26. `【图石钢筋1比1复刻】\08_开发命令契约.md`
+27. `【图石钢筋1比1复刻】\17_一期按钮追溯与命令占位矩阵.md`
+28. `【图石钢筋1比1复刻】\99_缺口和待确认项.md`
+29. `【图石钢筋1比1复刻】\todo.csv`
 
 本轮允许修改：
 
-- `app/src/domain/rebar/SteelData.h`
-- `app/src/domain/rebar/SteelBar.h`
-- `app/src/domain/rebar/SteelBarSegment.h`
-- `app/src/domain/rebar/SteelBarGroup.h`
+- `app/src/command/`
+- `app/src/ui/` 中命令映射相关文件
 - `app/tests/unit/`
-- 必要时修改 `app/CMakeLists.txt` 以接入领域模型单测
+- 必要时修改 `app/CMakeLists.txt` 以接入命令契约单测
 - `【图石钢筋1比1复刻】` 下对应实现记录、build report、追溯矩阵、缺口文档和 `todo.csv`
 
 本轮禁止修改或迁移：
@@ -605,37 +613,40 @@ C:\Users\ghost\Desktop\reverse_engineering\【03】图石软件
 - `domain/rebar` 中引入 `TopoDS_`、`AIS_`、`BRep*`、`TopAbs_`
 - 线筋 / 弧筋 / 面筋创建算法
 - Detail writer 输出逻辑
-- UI 菜单和命令 handler
+- AIS 钢筋显示逻辑
+- 旧命令低置信项被写成确定业务算法
 
 本轮验收标准：
 
-1. `domain/rebar` 中的 SteelData / SteelBar / SteelBarSegment / SteelBarGroup 字段与 `09/13/16` 的证据口径对齐。
-2. 字段需要区分：
-   - 已有高置信字段。
-   - 低置信但需要保留的 legacy raw / unresolved 字段。
-   - Detail writer 需要的映射字段。
-3. 领域模型只依赖 STL / Qt 基础类型或本项目纯领域类型，不依赖 OCCT / AIS。
+1. 首批旧命令在 `LegacyUiCommandMap` 和 `CommandRegistry` 中可查询。
+2. 命令契约需要区分：
+   - 旧 UI 路径。
+   - 新 CommandId。
+   - 旧命令字符串 / IDA evidence。
+   - 输入选择类型。
+   - 当前 handler 状态：`NotImplemented` 或明确可调用 handler。
+3. 未确认命令必须带 GAP / evidence，不得写成已确认旧逻辑。
 4. 新增或补强单测，覆盖：
-   - 默认值。
-   - group -> bar -> segment 引用关系。
-   - Detail 关键字段映射所需 ID / 数量 / 直径 / 间距 / 长度 / 类型字段。
-   - 低置信字段必须能标注 unresolved / evidence。
+   - 线配筋 / 弧形筋 / 裁剪类首批命令存在。
+   - 未实现命令返回稳定 `NotImplemented`，不静默成功。
+   - 命令 metadata 能追溯到 `01/03/08/17`。
+   - 命令注册不引入钢筋创建副作用。
 5. 默认 CTest 通过。
 6. readiness gate 严格模式通过，或记录明确失败原因。
 7. domain/rebar OCCT 泄漏检查通过。
 8. 涉及代码、测试、构建脚本时，commit 前必须执行 xhigh 只读 review，并关闭已完成子代理。
-9. 新增 `55_M1-App-018RebarDomainModelFreezeP1实现记录.md`。
-10. 新增 `docs/phase1/app_build_reports/m1_app_018_run_001.md` 和必要 JSON。
+9. 新增 `56_M1-App-019LegacyCommandContractP1实现记录.md`。
+10. 新增 `docs/phase1/app_build_reports/m1_app_019_run_001.md` 和必要 JSON。
 11. 更新：
    - `00_总览.md`
-   - `09_钢筋领域模型草案.md`
+   - `08_开发命令契约.md`
    - `11_需求证据追溯矩阵.md`
-   - `13_Detail字段映射矩阵.md`
+   - `17_一期按钮追溯与命令占位矩阵.md`
    - `34_Phase1ReadinessGate实际运行记录.md`
    - `99_缺口和待确认项.md`
    - `46_CSE_v2Goal执行目标与Todo说明.md`
    - `todo.csv`
-12. `todo.csv` 中 `TODO-018` 改为 `done`；只把下一个明确可执行任务改为 `next`，但不继续实现。
+12. `todo.csv` 中 `TODO-019` 改为 `done`；只把下一个明确可执行任务改为 `next`，但不继续实现。
 
 本轮完成后必须停止，输出阶段复盘：
 
@@ -643,10 +654,10 @@ C:\Users\ghost\Desktop\reverse_engineering\【03】图石软件
 完成了什么
 验证了什么
 还缺什么
-下一阶段建议做 TODO-019 / TODO-020 / TODO-021 中哪一个
+下一阶段建议做 TODO-020 / TODO-021 / TODO-023 中哪一个
 ```
 
-不要在同一个 goal 内继续做 `TODO-019`、旧命令契约、钢筋创建算法、Detail writer 或 UI 复刻。
+不要在同一个 goal 内继续做 `TODO-020`、钢筋创建算法、Detail writer、AIS 钢筋显示或新工程格式 runtime。
 
 ### 长期方向（只作护栏，不作为本轮 Goal）
 
@@ -811,6 +822,7 @@ Detail / 新设计文件格式输出层
 - `52_M1-App-015LegacyGeometryAdapterOffsetSpike实现记录.md`
 - `53_M1-App-016LegacyGeometryAdapterSectionSpike实现记录.md`
 - `54_M1-App-017LegacyGeometryAdapterSweepBoundary实现记录.md`
+- `55_M1-App-018RebarDomainModelFreezeP1实现记录.md`
 
 ### 当前已知状态
 
@@ -833,11 +845,12 @@ Detail / 新设计文件格式输出层
 - `M1-App-015`：`LegacyGeometryAdapter offset preview`，edge ref to offset curve preview summary。
 - `M1-App-016`：`LegacyGeometryAdapter section preview`，face-plane section preview summary。
 - `M1-App-017`：`LegacyGeometryAdapter sweep preview`，edge circular sweep preview summary。
+- `M1-App-018`：`domain/rebar` 钢筋领域模型冻结 P1，SteelData / SteelBarGroup / SteelBar / SteelBarSegment 字段可编码。
 
 当前最新验证状态：
 
 ```text
-app 默认 CTest = 8/8 pass
+app 默认 CTest = 9/9 pass
 readiness gate = M1-Formal-Ready, 78/78 pass
 domain/rebar OCCT 边界 = pass
 ```
@@ -845,18 +858,18 @@ domain/rebar OCCT 边界 = pass
 当前下一步：
 
 ```text
-TODO-018 / M1-App-018
-  -> 钢筋领域模型冻结 P1
-  -> SteelBar / SteelBarSegment / SteelBarGroup / SteelData 字段可编码
+TODO-019 / M1-App-019
+  -> 旧命令契约绑定 P1
+  -> 线筋 / 弧筋 / 裁剪等首批旧命令进入 LegacyUiCommandMap 和 CommandRegistry
 ```
 
 原因：
 
 ```text
-LegacyGeometryAdapter 的首批几何能力边界已覆盖到 sweep / pipe preview。
-继续堆 adapter spike 的收益下降。下一步应把旧 steelbar / steelbargroup /
-seg_steelbargroup / steelData 证据沉到 domain/rebar 领域模型里，
-为后续线筋 / 弧筋创建算法提供稳定对象边界。
+LegacyGeometryAdapter 的首批几何能力边界已覆盖到 sweep / pipe preview，
+domain/rebar 也已完成 P1 字段冻结。
+下一步需要先把旧 UI / IDA 命令入口绑定到正式命令系统，
+让后续线筋 / 弧筋 / 裁剪业务算法有稳定入口和可追溯状态机。
 ```
 
 ### 执行规则
@@ -921,18 +934,18 @@ seg_steelbargroup / steelData 证据沉到 domain/rebar 领域模型里，
 
 ## CSE v2 Control Contract
 
-- **Primary Setpoint**：本轮只完成 `TODO-018 / M1-App-018`，让 `domain/rebar` 的 SteelData / SteelBar / SteelBarSegment / SteelBarGroup 字段按旧证据冻结到 P1。
-- **Acceptance**：领域模型 DTO、单测、默认 CTest、readiness gate、domain/rebar OCCT 泄漏检查、xhigh 只读 review、实现记录、build report、`todo.csv` 和追溯文档全部闭合。
+- **Primary Setpoint**：本轮只完成 `TODO-019 / M1-App-019`，让线筋 / 弧筋 / 裁剪等首批旧命令进入 `LegacyUiCommandMap` 和 `CommandRegistry`，形成可测试、可追溯、可返回稳定 NotImplemented 的命令契约。
+- **Acceptance**：命令契约 DTO / metadata、单测、默认 CTest、readiness gate、domain/rebar OCCT 泄漏检查、xhigh 只读 review、实现记录、build report、`todo.csv` 和追溯文档全部闭合。
 - **Guardrail Metrics**：不能让 OCCT 细节泄漏进 `domain/rebar`；不能把父目录钢筋生成器当业务真相；不能用“OCCT 能做什么”替代“旧图石怎么做”。
-- **Sampling Plan**：先读 `09/13/16` 字段证据，再补 domain/rebar 单测；实现后运行默认 CTest；运行 readiness gate；运行 domain/rebar OCCT 泄漏检查；代码节点 commit 前执行 xhigh 只读 review；完成后更新 evidence / gap / todo。
+- **Sampling Plan**：先读 `01/03/08/17` 命令证据，再补 command map / registry 单测；实现后运行默认 CTest；运行 readiness gate；运行 domain/rebar OCCT 泄漏检查；代码节点 commit 前执行 xhigh 只读 review；完成后更新 evidence / gap / todo。
 - **Known Delays**：IDA MCP 当前可能没有绑定数据库；旧图石运行确认依赖用户操作；真实 golden 对照要等旧软件可稳定导出。
 - **Recovery Target**：发现路线偏移时，停止继续开发钢筋业务，先回到文档和 adapter 边界修正。
 - **Rollback Trigger**：`domain/rebar` 出现 OCCT include、父目录 rebar 业务被迁入、测试失败但继续堆功能、旧逻辑无证据却写成确定结论、代码节点跳过 xhigh 只读 review。
 - **Constraints**：不使用 ACIS / HOOPS / Codejock 等商业库；不读取完整私有 SFL 作为新主格式；新工程格式结合 SFL 业务语义和 OCCT 几何引用设计。
-- **Boundary**：本轮只允许修改 domain/rebar DTO、领域模型单测、必要 CMake 测试接入、M1-App-018 文档和任务看板；父目录只读参考；xhigh agent 只读 review，不负责修改。
+- **Boundary**：本轮只允许修改 command / UI 命令映射、命令契约单测、必要 CMake 测试接入、M1-App-019 文档和任务看板；父目录只读参考；xhigh agent 只读 review，不负责修改。
 - **Coupling Notes**：`LegacyGeometryAdapter` 是几何能力边界；`domain/rebar` 是业务对象边界；`DetailWriter` 和新设计文件格式是输出 / 持久化边界。
-- **Approximation Validity**：本轮领域模型冻结 P1 只确认可编码字段、ID 关系和低置信字段承载方式；不代表旧图石所有业务字段语义完全闭合，也不代表线筋 / 弧筋创建算法已实现。
-- **Actuator Budget**：本轮只推进 `TODO-018`。完成后停止复盘，不自动进入 `TODO-019`。
+- **Approximation Validity**：本轮命令契约绑定 P1 只确认命令入口、metadata、选择类型和 NotImplemented 状态可追溯；不代表线筋 / 弧筋 / 裁剪业务算法已实现。
+- **Actuator Budget**：本轮只推进 `TODO-019`。完成后停止复盘，不自动进入 `TODO-020` 或钢筋创建算法。
 - **Risks**：旧图石业务逻辑证据不足；OCCT 几何结果和 ACIS 存在细节差异；没有 golden 时只能先做结构正确和证据闭环。
 
 ## Todo CSV 使用方式
@@ -959,11 +972,11 @@ seg_steelbargroup / steelData 证据沉到 domain/rebar 领域模型里，
 下一步优先执行：
 
 ```text
-TODO-018 / M1-App-018
-  -> 钢筋领域模型冻结 P1
-  -> 把 SteelBar / SteelBarSegment / SteelBarGroup / SteelData 字段按旧证据固化
+TODO-019 / M1-App-019
+  -> 旧命令契约绑定 P1
+  -> 把线筋 / 弧筋 / 裁剪等首批旧命令接入 LegacyUiCommandMap 和 CommandRegistry
 ```
 
-原因很简单：几何 adapter 的首批能力边界已经够支撑下一步建业务对象。
-如果不先冻结领域模型，后面线筋 / 弧筋创建、Detail writer 和新工程格式
-都会各自发明字段，路线会变成多套事实源。
+原因很简单：几何 adapter 的首批能力边界和 domain/rebar P1 字段已经完成。
+如果不先绑定旧命令入口，后面线筋 / 弧筋创建、裁剪编辑、UI 和测试
+都会各自发明入口，路线会变成多套命令事实源。

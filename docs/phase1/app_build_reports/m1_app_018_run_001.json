@@ -1,0 +1,83 @@
+{
+  "id": "m1_app_018_run_001",
+  "date": "2026-06-06",
+  "decision": "m1-app-018-pass",
+  "appRoot": "C:/Users/ghost/Desktop/reverse_engineering/【03】图石软件/【图石钢筋1比1复刻】/app",
+  "scope": [
+    "domain/rebar P1 model freeze",
+    "SteelData P1 fields",
+    "SteelBarGroup P1 fields",
+    "SteelBar P1 fields",
+    "SteelBarSegment P1 fields",
+    "legacy raw / geometryRef / binding / evidence carriers"
+  ],
+  "red": {
+    "verified": true,
+    "failure": "rebar_domain_model_tests compile failure: SteelData.steelDataId, BindingState, SteelBarGroup.rsdId, SteelBarSegment.shapeType, legacyRaw, geometryRef, binding and related P1 fields were missing"
+  },
+  "build": {
+    "success": true,
+    "target": "rebar_domain_model_tests"
+  },
+  "tests": {
+    "success": true,
+    "passed": 9,
+    "failed": 0,
+    "totalSeconds": 163.30,
+    "cases": [
+      "command_registry_tests",
+      "legacy_selection_ref_tests",
+      "rebar_domain_model_tests",
+      "app_smoke",
+      "viewer_smoke_tests",
+      "domain_rebar_boundary",
+      "step_import_probe_123",
+      "occ_selection_index_123",
+      "legacy_geometry_adapter_123"
+    ]
+  },
+  "domainModel": {
+    "objects": [
+      "SteelData",
+      "SteelBarGroup",
+      "SteelBar",
+      "SteelBarSegment",
+      "RebarDomainTypes"
+    ],
+    "assertions": [
+      "default binding and visibility state is stable",
+      "group references bar ids",
+      "bar references segment ids",
+      "Detail shapeType L is derived from SteelBarSegmentShape::Line",
+      "rsdId preserves non-integer Detail forms",
+      "Detail key fields for StbGroup and StbGeo are representable",
+      "unresolved legacy fields, evidence and binding are explicit"
+    ],
+    "approximation": "P1 field freeze only; no steelbar creation algorithm and no complete old SFL field equivalence"
+  },
+  "xhighReview": {
+    "required": true,
+    "critical": "none",
+    "important": "none",
+    "minor": "legacy id alias should not become future business truth; start/end radius fields are present but not explicitly asserted",
+    "routeDrift": "none",
+    "verdict": "allow_commit",
+    "agentClosed": true
+  },
+  "guardrails": {
+    "domainRebarOcctBoundary": "pass",
+    "parentRebarGenerationChainMigrated": false,
+    "rebarBusinessImplemented": false,
+    "todo019Implemented": false,
+    "detailWriterImplemented": false,
+    "uiCommandHandlerImplemented": false
+  },
+  "readinessGate": {
+    "decision": "M1-Formal-Ready",
+    "m1FormalAllowed": true,
+    "errorCount": 0,
+    "warningCount": 0,
+    "passCount": 78,
+    "checkCount": 78
+  }
+}

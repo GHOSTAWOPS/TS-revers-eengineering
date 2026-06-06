@@ -163,6 +163,14 @@ E-DEV-041
      54_M1-App-017LegacyGeometryAdapterSweepBoundary实现记录.md
      docs/phase1/app_build_reports/m1_app_017_run_001.md
      docs/phase1/app_build_reports/m1_app_017_run_001.json
+
+E-DEV-042
+  -> M1-App-018 钢筋领域模型冻结 P1 报告
+  -> 来源：
+     app/
+     55_M1-App-018RebarDomainModelFreezeP1实现记录.md
+     docs/phase1/app_build_reports/m1_app_018_run_001.md
+     docs/phase1/app_build_reports/m1_app_018_run_001.json
 ```
 
 注意：
@@ -215,6 +223,7 @@ Blocker GAPs: none
 - `LegacyGeometryAdapter offset preview` 已落地并通过 M1-App-015：默认 CTest 8/8 pass，可把 edge ref 生成 offset curve preview summary，并记录 samplePoints、length、bbox、sourceCurveKind、sourceLength、offsettable 和失败诊断；该阶段不是完整 ACIS offset 等价、OCCT topology mutation 或钢筋生成。
 - `LegacyGeometryAdapter section preview` 已落地并通过 M1-App-016：默认 CTest 8/8 pass，可把 face ref + legacy plane 生成 section preview summary，并补充 far plane empty、invalid plane、wrong type/missing ref 和 edge-face empty intersection set 覆盖；该阶段不是完整 ACIS section 等价、OCCT topology mutation、剖切面 UI 或钢筋生成。
 - `LegacyGeometryAdapter sweep preview` 已落地并通过 M1-App-017：默认 CTest 8/8 pass，可把 edge ref + circular radius 生成 sweep / pipe preview summary，并记录 pathLength、samplePoints、bbox、shape face/edge/vertex count、zero/non-finite radius 和 wrong type/missing ref 诊断；该阶段不是完整 ACIS sweep 等价、OCCT topology mutation、钢筋实体持久化或钢筋生成。
+- `domain/rebar` 钢筋领域模型 P1 已落地并通过 M1-App-018：默认 CTest 9/9 pass，可用 `SteelData / SteelBarGroup / SteelBar / SteelBarSegment` 承载 Detail 关键字段、group -> bar -> segment 引用、legacy raw、geometryRef、binding、evidence 和 unresolved 字段；该阶段不是钢筋创建算法、Detail writer 接入、UI handler 或旧 SFL 全字段语义闭合。
 - Detail writer L0/L1 离线 gate 已落地并通过，不再作为当前 M1 阻塞。
 - `GAP-DEV-001/GAP-DEV-007` 不再阻塞进入 Qt6 + OCCT 开发入口，但旧图石业务复刻缺口仍按功能专项继续闭合。
 
@@ -280,4 +289,4 @@ none
 2. 保留 Qt6 runtime gate，防止 Save/Open 和 binding repair 报告退回 simulation。
 3. 保留 Detail writer L0/L1 报告；AutoCAD L2 导入另走工程图专项。
 4. 新增真实工程 STEP 样本时继续跑 STEP selection gate。
-5. 后续开发仍按旧图石运行、IDA、SFL、Detail 证据闭合业务缺口；下一步建议按 `TODO-018` 冻结钢筋领域模型 P1，或在 IDA 数据库恢复绑定后先补 `TODO-020` 旧线筋 / 弧筋链证据。
+5. 后续开发仍按旧图石运行、IDA、SFL、Detail 证据闭合业务缺口；下一步建议按 `TODO-019` 做旧命令契约绑定 P1，或在 IDA 数据库恢复绑定后先补 `TODO-020` 旧线筋 / 弧筋链证据。
