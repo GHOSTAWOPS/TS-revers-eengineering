@@ -65,7 +65,7 @@
       "Wrote the round2 review verdict back into this report before commit"
     ],
     "finalStatus": "allow_commit",
-    "subagentLifecycle": "xhigh_rebar_move_reviewer_round2 ran as a codex exec read-only process and exited; no MCP close_agent handle was available in this session"
+    "subagentLifecycle": "xhigh_rebar_move_reviewer and xhigh_rebar_move_reviewer_round2 were closed by the main flow after completion."
   },
   "boundaries": [
     "No OCCT/AIS dependency in domain/rebar",

@@ -122,8 +122,8 @@ Round 2 只读复审通过后，本报告已由主流程写回最终结论。
 子代理生命周期：
 
 ```text
-xhigh_rebar_move_reviewer_round2 通过 codex exec 只读进程执行。
-该进程已退出；本环境没有暴露 MCP close_agent 句柄可调用。
+xhigh_rebar_move_reviewer = 已完成后由主流程 close_agent 关闭。
+xhigh_rebar_move_reviewer_round2 = 已完成后由主流程 close_agent 关闭。
 ```
 
 ## 边界
