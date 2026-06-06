@@ -139,6 +139,14 @@ E-DEV-038
      51_M1-App-014LegacyWireChain实现记录.md
      docs/phase1/app_build_reports/m1_app_014_run_001.md
      docs/phase1/app_build_reports/m1_app_014_run_001.json
+
+E-DEV-039
+  -> M1-App-015 LegacyGeometryAdapter offset curve preview summary 报告
+  -> 来源：
+     app/
+     52_M1-App-015LegacyGeometryAdapterOffsetSpike实现记录.md
+     docs/phase1/app_build_reports/m1_app_015_run_001.md
+     docs/phase1/app_build_reports/m1_app_015_run_001.json
 ```
 
 注意：
@@ -188,6 +196,7 @@ Blocker GAPs: none
 - `LegacyGeometryAdapter P3D` 已落地并通过 M1-App-012：默认 CTest 8/8 pass，可对输入点和候选 edge refs 返回组内最小距离、nearest stableId 和 `0.002` 阈值命中标记；该阶段不是旧 group 链表完整复刻或钢筋生成。
 - `LegacyGeometryAdapter P3E` 已落地并通过 M1-App-013：默认 CTest 8/8 pass，可把点列重建为 BSpline legacy summary，记录输入点数、采样数、`max(5,length*50)` 建议值、长度、bbox 和失败原因；该阶段不是旧 ACIS `api_curve_spline` topology mutation 或钢筋生成。
 - `LegacyWireChain` 已落地并通过 M1-App-014：默认 CTest 8/8 pass，可把 edge refs 构造成 ordered wire chain summary，并记录总长度、起止点、bbox、connected、closed 和断链诊断；该阶段不是旧 `ENTITY_LIST` 对象完整复刻、OCCT wire mutation 或钢筋生成。
+- `LegacyGeometryAdapter offset preview` 已落地并通过 M1-App-015：默认 CTest 8/8 pass，可把 edge ref 生成 offset curve preview summary，并记录 samplePoints、length、bbox、sourceCurveKind、sourceLength、offsettable 和失败诊断；该阶段不是完整 ACIS offset 等价、OCCT topology mutation 或钢筋生成。
 - Detail writer L0/L1 离线 gate 已落地并通过，不再作为当前 M1 阻塞。
 - `GAP-DEV-001/GAP-DEV-007` 不再阻塞进入 Qt6 + OCCT 开发入口，但旧图石业务复刻缺口仍按功能专项继续闭合。
 
@@ -253,4 +262,4 @@ none
 2. 保留 Qt6 runtime gate，防止 Save/Open 和 binding repair 报告退回 simulation。
 3. 保留 Detail writer L0/L1 报告；AutoCAD L2 导入另走工程图专项。
 4. 新增真实工程 STEP 样本时继续跑 STEP selection gate。
-5. 后续开发仍按旧图石运行、IDA、SFL、Detail 证据闭合业务缺口；下一步建议按 `TODO-015` 补 offset 曲线能力 spike，或先补 `TODO-020` IDA 证据。
+5. 后续开发仍按旧图石运行、IDA、SFL、Detail 证据闭合业务缺口；下一步建议按 `TODO-016` 补 section / 剖切能力 spike，或先补 `TODO-020` IDA 证据。

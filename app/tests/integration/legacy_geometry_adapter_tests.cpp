@@ -4,6 +4,7 @@
 
 #include <cmath>
 #include <iostream>
+#include <limits>
 #include <string>
 #include <vector>
 
@@ -234,6 +235,97 @@ int main(int argc, char* argv[])
            "single edge wire chain start must match edge start");
     expect(distance(singleWire.value.endPoint, edgeResult.value.endPoint) < 1.0e-6,
            "single edge wire chain end must match edge end");
+
+    tsrebar::LegacySelectionRef lineEdgeRef = edgeRefs.front();
+    tsrebar::LegacyEdgeGeometry lineEdgeGeometry;
+    bool foundLineEdge = false;
+    for (const auto& candidateRef : edgeRefs) {
+        const auto candidateGeometry = adapter.edgeGeometry(candidateRef);
+        expect(candidateGeometry.ok, candidateGeometry.diagnostic.toUtf8().constData());
+        if (candidateGeometry.value.curveKind == tsrebar::LegacyCurveKind::Line) {
+            lineEdgeRef = candidateRef;
+            lineEdgeGeometry = candidateGeometry.value;
+            foundLineEdge = true;
+            break;
+        }
+    }
+    expect(foundLineEdge, "test STEP must provide a line edge for offset preview success");
+
+    const auto offsetPreview = adapter.offsetEdgePreview(lineEdgeRef, 10.0, 5);
+    expect(offsetPreview.ok, offsetPreview.diagnostic.toUtf8().constData());
+    expect(offsetPreview.value.sourceEdgeStableId == lineEdgeRef.stableId,
+           "edge offset preview must preserve source edge stable id");
+    expect(offsetPreview.value.offsetDistance == 10.0,
+           "edge offset preview must preserve offset distance");
+    expect(offsetPreview.value.requestedSampleCount == 5,
+           "edge offset preview must preserve requested sample count");
+    expect(offsetPreview.value.effectiveSampleCount == 5,
+           "edge offset preview effective sample count must match valid request");
+    expect(offsetPreview.value.offsettable,
+           "edge offset preview must mark a successful preview as offsettable");
+    expect(offsetPreview.value.samplePoints.size() == 5,
+           "edge offset preview sample count must match request");
+    expect(offsetPreview.value.length > 0.0,
+           "edge offset preview length must be positive");
+    expectValidBox(offsetPreview.value.bounds, "edge offset preview bbox must be available");
+    expect(offsetPreview.value.sourceCurveKind == tsrebar::LegacyCurveKind::Line,
+           "edge offset preview must expose source curve kind");
+    expect(distance(offsetPreview.value.samplePoints.front(), lineEdgeGeometry.startPoint) > 1.0,
+           "edge offset preview first sample must move away from source edge");
+
+    tsrebar::LegacySelectionRef nonLineEdgeRef = edgeRefs.front();
+    bool foundNonLineEdge = false;
+    for (const auto& candidateRef : edgeRefs) {
+        const auto candidateGeometry = adapter.edgeGeometry(candidateRef);
+        expect(candidateGeometry.ok, candidateGeometry.diagnostic.toUtf8().constData());
+        if (candidateGeometry.value.curveKind != tsrebar::LegacyCurveKind::Line) {
+            nonLineEdgeRef = candidateRef;
+            foundNonLineEdge = true;
+            break;
+        }
+    }
+    expect(foundNonLineEdge, "test STEP must provide a non-line edge for offset spike");
+    const auto nonLineOffsetPreview = adapter.offsetEdgePreview(nonLineEdgeRef, 10.0, 5);
+    expect(nonLineOffsetPreview.ok || !nonLineOffsetPreview.value.failureReason.empty(),
+           "non-line offset preview must either succeed or return stable failure DTO");
+    if (nonLineOffsetPreview.ok) {
+        expect(nonLineOffsetPreview.value.offsettable,
+               "successful non-line offset preview must be marked offsettable");
+        expect(nonLineOffsetPreview.value.samplePoints.size() == 5,
+               "successful non-line offset preview sample count must match request");
+        expectValidBox(nonLineOffsetPreview.value.bounds,
+                       "successful non-line offset preview bbox must be available");
+    } else {
+        expect(nonLineOffsetPreview.diagnostic.contains(QStringLiteral("offset")),
+               "non-line offset preview failure diagnostic must be stable");
+        expect(!nonLineOffsetPreview.value.offsettable,
+               "failed non-line offset preview must be marked not offsettable");
+    }
+
+    const auto zeroOffsetPreview = adapter.offsetEdgePreview(edgeRefs.front(), 0.0, 5);
+    expect(!zeroOffsetPreview.ok, "edge offset preview must reject zero distance");
+    expect(zeroOffsetPreview.diagnostic.contains(QStringLiteral("distance")),
+           "zero offset preview diagnostic must be stable");
+    expect(!zeroOffsetPreview.value.failureReason.empty(),
+           "zero offset preview failure must be carried in DTO");
+
+    const auto nonFiniteOffsetPreview =
+        adapter.offsetEdgePreview(edgeRefs.front(),
+                                  std::numeric_limits<double>::infinity(),
+                                  5);
+    expect(!nonFiniteOffsetPreview.ok,
+           "edge offset preview must reject non-finite distance");
+    expect(nonFiniteOffsetPreview.diagnostic.contains(QStringLiteral("finite")),
+           "non-finite offset preview diagnostic must be stable");
+
+    const auto nanOffsetPreview =
+        adapter.offsetEdgePreview(edgeRefs.front(),
+                                  std::numeric_limits<double>::quiet_NaN(),
+                                  5);
+    expect(!nanOffsetPreview.ok,
+           "edge offset preview must reject NaN distance");
+    expect(nanOffsetPreview.diagnostic.contains(QStringLiteral("finite")),
+           "NaN offset preview diagnostic must be stable");
 
     std::vector<tsrebar::LegacySelectionRef> disconnectedWireEdges{edgeRefs.front()};
     for (qsizetype index = 1; index < edgeRefs.size(); ++index) {
@@ -512,6 +604,12 @@ int main(int argc, char* argv[])
     expect(wrongTypeWire.diagnostic.contains(QStringLiteral("expected an edge ref")),
            "wire chain wrong type diagnostic must be stable");
 
+    const auto wrongTypeOffsetPreview =
+        adapter.offsetEdgePreview(faceRefs.front(), 10.0, 5);
+    expect(!wrongTypeOffsetPreview.ok, "edge offset preview must reject face refs");
+    expect(wrongTypeOffsetPreview.diagnostic.contains(QStringLiteral("expected an edge ref")),
+           "edge offset preview wrong type diagnostic must be stable");
+
     const tsrebar::LegacySelectionRef missingPart =
         tsrebar::makeLegacySelectionRef(QStringLiteral("missing-part"),
                                         false,
@@ -539,6 +637,13 @@ int main(int argc, char* argv[])
     expect(!missingPartWire.ok, "wire chain must reject missing part refs");
     expect(missingPartWire.diagnostic.contains(QStringLiteral("not in current document")),
            "wire chain missing part diagnostic must be stable");
+
+    const auto missingPartOffsetPreview =
+        adapter.offsetEdgePreview(missingPart, 10.0, 5);
+    expect(!missingPartOffsetPreview.ok,
+           "edge offset preview must reject missing part refs");
+    expect(missingPartOffsetPreview.diagnostic.contains(QStringLiteral("not in current document")),
+           "edge offset preview missing part diagnostic must be stable");
 
     const tsrebar::LegacySelectionRef outOfRange =
         tsrebar::makeLegacySelectionRef(QString::fromStdString(edgeRefs.front().partEntry),

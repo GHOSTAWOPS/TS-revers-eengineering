@@ -5,6 +5,7 @@
 #include <BRepAdaptor_Surface.hxx>
 #include <BRepExtrema_DistShapeShape.hxx>
 #include <BRepGProp.hxx>
+#include <BRep_Tool.hxx>
 #include <BRepTools.hxx>
 #include <Bnd_Box.hxx>
 #include <Extrema_ExtPC.hxx>
@@ -14,6 +15,8 @@
 #include <GeomAPI_PointsToBSpline.hxx>
 #include <GeomAdaptor_Curve.hxx>
 #include <Geom_BSplineCurve.hxx>
+#include <Geom_Curve.hxx>
+#include <Geom_OffsetCurve.hxx>
 #include <GeomAbs_CurveType.hxx>
 #include <GeomAbs_SurfaceType.hxx>
 #include <Precision.hxx>
@@ -300,6 +303,38 @@ bool hasCollapsedConsecutivePoints(const std::vector<tsrebar::LegacyPoint3d>& po
                               points[index - 1].z);
         const gp_Pnt current(points[index].x, points[index].y, points[index].z);
         if (pointsClose(previous, current, Precision::Confusion())) {
+            return true;
+        }
+    }
+    return false;
+}
+
+bool makeStableOffsetNormal(BRepAdaptor_Curve& curve,
+                            double parameter,
+                            gp_Dir* normal)
+{
+    if (normal == nullptr) {
+        return false;
+    }
+
+    gp_Pnt point;
+    gp_Vec tangent;
+    curve.D1(parameter, point, tangent);
+    if (tangent.Magnitude() <= Precision::Confusion()) {
+        return false;
+    }
+    tangent.Normalize();
+
+    const std::vector<gp_Vec> candidates{
+        gp_Vec(0.0, 0.0, 1.0),
+        gp_Vec(0.0, 1.0, 0.0),
+        gp_Vec(1.0, 0.0, 0.0),
+    };
+    for (const gp_Vec& candidate : candidates) {
+        gp_Vec offsetNormal = tangent.Crossed(candidate);
+        if (offsetNormal.Magnitude() > Precision::Confusion()) {
+            offsetNormal.Normalize();
+            *normal = gp_Dir(offsetNormal);
             return true;
         }
     }
@@ -1612,6 +1647,130 @@ OccLegacyGeometryAdapter::buildWireChain(
     result.value = chain;
     result.ok = true;
     return result;
+}
+
+LegacyGeometryQueryResult<LegacyOffsetCurvePreview>
+OccLegacyGeometryAdapter::offsetEdgePreview(
+    const LegacySelectionRef& edgeRef,
+    double offsetDistance,
+    int sampleCount) const
+{
+    LegacyGeometryQueryResult<LegacyOffsetCurvePreview> result;
+    LegacyOffsetCurvePreview preview;
+    preview.sourceEdgeStableId = edgeRef.stableId;
+    preview.offsetDistance = offsetDistance;
+    preview.requestedSampleCount = sampleCount;
+    preview.effectiveSampleCount = std::max(2, sampleCount);
+
+    auto reject = [&result, &preview](QString diagnostic) {
+        preview.failureReason = diagnostic.toStdString();
+        result.value = preview;
+        result.diagnostic = std::move(diagnostic);
+        return result;
+    };
+
+    if (edgeRef.shapeKind != LegacyShapeKind::Edge) {
+        return reject(QStringLiteral("LegacyGeometryAdapter expected an edge ref."));
+    }
+    if (!std::isfinite(offsetDistance)) {
+        return reject(QStringLiteral("edge offset distance must be finite"));
+    }
+    if (std::abs(offsetDistance) <= Precision::Confusion()) {
+        return reject(QStringLiteral("edge offset distance must be non-zero"));
+    }
+    if (sampleCount <= 0) {
+        return reject(QStringLiteral("edge offset sample count must be positive"));
+    }
+
+    try {
+        const OccSelectionResolveResult resolved = m_selectionIndex.resolve(edgeRef);
+        if (!resolved.found) {
+            return reject(resolved.diagnostic);
+        }
+
+        const TopoDS_Edge edge = TopoDS::Edge(resolved.shape);
+        if (edge.IsNull()) {
+            return reject(QStringLiteral("SelectionRef did not resolve to an edge."));
+        }
+
+        BRepAdaptor_Curve sourceAdaptor(edge);
+        const double first = sourceAdaptor.FirstParameter();
+        const double last = sourceAdaptor.LastParameter();
+        if (!std::isfinite(first) || !std::isfinite(last) || first >= last) {
+            return reject(QStringLiteral("edge offset source parameter range is not finite"));
+        }
+
+        preview.sourceCurveKind = toLegacyCurveKind(sourceAdaptor.GetType());
+        preview.sourceLength = curveLength(sourceAdaptor, first, last);
+        if (preview.sourceLength <= Precision::Confusion()) {
+            return reject(QStringLiteral("edge offset source length too short"));
+        }
+
+        Standard_Real curveFirst = 0.0;
+        Standard_Real curveLast = 0.0;
+        Handle(Geom_Curve) sourceCurve = BRep_Tool::Curve(edge, curveFirst, curveLast);
+        if (sourceCurve.IsNull()) {
+            return reject(QStringLiteral("edge offset source curve is null"));
+        }
+
+        gp_Dir offsetNormal;
+        if (!makeStableOffsetNormal(sourceAdaptor, midpoint(first, last), &offsetNormal)) {
+            return reject(QStringLiteral("edge offset normal could not be computed"));
+        }
+
+        Handle(Geom_OffsetCurve) offsetCurve =
+            new Geom_OffsetCurve(sourceCurve, offsetDistance, offsetNormal);
+        if (offsetCurve.IsNull()) {
+            return reject(QStringLiteral("OCCT edge offset returned null curve"));
+        }
+
+        GeomAdaptor_Curve offsetAdaptor(offsetCurve);
+        const double offsetFirst = std::max(offsetCurve->FirstParameter(), curveFirst);
+        const double offsetLast = std::min(offsetCurve->LastParameter(), curveLast);
+        const double sampleFirst = std::isfinite(offsetFirst) ? offsetFirst : first;
+        const double sampleLast = std::isfinite(offsetLast) ? offsetLast : last;
+        if (!std::isfinite(sampleFirst) || !std::isfinite(sampleLast) ||
+            sampleFirst >= sampleLast) {
+            return reject(QStringLiteral("edge offset parameter range is not finite"));
+        }
+
+        preview.samplePoints.reserve(static_cast<std::size_t>(preview.effectiveSampleCount));
+        if (preview.effectiveSampleCount == 1) {
+            preview.samplePoints.push_back(
+                toLegacyPoint(offsetCurve->Value(midpoint(sampleFirst, sampleLast))));
+        } else {
+            for (int index = 0; index < preview.effectiveSampleCount; ++index) {
+                const double ratio =
+                    static_cast<double>(index) /
+                    static_cast<double>(preview.effectiveSampleCount - 1);
+                const double parameter = sampleFirst + (sampleLast - sampleFirst) * ratio;
+                preview.samplePoints.push_back(toLegacyPoint(offsetCurve->Value(parameter)));
+            }
+        }
+
+        preview.bounds = makeBounds(preview.samplePoints);
+        preview.length = GCPnts_AbscissaPoint::Length(
+            offsetAdaptor,
+            sampleFirst,
+            sampleLast,
+            Precision::Confusion());
+        if (!std::isfinite(preview.length) || preview.length <= 0.0) {
+            preview.length = polylineLength(preview.samplePoints);
+        }
+        if (!std::isfinite(preview.length) || preview.length <= Precision::Confusion()) {
+            return reject(QStringLiteral("edge offset preview length too short"));
+        }
+
+        preview.offsettable = true;
+        result.value = preview;
+        result.ok = true;
+        return result;
+    } catch (const Standard_Failure& failure) {
+        return reject(QStringLiteral("OCCT edge offset preview failed: %1")
+                          .arg(QString::fromUtf8(failure.GetMessageString())));
+    } catch (...) {
+        return reject(QStringLiteral("OCCT edge offset preview failed: unknown exception."));
+    }
 }
 
 } // namespace tsrebar

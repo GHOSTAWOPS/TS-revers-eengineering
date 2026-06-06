@@ -60,6 +60,10 @@ public:
         int sampleCount) const;
     [[nodiscard]] LegacyGeometryQueryResult<LegacyWireChain> buildWireChain(
         const std::vector<LegacySelectionRef>& edgeRefs) const;
+    [[nodiscard]] LegacyGeometryQueryResult<LegacyOffsetCurvePreview> offsetEdgePreview(
+        const LegacySelectionRef& edgeRef,
+        double offsetDistance,
+        int sampleCount) const;
 
 private:
     OccSelectionIndex m_selectionIndex;

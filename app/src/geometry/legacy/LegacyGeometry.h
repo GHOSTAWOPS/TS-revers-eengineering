@@ -189,6 +189,21 @@ struct LegacyWireChain
     std::string failureReason;
 };
 
+struct LegacyOffsetCurvePreview
+{
+    std::string sourceEdgeStableId;
+    double offsetDistance = 0.0;
+    int requestedSampleCount = 0;
+    int effectiveSampleCount = 0;
+    LegacyCurveKind sourceCurveKind = LegacyCurveKind::Unknown;
+    double sourceLength = 0.0;
+    double length = 0.0;
+    LegacyBoundingBox bounds;
+    std::vector<LegacyPoint3d> samplePoints;
+    bool offsettable = false;
+    std::string failureReason;
+};
+
 enum class LegacySurfaceKind {
     Unknown,
     Plane,
