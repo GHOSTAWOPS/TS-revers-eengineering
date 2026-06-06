@@ -19,6 +19,38 @@
 
 namespace {
 
+QString joinIds(const QVector<QString>& values)
+{
+    QStringList result;
+    result.reserve(values.size());
+    for (const QString& value : values) {
+        result.push_back(value);
+    }
+    return result.join(QLatin1Char(';'));
+}
+
+QString uiSurfaceName(tsrebar::LegacyCommandUiSurface surface)
+{
+    switch (surface) {
+    case tsrebar::LegacyCommandUiSurface::Ribbon:
+        return QStringLiteral("Ribbon");
+    case tsrebar::LegacyCommandUiSurface::ContextMenu:
+        return QStringLiteral("ContextMenu");
+    }
+    return QStringLiteral("Unknown");
+}
+
+QString implementationStateName(tsrebar::LegacyCommandImplementationState state)
+{
+    switch (state) {
+    case tsrebar::LegacyCommandImplementationState::Implemented:
+        return QStringLiteral("Implemented");
+    case tsrebar::LegacyCommandImplementationState::NotImplemented:
+        return QStringLiteral("NotImplemented");
+    }
+    return QStringLiteral("Unknown");
+}
+
 QString commandStatusText(const tsrebar::CommandResult& result)
 {
     switch (result.status) {
@@ -114,6 +146,65 @@ MainWindow::MainWindow(QWidget* parent)
     statusBar()->showMessage(QStringLiteral("就绪"));
 }
 
+bool MainWindow::verifyLegacyUiActionMetadata(QString* errorMessage) const
+{
+    const auto commands = tsrebar::legacyUiCommands();
+    for (const auto& command : commands) {
+        if (command.uiSurface != tsrebar::LegacyCommandUiSurface::Ribbon) {
+            continue;
+        }
+
+        const auto actions = findChildren<QAction*>(command.objectName);
+        if (actions.size() != 1) {
+            if (errorMessage) {
+                *errorMessage = QStringLiteral("%1 action count=%2")
+                                    .arg(command.commandKey)
+                                    .arg(actions.size());
+            }
+            return false;
+        }
+
+        const QAction* action = actions.front();
+        if (action->text() != command.caption ||
+            action->property("commandKey").toString() != command.commandKey ||
+            action->property("legacyUiPath").toString() != command.legacyUiPath ||
+            action->property("legacyUiSurface").toString() != uiSurfaceName(command.uiSurface) ||
+            action->property("implementationState").toString() !=
+                implementationStateName(command.implementationState) ||
+            action->property("legacyCommand").toString() != command.legacyCommand ||
+            action->property("legacyContextCommandId").toString() !=
+                command.legacyContextCommandId ||
+            action->property("evidenceIds").toString() != joinIds(command.evidenceIds) ||
+            action->property("sourceRefs").toString() != joinIds(command.sourceRefs) ||
+            action->property("gapIds").toString() != joinIds(command.gapIds) ||
+            action->property("inputSelectionTypes").toString() !=
+                joinIds(command.inputSelectionTypes)) {
+            if (errorMessage) {
+                *errorMessage =
+                    QStringLiteral("%1 action traceability metadata mismatch")
+                        .arg(command.commandKey);
+            }
+            return false;
+        }
+    }
+
+    for (const auto& command : commands) {
+        if (command.uiSurface != tsrebar::LegacyCommandUiSurface::ContextMenu) {
+            continue;
+        }
+        if (!findChildren<QAction*>(command.objectName).isEmpty()) {
+            if (errorMessage) {
+                *errorMessage =
+                    QStringLiteral("%1 context menu action unexpectedly rendered in ribbon")
+                        .arg(command.commandKey);
+            }
+            return false;
+        }
+    }
+
+    return true;
+}
+
 void MainWindow::buildUi()
 {
     setWindowTitle(QStringLiteral("图石钢筋 1:1 复刻"));
@@ -186,6 +277,19 @@ void MainWindow::buildCommandTabs()
 
                 auto* action = new QAction(command.caption, toolbar);
                 action->setObjectName(command.objectName);
+                action->setProperty("commandKey", command.commandKey);
+                action->setProperty("legacyUiPath", command.legacyUiPath);
+                action->setProperty("legacyUiSurface", uiSurfaceName(command.uiSurface));
+                action->setProperty("implementationState",
+                                    implementationStateName(command.implementationState));
+                action->setProperty("legacyCommand", command.legacyCommand);
+                action->setProperty("legacyContextCommandId",
+                                    command.legacyContextCommandId);
+                action->setProperty("evidenceIds", joinIds(command.evidenceIds));
+                action->setProperty("sourceRefs", joinIds(command.sourceRefs));
+                action->setProperty("gapIds", joinIds(command.gapIds));
+                action->setProperty("inputSelectionTypes",
+                                    joinIds(command.inputSelectionTypes));
                 connect(action, &QAction::triggered, this, [this, id = command.id]() {
                     executeCommand(id);
                 });

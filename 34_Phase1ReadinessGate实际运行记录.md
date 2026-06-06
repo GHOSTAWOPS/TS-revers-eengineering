@@ -220,6 +220,14 @@ E-DEV-048
      docs/phase1/step_selection/tushi_rebar_123_stp/witness_todo_025.json
      docs/phase1/app_build_reports/m1_app_024_run_001.md
      docs/phase1/app_build_reports/m1_app_024_run_001.json
+
+E-DEV-049
+  -> TODO-027 / M2-UI-001 旧 UI 功能入口 P1 报告
+  -> 来源：
+     app/
+     63_M2-UI-001旧UI功能入口P1实现记录.md
+     docs/phase1/app_build_reports/m2_ui_001_run_001.md
+     docs/phase1/app_build_reports/m2_ui_001_run_001.json
 ```
 
 注意：
@@ -280,6 +288,7 @@ Blocker GAPs: none
 - `新设计文件格式 runtime P1` 已落地并通过 M1-App-022：默认 CTest 12/12 pass，可通过 `TsRebarProjectRuntime` 保存 / 读取 STEP 来源、selection-v1 refs、rebar groups、legacyObject.raw、geometryRef、binding、evidence 和 unresolved 字段；runtime 导出包外部 validator 为 warning-only / 0 error；该阶段不是完整 UI Save/Open、旧 SFL 兼容或 Detail writer。
 - `DetailWriter P1` 已落地并通过 M1-App-023：默认 CTest 13/13 pass，可通过 `DetailWriter` 把 domain `SteelData / SteelBarGroup / SteelBar / SteelBarSegment` 输出为 `Detail.xml + Detail01.stl` 首批字段；安装失败会恢复旧 Detail 包；MaterialTable 质量公式 deferred；该阶段不是 AutoCAD L2 动态导入、完整工程图或完整下料统计公式。
 - `TODO-025 / M1-App-024` 旧图石输出钢筋 STP 样本入库验证已完成：`123.stp` 已固定为 `tushi_rebar_123_stp` 几何 witness，当前 import probe 为 754 solids / 3016 faces / 9048 raw edges / 18096 raw vertices / METRE，既有 5 轮 STEP selection gate 为 pass；该阶段不是旧钢筋创建算法、旧参数、统计公式、Detail 正确性或新系统可生成同样几何的证明。
+- `TODO-027 / M2-UI-001` 旧 UI 功能入口 P1 已落地并通过：默认 CTest 13/13 pass，`tsrebar_app --smoke` 校验 Ribbon QAction 追溯 metadata，`LegacyUiCommandMap` 覆盖 `17` 的一期入口，ContextMenu 命令不渲染到 Ribbon；该阶段不是旧弹窗字段、状态栏提示、钢筋业务算法或 golden。
 - Detail writer L0/L1 离线 gate 已落地并通过，不再作为当前 M1 阻塞。
 - `GAP-DEV-001/GAP-DEV-007` 不再阻塞进入 Qt6 + OCCT 开发入口，但旧图石业务复刻缺口仍按功能专项继续闭合。
 
@@ -345,4 +354,4 @@ none
 2. 保留 Qt6 runtime gate，防止 Save/Open 和 binding repair 报告退回 simulation。
 3. 保留 Detail writer L0/L1 报告；AutoCAD L2 导入另走工程图专项。
 4. 新增真实工程 STEP 样本时继续跑 STEP selection gate。
-5. 后续开发仍按旧图石运行、IDA、SFL、Detail 证据闭合业务缺口；`TODO-025` 已把 `123.stp` 固定成几何 witness，下一步建议按 `TODO-027` 做旧 UI 功能入口 1:1 复刻 P1。`TODO-026` golden 采集保持 pending，不自动进入。
+5. 后续开发仍按旧图石运行、IDA、SFL、Detail 证据闭合业务缺口；`TODO-027` 已把一期旧 UI 功能入口接入正式 app，下一步建议按 `TODO-028` 扩展 CSE readiness gate。`TODO-026` golden 采集保持 pending，不自动进入。

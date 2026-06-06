@@ -1,4 +1,4 @@
-﻿# CSE v2 Goal 执行目标与 Todo 说明
+# CSE v2 Goal 执行目标与 Todo 说明
 
 ## 一句话结论
 
@@ -266,6 +266,11 @@ TODO-025 / Evidence = done
   -> 旧图石输出钢筋 STP 样本入库验证，`123.stp` 已固定为
      `tushi_rebar_123_stp` 几何 witness，记录源 SFL、hash、
      OCCT import probe 和既有 5 轮 STEP selection gate 摘要。
+
+TODO-027 / M2-UI = done
+  -> 旧 UI 功能入口 P1，`17` 矩阵一期入口已接入
+     CommandId / LegacyUiCommandMap / CommandRegistry / Qt6 QAction，
+     `tsrebar_app --smoke` 会校验 QAction 追溯 metadata。
 ```
 
 当前最新验证基线：
@@ -275,17 +280,17 @@ app 默认 CTest = 13/13 pass
 readiness gate = M1-Formal-Ready, 78/78 pass
 domain/rebar + drawing + project OCCT 边界 = pass
 
-latest completed tag = m1-app-023/detail-writer-p1
+latest completed tag = m2-ui-001/legacy-ui-entry-p1
 latest evidence tag = m1-app-024/stp-sample-witness
-planned tag = m2-ui-001/legacy-ui-entry-p1
+planned tag = m2-gate-001/cse-readiness-gate-extension
 ```
 
 当前下一步：
 
 ```text
-TODO-027 / M2-UI
-  -> 旧 UI 功能入口 1:1 复刻 P1
-  -> 新 UI 可以更好看，但功能入口、命令、参数和状态按旧图石对齐。
+TODO-028 / Gate
+  -> CSE readiness gate 扩展
+  -> 把路线护栏自动化，防止后续再次偏到父目录路线。
 ```
 
 长期执行循环：
@@ -529,28 +534,30 @@ commit / tag / push 状态
 
 ### 短期 Goal（推荐本轮复制）
 
-目标：只完成 `TODO-027 / 旧 UI 功能入口 1:1 复刻 P1` 这个短期阶段，不自动进入后续长期开发。
+目标：只完成 `TODO-028 / CSE readiness gate 扩展` 这个短期阶段，不自动进入后续长期开发。
 
-本轮要把旧图石首批功能入口落到正式 Qt6 app 的可追溯入口上：
+本轮要把长期路线护栏落到可运行 gate 上：
 
 ```text
-旧图石 UI 图片 / 功能矩阵 / 命令证据
-  -> Qt6 页签 / 分组 / 按钮 / 状态栏入口
-  -> LegacyUiCommandMap
-  -> CommandRegistry
-  -> NotImplemented 或已有 handler
-  -> evidence / gap 可追溯
+46 / todo.csv / 23 父目录边界 / 34 readiness 记录
+  -> tools/phase1_readiness_gate
+  -> 自动检查路线护栏
+  -> warning-first / strict-ready
+  -> 防止父目录 OCCT 直接重写钢筋路线再次混入
 ```
 
 目标语义：
 
 ```text
-新 UI 可以比老图石更现代、更清楚。
-但首批菜单入口、命令语义、参数状态和状态栏口径必须能追溯到旧图石。
-本轮只做 UI 功能入口和命令契约对齐，不实现新的钢筋业务算法。
+readiness gate 不只检查“文件存在”。
+还要开始检查路线不变量：
+domain/rebar 不能泄漏 OCCT/AIS。
+父目录 rebar 业务不能迁入正式 app。
+todo / build report / 实现记录要能互相追溯。
+本轮只做 gate 扩展，不实现新的业务功能。
 ```
 
-本轮只做 UI 入口 / 命令契约 / smoke，不做钢筋创建算法扩展，不做 Detail writer 扩展，不做 AutoCAD L2 动态导入，不采集 golden。
+本轮只做 CSE readiness gate 扩展，不做 UI 新功能、不做钢筋创建算法扩展、不做 Detail writer 扩展、不做 AutoCAD L2 动态导入、不采集 golden。
 
 当前已完成前置：
 
@@ -582,6 +589,9 @@ TODO-024 / M1-App-023 = done
 TODO-025 / Evidence = done
   -> 旧图石输出钢筋 STP 样本入库验证，`123.stp` 已固定为几何 witness。
 
+TODO-027 / M2-UI = done
+  -> 旧 UI 功能入口 P1，`17` 矩阵一期入口已接入正式 app。
+
 TODO-026 / Golden = pending
   -> 用户明确说 golden 先不要，所以本轮不进入 golden 采集。
 ```
@@ -601,25 +611,21 @@ C:\Users\ghost\Desktop\reverse_engineering\【03】图石软件
 本轮必须先读这些参考文档：
 
 1. `【图石钢筋1比1复刻】\00_总览.md`
-2. `【图石钢筋1比1复刻】\01_功能操作矩阵.md`
-3. `【图石钢筋1比1复刻】\02_界面窗口参数矩阵.md`
-4. `【图石钢筋1比1复刻】\03_IDA命令证据.md`
-5. `【图石钢筋1比1复刻】\08_开发命令契约.md`
-6. `【图石钢筋1比1复刻】\11_需求证据追溯矩阵.md`
-7. `【图石钢筋1比1复刻】\17_一期按钮追溯与命令占位矩阵.md`
-8. `【图石钢筋1比1复刻】\35_Qt6_UI与LegacyGeometryAdapter复刻开发方案.md`
-9. `【图石钢筋1比1复刻】\56_M1-App-019LegacyCommandContractP1实现记录.md`
-10. `【图石钢筋1比1复刻】\62_TODO-025旧图石输出钢筋STP样本入库验证记录.md`
-11. `【图石钢筋1比1复刻】\99_缺口和待确认项.md`
-12. `【图石钢筋1比1复刻】\todo.csv`
+2. `【图石钢筋1比1复刻】\23_父目录源码参考边界与路线纠偏.md`
+3. `【图石钢筋1比1复刻】\34_Phase1ReadinessGate实际运行记录.md`
+4. `【图石钢筋1比1复刻】\46_CSE_v2Goal执行目标与Todo说明.md`
+5. `【图石钢筋1比1复刻】\63_M2-UI-001旧UI功能入口P1实现记录.md`
+6. `【图石钢筋1比1复刻】\99_缺口和待确认项.md`
+7. `【图石钢筋1比1复刻】\todo.csv`
+8. `【图石钢筋1比1复刻】\tools\phase1_readiness_gate\check_phase1_readiness.py`
+9. `【图石钢筋1比1复刻】\tools\phase1_readiness_gate\test_phase1_readiness_gate.py`
 
 本轮允许修改：
 
-- `app/src/ui/` 下旧 UI 入口、命令定义、命令注册和状态栏相关实现
-- `app/tests/` 下 UI command map / registry / smoke 测试
-- 必要的 Qt6 UI smoke 支撑代码
-- `63_M2-UI-001旧UI功能入口P1实现记录.md`
-- `docs/phase1/app_build_reports/m2_ui_001_run_001.md/json` 或等价 build report
+- `tools/phase1_readiness_gate/` 下 gate 实现和测试
+- 必要的 gate 报告生成逻辑
+- `64_M2-Gate-001CSEReadinessGate扩展实现记录.md`
+- `docs/phase1/app_build_reports/m2_gate_001_run_001.md/json` 或等价 build report
 - `11_需求证据追溯矩阵.md`
 - `34_Phase1ReadinessGate实际运行记录.md`
 - `99_缺口和待确认项.md`
@@ -638,22 +644,21 @@ C:\Users\ghost\Desktop\reverse_engineering\【03】图石软件
 - `domain/rebar` 中引入 `TopoDS_ / AIS_ / BRep / TopAbs_`
 - AutoCAD L2 动态导入同轮实现
 - 钢筋创建 / 编辑 / 统计 / Detail writer 同轮扩展
+- UI 新功能或命令入口扩展同轮实现
 - golden 采集同轮实现
 - 把缺证按钮语义写成确定结论
 
 本轮验收标准：
 
-1. 首批旧 UI 功能入口从 `01/17/35/56` 映射到 Qt6 app 可查询入口。
-2. 新 UI 可以现代化，但 CommandId、legacy command、ui path、evidence、gap、implementation state 可追溯。
-3. 已实现业务 handler 的入口必须连接已有 handler；未实现业务必须保持稳定 `NotImplemented` 或 disabled 状态，不能假装完成。
-4. 不确定的按钮文字、参数窗口、状态栏提示必须进入 `99_缺口和待确认项.md`。
-5. 新增或更新 UI / command map 测试，先看 RED，再实现 GREEN。
-6. 默认 CTest 通过。
-7. readiness gate 严格模式通过。
-8. domain/rebar + drawing + project OCCT / AIS 泄漏扫描通过。
-9. 涉及代码、测试、构建脚本，commit 前必须执行 xhigh 只读 review；Critical / Important 必须修复或写明技术反驳理由。
-10. 更新实现记录、build report、`11 / 34 / 99 / 46 / todo.csv`。
-11. `todo.csv` 中 `TODO-027` 改为 `done`；只把下一个明确可执行任务改为 `next`，但不继续实现。
+1. readiness gate 新增路线护栏检查，至少覆盖 domain/rebar OCCT/AIS 泄漏、父目录 rebar 业务引用、todo 状态字段、实现记录 / build report 存在性。
+2. 新 gate 检查先有 RED 或测试失败，再实现 GREEN。
+3. gate 过强风险要先 warning 或清晰记录，不能误阻断临时 spike。
+4. 默认 CTest 通过。
+5. readiness gate 严格模式通过。
+6. domain/rebar + drawing + project OCCT / AIS 泄漏扫描通过。
+7. 涉及代码、测试、构建脚本，commit 前必须执行 xhigh 只读 review；Critical / Important 必须修复或写明技术反驳理由。
+8. 更新实现记录、build report、`11 / 34 / 99 / 46 / todo.csv`。
+9. `todo.csv` 中 `TODO-028` 改为 `done`；只把下一个明确可执行任务改为 `next`，但不继续实现。
 
 本轮完成后必须停止，输出阶段复盘：
 
@@ -661,11 +666,11 @@ C:\Users\ghost\Desktop\reverse_engineering\【03】图石软件
 完成了什么
 验证了什么
 还缺什么
-下一阶段建议做 TODO-028 还是先补 IDA / 旧图石运行证据
+下一阶段建议做 TODO-029 还是先补 IDA / 旧图石运行证据
 commit / tag / push 状态
 ```
 
-不要在同一个 goal 内继续做 golden 采集、AutoCAD L2 动态导入、完整工程图生成、钢筋编辑 / 统计专项或新钢筋创建算法。
+不要在同一个 goal 内继续做 golden 采集、AutoCAD L2 动态导入、完整工程图生成、钢筋编辑 / 统计专项、UI 新功能或新钢筋创建算法。
 ### 长期方向（只作护栏，不作为本轮 Goal）
 
 目标：持续推进《图石钢筋 1 比 1 复刻》正式 `app` 开发，直到具备按旧 VisualTS 证据复刻钢筋创建、编辑、统计、出图的工程条件。
@@ -860,6 +865,7 @@ Detail / 新设计文件格式输出层
 - `M1-App-022`：新设计文件格式 runtime P1，TsRebarProjectRuntime 可保存 / 读取 STEP 来源、selection-v1 refs、rebar groups、binding 和 evidence。
 - `M1-App-023`：DetailWriter P1，DetailWriter 可把 domain SteelData / SteelBarGroup / SteelBar / SteelBarSegment 映射为 Detail.xml + Detail01.stl 首批字段。
 - `TODO-025 / M1-App-024`：旧图石输出钢筋 STP 样本入库验证，`123.stp` 已固定为旧图石钢筋几何 witness；该证据只证明几何可被 OCCT 稳定读取，不证明旧业务算法或新系统可生成同样几何。
+- `TODO-027 / M2-UI-001`：旧 UI 功能入口 P1，`17` 矩阵一期入口已接入 `CommandId / LegacyUiCommandMap / CommandRegistry / Qt6 QAction`，并通过 `tsrebar_app --smoke` 校验追溯 metadata；该证据只证明入口占位和命令契约，不证明业务算法已实现。
 
 当前最新验证状态：
 
@@ -872,17 +878,17 @@ domain/rebar + drawing + project OCCT 边界 = pass
 当前下一步：
 
 ```text
-TODO-027 / M2-UI
-  -> 旧 UI 功能入口 1:1 复刻 P1
-  -> 对齐首批菜单 / 页签 / 按钮 / 状态栏入口和旧命令契约
+TODO-028 / Gate
+  -> CSE readiness gate 扩展
+  -> 把路线护栏自动化，防止后续再次偏到父目录路线
 ```
 
 原因：
 
 ```text
-TODO-025 已把旧图石真实导出的钢筋 STP 样本固定成几何 witness。
+TODO-027 已把一期旧 UI 功能入口接入正式 Qt6 app。
 golden 采集 TODO-026 暂按用户要求保持 pending。
-下一步应把旧图石 UI 功能入口落到正式 Qt6 app 的可追溯入口上。
+下一步应把路线护栏自动化，防止后续再次偏到父目录 OCCT 直接重写钢筋路线。
 ```
 
 ### 执行规则
@@ -947,19 +953,19 @@ golden 采集 TODO-026 暂按用户要求保持 pending。
 
 ## CSE v2 Control Contract
 
-- **Primary Setpoint**：下一轮只完成 `TODO-027 / 旧 UI 功能入口 1:1 复刻 P1`，让正式 Qt6 app 的首批功能入口、命令契约和状态栏口径可追溯到旧图石证据。
-- **Acceptance**：首批 UI 入口可查询 / 可测试；CommandId、legacy command、旧 UI path、evidence、gap、implementation state 完整；默认 CTest、readiness gate、domain/rebar + drawing + project OCCT 泄漏检查通过；代码节点有 xhigh 只读 review。
-- **Guardrail Metrics**：不能因为 UI 现代化改变旧命令语义；不能把未实现业务显示成已完成；不能把 TODO-027 扩成钢筋创建、编辑、统计、Detail writer 或 golden 采集。
-- **Sampling Plan**：先读 `01/02/03/08/11/17/35/56/62/99/todo.csv`；补 UI command map / registry 测试；实现最小 UI 入口对齐；运行 CTest、readiness gate、泄漏扫描；xhigh 只读 review；最后更新实现记录、build report、追溯矩阵、缺口和 todo。
-- **Known Delays**：旧图石部分按钮的真实弹窗、状态栏提示和参数窗口缺运行确认；用户说 golden 先不要；旧 UI 很丑，新 UI 允许现代化但入口语义不能乱改。
-- **Recovery Target**：如果旧 UI 入口证据不足，先将对应入口标为 GAP / disabled / NotImplemented，不继续写业务算法。
-- **Rollback Trigger**：UI 入口绕过 LegacyUiCommandMap；未确认按钮写成确定功能；domain/rebar 引入 Qt/AIS/OCCT；TODO-027 顺手进入钢筋算法；测试或 gate 失败仍继续堆功能；代码节点跳过 xhigh。
+- **Primary Setpoint**：下一轮只完成 `TODO-028 / CSE readiness gate 扩展`，把路线护栏自动化，防止后续再次偏到父目录 OCCT 直接重写钢筋路线。
+- **Acceptance**：readiness gate 新增路线护栏检查，至少覆盖 domain/rebar OCCT/AIS 泄漏、父目录 rebar 业务引用、todo 状态字段、实现记录 / build report 存在性；默认 CTest、readiness gate、domain/rebar + drawing + project OCCT 泄漏检查通过；代码节点有 xhigh 只读 review。
+- **Guardrail Metrics**：不能让 gate 漏掉父目录路线污染、OCCT 泄漏、todo 状态漂移或报告缺失；不能把 TODO-028 扩成钢筋创建、编辑、统计、Detail writer、UI 新功能或 golden 采集。
+- **Sampling Plan**：先读 `23/34/46/99/todo.csv` 和现有 gate 脚本；补 readiness gate 检查测试；实现路线护栏检查；运行 CTest、readiness gate、泄漏扫描；xhigh 只读 review；最后更新实现记录、build report、追溯矩阵、缺口和 todo。
+- **Known Delays**：gate 过强可能阻碍临时 spike；父目录参考边界需要机器检查；用户说 golden 先不要。
+- **Recovery Target**：如果 gate 检查误伤临时 spike，先 warning 并记录，不直接阻断开发；成熟后再 strict。
+- **Rollback Trigger**：gate 漏掉 domain/rebar OCCT 泄漏、父目录 rebar 业务引用、todo 状态字段或报告存在性；TODO-028 顺手进入业务功能；测试或 gate 失败仍继续堆功能；代码节点跳过 xhigh。
 - **Constraints**：不使用 ACIS / HOOPS / Codejock 等商业库；旧逻辑不确定时优先查 IDA MCP 或旧图石运行确认；xhigh 只读，修改由主流程 agent 完成。
-- **Boundary**：下一轮允许修改 Qt6 UI / command map / command registry / UI smoke 测试、实现记录、build report、追溯矩阵、缺口、46 和 todo；禁止修改钢筋业务算法和 Detail writer。
-- **Coupling Notes**：`LegacyUiCommandMap` 是 UI 到旧命令的边界；`CommandRegistry` 是 handler 注册边界；`domain/rebar` 是业务对象边界；TODO-027 不改变业务对象和几何 adapter。
-- **Approximation Validity**：TODO-027 的 UI 入口对齐只能证明入口和命令契约可追溯，不证明旧弹窗字段、旧状态栏提示、业务算法或输出结果已经 1:1。
-- **Actuator Budget**：下一轮只推进 `TODO-027`。完成后停止复盘，不自动进入 `TODO-028`。
-- **Risks**：旧图石界面证据不完整；截图和 IDA 命令入口可能只覆盖一部分按钮；UI 现代化容易误改操作语义，必须用 evidence/gap 字段压住。
+- **Boundary**：下一轮允许修改 tools/phase1_readiness_gate、相关测试、实现记录、build report、追溯矩阵、缺口、46 和 todo；禁止修改钢筋业务算法、Detail writer 和 UI 功能。
+- **Coupling Notes**：`Phase1.ReadinessGate` 是路线护栏边界；`todo.csv` 是任务状态事实源；`domain/rebar` 是业务对象边界；TODO-028 不改变业务对象、UI 入口和几何 adapter。
+- **Approximation Validity**：TODO-028 的 gate 扩展只能证明路线护栏可自动检查，不证明旧业务算法或输出结果已经 1:1。
+- **Actuator Budget**：下一轮只推进 `TODO-028`。完成后停止复盘，不自动进入 `TODO-029`。
+- **Risks**：gate 漏检会让路线漂移继续发生；gate 误伤会阻碍 spike；需要先 warning、再逐步 strict。
 ## Todo CSV 使用方式
 
 `todo.csv` 是后续执行看板。建议每次 goal 模式只拿 `status=next` 或最高优先级 `pending` 的任务推进。
@@ -984,11 +990,11 @@ golden 采集 TODO-026 暂按用户要求保持 pending。
 下一步优先执行：
 
 ```text
-TODO-027 / M2-UI
-  -> 旧 UI 功能入口 1:1 复刻 P1
-  -> 对齐首批菜单 / 页签 / 按钮 / 状态栏入口和旧命令契约
+TODO-028 / Gate
+  -> CSE readiness gate 扩展
+  -> 把路线护栏自动化，防止后续再次偏到父目录路线
 ```
 
-原因很简单：TODO-025 已把旧图石真实导出的钢筋几何样本固定下来。
+原因很简单：TODO-027 已把一期旧 UI 功能入口接入正式 app。
 TODO-026 golden 采集暂按用户要求保持 pending。
-下一步应该把正式 Qt6 app 的功能入口继续往旧图石 1:1 操作方向收齐。
+下一步应该把路线护栏放进自动 gate。

@@ -19,6 +19,7 @@ class MainWindow final : public QMainWindow
 
 public:
     explicit MainWindow(QWidget* parent = nullptr);
+    bool verifyLegacyUiActionMetadata(QString* errorMessage = nullptr) const;
 
 private:
     void buildUi();

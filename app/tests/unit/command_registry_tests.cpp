@@ -60,6 +60,165 @@ bool testLegacyCommandMap()
     return true;
 }
 
+bool testLegacyUiCommandCoverageP1()
+{
+    struct ExpectedCommand
+    {
+        tsrebar::CommandId id;
+        QString commandKey;
+        QString caption;
+        QString tabObjectName;
+        QString groupObjectName;
+        QString legacyUiPath;
+    };
+
+    const QVector<ExpectedCommand> expected = {
+        {tsrebar::CommandId::ExportRebarStep, QStringLiteral("Rebar.Export.SteelStepOrLegacy"), QStringLiteral("输出钢筋"), QStringLiteral("tab_start"), QStringLiteral("group_file"), QStringLiteral("开始/文件/输出钢筋")},
+        {tsrebar::CommandId::EditUndo, QStringLiteral("Edit.Undo"), QStringLiteral("放弃"), QStringLiteral("tab_start"), QStringLiteral("group_edit"), QStringLiteral("开始/编辑/放弃")},
+        {tsrebar::CommandId::EditRedo, QStringLiteral("Edit.Redo"), QStringLiteral("重做"), QStringLiteral("tab_start"), QStringLiteral("group_edit"), QStringLiteral("开始/编辑/重做")},
+        {tsrebar::CommandId::EditDeleteSelection, QStringLiteral("Edit.DeleteSelection"), QStringLiteral("删除"), QStringLiteral("tab_start"), QStringLiteral("group_edit"), QStringLiteral("开始/编辑/删除")},
+        {tsrebar::CommandId::SelectionPickMode, QStringLiteral("Selection.PickMode"), QStringLiteral("拾取"), QStringLiteral("tab_start"), QStringLiteral("group_reference"), QStringLiteral("开始/参考/拾取")},
+        {tsrebar::CommandId::ReferenceCreatePlane, QStringLiteral("Reference.CreatePlane"), QStringLiteral("参考面"), QStringLiteral("tab_start"), QStringLiteral("group_reference"), QStringLiteral("开始/参考/参考面")},
+        {tsrebar::CommandId::ReferenceCreateLine, QStringLiteral("Reference.CreateLine"), QStringLiteral("参考线"), QStringLiteral("tab_start"), QStringLiteral("group_reference"), QStringLiteral("开始/参考/参考线")},
+        {tsrebar::CommandId::ViewZoomWindow, QStringLiteral("View.ZoomWindow"), QStringLiteral("窗口缩放"), QStringLiteral("tab_view"), QStringLiteral("group_view"), QStringLiteral("显示/取景/窗口缩放")},
+        {tsrebar::CommandId::ViewIso, QStringLiteral("View.Iso"), QStringLiteral("轴测"), QStringLiteral("tab_view"), QStringLiteral("group_view"), QStringLiteral("显示/视图/轴测")},
+        {tsrebar::CommandId::ViewPerpendicularToSelection, QStringLiteral("View.PerpendicularToSelection"), QStringLiteral("垂直于"), QStringLiteral("tab_view"), QStringLiteral("group_view"), QStringLiteral("显示/视图/垂直于")},
+        {tsrebar::CommandId::ViewRotateDiscrete, QStringLiteral("View.Rotate"), QStringLiteral("旋转"), QStringLiteral("tab_view"), QStringLiteral("group_view"), QStringLiteral("显示/视图/旋转")},
+        {tsrebar::CommandId::ViewRenderWireframe, QStringLiteral("View.Render.Wireframe"), QStringLiteral("线框"), QStringLiteral("tab_view"), QStringLiteral("group_display_state"), QStringLiteral("显示/显示状态/线框")},
+        {tsrebar::CommandId::RebarViewActivate, QStringLiteral("Rebar.View.Activate"), QStringLiteral("激活"), QStringLiteral("tab_view"), QStringLiteral("group_display_state"), QStringLiteral("显示/显示状态/激活")},
+        {tsrebar::CommandId::RebarViewDeactivate, QStringLiteral("Rebar.View.Deactivate"), QStringLiteral("钝化"), QStringLiteral("tab_view"), QStringLiteral("group_display_state"), QStringLiteral("显示/显示状态/钝化")},
+        {tsrebar::CommandId::RebarStyleOpenManager, QStringLiteral("RebarStyle.OpenManager"), QStringLiteral("钢筋式样"), QStringLiteral("tab_rebar"), QStringLiteral("group_rebar_settings"), QStringLiteral("钢筋/文件属性/钢筋式样")},
+        {tsrebar::CommandId::ProjectSettings, QStringLiteral("Project.Settings"), QStringLiteral("文件设置"), QStringLiteral("tab_rebar"), QStringLiteral("group_rebar_settings"), QStringLiteral("钢筋/文件属性/文件设置")},
+        {tsrebar::CommandId::ProjectSetElevationDatum, QStringLiteral("Project.SetElevationDatum"), QStringLiteral("标高基准面"), QStringLiteral("tab_rebar"), QStringLiteral("group_rebar_settings"), QStringLiteral("钢筋/文件属性/标高基准面")},
+        {tsrebar::CommandId::AppSystemSettings, QStringLiteral("App.SystemSettings"), QStringLiteral("系统设置"), QStringLiteral("tab_rebar"), QStringLiteral("group_rebar_settings"), QStringLiteral("钢筋/文件属性/系统设置")},
+        {tsrebar::CommandId::RebarSectionRingCreate, QStringLiteral("Rebar.Create.SectionRing"), QStringLiteral("剖面圈筋"), QStringLiteral("tab_rebar"), QStringLiteral("group_rebar_create"), QStringLiteral("钢筋/主要钢筋/剖面圈筋")},
+        {tsrebar::CommandId::RebarFaceBoundaryCreate, QStringLiteral("Rebar.Create.FaceBoundary"), QStringLiteral("面周边"), QStringLiteral("tab_rebar"), QStringLiteral("group_rebar_create"), QStringLiteral("钢筋/主要钢筋/面周边")},
+        {tsrebar::CommandId::RebarConcentricCircleCreate, QStringLiteral("Rebar.Create.ConcentricCircle"), QStringLiteral("同心圆"), QStringLiteral("tab_rebar"), QStringLiteral("group_rebar_create"), QStringLiteral("钢筋/主要钢筋/同心圆")},
+        {tsrebar::CommandId::RebarAngleCreate, QStringLiteral("Rebar.Create.Angle"), QStringLiteral("角度配筋"), QStringLiteral("tab_rebar"), QStringLiteral("group_rebar_create"), QStringLiteral("钢筋/主要钢筋/角度配筋")},
+        {tsrebar::CommandId::RebarCustomCreate, QStringLiteral("Rebar.Create.Custom"), QStringLiteral("自配筋"), QStringLiteral("tab_rebar"), QStringLiteral("group_rebar_create"), QStringLiteral("钢筋/主要钢筋/自配筋")},
+        {tsrebar::CommandId::RebarGenericCreate, QStringLiteral("Rebar.Create.Generic"), QStringLiteral("钢筋配筋"), QStringLiteral("tab_rebar"), QStringLiteral("group_rebar_create"), QStringLiteral("钢筋/主要钢筋/钢筋配筋")},
+        {tsrebar::CommandId::RebarFixedCenterCreate, QStringLiteral("Rebar.Create.FixedCenter"), QStringLiteral("固中心"), QStringLiteral("tab_rebar"), QStringLiteral("group_rebar_create"), QStringLiteral("钢筋/构造钢筋/固中心")},
+        {tsrebar::CommandId::RebarStirrupCreate, QStringLiteral("Rebar.Create.Stirrup"), QStringLiteral("箍筋"), QStringLiteral("tab_rebar"), QStringLiteral("group_rebar_create"), QStringLiteral("钢筋/构造钢筋/箍筋")},
+        {tsrebar::CommandId::RebarCornerCreate, QStringLiteral("Rebar.Create.Corner"), QStringLiteral("角筋"), QStringLiteral("tab_rebar"), QStringLiteral("group_rebar_create"), QStringLiteral("钢筋/构造钢筋/角筋")},
+        {tsrebar::CommandId::RebarOpeningCreate, QStringLiteral("Rebar.Create.Opening"), QStringLiteral("孔口"), QStringLiteral("tab_rebar"), QStringLiteral("group_rebar_create"), QStringLiteral("钢筋/构造钢筋/孔口")},
+        {tsrebar::CommandId::RebarInsertCreate, QStringLiteral("Rebar.Create.Insert"), QStringLiteral("插筋"), QStringLiteral("tab_rebar"), QStringLiteral("group_rebar_create"), QStringLiteral("钢筋/构造钢筋/插筋")},
+        {tsrebar::CommandId::RebarSpiralCreate, QStringLiteral("Rebar.Create.Spiral"), QStringLiteral("螺旋筋"), QStringLiteral("tab_rebar"), QStringLiteral("group_rebar_create"), QStringLiteral("钢筋/构造钢筋/螺旋筋")},
+        {tsrebar::CommandId::RebarMove, QStringLiteral("Rebar.Edit.Move"), QStringLiteral("钢筋移动"), QStringLiteral("tab_rebar"), QStringLiteral("group_rebar_edit"), QStringLiteral("钢筋/钢筋编辑/钢筋移动")},
+        {tsrebar::CommandId::RebarCopy, QStringLiteral("Rebar.Edit.Copy"), QStringLiteral("钢筋拷贝"), QStringLiteral("tab_rebar"), QStringLiteral("group_rebar_edit"), QStringLiteral("钢筋/钢筋编辑/钢筋拷贝")},
+        {tsrebar::CommandId::RebarGroupMerge, QStringLiteral("Rebar.Group.Merge"), QStringLiteral("组合并"), QStringLiteral("tab_rebar"), QStringLiteral("group_rebar_edit"), QStringLiteral("钢筋/钢筋编辑/组合并")},
+        {tsrebar::CommandId::RebarGroupSplit, QStringLiteral("Rebar.Group.Split"), QStringLiteral("组合开"), QStringLiteral("tab_rebar"), QStringLiteral("group_rebar_edit"), QStringLiteral("钢筋/钢筋编辑/组合开")},
+        {tsrebar::CommandId::RebarSegmentConnect, QStringLiteral("Rebar.Segment.Connect"), QStringLiteral("段连接"), QStringLiteral("tab_rebar"), QStringLiteral("group_rebar_edit"), QStringLiteral("钢筋/钢筋编辑/段连接")},
+        {tsrebar::CommandId::RebarSegmentDisconnect, QStringLiteral("Rebar.Segment.Disconnect"), QStringLiteral("段断开"), QStringLiteral("tab_rebar"), QStringLiteral("group_rebar_edit"), QStringLiteral("钢筋/钢筋编辑/段断开")},
+        {tsrebar::CommandId::RebarAddBarCount, QStringLiteral("Rebar.Edit.AddBarCount"), QStringLiteral("增加钢筋根数"), QStringLiteral("tab_rebar"), QStringLiteral("group_rebar_edit"), QStringLiteral("钢筋/钢筋编辑/增加钢筋根数")},
+        {tsrebar::CommandId::RebarAddSegment, QStringLiteral("Rebar.Edit.AddSegment"), QStringLiteral("增加钢筋段"), QStringLiteral("tab_rebar"), QStringLiteral("group_rebar_edit"), QStringLiteral("钢筋/钢筋编辑/增加钢筋段")},
+        {tsrebar::CommandId::QueryByDiameter, QStringLiteral("Rebar.Query.ByDiameter"), QStringLiteral("按直径"), QStringLiteral("tab_query"), QStringLiteral("group_rebar_query"), QStringLiteral("查询/查询钢筋/按直径")},
+        {tsrebar::CommandId::QueryByPart, QStringLiteral("Rebar.Query.ByPart"), QStringLiteral("按部位"), QStringLiteral("tab_query"), QStringLiteral("group_rebar_query"), QStringLiteral("查询/查询钢筋/按部位")},
+        {tsrebar::CommandId::QueryUncutOrUnsectioned, QStringLiteral("Rebar.Check.UncutOrUnsectioned"), QStringLiteral("未割钢筋"), QStringLiteral("tab_query"), QStringLiteral("group_rebar_check"), QStringLiteral("查询/检查/未割钢筋")},
+        {tsrebar::CommandId::QueryOutsideStructure, QStringLiteral("Rebar.Check.OutsideStructure"), QStringLiteral("体外钢筋"), QStringLiteral("tab_query"), QStringLiteral("group_rebar_check"), QStringLiteral("查询/检查/体外钢筋")},
+        {tsrebar::CommandId::MeasureGeneric, QStringLiteral("Measure.Generic"), QStringLiteral("测量"), QStringLiteral("tab_query"), QStringLiteral("group_rebar_check"), QStringLiteral("查询/测量/测量")},
+        {tsrebar::CommandId::MeasureStructureProperty, QStringLiteral("Measure.StructureProperty"), QStringLiteral("结构属性"), QStringLiteral("tab_query"), QStringLiteral("group_rebar_check"), QStringLiteral("查询/测量/结构属性")},
+        {tsrebar::CommandId::QueryMinDistance, QStringLiteral("Rebar.Check.MinDistance"), QStringLiteral("主筋"), QStringLiteral("tab_query"), QStringLiteral("group_rebar_check"), QStringLiteral("查询/测量/主筋")},
+        {tsrebar::CommandId::QueryGroupMinDistance, QStringLiteral("Rebar.Check.GroupMinDistance"), QStringLiteral("箍筋"), QStringLiteral("tab_query"), QStringLiteral("group_rebar_check"), QStringLiteral("查询/测量/箍筋")},
+        {tsrebar::CommandId::DrawingDefineProjectPlane, QStringLiteral("Drawing.DefineProjectPlane"), QStringLiteral("投影面"), QStringLiteral("tab_drawing"), QStringLiteral("group_drawing_view"), QStringLiteral("工程图/定义视图/投影面")},
+        {tsrebar::CommandId::DrawingDefineAxonometricProjection, QStringLiteral("Drawing.DefineAxonometricProjection"), QStringLiteral("轴测投影"), QStringLiteral("tab_drawing"), QStringLiteral("group_drawing_view"), QStringLiteral("工程图/定义视图/轴测投影")},
+    };
+
+    for (const auto& expectedCommand : expected) {
+        const auto command = tsrebar::legacyUiCommandDefinition(expectedCommand.id);
+        if (!command.has_value()) {
+            std::cerr << "missing legacy UI command: "
+                      << expectedCommand.commandKey.toStdString() << '\n';
+            return false;
+        }
+        if (command->commandKey != expectedCommand.commandKey ||
+            command->caption != expectedCommand.caption ||
+            command->tabObjectName != expectedCommand.tabObjectName ||
+            command->groupObjectName != expectedCommand.groupObjectName ||
+            command->legacyUiPath != expectedCommand.legacyUiPath) {
+            std::cerr << "legacy UI metadata mismatch: "
+                      << expectedCommand.commandKey.toStdString() << '\n';
+            return false;
+        }
+        if (command->uiSurface != tsrebar::LegacyCommandUiSurface::Ribbon) {
+            return fail("P1 UI coverage commands must be ribbon entries");
+        }
+        if (command->evidenceIds.isEmpty() && command->sourceRefs.isEmpty() &&
+            command->gapIds.isEmpty()) {
+            std::cerr << "missing traceability for "
+                      << command->commandKey.toStdString() << '\n';
+            return false;
+        }
+    }
+
+    return true;
+}
+
+bool testLegacyUiCommandTraceabilityP1()
+{
+    const auto exportRebar =
+        tsrebar::legacyUiCommandDefinition(tsrebar::CommandId::ExportRebarStep);
+    if (!exportRebar.has_value() ||
+        !exportRebar->evidenceIds.contains(QStringLiteral("E-IDA-014")) ||
+        !exportRebar->evidenceIds.contains(QStringLiteral("E-DEV-048"))) {
+        return fail("Rebar.Export.SteelStepOrLegacy must retain IDA and STP witness evidence");
+    }
+
+    const auto projectNew = tsrebar::legacyUiCommandDefinition(tsrebar::CommandId::ProjectNew);
+    const auto projectOpen = tsrebar::legacyUiCommandDefinition(tsrebar::CommandId::ProjectOpen);
+    const auto projectSave = tsrebar::legacyUiCommandDefinition(tsrebar::CommandId::ProjectSave);
+    const auto projectClose =
+        tsrebar::legacyUiCommandDefinition(tsrebar::CommandId::ProjectClose);
+    if (!projectNew.has_value() || !projectOpen.has_value() || !projectSave.has_value() ||
+        !projectClose.has_value() ||
+        !projectNew->gapIds.contains(QStringLiteral("GAP-BTN-START-001")) ||
+        !projectOpen->gapIds.contains(QStringLiteral("GAP-BTN-START-002")) ||
+        !projectSave->gapIds.contains(QStringLiteral("GAP-BTN-START-003")) ||
+        !projectClose->gapIds.contains(QStringLiteral("GAP-BTN-START-004"))) {
+        return fail("project file commands must retain button-level GAP IDs");
+    }
+
+    const auto undo = tsrebar::legacyUiCommandDefinition(tsrebar::CommandId::EditUndo);
+    const auto redo = tsrebar::legacyUiCommandDefinition(tsrebar::CommandId::EditRedo);
+    if (!undo.has_value() || !redo.has_value() ||
+        !undo->gapIds.contains(QStringLiteral("GAP-BTN-START-005")) ||
+        !redo->gapIds.contains(QStringLiteral("GAP-BTN-START-006"))) {
+        return fail("Edit undo/redo must keep button-level GAP IDs");
+    }
+
+    const auto fitAll = tsrebar::legacyUiCommandDefinition(tsrebar::CommandId::ViewFitAll);
+    const auto pan = tsrebar::legacyUiCommandDefinition(tsrebar::CommandId::ViewPan);
+    const auto zoom = tsrebar::legacyUiCommandDefinition(tsrebar::CommandId::ViewZoom);
+    const auto rotate = tsrebar::legacyUiCommandDefinition(tsrebar::CommandId::ViewRotate);
+    if (!fitAll.has_value() || !pan.has_value() || !zoom.has_value() ||
+        !rotate.has_value() ||
+        fitAll->legacyUiPath != QStringLiteral("显示/取景/全显") ||
+        pan->legacyUiPath != QStringLiteral("显示/取景/实时平移") ||
+        zoom->legacyUiPath != QStringLiteral("显示/取景/实时缩放") ||
+        rotate->legacyUiPath != QStringLiteral("显示/取景/实时转动")) {
+        return fail("view navigation commands must preserve the old 取景 UI path");
+    }
+
+    const auto trimByLine =
+        tsrebar::legacyUiCommandDefinition(tsrebar::CommandId::RebarGroupTrimByLine);
+    const auto trimByFace =
+        tsrebar::legacyUiCommandDefinition(tsrebar::CommandId::RebarGroupTrimByFace);
+    if (!trimByLine.has_value() || !trimByFace.has_value() ||
+        trimByLine->uiSurface != tsrebar::LegacyCommandUiSurface::ContextMenu ||
+        trimByFace->uiSurface != tsrebar::LegacyCommandUiSurface::ContextMenu) {
+        return fail("trim commands must remain context menu commands");
+    }
+
+    const auto sectionPlane =
+        tsrebar::legacyUiCommandDefinition(tsrebar::CommandId::DrawingDefineSectionPlane);
+    if (!sectionPlane.has_value() ||
+        !sectionPlane->evidenceIds.contains(QStringLiteral("E-SFL-002")) ||
+        !sectionPlane->gapIds.contains(QStringLiteral("GAP-FUNC-005"))) {
+        return fail("Drawing.DefineSectionPlane must retain SFL evidence and function GAP");
+    }
+
+    return true;
+}
+
 bool testLegacyRebarCommandContracts()
 {
     const auto lineGroup =
@@ -228,6 +387,12 @@ int main()
         return 1;
     }
     if (!testLegacyCommandMap()) {
+        return 1;
+    }
+    if (!testLegacyUiCommandCoverageP1()) {
+        return 1;
+    }
+    if (!testLegacyUiCommandTraceabilityP1()) {
         return 1;
     }
     if (!testLegacyRebarCommandContracts()) {

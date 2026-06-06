@@ -42,6 +42,11 @@ int main(int argc, char* argv[])
     MainWindow window;
     window.resize(1280, 820);
     if (arguments.contains(QStringLiteral("--smoke"))) {
+        QString errorMessage;
+        if (!window.verifyLegacyUiActionMetadata(&errorMessage)) {
+            std::cerr << errorMessage.toUtf8().constData() << '\n';
+            return 1;
+        }
         return 0;
     }
 

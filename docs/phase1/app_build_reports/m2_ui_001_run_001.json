@@ -1,0 +1,61 @@
+{
+  "id": "m2_ui_001_run_001",
+  "date": "2026-06-07",
+  "decision": "m2-ui-001-pass",
+  "scope": [
+    "TODO-027",
+    "M2-UI",
+    "legacy UI entry P1",
+    "LegacyUiCommandMap",
+    "QAction traceability metadata",
+    "app smoke metadata gate"
+  ],
+  "evidenceId": "E-DEV-049",
+  "tests": {
+    "commandRegistryTests": "pass",
+    "appSmoke": "pass",
+    "ctest": {
+      "success": true,
+      "passed": 13,
+      "failed": 0,
+      "totalSeconds": 125.40
+    }
+  },
+  "readinessGate": {
+    "decision": "M1-Formal-Ready",
+    "m1FormalAllowed": true,
+    "passCount": 78,
+    "checkCount": 78,
+    "errorCount": 0,
+    "warningCount": 0
+  },
+  "guardrails": {
+    "domainRebarDrawingProjectOcctBoundary": "pass",
+    "gitDiffCheck": "pass",
+    "parentRebarBusinessMigrated": false,
+    "newRebarBusinessImplemented": false,
+    "goldenCollected": false
+  },
+  "xhigh": {
+    "required": true,
+    "rounds": [
+      {
+        "round": 1,
+        "verdict": "needs_fix",
+        "status": "fixed"
+      },
+      {
+        "round": 2,
+        "verdict": "needs_fix",
+        "status": "fixed"
+      },
+      {
+        "round": 3,
+        "verdict": "allow_commit",
+        "status": "accepted"
+      }
+    ],
+    "finalVerdict": "allow_commit"
+  },
+  "next": "TODO-028"
+}
