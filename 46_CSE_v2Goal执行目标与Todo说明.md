@@ -6,6 +6,420 @@
 
 ## 可直接粘贴到 Goal 模式的目标
 
+### 长期 Goal（可直接复制，适合长期执行）
+
+目标：长期持续推进《图石钢筋 1 比 1 复刻》正式 `app` 开发，直到具备按旧 VisualTS 证据复刻钢筋创建、编辑、统计、出图的工程条件。
+
+本 goal 不是“用 OCCT 重新设计一个差不多的钢筋软件”。
+
+正确路线必须始终保持为：
+
+```text
+Qt6
+  -> 替代 MFC / Codejock，只负责新界面、菜单、命令入口、窗口状态。
+
+OCCT AIS
+  -> 替代 HOOPS，只负责三维显示、旋转缩放、选择、高亮。
+
+OCCT 几何 API
+  -> 替代 ACIS，只负责 EDGE / FACE / 曲线 / 距离 / 投影 / split /
+     trim / spline / wire chain / offset / section / sweep 等几何能力。
+
+LegacyGeometryAdapter
+  -> 把 OCCT 包装成旧 VisualTS 熟悉的 EDGE / FACE / ENTITY_LIST /
+     曲线 / 点 / 面 / 选择引用语义。
+
+VisualTS 复刻业务层
+  -> 按 IDA / SFL / Detail / 旧图石运行证据 1:1 复刻钢筋创建、
+     编辑、统计、出图逻辑。
+
+Detail / 新设计文件格式输出层
+  -> 输出 Detail.xml + DetailNN.stl；
+     用新的工程格式替代 .sfl 主保存格式；
+     新格式结合 SFL 业务语义和 OCCT 几何引用。
+```
+
+一句话硬约束：
+
+```text
+外壳换 Qt6 + OCCT。
+几何能力由 OCCT 提供。
+钢筋业务规则按旧图石 VisualTS 证据复刻。
+中间必须经过 LegacyGeometryAdapter 隔离。
+```
+
+用户要点冻结：
+
+```text
+1. 目标是 1:1 复刻旧图石钢筋功能操作，不是做一个“够用的新钢筋软件”。
+2. 老图石界面可以更现代、更好看，但菜单入口、命令语义、参数、状态机和输出结果要能追溯到旧图石。
+3. OCCT 不能成为钢筋业务真相；OCCT 只替代 ACIS/HOOPS 的几何、显示、选择能力。
+4. 钢筋由我们复刻的 VisualTS 业务层创建，不由 OCCT 直接创建业务钢筋。
+5. 父目录已有开发只能参考 STEP/STP 导入、XCAF 遍历、AIS viewer、选择 ID、OCCT API 写法。
+6. 父目录的 OCCT 直接重写钢筋路线是错误路线，不能迁入正式 app 当主线。
+7. 新系统不用 .sfl 做主保存格式；新设计文件格式要结合 SFL 业务语义和 OCCT 几何引用。
+8. SFL / STP / Detail / 旧图石运行结果都是证据来源，但不能互相替代。
+9. CAD 有商业版，可以作为 Detail / AutoCAD 插件验证环境；但 ACIS / HOOPS / Codejock 不纳入新系统依赖。
+10. golden 不是当前前置阻塞，但后续做 1:1 行为闭环时必须逐步补。
+11. 不确定旧逻辑时优先用 IDA MCP 或旧图石运行确认，不能凭父目录代码拍脑袋定案。
+12. 每次完成一个清晰节点都要 commit、打 tag、push，形成可回退时间线。
+```
+
+CSE v2 Control Contract：
+
+```text
+Primary Setpoint
+  长期推进正式 app，让 Qt6 / OCCT 成为旧商业底座替代层，
+  让 VisualTS 复刻业务层逐步具备钢筋创建、编辑、统计、出图能力。
+
+Acceptance
+  每个切片有测试、实现记录、build report、追溯矩阵、缺口记录、
+  todo 状态、commit、annotated tag、push 结果。
+
+Guardrail Metrics
+  domain/rebar 不出现 TopoDS_、AIS_、BRep*、TopAbs_；
+  不迁入父目录 rebar 业务；
+  不把 OCCT API 直接扩散到业务层；
+  不把低置信推断写成确定事实。
+
+Sampling Plan
+  每轮开始看 todo.csv / 46 / 99 / git status；
+  每轮结束跑默认 CTest、readiness gate、domain OCCT 泄漏检查；
+  涉及旧业务时补 IDA / 旧图石 / SFL / STP / Detail 证据。
+
+Known Delays
+  IDA MCP 可能没有绑定数据库；
+  旧图石运行确认依赖用户操作；
+  golden 采集成本高；
+  OCCT 与 ACIS 的容差差异需要后续样本验证。
+
+Recovery Target
+  如果路线偏成“OCCT 直接重写钢筋”，立即停止功能开发，
+  回到 23 / 35 / 46 文档和 adapter 边界修正。
+
+Rollback Trigger
+  测试或 gate 失败仍继续堆功能；
+  domain/rebar 引入 OCCT/AIS；
+  父目录 rebar 业务被迁入；
+  无证据旧逻辑被写死；
+  todo 与 46 的 next 目标不一致。
+
+Boundary
+  每轮只推进一个 M1/M2 切片；
+  adapter 切片只改 legacy geometry DTO、OCCT adapter、测试、文档；
+  业务切片只通过 legacy interface 使用几何能力；
+  UI 切片只对齐旧命令入口和状态，不顺手改业务。
+
+Actuator Budget
+  单轮只做一个可验证节点；
+  完成后停止复盘，除非用户明确要求继续下一轮。
+```
+
+工作目录：
+
+```text
+C:\Users\ghost\Desktop\reverse_engineering\【03】图石软件
+```
+
+主项目目录：
+
+```text
+【图石钢筋1比1复刻】
+```
+
+正式开发目录：
+
+```text
+【图石钢筋1比1复刻】\app
+```
+
+先读取以下入口文件，建立当前事实边界：
+
+1. `【图石钢筋1比1复刻】\00_总览.md`
+2. `【图石钢筋1比1复刻】\06_技术路线与替代方案.md`
+3. `【图石钢筋1比1复刻】\07_1比1复刻实施路线.md`
+4. `【图石钢筋1比1复刻】\08_开发命令契约.md`
+5. `【图石钢筋1比1复刻】\09_钢筋领域模型草案.md`
+6. `【图石钢筋1比1复刻】\11_需求证据追溯矩阵.md`
+7. `【图石钢筋1比1复刻】\13_Detail字段映射矩阵.md`
+8. `【图石钢筋1比1复刻】\15_线配筋与弧形组专项初稿.md`
+9. `【图石钢筋1比1复刻】\16_seg_steelbargroup字段地图初稿.md`
+10. `【图石钢筋1比1复刻】\18_新设计文件格式替代SFL策略.md`
+11. `【图石钢筋1比1复刻】\23_父目录源码参考边界与路线纠偏.md`
+12. `【图石钢筋1比1复刻】\24_新设计文件格式Schema与Fixture草案.md`
+13. `【图石钢筋1比1复刻】\32_Validator实现契约与错误码总表.md`
+14. `【图石钢筋1比1复刻】\34_Phase1ReadinessGate实际运行记录.md`
+15. `【图石钢筋1比1复刻】\35_Qt6_UI与LegacyGeometryAdapter复刻开发方案.md`
+16. `【图石钢筋1比1复刻】\36_正式Qt6_OCCT工程架构与首个实现切片.md`
+17. `【图石钢筋1比1复刻】\40_M1-App-004LegacyGeometryAdapterP0实现记录.md`
+18. `【图石钢筋1比1复刻】\41_M1-App-005LegacyGeometryAdapterP1实现记录.md`
+19. `【图石钢筋1比1复刻】\42_M1-App-006LegacyGeometryAdapterP2A实现记录.md`
+20. `【图石钢筋1比1复刻】\43_M1-App-007LegacyGeometryAdapterP2B实现记录.md`
+21. `【图石钢筋1比1复刻】\44_M1-App-008LegacyGeometryAdapterP2C实现记录.md`
+22. `【图石钢筋1比1复刻】\45_M1-App-009LegacyGeometryAdapterP3A实现记录.md`
+23. `【图石钢筋1比1复刻】\47_M1-App-010LegacyGeometryAdapterP3B实现记录.md`
+24. `【图石钢筋1比1复刻】\48_M1-App-011LegacyGeometryAdapterP3C实现记录.md`
+25. `【图石钢筋1比1复刻】\49_M1-App-012LegacyGeometryAdapterP3D实现记录.md`
+26. `【图石钢筋1比1复刻】\50_M1-App-013LegacyGeometryAdapterP3E实现记录.md`
+27. `【图石钢筋1比1复刻】\51_M1-App-014LegacyWireChain实现记录.md`
+28. `【图石钢筋1比1复刻】\99_缺口和待确认项.md`
+29. `【图石钢筋1比1复刻】\todo.csv`
+
+当前已完成状态：
+
+```text
+M1-App-001 = done
+  -> Qt6 app 骨架、五个旧图石页签、命令注册、STEP import probe。
+
+M1-App-002 = done
+  -> 最小 OCCT AIS Viewer 和 STEP 显示。
+
+M1-App-003 = done
+  -> face / edge / vertex 选择系统、selection-v1 稳定引用。
+
+M1-App-004 = done
+  -> LegacyGeometryAdapter P0，EDGE / FACE 基础几何摘要。
+
+M1-App-005 = done
+  -> LegacyGeometryAdapter P1，bbox、采样、boundary loop、
+     fingerprint、诊断矩阵。
+
+M1-App-006 = done
+  -> LegacyGeometryAdapter P2A，edge 切向、距离、最近点对。
+
+M1-App-007 = done
+  -> LegacyGeometryAdapter P2B，face boundary edge stableId、
+     edge-face 接触/重叠代表点。
+
+M1-App-008 = done
+  -> LegacyGeometryAdapter P2C，edge 参数区间、子段长度、bbox、采样。
+
+M1-App-009 = done
+  -> LegacyGeometryAdapter P3A，edge split by parameter。
+
+M1-App-010 = done
+  -> edgeProjectPoint + edgeSplitAtPoint。
+
+M1-App-011 = done
+  -> edgeTrimEndpoint。
+
+M1-App-012 = done
+  -> pointToEdgeGroupDistance。
+
+M1-App-013 = done
+  -> buildSplineFromPoints。
+
+M1-App-014 = done
+  -> buildWireChain。
+```
+
+当前最新验证基线：
+
+```text
+app 默认 CTest = 8/8 pass
+readiness gate = M1-Formal-Ready, 78/78 pass
+domain/rebar OCCT 边界 = pass
+
+latest commit = 6b989ad
+latest tag = m1-app-014/legacy-wire-chain-summary
+```
+
+当前下一步：
+
+```text
+TODO-015 / M1-App-015
+  -> LegacyGeometryAdapter offset 曲线能力 spike
+  -> 验证 OCCT 是否能替代旧 ACIS 偏移能力
+```
+
+长期执行循环：
+
+```text
+从 todo.csv 中选择 status=next 的任务。
+如果没有 next，选择依赖已满足的最高优先级 P0 pending。
+每轮只推进一个明确切片。
+每轮必须先读该任务 evidence 指向的文档。
+每轮必须先补测试或测试用例，再改实现。
+每轮实现后必须跑窄测、默认 CTest、readiness gate 或专项 gate。
+每轮必须更新实现记录、build report、追溯矩阵、缺口文档和 todo.csv。
+每轮完成后必须 commit、打 annotated tag、push main 和 tags。
+完成一个切片后停止复盘，不自动进入下一个切片。
+```
+
+每轮开始必须检查：
+
+```text
+git status --short --branch
+todo.csv 当前 next 项
+46_CSE_v2Goal执行目标与Todo说明.md 当前目标
+99_缺口和待确认项.md 当前相关缺口
+app/src/domain/rebar 是否仍无 OCCT / AIS 类型泄漏
+```
+
+每轮默认验证命令：
+
+```text
+cd /d "C:\Users\ghost\Desktop\reverse_engineering\【03】图石软件\【图石钢筋1比1复刻】\app"
+
+"D:\Work\vcpkg\downloads\tools\cmake-4.3.2-windows\cmake-4.3.2-windows-x86_64\bin\cmake.exe" --build build
+
+"D:\Work\vcpkg\downloads\tools\cmake-4.3.2-windows\cmake-4.3.2-windows-x86_64\bin\ctest.exe" --test-dir build --output-on-failure
+```
+
+每轮必须额外运行：
+
+```text
+py .\tools\phase1_readiness_gate\check_phase1_readiness.py --strict
+
+rg -n "TopoDS_|AIS_|BRep|TopAbs_" ".\app\src\domain\rebar"
+```
+
+TDD 规则：
+
+```text
+新增功能或行为变更必须先写失败测试。
+必须看到 RED。
+再写最小实现。
+再跑 GREEN。
+没有 RED 不能声称 TDD 完成。
+```
+
+禁止事项：
+
+```text
+禁止把父目录 src/rebar/* 当作旧图石业务真相迁入。
+禁止迁入 RebarCreationCommandService。
+禁止迁入 EdgeToRebarFactory。
+禁止迁入 FaceRebarGenerator。
+禁止迁入 PolylineRebarGenerator。
+禁止用 OCCT 能怎么做替代旧图石怎么做。
+禁止在 domain/rebar 中出现 TopoDS_、AIS_、BRep*、TopAbs_。
+禁止业务层直接依赖 OCCT / AIS。
+禁止在没有证据时把低置信推断写成确定结论。
+禁止 CTest 或 gate 失败时继续堆新功能。
+禁止因为没有 golden 就跳过证据追溯。
+```
+
+允许事项：
+
+```text
+允许参考父目录的 STEP/STP 导入、XCAF 遍历、AIS viewer、
+选择 ID、OCCT API 写法。
+
+允许在 LegacyGeometryAdapter 内部使用 OCCT。
+
+允许在 presentation / viewer 层使用 AIS。
+
+允许在文档中把低置信结论明确标为 gap。
+
+允许 IDA MCP 可用时优先查旧函数、调用链、常量、字段。
+```
+
+IDA / 旧图石确认规则：
+
+```text
+遇到旧业务不确定时，优先级如下：
+
+1. IDA MCP 查询旧 VisualTS 函数、调用链、常量和字段。
+2. 旧图石软件运行确认，记录截图、操作步骤、输出文件、hash。
+3. SFL / Detail / STP 样本交叉验证。
+4. 父目录代码只能作为 OCCT 工程写法参考，不能关闭旧业务证据缺口。
+
+如果 IDA MCP 不可用，必须写入 99_缺口和待确认项.md。
+```
+
+证据闭环要求：
+
+```text
+每个已完成功能必须有：
+
+1. 实现记录 md。
+2. build report md。
+3. build report json。
+4. 需求证据追溯矩阵更新。
+5. 99 缺口更新。
+6. todo.csv 状态更新。
+7. CTest 结果。
+8. readiness gate 结果。
+9. commit。
+10. annotated tag。
+11. push 到 GitHub。
+```
+
+Git 节点规则：
+
+```text
+每完成一个清晰节点必须 commit。
+每个节点必须打 annotated tag。
+tag 命名建议：
+
+m1-app-015/offset-curve-preview-spike
+m1-app-016/section-intersection-spike
+m1-app-017/sweep-capability-boundary
+m1-app-018/rebar-domain-model-p1
+
+提交后必须：
+
+git push origin main
+git push origin --tags
+```
+
+长期成功标准：
+
+```text
+功能矩阵完整。
+技术路线明确。
+命令契约可开发。
+钢筋领域模型可编码。
+Detail 工程图字段可映射。
+新设计文件格式可保存/读取/修复 binding。
+需求、证据、缺口、运行确认能互相追溯。
+关键缺口通过 IDA 或旧图石运行确认逐步闭合。
+Qt6 + OCCT 只替代商业底座。
+钢筋业务按旧 VisualTS 证据 1:1 复刻。
+```
+
+当前长期风险：
+
+```text
+IDA MCP 当前可能没有绑定数据库。
+旧图石运行确认依赖用户操作。
+OCCT 和 ACIS 几何细节可能有容差差异。
+没有 golden 时只能先做结构正确和证据闭环。
+父目录旧开发路线容易把项目带回“OCCT 直接重写钢筋”的错误方向。
+```
+
+恢复 / 回滚规则：
+
+```text
+发现路线偏移时，停止继续开发钢筋业务，先回到文档和 adapter 边界修正。
+
+出现以下情况要停止并修正：
+
+domain/rebar 出现 OCCT include。
+父目录 rebar 业务被迁入。
+测试失败但继续堆功能。
+旧逻辑无证据却写成确定结论。
+todo.csv 状态和 46 目标不一致。
+文档说已完成但没有 build report / gate / commit / tag。
+```
+
+本长期 goal 的执行方式：
+
+```text
+不要中途停下来问是否继续。
+除非遇到真实阻塞，否则按 todo.csv 顺序持续推进。
+每轮只做一个切片。
+每轮完成后更新 46，让下一轮 goal 指向新的 next。
+每轮完成后输出：
+
+完成了什么
+验证了什么
+还缺什么
+下一阶段建议做什么
+commit / tag / push 状态
+```
+
 ### 短期 Goal（推荐本轮复制）
 
 目标：只完成 `TODO-015 / M1-App-015` 这个短期阶段，不自动进入后续长期开发。
