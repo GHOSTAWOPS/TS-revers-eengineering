@@ -9,6 +9,7 @@ M1-Formal-Ready. It does not replace Qt6 application runtime tests.
 from __future__ import annotations
 
 import argparse
+import csv
 import json
 import re
 from dataclasses import dataclass
@@ -84,6 +85,248 @@ def read_json(path: Path) -> dict[str, Any] | None:
         return json.loads(path.read_text(encoding="utf-8"))
     except Exception:
         return None
+
+
+def read_text_lossy(path: Path) -> str:
+    for encoding in ("utf-8-sig", "utf-8", "gb18030"):
+        try:
+            return path.read_text(encoding=encoding)
+        except UnicodeDecodeError:
+            continue
+        except Exception:
+            return ""
+    try:
+        return path.read_text(errors="ignore")
+    except Exception:
+        return ""
+
+
+def iter_text_files(base: Path) -> list[Path]:
+    if not base.exists():
+        return []
+    suffixes = {
+        ".bat",
+        ".cmake",
+        ".cpp",
+        ".csv",
+        ".h",
+        ".hpp",
+        ".json",
+        ".md",
+        ".py",
+        ".txt",
+        ".xml",
+    }
+    ignored_dirs = {"build", "__pycache__", ".git", ".vs"}
+    files: list[Path] = []
+    for path in base.rglob("*"):
+        if not path.is_file():
+            continue
+        if any(part in ignored_dirs for part in path.parts):
+            continue
+        if path.suffix.lower() in suffixes:
+            files.append(path)
+    return files
+
+
+def find_pattern_hits(root: Path, bases: list[Path], pattern: re.Pattern[str]) -> list[str]:
+    hits: list[str] = []
+    for base in bases:
+        for path in iter_text_files(base):
+            text = read_text_lossy(path)
+            if not text:
+                continue
+            if pattern.search(text):
+                hits.append(rel(root, path))
+    return sorted(set(hits))
+
+
+def read_todo_rows(root: Path) -> list[dict[str, str]] | None:
+    todo = root / "todo.csv"
+    if not todo.exists():
+        return None
+    try:
+        with todo.open("r", encoding="utf-8-sig", newline="") as handle:
+            return [dict(row) for row in csv.DictReader(handle)]
+    except Exception:
+        return None
+
+
+def done_node_report_requirements(root: Path, rows: list[dict[str, str]]) -> tuple[list[str], list[str]]:
+    known_reports = {
+        "TODO-010": ("47_M1-App-010LegacyGeometryAdapterP3B实现记录.md", "docs/phase1/app_build_reports/m1_app_010_run_001.md"),
+        "TODO-011": ("48_M1-App-011LegacyGeometryAdapterP3C实现记录.md", "docs/phase1/app_build_reports/m1_app_011_run_001.md"),
+        "TODO-012": ("49_M1-App-012LegacyGeometryAdapterP3D实现记录.md", "docs/phase1/app_build_reports/m1_app_012_run_001.md"),
+        "TODO-013": ("50_M1-App-013LegacyGeometryAdapterP3E实现记录.md", "docs/phase1/app_build_reports/m1_app_013_run_001.md"),
+        "TODO-014": ("51_M1-App-014LegacyWireChain实现记录.md", "docs/phase1/app_build_reports/m1_app_014_run_001.md"),
+        "TODO-015": ("52_M1-App-015LegacyGeometryAdapterOffsetSpike实现记录.md", "docs/phase1/app_build_reports/m1_app_015_run_001.md"),
+        "TODO-016": ("53_M1-App-016LegacyGeometryAdapterSectionSpike实现记录.md", "docs/phase1/app_build_reports/m1_app_016_run_001.md"),
+        "TODO-017": ("54_M1-App-017LegacyGeometryAdapterSweepBoundary实现记录.md", "docs/phase1/app_build_reports/m1_app_017_run_001.md"),
+        "TODO-018": ("55_M1-App-018RebarDomainModelFreezeP1实现记录.md", "docs/phase1/app_build_reports/m1_app_018_run_001.md"),
+        "TODO-019": ("56_M1-App-019LegacyCommandContractP1实现记录.md", "docs/phase1/app_build_reports/m1_app_019_run_001.md"),
+        "TODO-020": ("57_TODO-020_IDA旧线筋弧筋链补证据记录.md", "docs/phase1/ida_reports/todo_020_ida_line_arc_chain_run_001.md"),
+        "TODO-021": ("58_M1-App-020旧线筋弧筋创建算法P0实现记录.md", "docs/phase1/app_build_reports/m1_app_020_run_001.md"),
+        "TODO-022": ("59_M1-App-021AIS钢筋显示映射实现记录.md", "docs/phase1/app_build_reports/m1_app_021_run_001.md"),
+        "TODO-023": ("60_M1-App-022新设计文件格式RuntimeP1实现记录.md", "docs/phase1/app_build_reports/m1_app_022_run_001.md"),
+        "TODO-024": ("61_M1-App-023DetailWriterP1实现记录.md", "docs/phase1/app_build_reports/m1_app_023_run_001.md"),
+        "TODO-025": ("62_TODO-025旧图石输出钢筋STP样本入库验证记录.md", "docs/phase1/app_build_reports/m1_app_024_run_001.md"),
+        "TODO-027": ("63_M2-UI-001旧UI功能入口P1实现记录.md", "docs/phase1/app_build_reports/m2_ui_001_run_001.md"),
+        "TODO-028": ("64_M2-Gate-001CSEReadinessGate扩展实现记录.md", "docs/phase1/app_build_reports/m2_gate_001_run_001.md"),
+    }
+    missing: list[str] = []
+    checked: list[str] = []
+    for row in rows:
+        if row.get("status") != "done":
+            continue
+        todo_id = row.get("id", "")
+        if todo_id not in known_reports:
+            continue
+        checked.append(todo_id)
+        for required_path in known_reports[todo_id]:
+            if not (root / required_path).exists():
+                missing.append(f"{todo_id}:{required_path}")
+    return missing, checked
+
+
+def collect_route_guardrail_checks(root: Path) -> list[GateCheck]:
+    checks: list[GateCheck] = []
+    occt_pattern = re.compile(r"\b(TopoDS_|AIS_|BRep|TopAbs_)")
+    forbidden_parent_rebar_pattern = re.compile(
+        r"\b(RebarCreationCommandService|EdgeToRebarFactory|FaceRebarGenerator|PolylineRebarGenerator)\b"
+    )
+
+    domain_hits = find_pattern_hits(root, [root / "app" / "src" / "domain" / "rebar"], occt_pattern)
+    checks.append(
+        GateCheck(
+            "RouteGuardrail",
+            "domain_rebar_occt_boundary",
+            "error",
+            not domain_hits,
+            "app/src/domain/rebar",
+            ["E-DEV-050"],
+            ["GAP-ROUTE-001"],
+            "no OCCT/AIS symbols in domain/rebar"
+            if not domain_hits
+            else "OCCT/AIS symbol leak: " + ", ".join(domain_hits[:8]),
+        )
+    )
+
+    boundary_hits = find_pattern_hits(
+        root,
+        [root / "app" / "src" / "domain" / "rebar", root / "app" / "src" / "drawing", root / "app" / "src" / "project"],
+        occt_pattern,
+    )
+    checks.append(
+        GateCheck(
+            "RouteGuardrail",
+            "domain_drawing_project_occt_boundary",
+            "error",
+            not boundary_hits,
+            "app/src/domain/rebar;app/src/drawing;app/src/project",
+            ["E-DEV-050"],
+            ["GAP-ROUTE-001"],
+            "no OCCT/AIS symbols in protected layers"
+            if not boundary_hits
+            else "OCCT/AIS symbol leak: " + ", ".join(boundary_hits[:8]),
+        )
+    )
+
+    parent_rebar_hits = find_pattern_hits(root, [root / "app" / "src"], forbidden_parent_rebar_pattern)
+    checks.append(
+        GateCheck(
+            "RouteGuardrail",
+            "parent_rebar_business_reference",
+            "error",
+            not parent_rebar_hits,
+            "app/src",
+            ["E-DEV-050", "23_父目录源码参考边界与路线纠偏.md"],
+            ["GAP-ROUTE-002"],
+            "no parent rebar business factories referenced"
+            if not parent_rebar_hits
+            else "parent rebar business reference: " + ", ".join(parent_rebar_hits[:8]),
+        )
+    )
+
+    rows = read_todo_rows(root)
+    if rows is None:
+        checks.append(
+            GateCheck(
+                "RouteGuardrail",
+                "todo_status_single_next",
+                "error",
+                False,
+                "todo.csv",
+                ["E-DEV-050"],
+                ["GAP-ROUTE-003"],
+                "todo.csv missing or unreadable",
+            )
+        )
+        checks.append(
+            GateCheck(
+                "RouteGuardrail",
+                "done_node_reports",
+                "warning",
+                False,
+                "todo.csv",
+                ["E-DEV-050"],
+                ["GAP-ROUTE-004"],
+                "todo.csv missing or unreadable",
+            )
+        )
+        return checks
+
+    next_ids = [row.get("id", "") for row in rows if row.get("status") == "next"]
+    checks.append(
+        GateCheck(
+            "RouteGuardrail",
+            "todo_status_single_next",
+            "error",
+            len(next_ids) == 1,
+            "todo.csv",
+            ["E-DEV-050"],
+            ["GAP-ROUTE-003"],
+            f"next_count={len(next_ids)} next_ids={','.join(next_ids) if next_ids else 'none'}",
+        )
+    )
+
+    allowed_statuses = {"done", "next", "pending", "blocked"}
+    invalid_statuses = [
+        f"{row.get('id', '<missing-id>')}:{row.get('status', '<missing-status>')}"
+        for row in rows
+        if row.get("status") not in allowed_statuses
+    ]
+    checks.append(
+        GateCheck(
+            "RouteGuardrail",
+            "todo_status_values",
+            "error",
+            not invalid_statuses,
+            "todo.csv",
+            ["E-DEV-050"],
+            ["GAP-ROUTE-003"],
+            "todo status values valid"
+            if not invalid_statuses
+            else "invalid todo status: " + ", ".join(invalid_statuses[:8]),
+        )
+    )
+
+    missing_reports, checked_done_ids = done_node_report_requirements(root, rows)
+    checks.append(
+        GateCheck(
+            "RouteGuardrail",
+            "done_node_reports",
+            "warning",
+            not missing_reports,
+            "todo.csv;docs/phase1/app_build_reports",
+            ["E-DEV-050"],
+            ["GAP-ROUTE-004"],
+            f"checked_done_nodes={len(checked_done_ids)}"
+            if not missing_reports
+            else "missing done node report: " + ", ".join(missing_reports[:8]),
+        )
+    )
+
+    return checks
 
 
 def decision_check(
@@ -476,6 +719,8 @@ def collect_checks(root: Path) -> list[GateCheck]:
         )
     )
 
+    checks.extend(collect_route_guardrail_checks(root))
+
     return checks
 
 
@@ -495,11 +740,11 @@ def summarize(checks: list[GateCheck]) -> dict[str, Any]:
     }
 
 
-def build_report(root: Path, checks: list[GateCheck]) -> dict[str, Any]:
+def build_report(root: Path, checks: list[GateCheck], report_id: str = "readiness_gate_run_001") -> dict[str, Any]:
     summary = summarize(checks)
     return {
         "schemaVersion": "phase1-readiness-gate/v1",
-        "reportId": "readiness_gate_run_001",
+        "reportId": report_id,
         "createdAt": datetime.now(CN_TZ).isoformat(timespec="seconds"),
         "scope": "M1-Formal readiness artifact gate",
         "summary": summary,
@@ -515,7 +760,7 @@ def build_report(root: Path, checks: list[GateCheck]) -> dict[str, Any]:
 def write_markdown(report: dict[str, Any], out_path: Path) -> None:
     summary = report["summary"]
     lines: list[str] = [
-        "# Phase 1 Readiness Gate Run 001",
+        f"# Phase 1 Readiness Gate {report['reportId']}",
         "",
         "## Summary",
         "",
@@ -565,12 +810,18 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--json-out", type=Path)
     parser.add_argument("--md-out", type=Path)
+    parser.add_argument("--report-id")
     parser.add_argument("--strict", action="store_true", help="exit 1 when M1-Formal is blocked")
     args = parser.parse_args()
 
     root = root_dir()
     checks = collect_checks(root)
-    report = build_report(root, checks)
+    report_id = args.report_id
+    if not report_id and args.json_out:
+        report_id = args.json_out.stem
+    if not report_id and args.md_out:
+        report_id = args.md_out.stem
+    report = build_report(root, checks, report_id or "readiness_gate_run_001")
 
     if args.json_out:
         args.json_out.parent.mkdir(parents=True, exist_ok=True)

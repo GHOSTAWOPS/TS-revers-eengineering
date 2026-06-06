@@ -1,0 +1,62 @@
+{
+  "id": "m2_gate_001_run_001",
+  "date": "2026-06-07",
+  "decision": "m2-gate-001-pass",
+  "scope": [
+    "TODO-028",
+    "M2-Gate",
+    "CSE readiness gate extension",
+    "RouteGuardrail",
+    "todo.csv state guardrail",
+    "parent rebar business reference guardrail",
+    "OCCT/AIS leakage guardrail"
+  ],
+  "evidenceId": "E-DEV-050",
+  "tests": {
+    "phase1ReadinessGateTests": {
+      "success": true,
+      "passed": 10,
+      "failed": 0
+    }
+  },
+  "readinessGate": {
+    "decision": "M1-Formal-Ready",
+    "m1FormalAllowed": true,
+    "passCount": 84,
+    "checkCount": 84,
+    "errorCount": 0,
+    "warningCount": 0,
+    "report": "docs/phase1/readiness_gate_reports/readiness_gate_run_002.json"
+  },
+  "routeGuardrail": {
+    "domainRebarOcctBoundary": "pass",
+    "domainDrawingProjectOcctBoundary": "pass",
+    "parentRebarBusinessReference": "pass",
+    "todoStatusSingleNext": "pass",
+    "todoStatusValues": "pass",
+    "doneNodeReports": "pass"
+  },
+  "guardrails": {
+    "parentRebarBusinessMigrated": false,
+    "newRebarBusinessImplemented": false,
+    "uiEntryExpanded": false,
+    "goldenCollected": false
+  },
+  "xhighReview": {
+    "initialVerdict": "block",
+    "critical": "none",
+    "important": [
+      "46_CSE_v2Goal执行目标与Todo说明.md contained a stale TODO-028 next-step sentence"
+    ],
+    "resolution": [
+      "Stale sentence fixed before commit",
+      "New evidence reports will be included in this commit"
+    ],
+    "minorDeferred": [
+      "Add drawing/project protected-layer leak negative tests later",
+      "Extend parent rebar business guardrail to CMake/include-path references later"
+    ],
+    "finalStatus": "important_resolved"
+  },
+  "next": "TODO-029"
+}

@@ -228,6 +228,16 @@ E-DEV-049
      63_M2-UI-001旧UI功能入口P1实现记录.md
      docs/phase1/app_build_reports/m2_ui_001_run_001.md
      docs/phase1/app_build_reports/m2_ui_001_run_001.json
+
+E-DEV-050
+  -> TODO-028 / M2-Gate-001 CSE readiness gate 扩展报告
+  -> 来源：
+     tools/phase1_readiness_gate/
+     64_M2-Gate-001CSEReadinessGate扩展实现记录.md
+     docs/phase1/readiness_gate_reports/readiness_gate_run_002.json
+     docs/phase1/readiness_gate_reports/readiness_gate_run_002.md
+     docs/phase1/app_build_reports/m2_gate_001_run_001.md
+     docs/phase1/app_build_reports/m2_gate_001_run_001.json
 ```
 
 注意：
@@ -244,6 +254,8 @@ tools/phase1_readiness_gate/check_phase1_readiness.py
 tools/phase1_readiness_gate/test_phase1_readiness_gate.py
 docs/phase1/readiness_gate_reports/readiness_gate_run_001.json
 docs/phase1/readiness_gate_reports/readiness_gate_run_001.md
+docs/phase1/readiness_gate_reports/readiness_gate_run_002.json
+docs/phase1/readiness_gate_reports/readiness_gate_run_002.md
 ```
 
 ## 当前运行结果
@@ -251,7 +263,7 @@ docs/phase1/readiness_gate_reports/readiness_gate_run_001.md
 ```text
 Decision: M1-Formal-Ready
 M1-Formal allowed: yes
-Checks: 78 / 78 pass
+Checks: 84 / 84 pass
 Errors: 0
 Warnings: 0
 Blocker GAPs: none
@@ -289,6 +301,7 @@ Blocker GAPs: none
 - `DetailWriter P1` 已落地并通过 M1-App-023：默认 CTest 13/13 pass，可通过 `DetailWriter` 把 domain `SteelData / SteelBarGroup / SteelBar / SteelBarSegment` 输出为 `Detail.xml + Detail01.stl` 首批字段；安装失败会恢复旧 Detail 包；MaterialTable 质量公式 deferred；该阶段不是 AutoCAD L2 动态导入、完整工程图或完整下料统计公式。
 - `TODO-025 / M1-App-024` 旧图石输出钢筋 STP 样本入库验证已完成：`123.stp` 已固定为 `tushi_rebar_123_stp` 几何 witness，当前 import probe 为 754 solids / 3016 faces / 9048 raw edges / 18096 raw vertices / METRE，既有 5 轮 STEP selection gate 为 pass；该阶段不是旧钢筋创建算法、旧参数、统计公式、Detail 正确性或新系统可生成同样几何的证明。
 - `TODO-027 / M2-UI-001` 旧 UI 功能入口 P1 已落地并通过：默认 CTest 13/13 pass，`tsrebar_app --smoke` 校验 Ribbon QAction 追溯 metadata，`LegacyUiCommandMap` 覆盖 `17` 的一期入口，ContextMenu 命令不渲染到 Ribbon；该阶段不是旧弹窗字段、状态栏提示、钢筋业务算法或 golden。
+- `TODO-028 / M2-Gate-001` CSE readiness gate 扩展已落地并通过：新增 RouteGuardrail，当前 readiness gate 为 84/84 pass、0 error、0 warning；新增检查覆盖 domain/rebar OCCT/AIS 泄漏、保护层泄漏、父目录 rebar 业务引用、todo 状态和 done 节点报告存在性；该阶段不是旧业务算法或输出结果 1:1 证明。
 - Detail writer L0/L1 离线 gate 已落地并通过，不再作为当前 M1 阻塞。
 - `GAP-DEV-001/GAP-DEV-007` 不再阻塞进入 Qt6 + OCCT 开发入口，但旧图石业务复刻缺口仍按功能专项继续闭合。
 
@@ -354,4 +367,4 @@ none
 2. 保留 Qt6 runtime gate，防止 Save/Open 和 binding repair 报告退回 simulation。
 3. 保留 Detail writer L0/L1 报告；AutoCAD L2 导入另走工程图专项。
 4. 新增真实工程 STEP 样本时继续跑 STEP selection gate。
-5. 后续开发仍按旧图石运行、IDA、SFL、Detail 证据闭合业务缺口；`TODO-027` 已把一期旧 UI 功能入口接入正式 app，下一步建议按 `TODO-028` 扩展 CSE readiness gate。`TODO-026` golden 采集保持 pending，不自动进入。
+5. 后续开发仍按旧图石运行、IDA、SFL、Detail 证据闭合业务缺口；`TODO-028` 已把路线护栏放进自动 readiness gate，下一步建议按 `TODO-029` 进入钢筋编辑命令专项。`TODO-026` golden 采集保持 pending，不自动进入。

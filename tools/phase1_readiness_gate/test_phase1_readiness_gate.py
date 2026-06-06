@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import importlib.util
 import sys
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -14,6 +15,15 @@ SPEC.loader.exec_module(gate)
 
 
 class Phase1ReadinessGateTests(unittest.TestCase):
+    def make_guardrail_root(self) -> tuple[tempfile.TemporaryDirectory[str], Path]:
+        tmp = tempfile.TemporaryDirectory()
+        root = Path(tmp.name)
+        (root / "app" / "src" / "domain" / "rebar").mkdir(parents=True)
+        (root / "app" / "src" / "drawing").mkdir(parents=True)
+        (root / "app" / "src" / "project").mkdir(parents=True)
+        (root / "docs" / "phase1" / "app_build_reports").mkdir(parents=True)
+        return tmp, root
+
     def test_current_workspace_is_m1_formal_ready_without_blocker_gaps(self):
         root = gate.root_dir()
         checks = gate.collect_checks(root)
@@ -84,6 +94,101 @@ class Phase1ReadinessGateTests(unittest.TestCase):
         self.assertTrue(detail_checks["detail_writer_l0_l1_run_001.json"].ok)
         self.assertEqual("decision=l0-l1-pass", detail_checks["detail_writer_l0_l1_run_001.json"].message)
         self.assertTrue(detail_checks["detail_writer_summary_001.md"].ok)
+
+    def test_current_workspace_route_guardrails_are_present_and_clean(self):
+        root = gate.root_dir()
+        checks = gate.collect_checks(root)
+        route_checks = {
+            check.item: check
+            for check in checks
+            if check.gate == "RouteGuardrail"
+        }
+
+        for item in [
+            "domain_rebar_occt_boundary",
+            "domain_drawing_project_occt_boundary",
+            "parent_rebar_business_reference",
+            "todo_status_single_next",
+            "todo_status_values",
+            "done_node_reports",
+        ]:
+            self.assertIn(item, route_checks)
+
+        route_errors = [
+            check
+            for check in route_checks.values()
+            if not check.ok and check.severity == "error"
+        ]
+        self.assertEqual([], route_errors)
+
+    def test_route_guardrail_detects_occt_leak_in_domain_rebar(self):
+        tmp, root = self.make_guardrail_root()
+        with tmp:
+            leak = root / "app" / "src" / "domain" / "rebar" / "BadLeak.h"
+            leak.write_text("#include <TopoDS_Edge.hxx>\nAIS_Shape* shape;\n", encoding="utf-8")
+
+            checks = gate.collect_route_guardrail_checks(root)
+            leak_checks = [check for check in checks if check.item == "domain_rebar_occt_boundary"]
+
+            self.assertEqual(1, len(leak_checks))
+            self.assertFalse(leak_checks[0].ok)
+            self.assertEqual("error", leak_checks[0].severity)
+            self.assertIn("GAP-ROUTE-001", leak_checks[0].gap)
+            self.assertIn("BadLeak.h", leak_checks[0].message)
+
+    def test_route_guardrail_detects_parent_rebar_business_import(self):
+        tmp, root = self.make_guardrail_root()
+        with tmp:
+            bad_file = root / "app" / "src" / "command" / "BadFactoryUse.cpp"
+            bad_file.parent.mkdir(parents=True)
+            bad_file.write_text("auto x = EdgeToRebarFactory{};\n", encoding="utf-8")
+
+            checks = gate.collect_route_guardrail_checks(root)
+            parent_checks = [check for check in checks if check.item == "parent_rebar_business_reference"]
+
+            self.assertEqual(1, len(parent_checks))
+            self.assertFalse(parent_checks[0].ok)
+            self.assertEqual("error", parent_checks[0].severity)
+            self.assertIn("GAP-ROUTE-002", parent_checks[0].gap)
+            self.assertIn("BadFactoryUse.cpp", parent_checks[0].message)
+
+    def test_route_guardrail_requires_exactly_one_next_todo(self):
+        tmp, root = self.make_guardrail_root()
+        with tmp:
+            (root / "todo.csv").write_text(
+                '"id","priority","phase","task","status","goal_setpoint","acceptance","boundary","evidence","dependencies","risk","notes"\n'
+                '"TODO-001","P1","A","one","next","","","","","","",""\n'
+                '"TODO-002","P1","A","two","next","","","","","","",""\n',
+                encoding="utf-8",
+            )
+
+            checks = gate.collect_route_guardrail_checks(root)
+            todo_checks = [check for check in checks if check.item == "todo_status_single_next"]
+
+            self.assertEqual(1, len(todo_checks))
+            self.assertFalse(todo_checks[0].ok)
+            self.assertEqual("error", todo_checks[0].severity)
+            self.assertIn("GAP-ROUTE-003", todo_checks[0].gap)
+            self.assertIn("next_count=2", todo_checks[0].message)
+
+    def test_route_guardrail_requires_done_node_reports(self):
+        tmp, root = self.make_guardrail_root()
+        with tmp:
+            (root / "todo.csv").write_text(
+                '"id","priority","phase","task","status","goal_setpoint","acceptance","boundary","evidence","dependencies","risk","notes"\n'
+                '"TODO-027","P1","M2-UI","旧 UI 功能入口 1:1 复刻 P1","done","","","","","","",""\n'
+                '"TODO-028","P1","Gate","CSE readiness gate 扩展","next","","","","","","",""\n',
+                encoding="utf-8",
+            )
+
+            checks = gate.collect_route_guardrail_checks(root)
+            report_checks = [check for check in checks if check.item == "done_node_reports"]
+
+            self.assertEqual(1, len(report_checks))
+            self.assertFalse(report_checks[0].ok)
+            self.assertEqual("warning", report_checks[0].severity)
+            self.assertIn("GAP-ROUTE-004", report_checks[0].gap)
+            self.assertIn("TODO-027", report_checks[0].message)
 
 
 if __name__ == "__main__":
