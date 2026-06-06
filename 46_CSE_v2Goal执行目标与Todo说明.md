@@ -63,6 +63,7 @@ Detail / 新设计文件格式输出层
 10. golden 不是当前前置阻塞，但后续做 1:1 行为闭环时必须逐步补。
 11. 不确定旧逻辑时优先用 IDA MCP 或旧图石运行确认，不能凭父目录代码拍脑袋定案。
 12. 每次完成一个清晰节点都要 commit、打 tag、push，形成可回退时间线。
+13. 涉及代码、测试、构建脚本的节点，在 commit 前必须经过 xhigh 只读 review；修改只能由主流程 agent 完成。
 ```
 
 CSE v2 Control Contract：
@@ -74,7 +75,7 @@ Primary Setpoint
 
 Acceptance
   每个切片有测试、实现记录、build report、追溯矩阵、缺口记录、
-  todo 状态、commit、annotated tag、push 结果。
+  todo 状态、代码节点 xhigh review 结论、commit、annotated tag、push 结果。
 
 Guardrail Metrics
   domain/rebar 不出现 TopoDS_、AIS_、BRep*、TopAbs_；
@@ -85,6 +86,7 @@ Guardrail Metrics
 Sampling Plan
   每轮开始看 todo.csv / 46 / 99 / git status；
   每轮结束跑默认 CTest、readiness gate、domain OCCT 泄漏检查；
+  涉及代码、测试、构建脚本的节点，在验证通过后、commit 前执行 xhigh 只读 review；
   涉及旧业务时补 IDA / 旧图石 / SFL / STP / Detail 证据。
 
 Known Delays
@@ -102,6 +104,7 @@ Rollback Trigger
   domain/rebar 引入 OCCT/AIS；
   父目录 rebar 业务被迁入；
   无证据旧逻辑被写死；
+  代码节点跳过 xhigh 只读 review；
   todo 与 46 的 next 目标不一致。
 
 Boundary
@@ -109,6 +112,7 @@ Boundary
   adapter 切片只改 legacy geometry DTO、OCCT adapter、测试、文档；
   业务切片只通过 legacy interface 使用几何能力；
   UI 切片只对齐旧命令入口和状态，不顺手改业务。
+  xhigh agent 只读，只能评审 diff / 文档 / 测试输出，不能修改、格式化、commit、tag、push。
 
 Actuator Budget
   单轮只做一个可验证节点；
@@ -241,6 +245,8 @@ TODO-015 / M1-App-015
 每轮必须先读该任务 evidence 指向的文档。
 每轮必须先补测试或测试用例，再改实现。
 每轮实现后必须跑窄测、默认 CTest、readiness gate 或专项 gate。
+涉及代码、测试、构建脚本的节点，验证通过后、commit 前必须执行 xhigh 只读 review。
+xhigh 只能审查，不能修改；Critical / Important 必须由主流程 agent 修复或写明技术反驳理由。
 每轮必须更新实现记录、build report、追溯矩阵、缺口文档和 todo.csv。
 每轮完成后必须 commit、打 annotated tag、push main 和 tags。
 完成一个切片后停止复盘，不自动进入下一个切片。
@@ -298,6 +304,8 @@ TDD 规则：
 禁止在没有证据时把低置信推断写成确定结论。
 禁止 CTest 或 gate 失败时继续堆新功能。
 禁止因为没有 golden 就跳过证据追溯。
+禁止让 xhigh agent 修改文件、格式化、commit、tag、push。
+禁止代码节点跳过 xhigh 只读 review 后提交。
 ```
 
 允许事项：
@@ -341,9 +349,50 @@ IDA / 旧图石确认规则：
 6. todo.csv 状态更新。
 7. CTest 结果。
 8. readiness gate 结果。
-9. commit。
-10. annotated tag。
-11. push 到 GitHub。
+9. 代码节点的 xhigh 只读 review 结论和处理结果。
+10. commit。
+11. annotated tag。
+12. push 到 GitHub。
+```
+
+xhigh 只读 review 契约：
+
+```text
+适用范围：
+  涉及代码、测试、构建脚本的节点强制执行。
+  纯文档、todo、证据整理节点不强制，但可以按需执行。
+
+执行时机：
+  主流程 agent 完成实现和本地验证后、commit 前执行。
+
+xhigh 权限：
+  只读。
+  只能读取 diff、相关文档、测试输出和验证报告。
+  不能修改文件。
+  不能 apply patch。
+  不能运行格式化写回。
+  不能 commit、tag、push。
+
+输入必须包含：
+  当前任务目标。
+  相关 goal / todo / evidence 文档。
+  base/head diff。
+  本地验证命令和输出。
+  本轮禁止事项，尤其是 OCCT 不得泄漏进 domain/rebar。
+
+输出必须包含：
+  Critical：必须修。
+  Important：必须修或主流程 agent 写明技术反驳理由。
+  Minor：可记录后续处理。
+  Verdict：block 或 allow_commit。
+
+修复责任：
+  xhigh 只给意见。
+  主流程 agent 负责修改、再验证、文档更新、commit、tag、push。
+
+不可用处理：
+  如果 xhigh agent 不可用，必须在实现记录或 build report 中写明阻塞原因。
+  不能伪造 review 结果。
 ```
 
 Git 节点规则：
@@ -779,8 +828,11 @@ TODO-015 / M1-App-015
 6. 默认只推进一个 M1 切片，不同时铺开 UI、几何、钢筋业务和工程图。
 7. 修改后运行默认 CTest。
 8. 运行 readiness gate 或对应专项 gate。
-9. 更新实现记录文档、build report、`11_需求证据追溯矩阵.md`、`99_缺口和待确认项.md`。
-10. 更新 `todo.csv`：完成项改为 `done`，下一个可执行项改为 `next`。
+9. 涉及代码、测试、构建脚本的节点，验证通过后、commit 前执行 xhigh 只读 review。
+10. xhigh 只给审查结论；Critical / Important 必须由主流程 agent 修复或写明技术反驳理由。
+11. 修复后重新运行受影响验证。
+12. 更新实现记录文档、build report、`11_需求证据追溯矩阵.md`、`99_缺口和待确认项.md`。
+13. 更新 `todo.csv`：完成项改为 `done`，下一个可执行项改为 `next`。
 
 ### 禁止事项
 
@@ -793,6 +845,8 @@ TODO-015 / M1-App-015
 - 不确定旧逻辑时直接写死结论。
 - CTest 或 gate 失败时继续堆新功能。
 - 因为没有 golden 就跳过证据追溯。
+- 让 xhigh agent 修改文件、格式化、commit、tag、push。
+- 代码节点跳过 xhigh 只读 review 后提交。
 
 允许：
 
@@ -819,19 +873,20 @@ TODO-015 / M1-App-015
 - `app` 默认 CTest 通过，readiness gate 通过。
 - `domain/rebar` 不出现 `TopoDS_`、`AIS_`、`BRep*`、`TopAbs_` 等 OCCT / AIS 细节。
 - 每个已实现功能都有实现记录、测试报告和需求证据追溯更新。
+- 每个代码节点都有 xhigh 只读 review 结论；Critical / Important 已处理或有技术反驳记录。
 - 旧逻辑不确定时，优先用 IDA MCP 或旧图石运行确认闭合，不用父目录代码替代旧图石证据。
 
 ## CSE v2 Control Contract
 
 - **Primary Setpoint**：本轮只完成 `TODO-015 / M1-App-015`，让 `LegacyGeometryAdapter` 具备 offset 曲线 preview summary 的能力边界。
-- **Acceptance**：offset preview DTO/API、真实 `123.stp` 集成测试、默认 CTest、readiness gate、实现记录、build report、`todo.csv` 和追溯文档全部闭合。
+- **Acceptance**：offset preview DTO/API、真实 `123.stp` 集成测试、默认 CTest、readiness gate、xhigh 只读 review、实现记录、build report、`todo.csv` 和追溯文档全部闭合。
 - **Guardrail Metrics**：不能让 OCCT 细节泄漏进 `domain/rebar`；不能把父目录钢筋生成器当业务真相；不能用“OCCT 能做什么”替代“旧图石怎么做”。
-- **Sampling Plan**：先跑/补 integration test，再改 adapter；实现后运行默认 CTest；最后运行 readiness gate；完成后更新 evidence / gap / todo。
+- **Sampling Plan**：先跑/补 integration test，再改 adapter；实现后运行默认 CTest；运行 readiness gate；代码节点 commit 前执行 xhigh 只读 review；完成后更新 evidence / gap / todo。
 - **Known Delays**：IDA MCP 当前可能没有绑定数据库；旧图石运行确认依赖用户操作；真实 golden 对照要等旧软件可稳定导出。
 - **Recovery Target**：发现路线偏移时，停止继续开发钢筋业务，先回到文档和 adapter 边界修正。
-- **Rollback Trigger**：`domain/rebar` 出现 OCCT include、父目录 rebar 业务被迁入、测试失败但继续堆功能、旧逻辑无证据却写成确定结论。
+- **Rollback Trigger**：`domain/rebar` 出现 OCCT include、父目录 rebar 业务被迁入、测试失败但继续堆功能、旧逻辑无证据却写成确定结论、代码节点跳过 xhigh 只读 review。
 - **Constraints**：不使用 ACIS / HOOPS / Codejock 等商业库；不读取完整私有 SFL 作为新主格式；新工程格式结合 SFL 业务语义和 OCCT 几何引用设计。
-- **Boundary**：本轮只允许修改 geometry legacy DTO、OCCT adapter、adapter 集成测试、M1-App-015 文档和任务看板；父目录只读参考。
+- **Boundary**：本轮只允许修改 geometry legacy DTO、OCCT adapter、adapter 集成测试、M1-App-015 文档和任务看板；父目录只读参考；xhigh agent 只读 review，不负责修改。
 - **Coupling Notes**：`LegacyGeometryAdapter` 是几何能力边界；`domain/rebar` 是业务对象边界；`DetailWriter` 和新设计文件格式是输出 / 持久化边界。
 - **Approximation Validity**：当前 adapter 的 split / interval / spline / wire chain / offset preview 都是 legacy summary 或能力 spike，不等价于真实 topology mutation；必须在文档中标明能力等级。
 - **Actuator Budget**：本轮只推进 `TODO-015`。完成后停止复盘，不自动进入 `TODO-016`。

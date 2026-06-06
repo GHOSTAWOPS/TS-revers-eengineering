@@ -31,11 +31,50 @@
 5. 运行最小相关测试。
 6. 运行默认 CTest。
 7. 运行 readiness gate 或专项 gate。
-8. 更新实现记录、build report、追溯矩阵、缺口文档和 `todo.csv`。
-9. 节点完成后 commit。
-10. commit 后立即打 annotated tag。
+8. 涉及代码、测试、构建脚本的节点，验证通过后、commit 前执行 xhigh 只读 review。
+9. xhigh 只给审查结论；Critical / Important 必须由主流程 agent 修复或写明技术反驳理由。
+10. 修复后重新运行受影响验证。
+11. 更新实现记录、build report、追溯矩阵、缺口文档和 `todo.csv`。
+12. 节点完成后 commit。
+13. commit 后立即打 annotated tag。
 
 如果测试或 gate 失败，不继续堆新功能。先修失败或把阻塞原因写入文档。
+
+## xhigh 只读 Review 规范
+
+涉及代码、测试、构建脚本的节点必须在本地验证通过后、commit 前执行 xhigh 只读 review。
+
+纯文档、todo、证据整理节点不强制 xhigh review，但可以按需执行。
+
+xhigh agent 的权限边界：
+
+- 只能读取 diff、相关文档、测试输出和验证报告。
+- 只能输出审查意见和提交判断。
+- 不能修改文件。
+- 不能 apply patch。
+- 不能运行会写回文件的格式化或代码生成。
+- 不能 commit、tag、push。
+
+xhigh review 输入必须包含：
+
+- 当前任务目标。
+- 相关 goal / todo / evidence 文档。
+- base/head diff。
+- 本地验证命令和输出。
+- 本轮禁止事项，尤其是 OCCT 不得泄漏进 `domain/rebar`。
+
+xhigh review 输出必须包含：
+
+- `Critical`：必须修。
+- `Important`：必须修，或由主流程 agent 写明技术反驳理由。
+- `Minor`：可以记录到后续 todo 或缺口文档。
+- `Verdict`：`block` 或 `allow_commit`。
+
+修复责任：
+
+- xhigh 只负责 review。
+- 主流程 agent 负责修改、再验证、文档更新、commit、tag、push。
+- 如果 xhigh agent 不可用，必须在实现记录或 build report 中写明阻塞原因，不能伪造 review 结果。
 
 ## Git 节点时间线规范
 
@@ -69,6 +108,9 @@ git diff --stat
 cmake --build build
 ctest --test-dir build --output-on-failure
 ```
+
+涉及代码、测试、构建脚本时，还必须在上述验证通过后执行 xhigh 只读 review。
+Critical / Important 未处理或未写明技术反驳理由时，不允许 commit。
 
 涉及正式 Phase1 放行时，执行：
 
