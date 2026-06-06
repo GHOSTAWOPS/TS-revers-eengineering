@@ -277,26 +277,33 @@ TODO-029 / M2-Edit = done
      barmove -> Input_Choice -> translate_transf 移动链，
      domain/rebar 新增 RebarEditMoveService，按 copyFlag=0
      实现领域层整体平移，不声明完整旧 ACIS topology mutation。
+
+TODO-032 / M2-Edit = done
+  -> Rebar.Edit.Copy / 钢筋拷贝 P0，IDA MCP 已补证
+     scopy -> Input_Choice copyFlag=1 -> sub_1405989C0 -> sub_1405AA5D0
+     拷贝链，domain/rebar 新增 RebarEditCopyService，按复制后累计平移
+     实现领域层 copy，不声明完整旧 ACIS topology clone、旧编号、dirty/undo 或 golden。
 ```
 
 当前最新验证基线：
 
 ```text
-app 默认 CTest = 14/14 pass
+app 默认 CTest = 15/15 pass
 readiness gate = M1-Formal-Ready, 84/84 pass
 domain/rebar + drawing + project OCCT 边界 = pass
 
-latest completed tag = m2-edit-001/rebar-move-p0
+latest completed tag = m2-edit-002/rebar-copy-p0
 latest evidence tag = m1-app-024/stp-sample-witness
-planned tag = m2-edit-002/rebar-copy-p0
+planned tag = m2-stats-001/rebar-schedule-p0
 ```
 
 当前下一步：
 
 ```text
-TODO-032 / M2-Edit-002
-  -> Rebar.Edit.Copy / 钢筋拷贝证据与 P0 切片
-  -> 先补 IDA MCP 或旧图石运行证据，再决定是否实现。
+TODO-030 / M2-Stats
+  -> 钢筋统计 / 下料表专项
+  -> 先按 E-IDA-019 / E-IDA-020 / E-IDA-021 和 DetailWriter P1
+     确认 StbTable / MaterialTable / 编号 / 长度 / 质量规则边界。
 ```
 
 长期执行循环：
@@ -538,27 +545,29 @@ todo.csv 状态和 46 目标不一致。
 commit / tag / push 状态
 ```
 
-### 短期 Goal（推荐本轮复制）
+### 短期 Goal（推荐下一轮复制）
 
-目标：只完成 `TODO-032 / M2-Edit-002 Rebar.Edit.Copy 钢筋拷贝证据与 P0 切片` 这个短期阶段，不自动进入后续长期开发。
+目标：只完成 `TODO-030 / M2-Stats 钢筋统计 / 下料表专项` 这个短期阶段，不自动进入后续长期开发。
 
-本轮要继续钢筋编辑专项的第二个可开发、可追溯切片：
+本轮要进入统计 / 下料表专项的第一个可开发、可追溯切片：
 
 ```text
-Rebar.Edit.Copy / 钢筋拷贝
-  -> 从 TODO-029 已确认的 Input_Choice 框架出发
-  -> 查 copy flag / Dialog #384 / 复制后对象编号与引用规则
-  -> 证据足够时补业务测试和 P0 实现
-  -> 证据不足时只落 IDA/GAP，不硬写业务算法
+Rebar.Stats / Drawing.GenerateBarSchedule
+  -> 从 E-IDA-019 / E-IDA-020 / E-IDA-021 的旧下料链出发
+  -> 对齐 DetailWriter P1 已落地的 StbTable / StbRow / MaterialTable 字段
+  -> 查清或明确标记 rsdID / groupID / stbNum / length / lenSum /
+     singleMass / massSum / MaterialTable 质量公式和编号合并规则
+  -> 证据足够时补业务测试和 P0 统计实现
+  -> 证据不足时只落 IDA/GAP，不硬写统计公式
 ```
 
 目标语义：
 
 ```text
-钢筋编辑不能按 OCCT 能力自由重写。
-必须先确认旧图石编辑命令怎么选对象、怎么改组、怎么 dirty、怎么失败提示。
+统计 / 下料表不能按“新系统方便统计什么”自由重写。
+必须先确认旧图石 Detail / 下料链怎么写字段、怎么汇总数量、长度、质量和编号。
 不确定旧逻辑时先查 IDA MCP 或旧图石运行确认。
-本轮只做 TODO-032 的一个编辑命令切片，不同时做统计、工程图、golden 或 UI 新功能。
+本轮只做 TODO-030 的一个统计 / 下料表切片，不同时做工程图生成、AutoCAD L2、golden 或 UI 新功能。
 ```
 
 当前已完成前置：
@@ -601,6 +610,10 @@ TODO-029 / M2-Edit = done
   -> Rebar.Edit.Move / 钢筋移动 P0，IDA MCP 已补证 copyFlag=0
      移动原对象链路，domain/rebar 已新增事务式整体平移服务。
 
+TODO-032 / M2-Edit = done
+  -> Rebar.Edit.Copy / 钢筋拷贝 P0，IDA MCP 已补证 copyFlag=1
+     复制后变换链路，domain/rebar 已新增事务式复制后累计平移服务。
+
 TODO-026 / Golden = pending
   -> 用户明确说 golden 先不要，所以本轮不进入 golden 采集。
 ```
@@ -620,33 +633,38 @@ C:\Users\ghost\Desktop\reverse_engineering\【03】图石软件
 本轮必须先读这些参考文档：
 
 1. `【图石钢筋1比1复刻】\00_总览.md`
-2. `【图石钢筋1比1复刻】\01_功能操作矩阵.md`
-3. `【图石钢筋1比1复刻】\03_IDA命令证据.md`
+2. `【图石钢筋1比1复刻】\03_IDA命令证据.md`
+3. `【图石钢筋1比1复刻】\05_Detail工程图包证据.md`
 4. `【图石钢筋1比1复刻】\08_开发命令契约.md`
 5. `【图石钢筋1比1复刻】\11_需求证据追溯矩阵.md`
-6. `【图石钢筋1比1复刻】\17_一期按钮追溯与命令占位矩阵.md`
-7. `【图石钢筋1比1复刻】\23_父目录源码参考边界与路线纠偏.md`
-8. `【图石钢筋1比1复刻】\35_Qt6_UI与LegacyGeometryAdapter复刻开发方案.md`
-9. `【图石钢筋1比1复刻】\56_M1-App-019LegacyCommandContractP1实现记录.md`
-10. `【图石钢筋1比1复刻】\64_M2-Gate-001CSEReadinessGate扩展实现记录.md`
+6. `【图石钢筋1比1复刻】\13_Detail字段映射矩阵.md`
+7. `【图石钢筋1比1复刻】\20_DetailWriter输出事务契约.md`
+8. `【图石钢筋1比1复刻】\61_M1-App-023DetailWriterP1实现记录.md`
+9. `【图石钢筋1比1复刻】\65_M2-Edit-001钢筋移动P0实现记录.md`
+10. `【图石钢筋1比1复刻】\66_M2-Edit-002钢筋拷贝P0实现记录.md`
 11. `【图石钢筋1比1复刻】\99_缺口和待确认项.md`
 12. `【图石钢筋1比1复刻】\todo.csv`
 
-如果任务涉及具体编辑命令，必须补读对应证据：
+如果任务涉及 UI / 命令入口，补读：
 
 ```text
-钢筋移动：E-IDA-004 / GAP-DEV-004 / 小样本 SFL
-钢筋拷贝：E-DLG-384 / E-IDA-023 / GAP-DEV-003
-组合并：E-DLG-500 / E-CTX-891F / GAP-DEV-005
-组合开：GAP-FUNC-003，需 IDA 或旧图石运行确认
-段连接：E-DLG-499 / E-CTX-8924 / GAP-DEV-005
+01_功能操作矩阵.md
+17_一期按钮追溯与命令占位矩阵.md
+```
+
+如果任务涉及旧编号 / 保存 / 新格式，补读：
+
+```text
+09_钢筋领域模型草案.md
+16_seg_steelbargroup字段地图初稿.md
+18_新设计文件格式替代SFL策略.md
 ```
 
 本轮允许修改：
 
-- 与所选编辑命令直接相关的 `domain/rebar` 业务层代码和测试
-- 必要的 `command` handler / service 接线，但必须保留旧命令语义
-- 必要的 `LegacyGeometryAdapter` 只读查询调用，不允许业务层直接依赖 OCCT
+- 与统计 / 下料表直接相关的 `domain/rebar`、`drawing/export` 业务层代码和测试
+- 必要的 `DetailWriter` 字段映射扩展，但必须保留旧 Detail 字段语义
+- 必要的统计服务 / command handler 接线，但必须保留旧命令语义
 - 对应实现记录、build report、`11 / 34 / 99 / 46 / todo.csv`
 
 本轮禁止修改或迁移：
@@ -659,15 +677,15 @@ C:\Users\ghost\Desktop\reverse_engineering\【03】图石软件
 - 任何 OCCT 直接造钢筋业务逻辑
 - `domain/rebar` 中引入 AIS / OCCT / `TopoDS_ / AIS_ / BRep / TopAbs_`
 - AutoCAD L2 动态导入同轮实现
-- 钢筋统计 / 下料表 / 完整工程图同轮实现
+- 完整工程图生成同轮实现
 - UI 新功能或命令入口扩展同轮实现
 - golden 采集同轮实现
-- 把缺证编辑命令语义写成确定结论
+- 把缺证统计公式、编号规则、质量公式写成确定结论
 
 本轮验收标准：
 
-1. 只选择 TODO-032 的一个明确编辑命令切片，不一次铺开所有编辑功能。
-2. 该命令的旧证据必须先补齐到可开发级；不确定时用 IDA MCP 或旧图石运行确认，查不到则写 GAP，不写死。
+1. 只选择 TODO-030 的一个明确统计 / 下料表切片，不一次铺开完整工程图或 AutoCAD L2。
+2. 统计 / 下料表旧证据必须先补齐到可开发级；不确定时用 IDA MCP 或旧图石运行确认，查不到则写 GAP，不写死。
 3. 新增业务测试先 RED 后 GREEN。
 4. 业务层只依赖 legacy DTO / interface，不直接依赖 OCCT / AIS。
 5. 默认 CTest 通过。
@@ -675,7 +693,7 @@ C:\Users\ghost\Desktop\reverse_engineering\【03】图石软件
 7. domain/rebar + drawing + project OCCT / AIS 泄漏扫描通过。
 8. 涉及代码、测试、构建脚本，commit 前必须执行 xhigh 只读 review；Critical / Important 必须修复或写明技术反驳理由。
 9. 更新实现记录、build report、`11 / 34 / 99 / 46 / todo.csv`。
-10. `todo.csv` 中 `TODO-032` 只在该拷贝切片完成或拆出更细子任务后更新；不能假装整个编辑专项已完成。
+10. `todo.csv` 中 `TODO-030` 只在该统计 / 下料表切片完成或拆出更细子任务后更新；不能假装完整工程图或 AutoCAD L2 已完成。
 
 本轮完成后必须停止，输出阶段复盘：
 
@@ -683,11 +701,11 @@ C:\Users\ghost\Desktop\reverse_engineering\【03】图石软件
 完成了什么
 验证了什么
 还缺什么
-下一阶段建议继续哪个编辑命令，还是先补 IDA / 旧图石运行证据
+下一阶段建议继续统计 / 下料表，还是先补 IDA / 旧图石运行证据
 commit / tag / push 状态
 ```
 
-不要在同一个 goal 内继续做 golden 采集、AutoCAD L2 动态导入、完整工程图生成、钢筋统计专项、UI 新功能或多个编辑命令。
+不要在同一个 goal 内继续做 golden 采集、AutoCAD L2 动态导入、完整工程图生成、UI 新功能或多个专项。
 ### 长期方向（只作护栏，不作为本轮 Goal）
 
 目标：持续推进《图石钢筋 1 比 1 复刻》正式 `app` 开发，直到具备按旧 VisualTS 证据复刻钢筋创建、编辑、统计、出图的工程条件。
@@ -885,11 +903,12 @@ Detail / 新设计文件格式输出层
 - `TODO-027 / M2-UI-001`：旧 UI 功能入口 P1，`17` 矩阵一期入口已接入 `CommandId / LegacyUiCommandMap / CommandRegistry / Qt6 QAction`，并通过 `tsrebar_app --smoke` 校验追溯 metadata；该证据只证明入口占位和命令契约，不证明业务算法已实现。
 - `TODO-028 / M2-Gate-001`：CSE readiness gate 扩展，RouteGuardrail 已接入 `Phase1.ReadinessGate`，自动检查 OCCT/AIS 泄漏、父目录 rebar 业务引用、todo 状态和 done 节点报告；该证据只证明路线护栏可自动检查，不证明旧业务算法已完成。
 - `TODO-029 / M2-Edit-001`：Rebar.Edit.Move / 钢筋移动 P0，IDA MCP 已补证 `barmove -> Input_Choice -> translate_transf` 移动链，domain/rebar 新增 `RebarEditMoveService`；该证据只证明领域层整体平移 P0，不证明完整旧 ACIS topology mutation、dirty/undo 或 golden。
+- `TODO-032 / M2-Edit-002`：Rebar.Edit.Copy / 钢筋拷贝 P0，IDA MCP 已补证 `scopy -> Input_Choice copyFlag=1 -> sub_1405989C0 -> sub_1405AA5D0` 拷贝链，domain/rebar 新增 `RebarEditCopyService`；该证据只证明领域层复制后累计平移 P0，不证明完整旧 ACIS topology clone、旧编号、dirty/undo 或 golden。
 
 当前最新验证状态：
 
 ```text
-app 默认 CTest = 14/14 pass
+app 默认 CTest = 15/15 pass
 readiness gate = M1-Formal-Ready, 84/84 pass
 domain/rebar + drawing + project OCCT 边界 = pass
 ```
@@ -897,17 +916,18 @@ domain/rebar + drawing + project OCCT 边界 = pass
 当前下一步：
 
 ```text
-TODO-032 / M2-Edit-002
-  -> Rebar.Edit.Copy / 钢筋拷贝证据与 P0 切片
-  -> 先补 IDA MCP 或旧图石运行证据，再决定是否实现
+TODO-030 / M2-Stats
+  -> 钢筋统计 / 下料表专项
+  -> 先按 E-IDA-019 / E-IDA-020 / E-IDA-021 和 DetailWriter P1
+     确认 StbTable / MaterialTable / 编号 / 长度 / 质量规则边界
 ```
 
 原因：
 
 ```text
-TODO-029 已完成第一个钢筋编辑切片。
+TODO-029 / TODO-032 已完成移动和拷贝两个钢筋编辑 P0 切片。
 golden 采集 TODO-026 暂按用户要求保持 pending。
-下一步应进入 TODO-032 钢筋拷贝切片；具体拷贝规则必须先补 IDA MCP 或旧图石运行证据，不确定项写 GAP。
+下一步应进入 TODO-030 钢筋统计 / 下料表专项；统计会继续推动旧编号、长度、数量、质量公式和下料表字段闭合。
 ```
 
 ### 执行规则
@@ -972,19 +992,19 @@ golden 采集 TODO-026 暂按用户要求保持 pending。
 
 ## CSE v2 Control Contract
 
-- **Primary Setpoint**：下一轮只完成 `TODO-032 / M2-Edit-002 Rebar.Edit.Copy 钢筋拷贝证据与 P0 切片`，先补旧证据，再按 VisualTS 证据决定是否实现业务层。
-- **Acceptance**：钢筋拷贝有旧证据、状态机 / 输入选择 / 业务边界测试和实现记录；默认 CTest、readiness gate、domain/rebar + drawing + project OCCT 泄漏检查通过；代码节点有 xhigh 只读 review。
-- **Guardrail Metrics**：不能用 OCCT 直接重写编辑业务；不能把缺证编辑命令写成确定结论；不能迁入父目录 rebar 业务；不能把 TODO-032 扩成统计、Detail writer、UI 新功能或 golden 采集。
-- **Sampling Plan**：先读 `01/02/03/08/11/17/23/35/56/64/65/99/todo.csv`；聚焦 Rebar.Edit.Copy；用 IDA MCP 或旧图石运行确认补 copy flag、编号、引用、失败口径；补业务测试；证据足够才实现最小拷贝切片；运行 CTest、readiness gate、泄漏扫描；xhigh 只读 review；最后更新实现记录、build report、追溯矩阵、缺口和 todo。
-- **Known Delays**：编辑命令更依赖旧对象状态、撤销/dirty 和运行提示；部分命令只有 Dialog 或右键证据；用户说 golden 先不要。
-- **Recovery Target**：如果钢筋拷贝证据不足，先停在 evidence/GAP，不继续写业务算法；必要时把 TODO-032 拆成更细子任务。
-- **Rollback Trigger**：domain/rebar 出现 OCCT/AIS 泄漏；父目录 rebar 业务被迁入；未查明旧逻辑就实现编辑规则；TODO-032 顺手进入统计/工程图/golden；测试或 gate 失败仍继续堆功能；代码节点跳过 xhigh。
+- **Primary Setpoint**：下一轮只完成 `TODO-030 / M2-Stats 钢筋统计 / 下料表专项` 的一个 P0 切片，先补旧统计 / 下料证据，再按 VisualTS / Detail 证据决定是否实现业务层。
+- **Acceptance**：统计 / 下料表有旧证据、字段映射、业务边界测试和实现记录；默认 CTest、readiness gate、domain/rebar + drawing + project OCCT 泄漏检查通过；代码节点有 xhigh 只读 review。
+- **Guardrail Metrics**：不能用新系统方便公式替代旧图石统计规则；不能把缺证编号、长度、质量公式写成确定结论；不能迁入父目录 rebar 业务；不能把 TODO-030 扩成完整工程图、AutoCAD L2、UI 新功能或 golden 采集。
+- **Sampling Plan**：先读 `03/05/08/11/13/20/61/65/66/99/todo.csv`；聚焦 StbTable / StbRow / MaterialTable；用 IDA MCP 或旧图石运行确认补编号、数量、长度、质量和合并规则；补业务测试；证据足够才实现最小统计切片；运行 CTest、readiness gate、泄漏扫描；xhigh 只读 review；最后更新实现记录、build report、追溯矩阵、缺口和 todo。
+- **Known Delays**：统计 / 下料表依赖旧编号、合并规则、质量公式和 Detail 输出字段；用户说 golden 先不要。
+- **Recovery Target**：如果统计 / 下料表证据不足，先停在 evidence/GAP，不继续写公式；必要时把 TODO-030 拆成更细子任务。
+- **Rollback Trigger**：domain/rebar 或 drawing 出现 OCCT/AIS 泄漏；父目录 rebar 业务被迁入；未查明旧逻辑就实现统计规则；TODO-030 顺手进入完整工程图 / AutoCAD L2 / golden；测试或 gate 失败仍继续堆功能；代码节点跳过 xhigh。
 - **Constraints**：不使用 ACIS / HOOPS / Codejock 等商业库；旧逻辑不确定时优先查 IDA MCP 或旧图石运行确认；xhigh 只读，修改由主流程 agent 完成。
-- **Boundary**：下一轮允许修改 Rebar.Edit.Copy 相关的 domain/rebar 业务层、必要 command handler、测试、实现记录、build report、追溯矩阵、缺口、46 和 todo；禁止修改统计、Detail writer、UI 新功能和多个编辑命令。
-- **Coupling Notes**：`domain/rebar` 是业务对象边界；`LegacyGeometryAdapter` 是几何能力边界；`LegacyUiCommandMap` 是旧命令入口边界；TODO-032 不能让编辑业务反向污染 adapter 或 presentation。
-- **Approximation Validity**：TODO-032 的单个编辑命令切片只能证明钢筋拷贝局部行为，不证明全部编辑、统计、工程图或 golden 已完成。
-- **Actuator Budget**：下一轮只推进 `TODO-032`。完成后停止复盘，不自动进入统计或工程图专项。
-- **Risks**：旧编辑规则依赖历史状态和对象关系；IDA 证据可能不足；没有 golden 时只能先验证结构和局部行为。
+- **Boundary**：下一轮允许修改统计 / 下料表相关的 `domain/rebar`、`drawing/export`、必要 command handler、测试、实现记录、build report、追溯矩阵、缺口、46 和 todo；禁止修改完整工程图、AutoCAD L2、UI 新功能和多个专项。
+- **Coupling Notes**：`domain/rebar` 是业务对象边界；`drawing/export` 是 Detail / 下料输出边界；`LegacyUiCommandMap` 是旧命令入口边界；TODO-030 不能让统计规则反向污染 adapter 或 presentation。
+- **Approximation Validity**：TODO-030 的单个统计 / 下料表切片只能证明局部字段和汇总规则，不证明完整工程图、AutoCAD L2、全部统计规则或 golden 已完成。
+- **Actuator Budget**：下一轮只推进 `TODO-030`。完成后停止复盘，不自动进入工程图或 AutoCAD L2 专项。
+- **Risks**：旧统计规则依赖旧编号、下料合并、质量公式和 Detail 字段；IDA 证据可能不足；没有 golden 时只能先验证结构和局部行为。
 ## Todo CSV 使用方式
 
 `todo.csv` 是后续执行看板。建议每次 goal 模式只拿 `status=next` 或最高优先级 `pending` 的任务推进。
@@ -1009,11 +1029,11 @@ golden 采集 TODO-026 暂按用户要求保持 pending。
 下一步优先执行：
 
 ```text
-TODO-032 / M2-Edit-002
-  -> Rebar.Edit.Copy / 钢筋拷贝证据与 P0 切片
-  -> 先补 IDA MCP 或旧图石运行证据，再决定是否实现
+TODO-030 / M2-Stats
+  -> 钢筋统计 / 下料表专项
+  -> 先补 IDA MCP 或旧图石运行证据，再决定 P0 统计 / 下料表实现边界
 ```
 
-原因很简单：TODO-029 已完成钢筋移动 P0。
+原因很简单：TODO-029 和 TODO-032 已完成钢筋移动 / 拷贝 P0。
 TODO-026 golden 采集暂按用户要求保持 pending。
-下一步应利用同一个 `Input_Choice` 框架继续查钢筋拷贝，但必须先补 copy flag、编号和引用规则证据。
+下一步应利用 `E-IDA-019 / E-IDA-020 / E-IDA-021` 和 DetailWriter P1 继续推进统计 / 下料表；旧编号、长度、数量、质量公式不确定时必须先补证据或写 GAP。

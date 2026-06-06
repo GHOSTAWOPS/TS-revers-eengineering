@@ -31,6 +31,9 @@ IDA `find_regex` 已命中以下旧命令字符串：
 | `sgroupbararc` | `0x1407689F8` | 弧形钢筋组 |
 | `sgroupbarline` | `0x140768A08` | 线性钢筋组 |
 | `sbararc2circle` | `0x140768D00` | 弧钢筋转圆/圆处理 |
+| `smove` | `0x140768D78` | 钢筋 / 钢筋组移动，语义待继续确认 |
+| `scopy` | `0x140768D80` | 钢筋拷贝 |
+| `smovenext_seg` | `0x140768D98` | 下一段移动，语义待继续确认 |
 | `srev_steelbar` | `0x140768DA8` | 钢筋反向 |
 | `sexportbar` | `0x140768DE0` | 导出钢筋 |
 | `checkoverlapsteel` | `0x140768E00` | 钢筋碰撞/重叠检查 |
@@ -52,6 +55,7 @@ IDA `find_regex` 已命中以下旧命令字符串：
 | `sgroupbarline` | `0x14095B440` | `sub_1404DE720` | `sub_14054B410` | `Rebar.Create.LineGroup` |
 | `sexportbar` | `0x14095B638` | `sub_1404D1540` | `sub_14045A020` | `Rebar.Export.SteelStepOrLegacy` |
 | `barmove` | `0x14095B230` | `sub_1404D5040` | `0` | `Rebar.Edit.Move` |
+| `scopy` | `0x14095ADF8` | `sub_1405A9DD0` | `0` | `Rebar.Edit.Copy` |
 | `steelhide` | `0x14095B4E8` | `sub_1404DA2C0` | `0` | `Rebar.View.Hide` |
 | `steeldis` | `0x14095B500` | `sub_1404D50F0` | `0` | `Rebar.View.Show` |
 | `steeldiam` | `0x14095B548` | `sub_140538DB0` | `0` | `Rebar.Edit.Properties` |
@@ -127,6 +131,129 @@ a1 + 1280 = copy flag
 - `Rebar.Edit.Move P0` 可先实现“选中钢筋组整体平移，保留 group / bar / segment 身份”的领域语义。
 - 领域层不得复刻 ACIS topology mutation；只能移动 domain `SteelBarSegment` 的起点 / 中点 / 终点，并保留 binding / geometryRef / evidence。
 - dirty、撤销、旧提示文本、reflect/rotate 等其他 mode 仍是后续 GAP。
+
+## `scopy` / `Input_Choice` 拷贝链补证
+
+证据编号：
+
+- `E-IDA-024`
+
+本轮 IDA MCP 会话：
+
+```text
+session = visualts_i64_todo032
+database = VisualTS.exe.i64
+Hex-Rays = ready
+```
+
+命令字符串和表项：
+
+```text
+scopy string = 0x140768D80
+
+xrefs:
+  0x140959EC8
+  0x14095ADF8
+
+handler table:
+  0x14095ADF8 -> 0x140768D80 "scopy"
+  0x14095AE00 -> sub_1405A9DD0
+  0x14095AE08 -> 0
+```
+
+入口链：
+
+```text
+scopy
+  -> sub_1405A9DD0
+  -> sub_14058B770(byte_1407768E8, byte_1407768D8, selectedList, 1)
+  -> sub_1404EED00 / Input_Choice
+  -> sub_1404EF8B0
+  -> sub_1404F1170
+  -> sub_1405989C0
+  -> sub_1405AA5D0
+```
+
+`sub_1405A9DD0` 当前确认：
+
+- 要求当前选择集数量 `>= 1`。
+- 遍历当前选择集。
+- 选中对象先过 `sub_1405C6820` 校验。
+- 选中对象 `+13` 指向对象继续过 `sub_1405F17C0` 校验。
+- 要求该对象 `+80` 非空。
+- 把符合条件的选中对象加入临时 `ENTITY_LIST`。
+- 对选中对象调用 `sub_1405C25D0(entity, 1)` 做状态 / 选择标记。
+- 最终调用：
+
+```text
+sub_14058B770(byte_1407768E8, byte_1407768D8, copiedEntityList, 1)
+```
+
+可确认含义：
+
+- `scopy` 使用 Dialog `#384` 对应的 `Input_Choice` 窗口。
+- 传入 `Input_Choice + 1280` 的 copy flag 为 `1`。
+- 与 `barmove` 的 copy flag `0` 区分明确：`0` 移动原对象，`1` 走复制后变换路径。
+
+`sub_1404EED00 / Input_Choice` 本轮复核：
+
+- `a1 + 1096` 初始值为 `1`，对应份数 / 次数字段。
+- `a1 + 1152` 为移动 / 拷贝方式 mode。
+- `a1 + 1160` 为 `SPAtransf`。
+- `a1 + 1272` 为初始选中实体列表。
+- `a1 + 1280` 为 copy flag。
+
+`sub_1404F1170` copy flag `1` 分支当前确认：
+
+- 先调用 `sub_1404EF8B0` 生成 `SPAtransf`。
+- 把 `Input_Choice + 1272` 的选中实体复制到临时 `ENTITY_LIST`。
+- 进入 `api_bb_begin -> update_from_bb -> api_bb_end` ACIS bulletin board 事务。
+- 当 `copy flag = 1` 时，对每个源实体按 `a1 + 1096` 循环多份：
+
+```text
+sub_1405989C0(sourceEntity, clonedEntityList, 0)
+SPAtransf *= originalTransform  // 第 2 份起叠加变换
+sub_1405AA5D0(clonedEntityList, mode, accumulatedTransform, 0)
+```
+
+工程含义：
+
+```text
+旧 scopy 的主线不是直接移动原对象。
+它先复制源钢筋组 / 子对象 / edge 链，再把复制件按 Input_Choice 得到的变换应用出去。
+多份拷贝时，第 N 份使用重复 N 次的同一变换。
+```
+
+`sub_1405989C0` 当前确认：
+
+- 如果输入是包装对象且类型为 `110`，取其 `+13` 指向的内部对象。
+- 调用 `sub_140447D90` 创建新 group / 容器类对象。
+- 调用 `sub_1405E79E0`、`sub_1405F2B60` 等复制 / 挂接组信息。
+- 遍历源对象 `+80/+88` 链。
+- 通过 `ACIS_OBJECT::operator new(..., "e:\\tushi3d\\dam\\steel\\qtool.cpp")` 和 `sub_1405DB340` 创建新的 `steelbar` 一类对象。
+- 对源 edge 调用：
+
+```text
+api_edge(source + 72, &edge)
+sub_14054BD40(edge, newBar, 0)
+ENTITY::backup(...)
+```
+
+- 写回复制件的 `+80/+88/+96/+104` 等引用链，并把新对象加入输出 `ENTITY_LIST`。
+
+当前可开发级结论：
+
+- `Rebar.Edit.Copy P0` 可以实现为“复制已选 domain group / bar / segment，然后对复制件按累计平移向量变换”。
+- P0 必须保持源对象不变，新增 group / bar / segment 身份，并保证引用关系一致。
+- 因旧编号、`rsdID`、`displayNumber`、legacy raw 写回、dirty / undo / 运行提示仍未闭合，新系统 P0 不应继承源对象的旧编号和 legacy raw 字段。
+- 新系统 P0 复制件的 `binding / geometryRef` 应标为需要重新绑定，不能假装已拥有旧 ACIS / STEP 几何引用。
+
+本轮不能过度推断：
+
+- 旧图石复制后 `groupID / rsdID / displayNumber / actualNumber / sequenceNo` 的完整生成规则未闭合。
+- `sub_1405989C0` 内部 `+80/+88/+96/+104` 等引用链业务名仍未完全闭合。
+- dirty / undo / 保存提示 / 旧错误提示文本仍需旧图石运行确认。
+- P0 中 `copyCount 1..1000` 只按当前 `Input_Choice` 字段和已有 DDV 线索作为安全边界；旧提示文本和所有 UI 分支仍未闭合。
 
 ## `sgroupbarline` 初步反编译
 

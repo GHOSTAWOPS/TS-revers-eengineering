@@ -1,0 +1,85 @@
+{
+  "schemaVersion": "app-build-report/v1",
+  "reportId": "m2_edit_002_run_001",
+  "createdAt": "2026-06-07T07:07:37+08:00",
+  "decision": "m2-edit-002-pass",
+  "todoId": "TODO-032",
+  "phase": "M2-Edit-002",
+  "scope": [
+    "Rebar.Edit.Copy",
+    "IDA MCP evidence",
+    "domain/rebar copy service",
+    "unit tests",
+    "readiness gate report mapping"
+  ],
+  "evidence": [
+    "E-DLG-384",
+    "E-IDA-023",
+    "E-IDA-024",
+    "E-DEV-049",
+    "E-DEV-052"
+  ],
+  "validation": {
+    "tddRed": "pass",
+    "narrowBuild": "pass",
+    "narrowTest": "pass",
+    "ctest": {
+      "result": "pass",
+      "passed": 15,
+      "failed": 0
+    },
+    "readinessGateUnit": {
+      "result": "pass",
+      "passed": 10,
+      "failed": 0
+    },
+    "readinessGate": {
+      "command": "py -3 tools/phase1_readiness_gate/check_phase1_readiness.py --strict",
+      "decision": "M1-Formal-Ready",
+      "passed": 84,
+      "failed": 0
+    },
+    "occtLeakScan": "pass"
+  },
+  "ida": {
+    "database": "VisualTS.exe.i64",
+    "session": "visualts_i64_todo032",
+    "confirmedChain": [
+      "scopy -> sub_1405A9DD0",
+      "sub_1405A9DD0 -> sub_14058B770(copyFlag=1)",
+      "sub_14058B770 -> Input_Choice Dialog #384",
+      "sub_1404F1170 copyFlag=1 -> sub_1405989C0 -> sub_1405AA5D0"
+    ]
+  },
+  "xhighReview": {
+    "round1Verdict": "block",
+    "round1Critical": [
+      "E-IDA-024 was referenced by code/tests before documentation traceability existed",
+      "Copied objects inherited unconfirmed source numbering, legacyRaw, and source refs"
+    ],
+    "round1Important": [
+      "copyCount 1..1000 needed explicit P0 safety-boundary documentation",
+      "Missing bar/segment id mapping failure paths needed tests"
+    ],
+    "round2Verdict": "allow_commit",
+    "round2Critical": "none",
+    "round2Important": "none",
+    "round2Minor": "none",
+    "resolution": [
+      "Added E-IDA-024 to IDA evidence and traceability documents",
+      "Cleared copied numbering, legacyRaw, createdFromParameters, source refs, and marked GAP-REB-E-002 unresolved fields",
+      "Documented copyCount 1..1000 as P0 safety boundary",
+      "Added missing/duplicate bar and segment id mapping tests"
+    ],
+    "finalStatus": "allow_commit",
+    "subagentLifecycle": "xhigh_rebar_copy_reviewer was closed after round1. xhigh_rebar_copy_reviewer_round2_initial timed out and was closed without using a conclusion. xhigh_rebar_copy_reviewer_retry returned allow_commit and was closed by the main flow."
+  },
+  "boundaries": [
+    "No OCCT/AIS dependency in domain/rebar",
+    "No parent rebar business migration",
+    "No claim of full old ACIS topology clone",
+    "No old numbering or dirty/undo claim",
+    "No golden claim"
+  ],
+  "next": "TODO-030"
+}
