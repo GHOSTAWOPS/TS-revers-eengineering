@@ -14,7 +14,7 @@
 
 ```text
 已确认核心算法链。
-已确认若干结构偏移和几何规则。
+TODO-020 已用 IDA MCP 补强 split / spline / trim / min-distance / 写回规则。
 字段业务名仍是初稿，不能当成最终 SFL 字段表。
 ```
 
@@ -114,6 +114,32 @@ api_curve_spline(pointCount, points, ..., &edge, ...)
 - 对结果边两端做迭代裁剪，直到端点到已有组的最小距离大于阈值。
 - 最后通过 `sub_1405BD0C0(entity, edge)` 把新边写回实体。
 
+TODO-020 新增链路含义：
+
+```text
+api_entity_entity_distance
+  -> pointOnEdge
+  -> api_split_curve
+  -> short segment check
+  -> optional spline rebuild
+  -> endpoint trim
+  -> group minimum distance trim loop
+  -> sub_1405BD0C0 backup + write edge
+```
+
+TODO-020 新增精确规则：
+
+| 规则 | 值 | 证据 |
+|---|---:|---|
+| split 后最小段长 | `0.01` | `EDGE::length(part) >= 0.01` |
+| 近端判断距离 | `0.1` | `distance_to_point(originalStart, originalEnd) <= 0.1` |
+| spline 最少采样 | `5` | `max(5.0, EDGE::length(edge) * 50.0)` |
+| spline 采样倍率 | `50` | `EDGE::length(edge) * 50.0` |
+| trim 步长 | `-0.03` | `sub_140580950(&edge, -0.03, 0/1)` |
+| 端点保护 split 起点比例 | `0.001` | `sub_14058F160(edge, 0.001, ...)` |
+| 端点保护 split 终点比例 | `0.999` | `sub_14058F160(edge, 0.999, ...)` |
+| 端部最小距离迭代步长 | `0.02` | `(EDGE::length(edge) - 0.1) / 0.02` |
+
 可编码含义：
 
 - 这是“钢筋线/弧段生成后的几何清理”。
@@ -138,6 +164,7 @@ ENTITY::backup(a1);
 可编码含义：
 
 - 修改前先备份，说明这是可撤销/可回滚的实体几何变更。
+- 新系统必须把它映射到 command transaction / undo 语义，不能裸覆盖领域对象。
 - 新系统应对应为：
 
 ```text
@@ -531,7 +558,7 @@ IDA 的 +72/+80/+88 等是运行内存对象偏移。
 
 P0：
 
-- `sub_1405D5670` 第 4 个 double 参数的来源。
+- `sub_1405D5670` 第 4 个 double 参数的来源。TODO-020 已确认它在端部最小距离循环中作为阈值使用，但 `sub_1404D10C0` 反编译调用只显示 3 个显式实参，真实来源仍不能写死。
 - `createdObject + 104`、`createdObject + 112` 的业务对象名。
 - `object + 80/88/96` 在不同对象上的准确含义。
 
@@ -562,3 +589,11 @@ P2：
 - 端部 `-0.03` 逐步裁剪。
 - 组内最小距离判断。
 - 写回段几何并刷新父组 dirty。
+
+TODO-020 后的开发边界：
+
+```text
+可以进入 TODO-021 的 P0 业务创建 spike。
+但仍不能声明完整 1:1 复刻完成。
+字段业务名、旧 UI 流程、失败提示和 golden 对照仍需继续补证。
+```

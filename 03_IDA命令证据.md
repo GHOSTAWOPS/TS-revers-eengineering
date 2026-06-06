@@ -939,10 +939,112 @@ E-IDA-021:
 | 与面裁剪 | `0x8CE5` | `RebarGroup.TrimByFace` |
 | 设为箍筋 | `0x8D4A` | `RebarGroup.SetAsStirrup` |
 
+## TODO-020 线筋 / 弧筋链 IDA MCP 补证
+
+Evidence ID：
+
+- `E-IDA-022`
+
+本轮 IDA MCP 成功打开：
+
+```text
+VisualTS.exe.i64
+session_id = visualts_i64_todo020
+hexrays_ready = true
+```
+
+本轮确认链路：
+
+```text
+sgroupbarline -> sub_1404DE720 -> sub_1404D10C0
+sgroupbararc  -> sub_1404DE110 -> sub_1404D10C0
+sub_1404D10C0 -> sub_140451730 -> sub_1405D5670
+sub_1405D5670 -> sub_1405BD0C0
+sub_1404D10C0 -> sub_1405C7260 -> sub_1405E49D0
+```
+
+`sub_1404DE720` 本轮新增确认：
+
+- 选择集必须只有 1 个对象。
+- 对象必须通过 `sub_1405C6820` 和 `sub_1405DA020` 校验。
+- 内部子项数量必须不少于 2。
+- 从奇数索引子项抽取实体并组装临时 `ENTITY_LIST`。
+- 读取两条相关边的起止点，计算 4 种端点距离。
+- 初始最小距离候选为 `10.0`。
+- 调用：
+
+```text
+sub_1404D10C0(copiedEntityList, v6, v4, minDistance, selectedEndpointDistance, flag)
+```
+
+`sub_1404DE110` 本轮新增确认：
+
+- 选择集必须只有 1 个对象。
+- 对象必须通过 `sub_1405C6820` 和 `sub_1405F17C0` 校验。
+- 内部元素数量必须不少于 3。
+- 从链式实体关系收集临时 `ENTITY_LIST`。
+- 默认距离为 `0.1`。
+- 调用 ACIS：
+
+```text
+api_entity_entity_distance(entityA, entityB, pointA, pointB, &distance, ...)
+```
+
+- 调用：
+
+```text
+sub_1404D10C0(copiedEntityList, v4, v6, distance, 0.8, 1)
+```
+
+`sub_1404D10C0` 本轮新增确认：
+
+- `objA / objB` 不能为空。
+- `sub_1405F25F0(objA) >= 3`。
+- `ENTITY_LIST::count(entityList) >= 1`。
+- `distanceA >= 0.002`。
+- 进入 `api_bb_begin(1)` ACIS block。
+- 创建成功后依次执行几何修正、父组刷新、显示挂接、dirty 标记。
+
+`sub_1405D5670` 本轮新增确认：
+
+- 命中源码路径 `e:\tushi3d\dam\class\seg_steelbargroup.cpp`。
+- 通过 `api_edge(entity + 72, &edge)` 获取 ACIS `EDGE`。
+- 用 `api_entity_entity_distance` 取得 edge 到参考实体的最近点。
+- 最近点不是端点时调用 `api_split_curve(edge, pointOnEdge, ...)`。
+- split 后小段阈值为 `0.01`。
+- 近端判断阈值为 `0.1`。
+- spline 重建采样数为 `max(5, EDGE::length(edge) * 50)`。
+- 端部 trim 使用 `sub_140580950(&edge, -0.03, 0/1)`。
+- 端点保护分支使用 `0.001 / 0.999` 两个比例 split。
+- 端部最小距离循环使用 `(EDGE::length(edge) - 0.1) / 0.02` 估算迭代次数。
+- 最终用 `sub_1405BD0C0(entity, edge)` 写回。
+
+辅助函数补证：
+
+```text
+sub_14058F160(edge, ratio)
+  -> ratio 接近 0 取起点，接近 1 取终点，中间走 bounded_curve。
+
+sub_14059B980(group, point)
+  -> 遍历 group + 88 链，用 api_entity_point_distance 求组内最小距离。
+
+sub_1405BD0C0(entity, edge)
+  -> ENTITY::backup(entity)，然后 *(entity + 72) = edge。
+
+sub_1405E49D0(object)
+  -> 在对象树显示名开头插入 *，并调用 sub_1405F2710(object, 1)。
+```
+
+本轮不能过度推断：
+
+- `sub_1405D5670` 第 4 个 double 参数在函数内被用作端部最小距离阈值，但 `sub_1404D10C0` 里的反编译调用只显示 3 个显式实参，真实来源仍需继续确认。
+- `objA / objB / createdPayload` 的业务对象名仍未完全闭合。
+- `sgroupbararc` 对应旧 UI 的 `扇形筋`、`同心圆`，还是二者共用，仍需旧图石运行确认。
+
 ## 待继续分析
 
-- `sub_1404DE110` 和 `sub_1404DE720` 已完成第一轮反编译摘要，公共生成链已追到 `sub_1404D10C0 -> sub_140451730 -> sub_1405D5670`。
-- `sub_1405D5670` 已确认命中 `seg_steelbargroup.cpp`，但字段名和对象名仍需继续闭合。
+- `sub_1404DE110` 和 `sub_1404DE720` 已完成第二轮 IDA MCP 补证，公共生成链已追到 `sub_1404D10C0 -> sub_140451730 -> sub_1405D5670 -> sub_1405BD0C0 / sub_1405C7260 / sub_1405E49D0`。
+- `sub_1405D5670` 已确认 split / spline / trim / min-distance / 写回主规则，但第 4 个 double 参数来源、字段业务名和对象名仍需继续闭合。
 - `rebarz` / `rebarpost` 业务含义未闭合。
 - 顶部 Ribbon 按钮和英文命令并非一一对应，需要结合运行界面确认。
 - `生成工程图` 顶部按钮的命令表入口仍需继续追。

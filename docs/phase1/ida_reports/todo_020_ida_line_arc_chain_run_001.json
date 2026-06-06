@@ -1,0 +1,72 @@
+{
+  "id": "todo_020_ida_line_arc_chain_run_001",
+  "todoId": "TODO-020",
+  "decision": "evidence-ready",
+  "idaMcp": {
+    "available": true,
+    "sessionId": "visualts_i64_todo020",
+    "inputPath": "..\\VisualTS.exe.i64",
+    "module": "VisualTS.exe",
+    "imageBase": "0x140000000",
+    "totalFunctions": 17182,
+    "totalStrings": 16320
+  },
+  "functions": [
+    {
+      "addr": "0x1404DE720",
+      "name": "sub_1404DE720",
+      "role": "sgroupbarline entry",
+      "status": "confirmed"
+    },
+    {
+      "addr": "0x1404DE110",
+      "name": "sub_1404DE110",
+      "role": "sgroupbararc entry",
+      "status": "confirmed"
+    },
+    {
+      "addr": "0x1404D10C0",
+      "name": "sub_1404D10C0",
+      "role": "common creation transaction",
+      "status": "confirmed"
+    },
+    {
+      "addr": "0x1405D5670",
+      "name": "sub_1405D5670",
+      "role": "seg_steelbargroup curve normalizer",
+      "status": "confirmed-with-gap"
+    },
+    {
+      "addr": "0x1405BD0C0",
+      "name": "sub_1405BD0C0",
+      "role": "backup and write edge to entity+72",
+      "status": "confirmed"
+    },
+    {
+      "addr": "0x1405E49D0",
+      "name": "sub_1405E49D0",
+      "role": "dirty display marker",
+      "status": "confirmed"
+    }
+  ],
+  "constants": {
+    "minimumCreationDistance": 0.002,
+    "defaultArcDistance": 0.1,
+    "arcDistanceB": 0.8,
+    "splitMinimumLength": 0.01,
+    "nearEndpointDistance": 0.1,
+    "minimumSplineSamples": 5,
+    "splineSamplesPerUnitLength": 50,
+    "trimDelta": -0.03,
+    "endpointSplitStartRatio": 0.001,
+    "endpointSplitEndRatio": 0.999,
+    "trimIterationStep": 0.02
+  },
+  "remainingGaps": [
+    "source of sub_1405D5670 fourth double parameter",
+    "business names for objA/objB/createdPayload",
+    "runtime UI mapping for sgroupbararc vs fan/concentric commands"
+  ],
+  "nextTodo": "TODO-021"
+}
+

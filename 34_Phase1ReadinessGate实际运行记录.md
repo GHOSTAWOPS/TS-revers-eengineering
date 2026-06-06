@@ -233,6 +233,7 @@ Blocker GAPs: none
 - `LegacyGeometryAdapter sweep preview` 已落地并通过 M1-App-017：默认 CTest 8/8 pass，可把 edge ref + circular radius 生成 sweep / pipe preview summary，并记录 pathLength、samplePoints、bbox、shape face/edge/vertex count、zero/non-finite radius 和 wrong type/missing ref 诊断；该阶段不是完整 ACIS sweep 等价、OCCT topology mutation、钢筋实体持久化或钢筋生成。
 - `domain/rebar` 钢筋领域模型 P1 已落地并通过 M1-App-018：默认 CTest 9/9 pass，可用 `SteelData / SteelBarGroup / SteelBar / SteelBarSegment` 承载 Detail 关键字段、group -> bar -> segment 引用、legacy raw、geometryRef、binding、evidence 和 unresolved 字段；该阶段不是钢筋创建算法、Detail writer 接入、UI handler 或旧 SFL 全字段语义闭合。
 - `旧命令契约绑定 P1` 已落地并通过 M1-App-019：默认 CTest 9/9 pass，可查询和注册 `Rebar.Create.LineGroup / Rebar.Create.ArcGroup / RebarGroup.TrimByLine / RebarGroup.TrimByFace`，右键裁剪命令只作为 `ContextMenu` 占位，不渲染到 Ribbon；该阶段不是线筋 / 弧筋创建算法或裁剪业务算法。
+- `TODO-020 IDA 旧线筋 / 弧筋链补证据` 已落地：IDA MCP 成功打开 `VisualTS.exe.i64`，补证 `sub_1404DE720 / sub_1404DE110 -> sub_1404D10C0 -> sub_140451730 -> sub_1405D5670 -> sub_1405BD0C0 / sub_1405C7260 / sub_1405E49D0`，形成 `E-IDA-022`；该阶段不是线筋 / 弧筋创建算法，也不是完整旧 UI/golden 闭合。
 - Detail writer L0/L1 离线 gate 已落地并通过，不再作为当前 M1 阻塞。
 - `GAP-DEV-001/GAP-DEV-007` 不再阻塞进入 Qt6 + OCCT 开发入口，但旧图石业务复刻缺口仍按功能专项继续闭合。
 
@@ -298,4 +299,4 @@ none
 2. 保留 Qt6 runtime gate，防止 Save/Open 和 binding repair 报告退回 simulation。
 3. 保留 Detail writer L0/L1 报告；AutoCAD L2 导入另走工程图专项。
 4. 新增真实工程 STEP 样本时继续跑 STEP selection gate。
-5. 后续开发仍按旧图石运行、IDA、SFL、Detail 证据闭合业务缺口；下一步建议按 `TODO-020` 用 IDA MCP 补旧线筋 / 弧筋链证据，避免在创建算法阶段凭命令占位猜旧逻辑。
+5. 后续开发仍按旧图石运行、IDA、SFL、Detail 证据闭合业务缺口；下一步建议按 `TODO-021` 做旧线筋 / 弧筋创建算法 P0 版本，并严格保持业务层通过 LegacyGeometryAdapter / legacy DTO 使用几何能力。
