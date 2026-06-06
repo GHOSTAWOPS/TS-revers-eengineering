@@ -1,0 +1,92 @@
+{
+  "decision": "m1-app-022-pass",
+  "readinessGate": {
+    "passCount": 78,
+    "m1FormalAllowed": true,
+    "checkCount": 78,
+    "warningCount": 0,
+    "decision": "M1-Formal-Ready",
+    "errorCount": 0
+  },
+  "scope": [
+    "tsrebar runtime P1",
+    "save snapshot package",
+    "open snapshot package",
+    "binding and evidence preservation",
+    "runtime validator P1"
+  ],
+  "tests": {
+    "cases": [
+      "command_registry_tests",
+      "legacy_selection_ref_tests",
+      "rebar_domain_model_tests",
+      "rebar_group_creator_tests",
+      "rebar_ais_presentation_tests",
+      "project_runtime_tests",
+      "app_smoke",
+      "viewer_smoke_tests",
+      "domain_rebar_boundary",
+      "step_import_probe_123",
+      "occ_selection_index_123",
+      "legacy_geometry_adapter_123"
+    ],
+    "failed": 0,
+    "totalSeconds": 125.49,
+    "passed": 12,
+    "success": true
+  },
+  "runtimeValidator": {
+    "warningCodes": [
+      "EVW001_PENDING_LEGACY_FIELD"
+    ],
+    "package": "app/build/runtime_validator_fixture.tsrebar",
+    "warningCount": 2,
+    "decision": "warning-only",
+    "report": "docs/phase1/validator_reports/runtime_m1_app_022/build_validation_001.json",
+    "errorCount": 0
+  },
+  "id": "m1_app_022_run_001",
+  "red": {
+    "verified": true,
+    "failures": [
+      "segment.groupId missing",
+      "broken rebar references saved",
+      "geometryRef sourceStepId hardcoded",
+      "relative TSREBAR_RUNTIME_FIXTURE_OUT hung at final packageHash",
+      "save-open-save lost unresolved_fields",
+      "install failure needed transaction cleanup",
+      "save result hash must match installed package hash"
+    ]
+  },
+  "appRoot": "C:/Users/ghost/Desktop/reverse_engineering/【03】图石软件/【图石钢筋1比1复刻】/app",
+  "guardrails": {
+    "parentRebarGenerationChainMigrated": false,
+    "oldBusinessRuleChanged": false,
+    "domainRebarAndProjectOcctBoundary": "pass",
+    "relativePackagePathHashHangFixed": true,
+    "unresolvedFieldsRoundTripPreserved": true,
+    "saveExceptionRollbackCovered": true,
+    "candidateHashPrecomputedBeforeInstall": true,
+    "uiSaveOpenImplemented": false,
+    "detailWriterImplemented": false
+  },
+  "ida": {
+    "addedThisRound": false,
+    "reason": "runtime saves and opens existing domain objects and does not add old VisualTS business rule decisions"
+  },
+  "xhighReview": {
+    "required": true,
+    "round1Verdict": "block_commit",
+    "round1Fixed": true,
+    "round2Verdict": "allow_commit",
+    "round3Verdict": "block_commit",
+    "round3Fixed": true,
+    "round4Verdict": "block_commit",
+    "round4Fixed": true,
+    "round5Verdict": "allow_commit",
+    "importantAfterFix": "none",
+    "criticalAfterFix": "none",
+    "agentClosed": true
+  },
+  "date": "2026-06-07"
+}

@@ -1,7 +1,7 @@
 {
   "schemaVersion": "phase1-readiness-gate/v1",
   "reportId": "readiness_gate_run_001",
-  "createdAt": "2026-06-07T00:43:13+08:00",
+  "createdAt": "2026-06-07T02:30:17+08:00",
   "scope": "M1-Formal readiness artifact gate",
   "summary": {
     "decision": "M1-Formal-Ready",

@@ -1,0 +1,37 @@
+{
+  "schemaVersion": "validation-report/v1",
+  "reportId": "build_validation_001",
+  "packagePath": "app/build/runtime_validator_fixture.tsrebar",
+  "packageHash": "sha256:4f4d03e7b1a45b72ab7df40e640f5200bce1bea53fcd55d7a3811423d4ad7fe4",
+  "createdAt": "2026-06-07T02:30:18+08:00",
+  "runnerVersion": "tsrebar-validator/0.1",
+  "decision": "warning-only",
+  "errorCount": 0,
+  "warningCount": 2,
+  "findings": [
+    {
+      "validatorName": "EvidenceValidator",
+      "objectId": "",
+      "packageFile": "rebar/groups.json",
+      "jsonPath": "#/items/0/legacyObject/raw/fields/positions168_192",
+      "errorCode": "EVW001_PENDING_LEGACY_FIELD",
+      "message": "pending legacy field is preserved and listed in unresolved_fields",
+      "evidenceHint": [
+        "GAP-SFL-004"
+      ],
+      "severity": "warning"
+    },
+    {
+      "validatorName": "EvidenceValidator",
+      "objectId": "",
+      "packageFile": "rebar/segments.json",
+      "jsonPath": "#/items/0/legacyObject/raw/fields/ptr80",
+      "errorCode": "EVW001_PENDING_LEGACY_FIELD",
+      "message": "pending legacy field is preserved and listed in unresolved_fields",
+      "evidenceHint": [
+        "GAP-SFL-005"
+      ],
+      "severity": "warning"
+    }
+  ]
+}

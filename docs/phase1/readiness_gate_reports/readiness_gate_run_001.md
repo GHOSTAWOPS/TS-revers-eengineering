@@ -2,7 +2,7 @@
 
 ## Summary
 
-- Created at: 2026-06-07T00:43:13+08:00
+- Created at: 2026-06-07T02:30:17+08:00
 - Scope: M1-Formal readiness artifact gate
 - Decision: M1-Formal-Ready
 - M1-Formal allowed: yes
