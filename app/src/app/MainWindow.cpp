@@ -107,6 +107,8 @@ MainWindow::MainWindow(QWidget* parent)
                                       QStringLiteral("选择模式：点")};
     });
 
+    tsrebar::registerLegacyUiCommandPlaceholders(m_commands);
+
     buildUi();
     buildCommandTabs();
     statusBar()->showMessage(QStringLiteral("就绪"));
@@ -176,7 +178,8 @@ void MainWindow::buildCommandTabs()
             toolbar->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
 
             for (const auto& command : commands) {
-                if (command.tabObjectName != tab.objectName ||
+                if (command.uiSurface != tsrebar::LegacyCommandUiSurface::Ribbon ||
+                    command.tabObjectName != tab.objectName ||
                     command.groupObjectName != group.objectName) {
                     continue;
                 }

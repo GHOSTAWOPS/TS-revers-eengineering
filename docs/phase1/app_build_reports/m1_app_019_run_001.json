@@ -1,0 +1,104 @@
+{
+  "id": "m1_app_019_run_001",
+  "date": "2026-06-06",
+  "decision": "m1-app-019-pass",
+  "appRoot": "C:/Users/ghost/Desktop/reverse_engineering/【03】图石软件/【图石钢筋1比1复刻】/app",
+  "scope": [
+    "legacy command contract P1",
+    "LineGroup / ArcGroup command metadata",
+    "TrimByLine / TrimByFace context menu command metadata",
+    "NotImplemented placeholder registration",
+    "command interaction state contract"
+  ],
+  "red": {
+    "verified": true,
+    "failure": "command_registry_tests compile failure: LegacyUiCommandDefinition.uiSurface, LegacyCommandImplementationState, LegacyCommandInteractionState and context-menu placement fields were missing"
+  },
+  "build": {
+    "success": true,
+    "target": "command_registry_tests"
+  },
+  "tests": {
+    "success": true,
+    "passed": 9,
+    "failed": 0,
+    "totalSeconds": 123.53,
+    "cases": [
+      "command_registry_tests",
+      "legacy_selection_ref_tests",
+      "rebar_domain_model_tests",
+      "app_smoke",
+      "viewer_smoke_tests",
+      "domain_rebar_boundary",
+      "step_import_probe_123",
+      "occ_selection_index_123",
+      "legacy_geometry_adapter_123"
+    ]
+  },
+  "commandContracts": {
+    "commands": [
+      {
+        "commandKey": "Rebar.Create.LineGroup",
+        "legacyCommand": "sgroupbarline",
+        "uiSurface": "Ribbon",
+        "implementationState": "NotImplemented"
+      },
+      {
+        "commandKey": "Rebar.Create.ArcGroup",
+        "legacyCommand": "sgroupbararc",
+        "uiSurface": "Ribbon",
+        "implementationState": "NotImplemented"
+      },
+      {
+        "commandKey": "RebarGroup.TrimByLine",
+        "legacyContextCommandId": "0x8939",
+        "uiSurface": "ContextMenu",
+        "implementationState": "NotImplemented"
+      },
+      {
+        "commandKey": "RebarGroup.TrimByFace",
+        "legacyContextCommandId": "0x8CE5",
+        "uiSurface": "ContextMenu",
+        "implementationState": "NotImplemented"
+      }
+    ],
+    "assertions": [
+      "legacy command metadata is queryable",
+      "context menu commands are not rendered as ribbon commands",
+      "unimplemented legacy commands return stable NotImplemented results",
+      "placeholder registration does not override existing real handlers",
+      "evidence and gap IDs are explicit",
+      "evidenceIds only contain E-* normalized evidence IDs while non-evidence source refs are stored separately"
+    ],
+    "approximation": "command contract binding only; no steelbar creation, trim algorithm, Detail writer or AIS rebar display"
+  },
+  "xhighReview": {
+    "required": true,
+    "firstVerdict": "block",
+    "critical": "none",
+    "important": "context-menu commands rendered as ribbon buttons; handlerState naming and missing interaction states; evidence IDs not normalized",
+    "fixApplied": true,
+    "secondVerdict": "block",
+    "secondImportant": "non-E source refs such as 17, 36 and M1-App-003 were still stored in evidenceIds",
+    "secondFixApplied": true,
+    "finalVerdict": "allow_commit",
+    "finalMinor": "sourceRefs regression coverage can be broadened; E-STR evidence IDs should be indexed later",
+    "agentClosed": true
+  },
+  "guardrails": {
+    "domainRebarOcctBoundary": "pass",
+    "parentRebarGenerationChainMigrated": false,
+    "rebarBusinessImplemented": false,
+    "trimAlgorithmImplemented": false,
+    "detailWriterImplemented": false,
+    "aisRebarDisplayImplemented": false
+  },
+  "readinessGate": {
+    "decision": "M1-Formal-Ready",
+    "m1FormalAllowed": true,
+    "errorCount": 0,
+    "warningCount": 0,
+    "passCount": 78,
+    "checkCount": 78
+  }
+}

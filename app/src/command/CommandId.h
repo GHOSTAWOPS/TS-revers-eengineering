@@ -19,6 +19,8 @@ enum class CommandId {
     RebarFaceCreate,
     RebarLineCreate,
     RebarArcGroupCreate,
+    RebarGroupTrimByLine,
+    RebarGroupTrimByFace,
     QueryByNumber,
     QueryCollision,
     DrawingDefineSectionPlane,
