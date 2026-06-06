@@ -367,4 +367,4 @@ none
 2. 保留 Qt6 runtime gate，防止 Save/Open 和 binding repair 报告退回 simulation。
 3. 保留 Detail writer L0/L1 报告；AutoCAD L2 导入另走工程图专项。
 4. 新增真实工程 STEP 样本时继续跑 STEP selection gate。
-5. 后续开发仍按旧图石运行、IDA、SFL、Detail 证据闭合业务缺口；`TODO-028` 已把路线护栏放进自动 readiness gate，下一步建议按 `TODO-029` 进入钢筋编辑命令专项。`TODO-026` golden 采集保持 pending，不自动进入。
+5. 后续开发仍按旧图石运行、IDA、SFL、Detail 证据闭合业务缺口；`TODO-029 / Rebar.Edit.Move P0` 已把第一个钢筋编辑切片纳入 done-report 映射，下一步建议按 `TODO-032` 继续钢筋拷贝证据与 P0 切片。`TODO-026` golden 采集保持 pending，不自动进入。

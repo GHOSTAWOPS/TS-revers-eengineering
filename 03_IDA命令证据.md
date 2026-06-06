@@ -66,6 +66,68 @@ IDA `find_regex` 已命中以下旧命令字符串：
 | `refl_createSteel` | `0x14095BC38` | `sub_14055B540` | `0` | `Rebar.Create.FromReference` |
 | `modify_refl_Steel` | `0x14095BC50` | `sub_14055C110` | `0` | `Rebar.Edit.ReferenceDriven` |
 
+## `barmove` / `Input_Choice` 移动链补证
+
+证据编号：
+
+- `E-IDA-023`
+
+入口：
+
+```text
+barmove -> sub_1404D5040
+```
+
+当前 IDA MCP 结论：
+
+- `sub_1404D5040` 要求当前选择集数量至少为 1。
+- 选中对象先过 `sub_1405BC870` 类型检查。
+- 入口取选中包装对象 `+80` 指针，放入临时 `ENTITY_LIST`。
+- 调用：
+
+```text
+sub_14058B770(&byte_140762208, &byte_1407621F8, selectedList, 0, -2)
+```
+
+可确认含义：
+
+- 传入 `Input_Choice` 的 copy flag 为 `0`，对应移动原对象，不是复制。
+- 字符串块含 `钢筋移动`、`选择移动方式`、`Z向移动距离(毫米)`、`平移距离`。
+- `sub_14058B770` 分配并显示 `Input_Choice` 窗口，Dialog ID 为 `384`。
+
+`Input_Choice` 关键字段：
+
+```text
+a1 + 1072 / 1080 / 1088 = 三个 double 输入字段
+a1 + 1096 = 份数 / 次数字段，DDV 范围 1..1000
+a1 + 1136 = 第一选择 ENTITY_LIST
+a1 + 1144 = 第二选择 ENTITY_LIST
+a1 + 1152 = 移动方式 mode
+a1 + 1160 = SPAtransf
+a1 + 1272 = 初始选中钢筋实体列表
+a1 + 1280 = copy flag
+```
+
+`sub_1404EF8B0` 负责根据 mode 生成 `SPAtransf`：
+
+- mode 4：要求两个 `VERTEX`，由第二点减第一点生成平移向量，再 `translate_transf`。
+- mode 5：由 `a1+1080 / a1+1088 / a1+1072` 构造 `SPAvector`，再 `translate_transf`。
+- 其他 mode 会生成 reflect / rotate 等变换，当前不作为 `Rebar.Edit.Move P0` 实现范围。
+
+`sub_1404F1170` 是执行入口：
+
+- `UpdateData(TRUE)` 后调用 `sub_1404EF8B0` 生成 `SPAtransf`。
+- 复制 `a1+1272` 中的选中实体列表到临时列表。
+- 进入 ACIS bulletin board 事务：`api_bb_begin -> update_from_bb -> api_bb_end`。
+- copy flag 为 `0` 时走移动原对象路径，调用 `sub_1405AA5D0(entityList, ..., SPAtransf, 0)`。
+- 局部分支还会调用 `sub_140447210`，该函数内部继续调用 `sub_1405AA5D0`，并对 pattern / 子实体调用 `ENTITY::backup`。
+
+当前可开发级结论：
+
+- `Rebar.Edit.Move P0` 可先实现“选中钢筋组整体平移，保留 group / bar / segment 身份”的领域语义。
+- 领域层不得复刻 ACIS topology mutation；只能移动 domain `SteelBarSegment` 的起点 / 中点 / 终点，并保留 binding / geometryRef / evidence。
+- dirty、撤销、旧提示文本、reflect/rotate 等其他 mode 仍是后续 GAP。
+
 ## `sgroupbarline` 初步反编译
 
 入口：
