@@ -1,5 +1,7 @@
 #include "drawing/detail/DetailWriter.h"
 
+#include "domain/rebar/RebarScheduleService.h"
+
 #include <QCryptographicHash>
 #include <QDir>
 #include <QDirIterator>
@@ -204,19 +206,6 @@ std::vector<QString> missingBarSegmentIds(const SteelBar& bar,
     return result;
 }
 
-double barLength(const SteelBar& bar,
-                 const std::map<QString, const SteelBarSegment*>& segmentIndex)
-{
-    if (bar.length > 0.0) {
-        return bar.length;
-    }
-    double total = 0.0;
-    for (const SteelBarSegment* segment : barSegments(bar, segmentIndex)) {
-        total += segment->length;
-    }
-    return total;
-}
-
 int segmentCountFor(const SteelBarGroup& group,
                     const std::vector<const SteelBar*>& bars,
                     const std::map<QString, const SteelBarSegment*>& segmentIndex)
@@ -233,6 +222,14 @@ int segmentCountFor(const SteelBarGroup& group,
 int barCountFor(const SteelBarGroup& group, int actualBarRefs)
 {
     return group.barCount > 0 ? group.barCount : actualBarRefs;
+}
+
+const SteelBarSegment* findSegmentById(
+    const std::map<QString, const SteelBarSegment*>& segmentIndex,
+    const std::string& segmentId)
+{
+    const auto it = segmentIndex.find(qstr(segmentId));
+    return it == segmentIndex.end() ? nullptr : it->second;
 }
 
 QString detailShapeCode(const SteelBarSegment& segment)
@@ -435,75 +432,58 @@ void writeDrawingXml(const QString& path,
 {
     const auto barIndex = barsById(steelData);
     const auto segmentIndex = segmentsById(steelData);
+    const RebarSchedule schedule = RebarScheduleService{}.buildSchedule(steelData);
 
     writeXmlFile(path, [&](QXmlStreamWriter& writer) {
         writer.writeStartElement(QStringLiteral("DrawingRoot"));
 
         writer.writeStartElement(QStringLiteral("StbTables"));
         writer.writeStartElement(QStringLiteral("StbTable"));
-        writer.writeAttribute(QStringLiteral("count"), QString::number(steelData.groups.size()));
+        writer.writeAttribute(QStringLiteral("count"), QString::number(schedule.scheduleRows.size()));
 
         int rowSequence = 0;
-        for (const SteelBarGroup& group : steelData.groups) {
-            const std::vector<const SteelBar*> bars = groupBars(group, barIndex);
-            const SteelBar& firstBar = *bars.front();
-            const std::vector<const SteelBarSegment*> segments = barSegments(firstBar, segmentIndex);
-            const double length = barLength(firstBar, segmentIndex);
-            const int barCount = barCountFor(group, static_cast<int>(bars.size()));
-            const int segmentCount = segmentCountFor(group, bars, segmentIndex);
-
+        for (const RebarScheduleRow& row : schedule.scheduleRows) {
             writer.writeStartElement(QStringLiteral("StbRow%1").arg(++rowSequence));
-            writer.writeAttribute(QStringLiteral("rsdID"), qstr(group.rsdId));
-            writer.writeAttribute(QStringLiteral("ComponentName"), qstr(group.componentName));
-            writer.writeAttribute(QStringLiteral("SteelWay"), qstr(group.steelWay));
-            writer.writeAttribute(QStringLiteral("diameter"), formatNumber(group.diameter));
-            writer.writeAttribute(QStringLiteral("length"), formatNumber(length));
-            writer.writeAttribute(QStringLiteral("segNum"), QString::number(segmentCount));
-            writer.writeAttribute(QStringLiteral("sameGrpNum"), QStringLiteral("1"));
-            writer.writeAttribute(QStringLiteral("stbNumSum"), QString::number(barCount));
-            writer.writeAttribute(QStringLiteral("lenSum"), formatNumber(length * barCount));
-            writer.writeAttribute(QStringLiteral("stbLevel"), qstr(group.steelLevel));
-            writer.writeAttribute(QStringLiteral("stbLayer"), qstr(group.layer));
-            writer.writeAttribute(QStringLiteral("stbProfile"), qstr(group.profile));
-            writer.writeAttribute(QStringLiteral("stbUse"), qstr(group.use));
+            writer.writeAttribute(QStringLiteral("rsdID"), qstr(row.rsdId));
+            writer.writeAttribute(QStringLiteral("ComponentName"), qstr(row.componentName));
+            writer.writeAttribute(QStringLiteral("SteelWay"), qstr(row.steelWay));
+            writer.writeAttribute(QStringLiteral("diameter"), formatNumber(row.diameter));
+            writer.writeAttribute(QStringLiteral("length"), formatNumber(row.length));
+            writer.writeAttribute(QStringLiteral("segNum"), QString::number(row.segmentCount));
+            writer.writeAttribute(QStringLiteral("sameGrpNum"), QString::number(row.sameGroupCount));
+            writer.writeAttribute(QStringLiteral("stbNumSum"), QString::number(row.barNumberSum));
+            writer.writeAttribute(QStringLiteral("lenSum"), formatNumber(row.lengthSum));
+            writer.writeAttribute(QStringLiteral("stbLevel"), qstr(row.steelLevel));
+            writer.writeAttribute(QStringLiteral("stbLayer"), qstr(row.layer));
+            writer.writeAttribute(QStringLiteral("stbProfile"), qstr(row.profile));
+            writer.writeAttribute(QStringLiteral("stbUse"), qstr(row.use));
             int scheduleSegSequence = 0;
-            for (const SteelBarSegment* segment : segments) {
-                writeScheduleSegment(writer, *segment, ++scheduleSegSequence);
+            for (const RebarScheduleSegmentRef& segmentRef : row.segments) {
+                const SteelBarSegment* segment = findSegmentById(segmentIndex, segmentRef.segmentId);
+                if (segment) {
+                    writeScheduleSegment(writer, *segment, ++scheduleSegSequence);
+                }
             }
             writer.writeEndElement();
         }
         writer.writeEndElement();
 
         writer.writeStartElement(QStringLiteral("MaterialTable"));
-        writer.writeAttribute(QStringLiteral("rowCount"), QStringLiteral("1"));
-        writer.writeAttribute(QStringLiteral("Mass"), QStringLiteral("0"));
-        writer.writeAttribute(QStringLiteral("Volume722"), QStringLiteral("0"));
-        writer.writeAttribute(QStringLiteral("MassNum"), QStringLiteral("0"));
-        double totalLength = 0.0;
-        int totalCount = 0;
-        double firstDiameter = 0.0;
-        QString firstLevel;
-        for (const SteelBarGroup& group : steelData.groups) {
-            const std::vector<const SteelBar*> bars = groupBars(group, barIndex);
-            if (bars.empty()) {
-                continue;
-            }
-            const int barCount = barCountFor(group, static_cast<int>(bars.size()));
-            totalLength += barLength(*bars.front(), segmentIndex) * barCount;
-            totalCount += barCount;
-            if (firstDiameter == 0.0) {
-                firstDiameter = group.diameter;
-                firstLevel = qstr(group.steelLevel);
-            }
+        writer.writeAttribute(QStringLiteral("rowCount"), QString::number(schedule.materialRows.size()));
+        writer.writeAttribute(QStringLiteral("Mass"), formatNumber(schedule.totalMass));
+        writer.writeAttribute(QStringLiteral("Volume722"), formatNumber(schedule.volume722));
+        writer.writeAttribute(QStringLiteral("MassNum"), QString::number(schedule.massNum));
+        int materialSequence = 0;
+        for (const RebarMaterialRow& material : schedule.materialRows) {
+            writer.writeStartElement(QStringLiteral("MatRow%1").arg(++materialSequence));
+            writer.writeAttribute(QStringLiteral("diameter"), formatNumber(material.diameter));
+            writer.writeAttribute(QStringLiteral("lenSum"), formatNumber(material.lengthSum));
+            writer.writeAttribute(QStringLiteral("countSum"), QString::number(material.countSum));
+            writer.writeAttribute(QStringLiteral("singleMass"), formatNumber(material.singleMass));
+            writer.writeAttribute(QStringLiteral("massSum"), formatNumber(material.massSum));
+            writer.writeAttribute(QStringLiteral("stbLevel"), qstr(material.steelLevel));
+            writer.writeEndElement();
         }
-        writer.writeStartElement(QStringLiteral("MatRow1"));
-        writer.writeAttribute(QStringLiteral("diameter"), formatNumber(firstDiameter));
-        writer.writeAttribute(QStringLiteral("lenSum"), formatNumber(totalLength));
-        writer.writeAttribute(QStringLiteral("countSum"), QString::number(totalCount));
-        writer.writeAttribute(QStringLiteral("singleMass"), QStringLiteral("0"));
-        writer.writeAttribute(QStringLiteral("massSum"), QStringLiteral("0"));
-        writer.writeAttribute(QStringLiteral("stbLevel"), firstLevel);
-        writer.writeEndElement();
         writer.writeEndElement();
         writer.writeEndElement();
 
@@ -798,7 +778,10 @@ DetailWriteResult DetailWriter::writePackage(
 
     DetailWriteResult result;
     result.candidatePackagePath = slashPath(candidate);
-    result.warnings.append(QString::fromLatin1(kMaterialDeferred));
+    const RebarSchedule schedulePreview = RebarScheduleService{}.buildSchedule(steelData);
+    if (schedulePreview.massFormulaDeferred) {
+        result.warnings.append(QString::fromLatin1(kMaterialDeferred));
+    }
 
     try {
         removeDirIfExists(candidate);

@@ -304,6 +304,7 @@ Blocker GAPs: none
 - `TODO-028 / M2-Gate-001` CSE readiness gate 扩展已落地并通过：新增 RouteGuardrail，当前 readiness gate 为 84/84 pass、0 error、0 warning；新增检查覆盖 domain/rebar OCCT/AIS 泄漏、保护层泄漏、父目录 rebar 业务引用、todo 状态和 done 节点报告存在性；该阶段不是旧业务算法或输出结果 1:1 证明。
 - `TODO-029 / M2-Edit-001` Rebar.Edit.Move / 钢筋移动 P0 已落地并通过：IDA MCP 已补证 `barmove -> Input_Choice copyFlag=0 -> translate_transf` 移动链，domain/rebar 新增 `RebarEditMoveService`；当前 CTest 14/14 pass，readiness gate 84/84 pass；该阶段不是旧 ACIS topology mutation、dirty/undo 或 golden 证明。
 - `TODO-032 / M2-Edit-002` Rebar.Edit.Copy / 钢筋拷贝 P0 已落地并通过：IDA MCP 已补证 `scopy -> Input_Choice copyFlag=1 -> sub_1405989C0 -> sub_1405AA5D0` 拷贝链，domain/rebar 新增 `RebarEditCopyService`；当前 CTest 15/15 pass，readiness gate 84/84 pass；该阶段不是旧 ACIS topology clone、旧编号、dirty/undo 或 golden 证明。
+- `TODO-030 / M2-Stats-001` 钢筋统计 / 下料表 P0 已落地并通过：IDA MCP 已补证 Detail / XML writer 侧 `StbTable / MaterialTable` 写出链，domain/rebar 新增 `RebarScheduleService`，DetailWriter 改为消费同一 schedule service；当前 CTest 16/16 pass，strict readiness gate 84/84 pass，xhigh 复审 `allow_commit`；该阶段不是完整下料合并规则、旧 `singleMass` 来源、`Volume722` ACIS 等价、AutoCAD L2 或 golden 证明。
 - Detail writer L0/L1 离线 gate 已落地并通过，不再作为当前 M1 阻塞。
 - `GAP-DEV-001/GAP-DEV-007` 不再阻塞进入 Qt6 + OCCT 开发入口，但旧图石业务复刻缺口仍按功能专项继续闭合。
 
@@ -369,4 +370,4 @@ none
 2. 保留 Qt6 runtime gate，防止 Save/Open 和 binding repair 报告退回 simulation。
 3. 保留 Detail writer L0/L1 报告；AutoCAD L2 导入另走工程图专项。
 4. 新增真实工程 STEP 样本时继续跑 STEP selection gate。
-5. 后续开发仍按旧图石运行、IDA、SFL、Detail 证据闭合业务缺口；`TODO-029 / Rebar.Edit.Move P0` 和 `TODO-032 / Rebar.Edit.Copy P0` 已纳入 done-report 映射，下一步建议按 `TODO-030 / M2-Stats` 进入钢筋统计 / 下料表专项。`TODO-026` golden 采集保持 pending，不自动进入。
+5. 后续开发仍按旧图石运行、IDA、SFL、Detail 证据闭合业务缺口；`TODO-029 / Rebar.Edit.Move P0`、`TODO-032 / Rebar.Edit.Copy P0` 和 `TODO-030 / M2-Stats-001` 已纳入 done-report 映射。下一步建议按 `TODO-031 / M2-Drawing` 进入工程图生成专项；`TODO-026` golden 采集保持 pending，不自动进入。

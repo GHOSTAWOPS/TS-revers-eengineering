@@ -1,0 +1,62 @@
+{
+  "schemaVersion": "app-build-report/v1",
+  "reportId": "m2_stats_001_run_001",
+  "createdAt": "2026-06-07T08:35:00+08:00",
+  "decision": "m2-stats-001-pass",
+  "todoId": "TODO-030",
+  "phase": "M2-Stats-001",
+  "scope": [
+    "Rebar schedule service",
+    "DetailWriter StbTable/MaterialTable integration",
+    "IDA MCP evidence",
+    "unit tests"
+  ],
+  "evidence": [
+    "E-IDA-019",
+    "E-IDA-020",
+    "E-IDA-021",
+    "E-IDA-025",
+    "E-DEV-053"
+  ],
+  "validation": {
+    "narrowBuild": "pass",
+    "narrowTest": {
+      "result": "pass",
+      "passed": 2,
+      "failed": 0
+    },
+    "ctest": {
+      "result": "pass",
+      "passed": 16,
+      "failed": 0
+    },
+    "readinessGate": {
+      "result": "pass",
+      "decision": "M1-Formal-Ready",
+      "passed": 84,
+      "failed": 0,
+      "warnings": 0
+    },
+    "occtLeakScan": "pass-no-matches",
+    "xhighReview": "allow_commit"
+  },
+  "ida": {
+    "database": "VisualTS.exe.i64",
+    "session": "visualts_i64_todo030",
+    "confirmedChain": [
+      "sub_140609690 -> sub_140607E30 -> sub_140637400",
+      "sub_140609690 -> sub_140609190 -> sub_1406382D0",
+      "sub_140637400 writes StbRow fields",
+      "sub_1406382D0 writes MatRow fields"
+    ]
+  },
+  "boundaries": [
+    "No OCCT/AIS dependency in domain/rebar",
+    "No parent rebar business migration",
+    "No full sameGrpNum merge-rule claim",
+    "No full singleMass source claim",
+    "No Volume722 ACIS equivalence claim",
+    "No AutoCAD L2 or golden claim"
+  ],
+  "next": "TODO-031"
+}

@@ -173,6 +173,7 @@ def done_node_report_requirements(root: Path, rows: list[dict[str, str]]) -> tup
         "TODO-027": ("63_M2-UI-001旧UI功能入口P1实现记录.md", "docs/phase1/app_build_reports/m2_ui_001_run_001.md"),
         "TODO-028": ("64_M2-Gate-001CSEReadinessGate扩展实现记录.md", "docs/phase1/app_build_reports/m2_gate_001_run_001.md"),
         "TODO-029": ("65_M2-Edit-001钢筋移动P0实现记录.md", "docs/phase1/app_build_reports/m2_edit_001_run_001.md"),
+        "TODO-030": ("67_M2-Stats-001钢筋统计下料表P0实现记录.md", "docs/phase1/app_build_reports/m2_stats_001_run_001.md"),
         "TODO-032": ("66_M2-Edit-002钢筋拷贝P0实现记录.md", "docs/phase1/app_build_reports/m2_edit_002_run_001.md"),
     }
     missing: list[str] = []

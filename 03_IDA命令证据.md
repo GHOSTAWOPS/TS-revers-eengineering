@@ -1109,6 +1109,89 @@ E-IDA-021:
 但 Dialog #427 和运行输出仍需旧图石运行确认。
 ```
 
+### 下料表 Detail / XML writer 聚合链补证
+
+证据 ID：
+
+```text
+E-IDA-025
+```
+
+本轮 IDA MCP 会话：
+
+```text
+session = visualts_i64_todo030
+database = VisualTS.exe.i64
+Hex-Rays = ready
+```
+
+已确认调用链：
+
+```text
+sub_140609690
+  -> sub_140606560
+  -> sub_140609860
+  -> sub_140607E30
+       写 StbTable
+       循环调用 sub_140637400 写 StbRow%d
+  -> sub_140609190
+       写 MaterialTable
+       循环调用 sub_1406382D0 写 MatRow%d
+```
+
+关键字段来源：
+
+```text
+sub_140607E30:
+  StbTable.count = vector size
+  每行调用 sub_140637400(row, ...)
+
+sub_140637400:
+  rsdID = Y%d / Z%d / %d%c / string / int 多分支
+  ComponentName = 旧构件链字段
+  SteelWay = GU / LA / STEEL_NET / LASAME / XI / OTHER 分支
+  diameter = a1[8]
+  length = sub_140637070(...)
+  segNum = sub_1405FE280(v5)
+  sameGrpNum = a1[1]
+  stbNumSum = a1[3]
+  lenSum = *((double*)a1 + 5)，格式 %.2f
+  stbLevel = *(v5 + 56 + 136)
+
+sub_140609190:
+  MaterialTable.rowCount = material vector size
+  循环调用 sub_1406382D0(row, ...)
+  MaterialTable.Mass = sum(sub_140637250(row)) / 1000
+  MaterialTable.Volume722 = ACIS body mass_props volume，四舍五入到 0.001
+  MaterialTable.MassNum = 入口 a1
+
+sub_1406382D0:
+  diameter = sub_140637010(this) -> *(this + 4)
+  lenSum = sub_140637220(this) -> *(this + 8)
+  countSum = *(this + 0)
+  singleMass = CAnimationVariable::GetDefaultValue(this)
+  massSum = sub_140637250(this) -> a1[2] * a1[1]
+  stbLevel = sub_140637200(this) -> CString(this + 32)
+```
+
+和 `E-IDA-019 / E-IDA-020 / E-IDA-021` 的边界：
+
+```text
+E-IDA-019/020/021 确认 psexcel / 0x8D1C / sub_140605B20 / sub_140602F90
+这条 Excel / 下料命令链。
+
+E-IDA-025 确认 Detail / XML writer 侧的 StbTable / MaterialTable 聚合写出链。
+两者字段重叠，但不能把函数来源混成同一条业务链。
+```
+
+本轮不能过度推断：
+
+```text
+sameGrpNum 的旧合并规则仍需继续追 sub_140606560 / sub_140609860。
+singleMass 的旧材料表来源仍需继续追 material row 构造逻辑。
+Volume722 依赖旧 ACIS body mass_props；新系统 P0 不声明等价。
+```
+
 ## 右键命令证据摘要
 
 来自已有迁移资料 `ROOT_CONTEXT_MENU_COMMANDS.csv`：

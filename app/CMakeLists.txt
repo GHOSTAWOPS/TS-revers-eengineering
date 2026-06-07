@@ -83,6 +83,8 @@ add_library(tsrebar_core STATIC
     src/domain/rebar/RebarEditCopyService.h
     src/domain/rebar/RebarEditMoveService.cpp
     src/domain/rebar/RebarEditMoveService.h
+    src/domain/rebar/RebarScheduleService.cpp
+    src/domain/rebar/RebarScheduleService.h
     src/domain/rebar/RebarDomainTypes.h
     src/domain/rebar/SteelBar.h
     src/domain/rebar/SteelBarGroup.h
@@ -224,6 +226,11 @@ add_executable(rebar_edit_copy_tests
 
 target_link_libraries(rebar_edit_copy_tests PRIVATE tsrebar_core)
 
+add_executable(rebar_schedule_service_tests
+    tests/unit/rebar_schedule_service_tests.cpp)
+
+target_link_libraries(rebar_schedule_service_tests PRIVATE tsrebar_core)
+
 add_executable(rebar_ais_presentation_tests
     tests/unit/rebar_ais_presentation_tests.cpp)
 
@@ -274,6 +281,7 @@ add_test(NAME rebar_domain_model_tests COMMAND rebar_domain_model_tests)
 add_test(NAME rebar_group_creator_tests COMMAND rebar_group_creator_tests)
 add_test(NAME rebar_edit_move_tests COMMAND rebar_edit_move_tests)
 add_test(NAME rebar_edit_copy_tests COMMAND rebar_edit_copy_tests)
+add_test(NAME rebar_schedule_service_tests COMMAND rebar_schedule_service_tests)
 add_test(NAME rebar_ais_presentation_tests COMMAND rebar_ais_presentation_tests)
 add_test(NAME project_runtime_tests COMMAND project_runtime_tests)
 add_test(NAME detail_writer_tests COMMAND detail_writer_tests)
