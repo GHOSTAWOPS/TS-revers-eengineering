@@ -1,0 +1,125 @@
+{
+  "schemaVersion": "app-build-report/v1",
+  "reportId": "m2_drawing_011_run_001",
+  "createdAt": "2026-06-07T17:53:21+08:00",
+  "decision": "point-face-edge-autocad-l2-ready-not-run",
+  "todoId": "TODO-042",
+  "phase": "M2-Drawing-011",
+  "scope": [
+    "pointStb / FaceEdge AutoCAD L2 confirmation checklist",
+    "point-face-edge independent probe package regenerated for TODO-042",
+    "AutoCAD executable and registry probe",
+    "FDrawing plugin file hash record",
+    "readiness gate done-report mapping for TODO-042"
+  ],
+  "evidence": [
+    "E-DETAIL-003",
+    "E-DEV-059",
+    "E-DEV-063",
+    "E-DEV-064"
+  ],
+  "probe": {
+    "path": "docs/phase1/app_build_reports/m2_drawing_011_detail_probe.json",
+    "schemaVersion": "detail-l2-fixture-probe/v1",
+    "runId": "DW-L2-TODO042-001",
+    "fixture": "point-face-edge",
+    "decision": "l0-l1-pass",
+    "l0": "passed",
+    "l1": "passed",
+    "l2": "not_run",
+    "autocadL2": "not_run",
+    "pointFaceEdge": {
+      "passed": true,
+      "scope": "pointStb StbGeo shapeType=C + FaceEdge L/A field skeleton only",
+      "pointGroupCount": 2,
+      "pointGeoCount": 2,
+      "faceEdgeCount": 2,
+      "lineFaceEdgePassed": true,
+      "arcFaceEdgePassed": true,
+      "allPointGeoFieldsPresent": true
+    },
+    "autocadEnvironment": {
+      "status": "not_found",
+      "automaticL2Possible": false
+    },
+    "fdrawingPlugin": {
+      "status": "ready",
+      "allRequiredPresent": true
+    }
+  },
+  "files": [
+    {
+      "name": "Detail.xml",
+      "bytes": 186,
+      "root": "StyleRoot",
+      "sha256": "f4927ef3f83e91c858eeead3832fbcf86f8956b2837a7df5b74de3273d46be8c"
+    },
+    {
+      "name": "Detail01.stl",
+      "bytes": 5712,
+      "root": "DrawingRoot",
+      "sha256": "2bd56433cf2858aaf8d88e32518f808d997f9839f142f130b2fab3fa90cc24c4"
+    },
+    {
+      "name": "Detail02.stl",
+      "bytes": 5712,
+      "root": "DrawingRoot",
+      "sha256": "e4dc455d01721f814ee0ad38f58fe0a46129350caa723e3e5d01140e7b711568"
+    },
+    {
+      "name": "Detail03.stl",
+      "bytes": 5712,
+      "root": "DrawingRoot",
+      "sha256": "4a685909e798fb850743e0e6a734b29f453bde0d9d060dc889e8ca1169cf39d3"
+    }
+  ],
+  "validation": {
+    "gateUnitTests": {
+      "result": "pass",
+      "redGreen": "RED failed before TODO-042 known_reports mapping; GREEN passed after mapping",
+      "tests": "14/14"
+    },
+    "pointFaceEdgeProbe": "pass",
+    "jsonValidation": "pass: py -3 -m json.tool docs/phase1/app_build_reports/m2_drawing_011_detail_probe.json and m2_drawing_011_run_001.json",
+    "ctest": {
+      "result": "pass",
+      "tests": "17/17",
+      "totalSeconds": 152.51,
+      "command": "ctest --test-dir app/build --output-on-failure"
+    },
+    "readinessGate": {
+      "result": "pass",
+      "decision": "M1-Formal-Ready",
+      "checks": "84/84",
+      "errors": 0,
+      "warnings": 0,
+      "command": "py -3 tools/phase1_readiness_gate/check_phase1_readiness.py --strict"
+    },
+    "occtLeakScan": "pass: rg TopoDS_/AIS_/BRep/TopAbs_ found no matches in app/src/domain/rebar, app/src/drawing, app/src/project",
+    "diffCheck": "pass: git diff --check exited 0; CRLF replacement warnings only",
+    "xhighReview": {
+      "verdict": "needs_fix",
+      "critical": "none",
+      "important": "Fixed by main flow: report/json/46 pending verification state was replaced with actual verification and review results",
+      "minor": "Probe JSON evidence remains generator-side E-DEV-059; non-blocking because run report carries E-DEV-064",
+      "reviewer": "Anscombe / 019ea199-5c49-7b53-a863-4aa49676ee49",
+      "readOnly": true,
+      "closedAfterReview": true,
+      "routeDrift": "none found; no OCCT direct rebar rewrite and no protected-layer OCCT/AIS leak",
+      "autocadL2Misclaim": "none found; autocadL2 remains not_run",
+      "algorithmMisclaim": "none found; no pointStb / FaceEdge real generation rule or complete drawing algorithm claimed"
+    }
+  },
+  "boundaries": [
+    "AutoCAD L2 import is not_run",
+    "FDrawing acceptance is not confirmed",
+    "pointStb / FaceEdge L2 checklist is preparation only",
+    "pointStb generation rule remains a gap",
+    "FaceEdge generation rule remains a gap",
+    "No continue, hidden, central, hatch, section, or joint drawing algorithm claim",
+    "No OCCT/AIS dependency in domain/rebar, drawing, or project protected layers",
+    "No parent rebar business migration",
+    "No golden claim"
+  ],
+  "next": "TODO-043 / M2-Drawing-012 proposed as next; do not implement in this goal turn"
+}

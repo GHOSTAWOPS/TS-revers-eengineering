@@ -302,18 +302,19 @@ TODO-038 验证 = sectionLine.passed=true, lineCount=1, arcCount=1, autocadL2=no
 TODO-039 验证 = sectionLine.passed=true, lineCount=1, arcCount=1, AutoCAD environment not_found, autocadL2=not_run, CTest 17/17 pass, readiness 84/84 pass, OCCT leak scan pass, xhigh allow_commit
 TODO-040 验证 = lineContainers.passed=true, containerCount=4, AutoCAD environment not_found, autocadL2=not_run, CTest 17/17 pass, readiness 84/84 pass, OCCT leak scan pass, xhigh round2 allow_commit
 TODO-041 验证 = lineContainers.passed=true, containerCount=4, AutoCAD environment not_found, autocadL2=not_run, CTest 17/17 pass, readiness 84/84 pass, OCCT leak scan pass, xhigh allow_commit
+TODO-042 验证 = pointFaceEdge.passed=true, pointGroupCount=2, pointGeoCount=2, faceEdgeCount=2, AutoCAD environment not_found, autocadL2=not_run, CTest 17/17 pass, readiness 84/84 pass, OCCT leak scan pass, xhigh needs_fix important fixed
 
-latest completed tag = m2-drawing-009/line-containers-field-skeleton-p0
-planned tag = m2-drawing-010/line-containers-l2-confirmation-ready
+latest completed tag = m2-drawing-010/line-containers-l2-confirmation-ready
+planned tag = m2-drawing-011/point-face-edge-l2-confirmation-ready
 ```
 
 当前下一步：
 
 ```text
-TODO-042 / M2-Drawing-011
-  -> DetailWriter pointStb / FaceEdge AutoCAD L2 运行确认准备 P0
-  -> 把 TODO-037 的 pointStb / FaceEdge 独立包转成 AutoCAD L2 手工或自动运行确认准备项。
-  -> 不实现点筋真实算法 / FaceEdge 生成规则 / 剖切线 / 隐藏线 / 填充线 / 接头线算法，不声明 AutoCAD L2 通过，不进入 golden。
+TODO-043 / M2-Drawing-012
+  -> DetailWriter Others / steeljoint-line 字段骨架 P0
+  -> 把旧 Detail 样例中 Others / steeljoint-line 容器做成独立干净变量字段骨架专项。
+  -> 只做字段骨架和离线 probe；不实现真实接头线 / 其他几何算法，不声明 AutoCAD L2 通过，不进入 golden。
 ```
 
 长期执行循环：
@@ -557,29 +558,28 @@ commit / tag / push 状态
 
 ### 短期 Goal（推荐下一轮复制）
 
-目标：只完成 `TODO-042 / M2-Drawing-011 DetailWriter pointStb / FaceEdge AutoCAD L2 运行确认准备 P0` 这个短期阶段，不自动进入后续长期开发。
+目标：只完成 `TODO-043 / M2-Drawing-012 DetailWriter Others / steeljoint-line 字段骨架 P0` 这个短期阶段，不自动进入后续长期开发。
 
-本轮要把 TODO-037 的 `pointStb / FaceEdge` 独立包转成 AutoCAD L2 手工或自动运行确认准备项：
+本轮要把旧 Detail 样例中 `Others / steeljoint-line` 容器做成独立干净变量字段骨架专项：
 
 ```text
-Drawing.GeneratePackage / M2-Drawing-011
-  -> 从 E-DEV-059 / GAP-DRAW-001 / GAP-DRAW-002 出发
-  -> 复用 pointStb / FaceEdge 独立变量包
-  -> 生成 pointStb / FaceEdge AutoCAD L2 手工确认清单
-  -> 记录 AutoCAD / FDrawing 环境探测、文件 hash 和阻塞状态
-  -> 不实现点筋真实算法 / FaceEdge 生成规则 / 剖切线 / 隐藏线 / 填充线 / 接头线算法
+Drawing.GeneratePackage / M2-Drawing-012
+  -> 从 E-DETAIL-003 / E-DEV-056 / E-DEV-057 / E-DEV-064 出发
+  -> 输出 Others 和 steeljoint-line / joints 字段骨架
+  -> 生成独立 probe/report，确认字段骨架可离线生成和检查
+  -> 记录旧样例 Others 为空、steeljoint-line 仅确认 joints 容器存在的证据边界
+  -> 不实现真实接头线 / 其他几何算法
   -> 没有真实运行证据不得声明 AutoCAD L2 通过或旧插件接受新包
 ```
 
 目标语义：
 
 ```text
-TODO-037 已经完成 pointStb / FaceEdge 字段骨架。
-TODO-041 已经完成 line-containers L2 运行确认准备。
+TODO-042 已经完成 pointStb / FaceEdge L2 运行确认准备。
 当前 AutoCAD 环境仍 not_found，autocadL2=not_run。
-下一步不是写点筋生成算法、FaceEdge 生成规则或 OCCT HLR 算法。
-下一步只把 TODO-037 的 pointStb / FaceEdge 包转成 L2 运行确认准备材料和环境阻塞记录。
-本轮只做 TODO-042，不同时做 golden 采集、UI 新功能、AutoCAD L2 通过声明或多个专项。
+下一步不是写接头线生成算法、其他几何算法或 OCCT HLR 算法。
+下一步只把 Others / steeljoint-line 做成字段骨架和离线 probe。
+本轮只做 TODO-043，不同时做 golden 采集、UI 新功能、AutoCAD L2 通过声明或多个专项。
 ```
 
 当前已完成前置：
@@ -644,10 +644,11 @@ TODO-033 / M2-Drawing-002 = done
   -> AutoCAD L2 导入验证 P0 已生成三图纸验证包和手工清单。
      当前本机 AutoCAD 环境 not_found，所以 autocadL2=not_run。
 
-TODO-034 ~ TODO-041 / M2-Drawing-003..010 = done
+TODO-034 ~ TODO-042 / M2-Drawing-003..011 = done
   -> 已完成复杂字段静态证据、复杂字段骨架、pointStb / FaceEdge 字段骨架、
      section-line Line/Arc/ZValue 字段骨架、section-line L2 运行确认准备，
-     line-containers LineN 字段骨架，以及 line-containers L2 运行确认准备。
+     line-containers LineN 字段骨架、line-containers L2 运行确认准备，
+     以及 pointStb / FaceEdge L2 运行确认准备。
      这些证据均不声明旧插件接受、真实工程图算法、AutoCAD L2 pass 或 golden。
 
 TODO-026 / Golden = pending
@@ -676,8 +677,8 @@ C:\Users\ghost\Desktop\reverse_engineering\【03】图石软件
 6. `【图石钢筋1比1复刻】\70_M2-Drawing-003Detail复杂字段静态证据P0实现记录.md`
 7. `【图石钢筋1比1复刻】\71_M2-Drawing-004DetailWriter复杂字段骨架P0实现记录.md`
 8. `【图石钢筋1比1复刻】\74_M2-Drawing-007DetailWriter剖切线字段骨架P0实现记录.md`
-9. `【图石钢筋1比1复刻】\75_M2-Drawing-008DetailWriterSectionLineAutoCADL2运行确认准备P0实现记录.md`
-10. `【图石钢筋1比1复刻】\77_M2-Drawing-010DetailWriter线容器AutoCADL2运行确认准备P0实现记录.md`
+9. `【图石钢筋1比1复刻】\76_M2-Drawing-009DetailWriter线容器字段骨架P0实现记录.md`
+10. `【图石钢筋1比1复刻】\78_M2-Drawing-011DetailWriter点筋FaceEdgeAutoCADL2运行确认准备P0实现记录.md`
 11. `【图石钢筋1比1复刻】\99_缺口和待确认项.md`
 12. `【图石钢筋1比1复刻】\todo.csv`
 
@@ -698,10 +699,9 @@ C:\Users\ghost\Desktop\reverse_engineering\【03】图石软件
 
 本轮允许修改：
 
-- pointStb / FaceEdge L2 probe/report/docs
+- Others / steeljoint-line 字段骨架相关 DTO / DetailWriter / probe / tests / docs
 - 必要的 Detail 包生成 / 导出辅助测试，但必须保留旧 Detail 字段语义
-- 对应 L2 手工确认清单、环境探测和阻塞记录
-- 对应实现记录、build report、`11 / 34 / 99 / 46 / todo.csv`
+- 对应实现记录、build report、`11 / 13 / 20 / 34 / 99 / 46 / todo.csv`
 
 本轮禁止修改或迁移：
 
@@ -713,25 +713,26 @@ C:\Users\ghost\Desktop\reverse_engineering\【03】图石软件
 - 任何 OCCT 直接造钢筋业务逻辑
 - `domain/rebar` 中引入 AIS / OCCT / `TopoDS_ / AIS_ / BRep / TopAbs_`
 - 把 OCCT HLR / section 结果直接当成旧图石工程图业务真相
-- 把 TODO-042 扩成完整工程图全量功能
+- 把 TODO-043 扩成完整工程图全量功能
 - 在没有真实运行证据时声明 AutoCAD L2 通过
-- 实现点筋真实算法 / FaceEdge 生成规则 / 真实连续线 / 隐藏线 / 中心线 / 填充线 / 剖切线 / 接头线算法
+- 实现真实接头线 / Others 几何算法 / 点筋真实算法 / FaceEdge 生成规则 / 真实连续线 / 隐藏线 / 中心线 / 填充线 / 剖切线算法
 - UI 新功能或命令入口扩展同轮实现
 - golden 采集同轮实现
 - 把缺证剖切线、隐藏线、填充线、标注或 AutoCAD 字段写成确定结论
 
 本轮验收标准：
 
-1. 只执行 TODO-042，不一次铺开完整工程图全部能力。
-2. 生成 pointStb / FaceEdge L2 运行确认清单，记录旧样例包 / TODO-037 新包的确认步骤。
-3. 记录 AutoCAD / FDrawing 环境探测、文件列表、hash、字段摘要和能力边界。
-4. 若本机仍无法运行 AutoCAD，必须明确 `autocadL2=not_run`，不得写成通过。
-5. 默认 CTest 通过。
-6. readiness gate 严格模式通过。
-7. domain/rebar + drawing + project OCCT / AIS 泄漏扫描通过。
-8. 涉及代码、测试、构建脚本，commit 前必须执行 xhigh 只读 review；Critical / Important 必须修复或写明技术反驳理由。
-9. 更新实现记录、build report、`11 / 34 / 99 / 46 / todo.csv`。
-10. `todo.csv` 中 `TODO-042` 只在 L2 准备材料、probe、验证和审查闭合后更新；不能假装 AutoCAD L2 通过、完整工程图或 golden 已完成。
+1. 只执行 TODO-043，不一次铺开完整工程图全部能力。
+2. DetailWriter 输出 Others 和 steeljoint-line / joints 字段骨架。
+3. 新增或更新测试，覆盖 Others / steeljoint-line 字段骨架。
+4. 生成独立 probe/report，记录字段摘要、文件 hash 和能力边界。
+5. 若生成 AutoCAD 相关材料，必须明确 `autocadL2=not_run` 或真实运行结果，不得写成通过。
+6. 默认 CTest 通过。
+7. readiness gate 严格模式通过。
+8. domain/rebar + drawing + project OCCT / AIS 泄漏扫描通过。
+9. 涉及代码、测试、构建脚本，commit 前必须执行 xhigh 只读 review；Critical / Important 必须修复或写明技术反驳理由。
+10. 更新实现记录、build report、`11 / 13 / 20 / 34 / 99 / 46 / todo.csv`。
+11. `todo.csv` 中 `TODO-043` 只在字段骨架、probe、验证和审查闭合后更新；不能假装 AutoCAD L2 通过、真实接头线 / Others 几何算法、完整工程图或 golden 已完成。
 
 本轮完成后必须停止，输出阶段复盘：
 
@@ -739,7 +740,7 @@ C:\Users\ghost\Desktop\reverse_engineering\【03】图石软件
 完成了什么
 验证了什么
 还缺什么
-下一阶段建议继续 AutoCAD L2 运行确认准备，还是先补 IDA / 旧图石运行证据
+下一阶段建议做 TODO-044 还是先补 IDA / 旧图石运行证据
 commit / tag / push 状态
 ```
 
@@ -971,24 +972,24 @@ TODO-038 验证 = sectionLine.passed=true, lineCount=1, arcCount=1, AutoCAD envi
 TODO-039 验证 = sectionLine.passed=true, lineCount=1, arcCount=1, AutoCAD environment not_found, autocadL2=not_run, CTest 17/17 pass, readiness 84/84 pass, OCCT leak scan pass, xhigh allow_commit
 TODO-040 验证 = lineContainers.passed=true, containerCount=4, AutoCAD environment not_found, autocadL2=not_run, CTest 17/17 pass, readiness 84/84 pass, OCCT leak scan pass, xhigh round2 allow_commit
 TODO-041 验证 = lineContainers.passed=true, containerCount=4, AutoCAD environment not_found, autocadL2=not_run, CTest 17/17 pass, readiness 84/84 pass, OCCT leak scan pass, xhigh allow_commit
+TODO-042 验证 = pointFaceEdge.passed=true, pointGroupCount=2, pointGeoCount=2, faceEdgeCount=2, AutoCAD environment not_found, autocadL2=not_run, CTest 17/17 pass, readiness 84/84 pass, OCCT leak scan pass, xhigh needs_fix important fixed
 ```
 
 当前下一步：
 
 ```text
-TODO-042 / M2-Drawing-011
-  -> DetailWriter pointStb / FaceEdge AutoCAD L2 运行确认准备 P0
-  -> 把 TODO-037 pointStb / FaceEdge 独立包转成 AutoCAD L2 手工或自动运行确认准备项
-  -> 不实现点筋真实算法 / FaceEdge 生成规则 / 剖切线 / 隐藏线 / 填充线 / 接头线算法，不声明 AutoCAD L2 通过，不进入 golden
+TODO-043 / M2-Drawing-012
+  -> DetailWriter Others / steeljoint-line 字段骨架 P0
+  -> 把旧 Detail 样例中 Others / steeljoint-line 容器做成独立干净变量字段骨架专项
+  -> 只做字段骨架和离线 probe；不实现真实接头线 / 其他几何算法，不声明 AutoCAD L2 通过，不进入 golden
 ```
 
 原因：
 
 ```text
-TODO-037 已完成 pointStb / FaceEdge 字段骨架。
-TODO-041 已完成 line-containers AutoCAD L2 运行确认准备。
-当前仍未运行 AutoCAD L2，旧插件是否接受 pointStb / FaceEdge 包未确认；点筋生成规则和 FaceEdge 生成规则也没有关闭。
-下一步建议做 TODO-042，把 pointStb / FaceEdge 包转成 AutoCAD L2 运行确认准备和手工清单。
+TODO-042 已完成 pointStb / FaceEdge AutoCAD L2 运行确认准备。
+当前仍未运行 AutoCAD L2，旧插件是否接受新包未确认；点筋、FaceEdge、接头线和 Others 真实生成规则也没有关闭。
+下一步建议做 TODO-043，把 Others / steeljoint-line 做成独立字段骨架专项。
 golden 采集 TODO-026 暂按用户要求保持 pending。
 ```
 
@@ -1054,19 +1055,19 @@ golden 采集 TODO-026 暂按用户要求保持 pending。
 
 ## CSE v2 Control Contract
 
-- **Primary Setpoint**：下一轮只完成 `TODO-042 / M2-Drawing-011 DetailWriter pointStb / FaceEdge AutoCAD L2 运行确认准备 P0`，把 TODO-037 的 pointStb / FaceEdge 独立包转成 AutoCAD L2 手工或自动运行确认准备项。
-- **Acceptance**：生成 pointStb / FaceEdge L2 运行确认清单；记录 AutoCAD / FDrawing 环境探测、文件 hash、包摘要和阻塞状态；默认 CTest、readiness gate、OCCT 泄漏检查通过；执行 xhigh 只读 review；更新实现记录、build report、追溯矩阵、缺口文档、46 和 todo。
-- **Guardrail Metrics**：不能实现或声明点筋真实算法、FaceEdge 生成规则、真实连续线、隐藏线、中心线、填充线、剖切线、接头线算法；不能在没有运行证据时声明 AutoCAD L2 通过；不能把 L2 准备清单写成旧插件接受证明；不能改钢筋创建业务；不能迁入父目录 rebar 业务；不能进入 golden 全量采集。
-- **Sampling Plan**：先读 `todo.csv / 05 / 13 / 20 / 73 / 77 / 99`，再检查 TODO-037 pointStb / FaceEdge 包和既有 L2 准备清单模式；先补 gate / checklist 断言，再生成 L2 准备材料；最后运行默认 CTest、readiness gate 和 OCCT 泄漏扫描。
-- **Known Delays**：点筋生成规则、FaceEdge 生成规则和旧插件容忍度仍需 IDA 或旧图石运行确认；下一轮只做 L2 运行确认准备，不能把准备材料升级为真实工程图算法或旧插件接受度。
-- **Recovery Target**：如果 L2 准备包或清单失败，保持 TODO-037 和 TODO-041 成果不变，把失败原因写入 `99` 和 build report，不继续堆后续工程图算法。
-- **Rollback Trigger**：无证据实现点筋 / FaceEdge / 工程图算法；把 L2 准备清单当成旧插件接受证明；无运行证据声明 L2 通过；让 `domain/rebar` 泄漏 OCCT/AIS；测试或 gate 失败仍继续堆功能。
+- **Primary Setpoint**：下一轮只完成 `TODO-043 / M2-Drawing-012 DetailWriter Others / steeljoint-line 字段骨架 P0`，把旧 Detail 样例中 Others / steeljoint-line 容器做成独立干净变量字段骨架专项。
+- **Acceptance**：DetailWriter 输出 Others 和 steeljoint-line / joints 字段骨架；新增或更新测试；生成独立 probe/report；默认 CTest、readiness gate、OCCT 泄漏检查通过；执行 xhigh 只读 review；更新实现记录、build report、追溯矩阵、缺口文档、46 和 todo。
+- **Guardrail Metrics**：不能实现或声明真实接头线 / Others 几何算法、点筋真实算法、FaceEdge 生成规则、真实连续线、隐藏线、中心线、填充线、剖切线算法；不能在没有运行证据时声明 AutoCAD L2 通过；不能把字段骨架写成旧插件接受证明；不能改钢筋创建业务；不能迁入父目录 rebar 业务；不能进入 golden 全量采集。
+- **Sampling Plan**：先读 `todo.csv / 05 / 13 / 20 / 70 / 71 / 78 / 99`，再检查旧 Detail 样例和既有字段骨架模式；先补测试 / probe 断言，再实现字段骨架；最后运行默认 CTest、readiness gate 和 OCCT 泄漏扫描。
+- **Known Delays**：真实接头线 / Others 几何算法、旧插件容忍度仍需 IDA 或旧图石运行确认；下一轮只做字段骨架，不能把字段存在升级为真实工程图算法或旧插件接受度。
+- **Recovery Target**：如果字段骨架或 probe 失败，保持 TODO-042 成果不变，把失败原因写入 `99` 和 build report，不继续堆后续工程图算法。
+- **Rollback Trigger**：无证据实现接头线 / Others / 工程图算法；把字段骨架当成旧插件接受证明；无运行证据声明 L2 通过；让 `domain/rebar` 泄漏 OCCT/AIS；测试或 gate 失败仍继续堆功能。
 - **Constraints**：不使用 ACIS / HOOPS / Codejock 等商业库；旧逻辑不确定时优先查 IDA MCP 或旧图石运行确认；xhigh 只读，修改由主流程 agent 完成。
-- **Boundary**：下一轮只允许 pointStb / FaceEdge L2 probe/report/checklist/docs/追溯/缺口/46/todo 必要更新；禁止修改 UI 新功能、钢筋创建业务、真实 OCCT HLR/section/hidden-line 算法、无证据 AutoCAD L2 结论和 golden。
-- **Coupling Notes**：`drawing/export` 是 Detail 包输出边界；TODO-042 只把 TODO-037 字段骨架包转成 L2 运行确认准备，不关闭点筋生成规则、FaceEdge 生成规则、隐藏线 / 填充线 / 接头线算法或完整工程图缺口。
-- **Approximation Validity**：TODO-042 只能证明 pointStb / FaceEdge 包、环境探测和手工确认材料齐备；不证明旧插件接受、不证明点筋 / FaceEdge 生成规则，也不证明工程图完整性。
-- **Actuator Budget**：下一轮只推进 `TODO-042`。完成后停止复盘，不自动进入真实点筋、FaceEdge、隐藏线、填充线、接头线算法或 golden。
-- **Risks**：AutoCAD 环境可能继续不可用；旧插件接受度仍需真实运行确认；L2 准备材料可能被误读为 L2 通过，必须在报告中明确 `autocadL2=not_run` 或真实运行结果。
+- **Boundary**：下一轮只允许 Others / steeljoint-line 字段骨架、probe/report/docs/追溯/缺口/46/todo 必要更新；禁止修改 UI 新功能、钢筋创建业务、真实 OCCT HLR/section/hidden-line 算法、无证据 AutoCAD L2 结论和 golden。
+- **Coupling Notes**：`drawing/export` 是 Detail 包输出边界；TODO-043 只补 Others / steeljoint-line 字段骨架，不关闭接头线生成规则、Others 几何规则、隐藏线 / 填充线算法或完整工程图缺口。
+- **Approximation Validity**：TODO-043 只能证明 Others / steeljoint-line 字段骨架可输出和离线检查；不证明旧插件接受、不证明接头线 / Others 生成规则，也不证明工程图完整性。
+- **Actuator Budget**：下一轮只推进 `TODO-043`。完成后停止复盘，不自动进入真实接头线、Others 几何算法、隐藏线、填充线、点筋、FaceEdge 或 golden。
+- **Risks**：旧样例 Others 为空，字段语义可能不足；steeljoint-line 仅确认 joints 容器存在；字段骨架可能被误读为真实算法，必须在报告中明确能力边界。
 ## Todo CSV 使用方式
 
 `todo.csv` 是后续执行看板。建议每次 goal 模式只拿 `status=next` 或最高优先级 `pending` 的任务推进。
@@ -1091,11 +1092,11 @@ golden 采集 TODO-026 暂按用户要求保持 pending。
 下一步优先执行：
 
 ```text
-TODO-042 / M2-Drawing-011
-  -> DetailWriter pointStb / FaceEdge AutoCAD L2 运行确认准备 P0
-  -> 把 TODO-037 pointStb / FaceEdge 独立包转成 AutoCAD L2 手工或自动运行确认准备项
-  -> 不实现点筋真实算法 / FaceEdge 生成规则 / 剖切线 / 隐藏线 / 填充线 / 接头线算法，不声明 AutoCAD L2 通过，不进入 golden
+TODO-043 / M2-Drawing-012
+  -> DetailWriter Others / steeljoint-line 字段骨架 P0
+  -> 把旧 Detail 样例中 Others / steeljoint-line 容器做成独立干净变量字段骨架专项
+  -> 只做字段骨架和离线 probe；不实现真实接头线 / 其他几何算法，不声明 AutoCAD L2 通过，不进入 golden
 ```
 
-原因很简单：TODO-037 已把 pointStb / FaceEdge 独立包做成可输出、可离线检查的字段骨架，但 AutoCAD 环境仍不可用；下一步应先补 L2 运行确认准备和阻塞记录，不能把字段存在直接升级成点筋算法、FaceEdge 生成规则或旧插件接受。
+原因很简单：TODO-042 已把 pointStb / FaceEdge 独立包转成 AutoCAD L2 运行确认准备和阻塞记录，但 AutoCAD 环境仍不可用；下一步应先补 Others / steeljoint-line 独立字段骨架，不能把字段存在直接升级成接头线算法、其他几何算法或旧插件接受。
 TODO-026 golden 采集暂按用户要求保持 pending。

@@ -299,6 +299,15 @@ M2-Drawing-005 状态：
 - 主流程已从 TODO-036 包中移除点筋 fixture。
 - `pointStb / FaceEdge` 后续必须作为独立干净变量专项验证，不能借 TODO-036 的复杂容器骨架结论关闭。
 
+M2-Drawing-011 状态：
+
+- `E-DEV-064` 已把 `pointStb / FaceEdge` 独立包转成 AutoCAD L2 运行确认准备项。
+- 已生成 `m2_drawing_011_point_face_edge_l2_checklist.md`，记录旧样例包和 TODO-042 新包的 APPLOAD / 导入确认步骤。
+- 已记录 `FDrawingObj.dbx / FDrawing.arx`、旧样例 `Detail.xml / Detail01.stl` 和 TODO-042 新包 hash。
+- `detail_l2_fixture_probe --fixture point-face-edge` 已离线确认 `pointFaceEdge.passed=true`、`pointGroupCount=2`、`pointGeoCount=2`、`faceEdgeCount=2`、`lineFaceEdgePassed=true`、`arcFaceEdgePassed=true`。
+- 当前本机仍未发现 `acad.exe / accoreconsole.exe / AutoCAD registry`，所以 `autocadL2=not_run`。
+- 该状态不等价于旧插件接受新包，也不等价于点筋生成规则、FaceEdge 生成规则或完整工程图算法完成。
+
 ## 必须保持一致的字段
 
 这些字段后续开发时不能各算各的：

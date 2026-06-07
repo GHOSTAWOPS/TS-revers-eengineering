@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<DrawingRoot>
+    <StbTables>
+        <StbTable count="2">
+            <StbRow1 rsdID="PFE-L" ComponentName="todo037-pier" SteelWay="OTHER" diameter="20" length="0" segNum="1" sameGrpNum="1" stbNumSum="2" lenSum="0" stbLevel="HRB400" stbLayer="inside" stbProfile="default-profile" stbUse="main">
+                <StbSeg1 lenRange="0" deltaLen="0" shapeType="C">
+                    <Line start_x="4.94" start_y="-0.08" end_x="0" end_y="0"/>
+                </StbSeg1>
+            </StbRow1>
+            <StbRow2 rsdID="PFE-A" ComponentName="todo037-pier" SteelWay="OTHER" diameter="20" length="0" segNum="1" sameGrpNum="1" stbNumSum="2" lenSum="0" stbLevel="HRB400" stbLayer="inside" stbProfile="default-profile" stbUse="main">
+                <StbSeg1 lenRange="0" deltaLen="0" shapeType="C">
+                    <Line start_x="4.94" start_y="12.2694153788145" end_x="0" end_y="0"/>
+                </StbSeg1>
+            </StbRow2>
+        </StbTable>
+        <MaterialTable rowCount="1" Mass="0" Volume722="0" MassNum="0">
+            <MatRow1 diameter="20" lenSum="0" countSum="4" singleMass="0" massSum="0" stbLevel="HRB400"/>
+        </MaterialTable>
+    </StbTables>
+    <HViewPorts>
+        <ViewPort id="todo037-view-001">
+            <PartDetailDrawing num="8">
+                <General-Info CompanyName="design-company" ExportYesNo="T" ExpSteelYesNo="T" ExpSteelMark="T" DimensionChicunB="T" DimensionChicunT="F" DimensionChicunL="T" DimensionChicunR="F" DimensionPointBarB="F" DimensionPointBarT="F" DimensionPointBarL="F" DimensionPointBarR="F" DimensionLineBarB="F" DimensionLineBarT="F" DimensionLineBarL="F" DimensionLineBarR="F" DimensionLLineBarB="F" DimensionLLineBarT="F" DimensionLLineBarL="F" DimensionLLineBarR="F" DimensionBDist="15" DimensionTDist="15" DimensionLDist="15" DimensionRDist="15" Detail="" Model_FileName="todo037-model-1.step" DispCuttedSymb="T" HalfViewH="F" HalfViewW="F" BasePoint_X="0" BasePoint_Y="0" Range_Min_X="0" Range_Max_X="0" Range_Min_Y="0" Range_Max_Y="0" Range_XMLMin_X="0" Range_XMLMax_X="0" Range_XMLMin_Y="0" Range_XMLMax_Y="0" CutPlaneDirX0="0" CutPlaneDirY0="-1" CutPlaneDirZ0="0" CutPlaneDirX="0" CutPlaneDirY="-1" CutPlaneDirZ="0" TopDirX="0" TopDirY="0" TopDirZ="1" DrawingName="todo037-view-1" DrawingUnit="mm" DrawingScale="1:1" GeneralScale="todo037-general-1" DrawingType="0" LevelDrawing="0" CutPlanePosX="0" CutPlanePosY="0" CutPlanePosZ="0" DrawTaoTong="F"/>
+                <continue-line>
+                    <lines/>
+                    <circles/>
+                    <Arcs/>
+                    <Ellipses/>
+                    <EllipseArcs/>
+                    <Splines/>
+                </continue-line>
+                <hidden-line>
+                    <lines/>
+                    <circles/>
+                    <Arcs/>
+                    <Ellipses/>
+                    <EllipseArcs/>
+                    <Splines/>
+                </hidden-line>
+                <central-line>
+                    <lines/>
+                </central-line>
+                <section-line>
+                    <lines/>
+                    <circles/>
+                    <Arcs/>
+                    <Ellipses/>
+                    <EllipseArcs/>
+                    <Splines/>
+                </section-line>
+                <hatch-line>
+                    <lines/>
+                </hatch-line>
+                <Others/>
+                <steeljoint-line>
+                    <joints/>
+                </steeljoint-line>
+            </PartDetailDrawing>
+            <StbDetailDrawing>
+                <StbGroups stbGroupCount="2">
+                    <StbGroup1 rsdID="PFE-L" groupID="todo037-group-point-line-edge-001" diameter="20" diameter2="25" interval="20" barcount="2" segcount="1" stbNum="P-L" stbNumAct="2" stbLevel="HRB400" stbLayer="inside" stbProfile="default-profile" stbUse="main" RangeLess180="T" ComponentName="todo037-pier" PJSteelName="todo037-point-line-edge" SteelWay="OTHER" stbType="pointStb" stbOffsetInOut="0">
+                        <Std1 segCount="1">
+                            <StbGeo1 segID="todo037-segment-point-line-edge-001" stbSeqNum="1" shapeType="C" point_x="4.94" point_y="-0.08" point_z="0" offset_x="0" offset_y="1" offset_z="0" offset_x2="0" offset_y2="0" offset_z2="0" length="0"/>
+                        </Std1>
+                        <FaceEdge shapeType="L" start_x="4.94" start_y="0" end_x="-4.99" end_y="0"/>
+                    </StbGroup1>
+                    <StbGroup2 rsdID="PFE-A" groupID="todo037-group-point-arc-edge-001" diameter="20" diameter2="25" interval="20" barcount="2" segcount="1" stbNum="P-A" stbNumAct="2" stbLevel="HRB400" stbLayer="inside" stbProfile="default-profile" stbUse="main" RangeLess180="T" ComponentName="todo037-pier" PJSteelName="todo037-point-arc-edge" SteelWay="OTHER" stbType="pointStb" stbOffsetInOut="0">
+                        <Std1 segCount="1">
+                            <StbGeo1 segID="todo037-segment-point-arc-edge-001" stbSeqNum="1" shapeType="C" point_x="4.94" point_y="12.2694153788145" point_z="0" offset_x="-0.859628770301123" offset_y="-0.510919149445956" offset_z="0" offset_x2="0" offset_y2="0" offset_z2="0" length="0"/>
+                        </Std1>
+                        <FaceEdge shapeType="A" m_ArcDotReverse="F" start_x="4.87122969837591" start_y="12.2285418468588" middle_x="4.28372389791187" middle_y="13.0428913498069" end_x="-4.92053364269146" end_y="12.1439310957802"/>
+                    </StbGroup2>
+                </StbGroups>
+            </StbDetailDrawing>
+        </ViewPort>
+    </HViewPorts>
+</DrawingRoot>

@@ -253,6 +253,27 @@ class Phase1ReadinessGateTests(unittest.TestCase):
             self.assertIn("77_M2-Drawing-010DetailWriter线容器AutoCADL2运行确认准备P0实现记录.md",
                           report_checks[0].message)
 
+    def test_route_guardrail_requires_todo042_done_report(self):
+        tmp, root = self.make_guardrail_root()
+        with tmp:
+            (root / "todo.csv").write_text(
+                '"id","priority","phase","task","status","goal_setpoint","acceptance","boundary","evidence","dependencies","risk","notes"\n'
+                '"TODO-042","P2","M2-Drawing-011","DetailWriter pointStb / FaceEdge AutoCAD L2 confirmation preparation P0","done","","","","","","",""\n'
+                '"TODO-043","P2","M2-Drawing-012","next task","next","","","","","","",""\n',
+                encoding="utf-8",
+            )
+
+            checks = gate.collect_route_guardrail_checks(root)
+            report_checks = [check for check in checks if check.item == "done_node_reports"]
+
+            self.assertEqual(1, len(report_checks))
+            self.assertFalse(report_checks[0].ok)
+            self.assertEqual("warning", report_checks[0].severity)
+            self.assertIn("GAP-ROUTE-004", report_checks[0].gap)
+            self.assertIn("TODO-042", report_checks[0].message)
+            self.assertIn("78_M2-Drawing-011DetailWriter点筋FaceEdgeAutoCADL2运行确认准备P0实现记录.md",
+                          report_checks[0].message)
+
 
 if __name__ == "__main__":
     unittest.main()
