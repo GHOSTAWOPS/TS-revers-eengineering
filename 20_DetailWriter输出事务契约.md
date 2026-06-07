@@ -540,3 +540,60 @@ section / hidden / hatch line: not_implemented
 full drawing generation: not_complete
 golden: not_collected
 ```
+
+## M2-Drawing-003 复杂字段静态证据状态
+
+当前正式证据已补：
+
+```text
+E-DETAIL-003
+E-IDA-027
+E-DEV-056
+TODO-034 / M2-Drawing-003
+```
+
+已完成：
+
+- 从旧 `Detail01.stl` 样例确认 `PartDetailDrawing` 复杂容器：
+  - `continue-line`
+  - `hidden-line`
+  - `central-line`
+  - `section-line`
+  - `hatch-line`
+  - `Others`
+  - `steeljoint-line`
+- 确认 `continue-line / hidden-line / section-line` 具备 `lines / circles / Arcs / Ellipses / EllipseArcs / Splines` 子容器。
+- 确认 `section-line` 样例中实际出现 `LineN.start_x/start_y/end_x/end_y/ZValue` 和 `ArcN.center_x/center_y/center_z/radius/start_angle/end_angle/ZValue`。
+- 确认点筋 `StbGeo shapeType=C` 的 `point_x/y/z`、`offset_x/y/z`、`offset_x2/y2/z2` 字段。
+- 确认 `FaceEdge shapeType=L/A` 字段，其中圆弧分支含 `m_ArcDotReverse`。
+- 用 IDA MCP 复核 `FDrawing.arx`，确认 `CViewInfo / CWSNLineDim / CWSNPointDim / CWSNSteelBarTable / CWSNMaterialTable / CWSNSectionTitle` 等插件对象符号存在。
+
+后续 writer 扩展顺序：
+
+```text
+P0A: 输出复杂容器骨架
+  continue-line / hidden-line / central-line / section-line /
+  hatch-line / Others / steeljoint-line
+
+P0B: 输出 General-Info 扩展字段
+  DimensionPointBar* / DimensionLineBar* / DimensionLLineBar* /
+  Range_XML* / CutPlaneDir0* / HalfView* / DrawTaoTong
+
+P0C: 输出 pointStb / FaceEdge 字段骨架
+  point_x/y/z / offset_x2/y2/z2 / FaceEdge L/A
+
+P1: 真实剖切线 / 隐藏线 / 填充线 / 接头线算法
+  必须另走 OCCT HLR / section 能力、IDA 或旧图石运行对照。
+```
+
+仍不声明：
+
+```text
+AutoCAD L2 import: not_run
+FDrawing accepts complex skeleton: not_confirmed
+section / hidden / hatch / joint algorithm: not_implemented
+ZValue semantics: gap
+FaceEdge generation rule: gap
+full drawing generation: not_complete
+golden: not_collected
+```

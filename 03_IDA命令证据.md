@@ -1373,6 +1373,36 @@ sub_1405E49D0(object)
 - `objA / objB / createdPayload` 的业务对象名仍未完全闭合。
 - `sgroupbararc` 对应旧 UI 的 `扇形筋`、`同心圆`，还是二者共用，仍需旧图石运行确认。
 
+## TODO-034 FDrawing 插件工程图对象符号静态证据
+
+- `E-IDA-027`
+
+本轮 IDA MCP 会话：
+
+```text
+database = fdrawing_arx_todo034
+input = C:\Users\ghost\Desktop\reverse_engineering\autocad2020\FDrawing.arx
+```
+
+当前确认：
+
+- IDA MCP `idb_list` 显示 `fdrawing_arx_todo034` 为 active worker session。
+- `find_regex` 可命中旧 AutoCAD 插件侧工程图对象 / 方法符号：
+  - `CViewInfo`
+  - `CWSNLineDim`
+  - `CWSNPointDim`
+  - `CWSNSteelBarTable`
+  - `CWSNMaterialTable`
+  - `CWSNSectionTitle`
+- `CViewInfo` 可见 `GetBoxXmlMinMax / GetTopDir / GetCutPlanePos / GetCutPlaneDir / GetCutPlaneDir0 / GetGeneralScale / GetDimension*` 等视图和剖切相关方法符号。
+- `CWSNLineDim / CWSNPointDim` 可见钢筋标注、位置、bulge、explode 等插件对象方法符号。
+
+本轮不能过度推断：
+
+- 在 `FDrawing.arx` 字符串缓存里暂未把 `continue-line / hidden-line / section-line / hatch-line / steeljoint-line / FaceEdge / StbGroup / StbGeo / ZValue` 等 XML 节点名作为明文命中。
+- 因此复杂 XML 字段名的直接证据仍来自旧 `Detail01.stl` 样例，`FDrawing.arx` 只作为旧插件对象模型存在的静态补强证据。
+- 旧插件是否接受缺失 / 空复杂字段容器，仍需 AutoCAD L2 导入或进一步反编译确认。
+
 ## 待继续分析
 
 - `sub_1404DE110` 和 `sub_1404DE720` 已完成第二轮 IDA MCP 补证，公共生成链已追到 `sub_1404D10C0 -> sub_140451730 -> sub_1405D5670 -> sub_1405BD0C0 / sub_1405C7260 / sub_1405E49D0`。

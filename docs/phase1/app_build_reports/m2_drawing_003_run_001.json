@@ -1,0 +1,125 @@
+{
+  "schemaVersion": "m2-drawing-003-static-detail-fields/v1",
+  "todoId": "TODO-034",
+  "phase": "M2-Drawing-003",
+  "decision": "static-detail-complex-fields-ready",
+  "evidenceIds": [
+    "E-DETAIL-003",
+    "E-IDA-027",
+    "E-DEV-056"
+  ],
+  "sourceFiles": [
+    {
+      "path": "C:/Users/ghost/Desktop/reverse_engineering/autocad2020/Detail01.stl",
+      "sha256": "E3BB220E39F5657A38BFC6793E246208760816913520DAF9C97C3544D0421C3E",
+      "role": "old DetailNN XML sample"
+    },
+    {
+      "path": "C:/Users/ghost/Desktop/reverse_engineering/autocad2020/FDrawing.arx",
+      "sha256": "30DB8152DA1D42DE0F2550C6A4242BCC4781F8D5B649428C6DDCBF647A29D428",
+      "role": "old AutoCAD plugin static symbol source"
+    }
+  ],
+  "xmlFieldGroups": {
+    "partDetailDrawing": [
+      "General-Info",
+      "continue-line",
+      "hidden-line",
+      "central-line",
+      "section-line",
+      "hatch-line",
+      "Others",
+      "steeljoint-line"
+    ],
+    "lineContainers": [
+      "lines",
+      "circles",
+      "Arcs",
+      "Ellipses",
+      "EllipseArcs",
+      "Splines"
+    ],
+    "sectionLineLineAttributes": [
+      "start_x",
+      "start_y",
+      "end_x",
+      "end_y",
+      "ZValue"
+    ],
+    "sectionLineArcAttributes": [
+      "center_x",
+      "center_y",
+      "center_z",
+      "radius",
+      "start_angle",
+      "end_angle",
+      "ZValue"
+    ],
+    "pointStbAttributes": [
+      "point_x",
+      "point_y",
+      "point_z",
+      "offset_x",
+      "offset_y",
+      "offset_z",
+      "offset_x2",
+      "offset_y2",
+      "offset_z2"
+    ],
+    "faceEdgeLineAttributes": [
+      "shapeType",
+      "start_x",
+      "start_y",
+      "end_x",
+      "end_y"
+    ],
+    "faceEdgeArcAttributes": [
+      "shapeType",
+      "m_ArcDotReverse",
+      "start_x",
+      "start_y",
+      "middle_x",
+      "middle_y",
+      "end_x",
+      "end_y"
+    ]
+  },
+  "ida": {
+    "session": "fdrawing_arx_todo034",
+    "stringsCacheReady": true,
+    "confirmedSymbols": [
+      "CViewInfo",
+      "CWSNLineDim",
+      "CWSNPointDim",
+      "CWSNSteelBarTable",
+      "CWSNMaterialTable",
+      "CWSNSectionTitle",
+      "CWSNOptionSectionSymbolDlg",
+      "CWSNArchInfo::GetHiddenLayer",
+      "CWSNArchInfo::GetSectionSymbolTextStyle"
+    ],
+    "xmlNodeNamesNotFoundInStringCache": [
+      "DrawingRoot",
+      "PartDetailDrawing",
+      "General-Info",
+      "continue-line",
+      "hidden-line",
+      "section-line",
+      "hatch-line",
+      "steeljoint-line",
+      "FaceEdge",
+      "StbGroup",
+      "StbGeo",
+      "ZValue"
+    ]
+  },
+  "boundary": {
+    "autoCadL2Import": "not_run",
+    "detailWriterAlgorithmChange": "not_done",
+    "sectionHiddenHatchAlgorithm": "not_done",
+    "zValueSemantics": "gap",
+    "faceEdgeGenerationRule": "gap",
+    "golden": "not_collected"
+  },
+  "next": "TODO-035 / M2-Drawing-004 DetailWriter complex field skeleton P0"
+}

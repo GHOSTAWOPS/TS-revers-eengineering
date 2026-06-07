@@ -201,6 +201,52 @@ IDA 补证：
 | `Range_Min_X/Y` | `DrawingView.rangeMin` | 已确认字段存在 | 视图范围。 |
 | `Range_Max_X/Y` | `DrawingView.rangeMax` | 已确认字段存在 | 视图范围。 |
 
+M2-Drawing-003 补充：
+
+- `E-DETAIL-003` 已从旧样例补齐 `DimensionPointBarB/T/L/R`、`DimensionLineBarB/T/L/R`、`DimensionLLineBarB/T/L/R`、`Range_XMLMin_X/Y`、`Range_XMLMax_X/Y`、`CutPlaneDirX0/Y0/Z0`、`HalfViewH/W`、`DrawTaoTong` 等复杂视图字段存在性。
+- `E-IDA-027` 已确认 `FDrawing.arx` 中 `CViewInfo` 存在视图范围、剖切方向、剖切位置、上方向、比例和尺寸相关方法符号。
+- 字段默认值、写入公式和旧插件容忍度仍需 AutoCAD L2 或进一步 IDA 反编译确认。
+
+## PartDetailDrawing 复杂线容器
+
+| Detail 字段 | 新模型字段 | 状态 | 说明 |
+|---|---|---|---|
+| `continue-line` | `DrawingView.continueLineGeometry` | 样例确认容器 | 旧样例确认容器和子容器存在，多数为空；不等于算法已实现。 |
+| `hidden-line` | `DrawingView.hiddenLineGeometry` | 样例确认容器 | 旧样例确认 `lines / circles / Arcs / Ellipses / EllipseArcs / Splines` 容器存在；隐藏线算法未实现。 |
+| `central-line` | `DrawingView.centralLines` | 样例确认容器 | 当前样例仅确认 `lines` 容器。 |
+| `section-line` | `DrawingView.sectionLineGeometry` | 样例确认字段 | 样例含 Line 和 Arc 实际几何字段；剖切线算法未实现。 |
+| `hatch-line` | `DrawingView.hatchLines` | 样例确认容器 | 当前样例确认 `lines` 容器存在；填充线算法未实现。 |
+| `Others` | `DrawingView.otherDrawingGeometry` | 样例确认容器 | 样例为空，语义未闭合。 |
+| `steeljoint-line` | `DrawingView.steelJointLines` | 样例确认容器 | 当前样例确认 `joints` 容器存在；接头线生成规则未闭合。 |
+
+子字段：
+
+```text
+LineN:
+  start_x / start_y / end_x / end_y / ZValue
+
+ArcN:
+  center_x / center_y / center_z / radius / start_angle / end_angle / ZValue
+```
+
+边界：
+
+```text
+这些字段目前是 DetailWriter 复杂字段骨架输入。
+不得把容器存在写成完整剖切线、隐藏线或填充线算法完成。
+```
+
+## pointStb / FaceEdge 补充字段
+
+| Detail 字段 | 新模型字段 | 状态 | 说明 |
+|---|---|---|---|
+| `StbGeo.shapeType=C` | `RebarSegment.shapeType = Point` | 样例确认字段 | 点状钢筋表达存在；生成规则未闭合。 |
+| `point_x/y/z` | `RebarSegment.point` | 样例确认字段 | 点筋位置字段。 |
+| `offset_x/y/z` | `RebarSegment.offset` | 样例确认字段 | 偏移字段，来源未完全闭合。 |
+| `offset_x2/y2/z2` | `RebarSegment.secondaryOffset` | 样例确认字段 | 第二偏移字段，语义未闭合。 |
+| `FaceEdge shapeType=L` | `RebarGroup.faceEdgeGeometry.line` | 样例确认字段 | 面边界线段表达。 |
+| `FaceEdge shapeType=A` | `RebarGroup.faceEdgeGeometry.arc` | 样例确认字段 | 面边界圆弧表达，含 `m_ArcDotReverse`。 |
+
 ## 必须保持一致的字段
 
 这些字段后续开发时不能各算各的：

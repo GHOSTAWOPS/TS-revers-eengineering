@@ -308,3 +308,79 @@ writer 事务、字段缺省、覆盖、回滚和 AutoCAD 导入门禁见：
 - `FDrawing.arx` / `FDrawingObj.dbx` 对字段缺失的容忍度。
 - 多图纸 `Detail02`、`Detail09`、`Detail10` 命名规则。
 - 真实复杂剖切视图、隐藏线、填充线和尺寸标注的字段保真。
+
+## M2-Drawing-003 复杂字段静态证据
+
+当前已形成：
+
+```text
+E-DETAIL-003
+E-IDA-027
+E-DEV-056
+TODO-034 / M2-Drawing-003
+```
+
+旧 `Detail01.stl` 样例确认 `PartDetailDrawing` 下存在：
+
+```text
+General-Info
+continue-line
+hidden-line
+central-line
+section-line
+hatch-line
+Others
+steeljoint-line
+```
+
+复杂线容器结构：
+
+```text
+continue-line -> lines / circles / Arcs / Ellipses / EllipseArcs / Splines
+hidden-line -> lines / circles / Arcs / Ellipses / EllipseArcs / Splines
+central-line -> lines
+section-line -> lines / circles / Arcs / Ellipses / EllipseArcs / Splines
+hatch-line -> lines
+steeljoint-line -> joints
+```
+
+`section-line` 样例中实际出现：
+
+```text
+LineN:
+  start_x / start_y / end_x / end_y / ZValue
+
+ArcN:
+  center_x / center_y / center_z / radius / start_angle / end_angle / ZValue
+```
+
+点筋 / 面边界样例中实际出现：
+
+```text
+StbGeo shapeType=C:
+  point_x / point_y / point_z
+  offset_x / offset_y / offset_z
+  offset_x2 / offset_y2 / offset_z2
+
+FaceEdge shapeType=L:
+  start_x / start_y / end_x / end_y
+
+FaceEdge shapeType=A:
+  m_ArcDotReverse
+  start_x / start_y / middle_x / middle_y / end_x / end_y
+```
+
+IDA MCP 已用 `fdrawing_arx_todo034` 复核 `FDrawing.arx`：
+
+- 可见 `CViewInfo / CWSNLineDim / CWSNPointDim / CWSNSteelBarTable / CWSNMaterialTable / CWSNSectionTitle` 等旧插件对象符号。
+- 可见 `CViewInfo` 的剖切方向、剖切位置、上方向、比例和尺寸相关方法符号。
+- 暂未在该插件字符串缓存中直接命中 `continue-line / hidden-line / section-line / hatch-line / steeljoint-line / FaceEdge / StbGroup / StbGeo / ZValue` 等 XML 节点名。
+
+边界：
+
+```text
+复杂 XML 字段名 = 旧 Detail01.stl 样例直接证据
+FDrawing 对象符号 = 旧插件工程图对象模型存在的静态补强证据
+AutoCAD L2 动态导入 = 仍未运行
+section / hidden / hatch / joint 算法 = 仍未实现
+```
