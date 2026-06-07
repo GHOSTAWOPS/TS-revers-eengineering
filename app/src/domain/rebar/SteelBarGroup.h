@@ -45,6 +45,7 @@ struct SteelBarGroup
     LegacyRawBlock legacyRaw;
     GeometryReference geometryRef;
     BindingAnchor binding;
+    std::vector<RebarFaceEdgeGeometry> faceEdges;
     std::vector<UnresolvedLegacyField> unresolvedLegacyFields;
     std::vector<RebarEvidenceRef> evidence;
 };

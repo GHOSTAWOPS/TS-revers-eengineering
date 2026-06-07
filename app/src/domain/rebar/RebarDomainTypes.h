@@ -39,6 +39,41 @@ struct UnresolvedLegacyField
     std::string gapId;
 };
 
+enum class RebarFaceEdgeShape {
+    Unknown,
+    Line,
+    Arc
+};
+
+inline std::string detailFaceEdgeShapeTypeCode(RebarFaceEdgeShape shape)
+{
+    switch (shape) {
+    case RebarFaceEdgeShape::Line:
+        return "L";
+    case RebarFaceEdgeShape::Arc:
+        return "A";
+    case RebarFaceEdgeShape::Unknown:
+        return {};
+    }
+    return {};
+}
+
+struct RebarFaceEdgeGeometry
+{
+    RebarFaceEdgeShape shapeType = RebarFaceEdgeShape::Unknown;
+    DomainPoint3d startPoint;
+    DomainPoint3d middlePoint;
+    DomainPoint3d endPoint;
+    bool arcDotReverse = false;
+    std::vector<UnresolvedLegacyField> unresolvedLegacyFields;
+    std::vector<RebarEvidenceRef> evidence;
+
+    [[nodiscard]] std::string detailShapeTypeCode() const
+    {
+        return detailFaceEdgeShapeTypeCode(shapeType);
+    }
+};
+
 struct GeometryReference
 {
     std::vector<std::string> faceStableIds;

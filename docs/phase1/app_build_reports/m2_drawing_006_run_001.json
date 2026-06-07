@@ -1,0 +1,124 @@
+{
+  "schemaVersion": "app-build-report/v1",
+  "reportId": "m2_drawing_006_run_001",
+  "createdAt": "2026-06-07T13:25:00+08:00",
+  "decision": "point-face-edge-field-skeleton-l2-not-run",
+  "todoId": "TODO-037",
+  "phase": "M2-Drawing-006",
+  "scope": [
+    "DetailWriter pointStb StbGeo shapeType=C fixture",
+    "DetailWriter FaceEdge shapeType=L/A explicit field skeleton",
+    "point-face-edge independent probe package",
+    "AutoCAD executable and registry probe",
+    "FDrawing plugin file hash record",
+    "readiness done-report mapping"
+  ],
+  "evidence": [
+    "E-DETAIL-003",
+    "E-DEV-056",
+    "E-DEV-057",
+    "E-DEV-058",
+    "E-DEV-059"
+  ],
+  "probe": {
+    "path": "docs/phase1/app_build_reports/m2_drawing_006_detail_probe.json",
+    "schemaVersion": "detail-l2-fixture-probe/v1",
+    "runId": "DW-L2-TODO037-001",
+    "fixture": "point-face-edge",
+    "decision": "l0-l1-pass",
+    "l0": "passed",
+    "l1": "passed",
+    "l2": "not_run",
+    "autocadL2": "not_run",
+    "pointFaceEdge": {
+      "passed": true,
+      "scope": "pointStb StbGeo shapeType=C + FaceEdge L/A field skeleton only",
+      "pointGroupCount": 2,
+      "pointGeoCount": 2,
+      "faceEdgeCount": 2,
+      "lineFaceEdgePassed": true,
+      "arcFaceEdgePassed": true
+    },
+    "autocadEnvironment": {
+      "status": "not_found",
+      "automaticL2Possible": false
+    },
+    "fdrawingPlugin": {
+      "status": "ready",
+      "allRequiredPresent": true
+    }
+  },
+  "files": [
+    {
+      "name": "Detail.xml",
+      "bytes": 186,
+      "root": "StyleRoot",
+      "sha256": "f4927ef3f83e91c858eeead3832fbcf86f8956b2837a7df5b74de3273d46be8c"
+    },
+    {
+      "name": "Detail01.stl",
+      "bytes": 5712,
+      "root": "DrawingRoot",
+      "sha256": "89f3bd590e028a3858c045882294d3c257f2e119f1561cd9bd709cce8996ede8"
+    },
+    {
+      "name": "Detail02.stl",
+      "bytes": 5712,
+      "root": "DrawingRoot",
+      "sha256": "84782c687d049ceff11953c0743c1258f0884deab08048ad430ee5ce8fac5c90"
+    },
+    {
+      "name": "Detail03.stl",
+      "bytes": 5712,
+      "root": "DrawingRoot",
+      "sha256": "e670adc2fbfd486cbb119a6fadd81ccd04263b7f33349457f1587aafe15e90f2"
+    }
+  ],
+  "fdrawingPlugin": {
+    "FDrawingObj.dbx": "a7c8493507de802f4881c0b60db3dbbe4c5982cdf9f9c42a9c805ec2feec97b0",
+    "FDrawing.arx": "30db8152da1d42de0f2550c6a4242bcc4781f8d5b649428c6ddcbf647a29d428",
+    "oldDetailXml": "b02abeeb7b9e0ab802566fa617e0627d9883010172efd9cd50dacf940b5afeb5",
+    "oldDetail01Stl": "e3bb220e39f5657a38bfc6793e246208760816913520daf9c97c3544d0421c3e"
+  },
+  "validation": {
+    "build": "pass",
+    "detailWriterTests": "pass",
+    "pointFaceEdgeProbe": "pass",
+    "ctest": {
+      "result": "pass",
+      "passed": 17,
+      "failed": 0
+    },
+    "readinessGate": {
+      "result": "pass",
+      "decision": "M1-Formal-Ready",
+      "passed": 84,
+      "failed": 0,
+      "warnings": 0
+    },
+    "occtLeakScan": "pass-no-matches",
+    "jsonValidation": "pass",
+    "xhighReview": "allow_commit",
+    "xhighReviewSummary": {
+      "initialVerdict": "needs_fix",
+      "critical": "none",
+      "important": "fixed: closed pending review status and updated REQ-PROJ-001 / REQ-TECH-002 traceability rows to include E-DEV-059",
+      "minor": "pointFaceEdgeProbe uses global counts and can later strengthen per-StbGroup FaceEdge ownership assertions.",
+      "finalVerdict": "allow_commit",
+      "subagentLifecycle": "drawing_xhigh_reviewer completed and was closed by the main flow"
+    }
+  },
+  "boundaries": [
+    "AutoCAD L2 import is not_run",
+    "FDrawing acceptance is not confirmed",
+    "pointStb L2 acceptance is not confirmed",
+    "FaceEdge fields are explicit fixture skeleton only",
+    "FaceEdge generation rule remains a gap",
+    "No point-bar generation algorithm claim",
+    "No section, hidden, hatch, or joint drawing algorithm claim",
+    "No OCCT/AIS dependency in domain/rebar, drawing, or project protected layers",
+    "No parent rebar business migration",
+    "No golden claim"
+  ],
+  "next": "TODO-038 pending selection after TODO-037 review; do not auto-continue in this goal turn"
+}

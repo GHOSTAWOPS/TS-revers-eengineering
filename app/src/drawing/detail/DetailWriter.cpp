@@ -476,6 +476,32 @@ void writeSegmentGeo(QXmlStreamWriter& writer,
     writer.writeEndElement();
 }
 
+void writeFaceEdge(QXmlStreamWriter& writer, const RebarFaceEdgeGeometry& faceEdge)
+{
+    const QString shapeType = qstr(faceEdge.detailShapeTypeCode());
+    if (shapeType.isEmpty()) {
+        return;
+    }
+
+    writer.writeEmptyElement(QStringLiteral("FaceEdge"));
+    writer.writeAttribute(QStringLiteral("shapeType"), shapeType);
+    if (faceEdge.shapeType == RebarFaceEdgeShape::Arc) {
+        writer.writeAttribute(QStringLiteral("m_ArcDotReverse"),
+                              faceEdge.arcDotReverse ? QStringLiteral("T") : QStringLiteral("F"));
+        writer.writeAttribute(QStringLiteral("start_x"), formatNumber(faceEdge.startPoint.x));
+        writer.writeAttribute(QStringLiteral("start_y"), formatNumber(faceEdge.startPoint.y));
+        writer.writeAttribute(QStringLiteral("middle_x"), formatNumber(faceEdge.middlePoint.x));
+        writer.writeAttribute(QStringLiteral("middle_y"), formatNumber(faceEdge.middlePoint.y));
+        writer.writeAttribute(QStringLiteral("end_x"), formatNumber(faceEdge.endPoint.x));
+        writer.writeAttribute(QStringLiteral("end_y"), formatNumber(faceEdge.endPoint.y));
+    } else {
+        writer.writeAttribute(QStringLiteral("start_x"), formatNumber(faceEdge.startPoint.x));
+        writer.writeAttribute(QStringLiteral("start_y"), formatNumber(faceEdge.startPoint.y));
+        writer.writeAttribute(QStringLiteral("end_x"), formatNumber(faceEdge.endPoint.x));
+        writer.writeAttribute(QStringLiteral("end_y"), formatNumber(faceEdge.endPoint.y));
+    }
+}
+
 void writeScheduleSegment(QXmlStreamWriter& writer,
                           const SteelBarSegment& segment,
                           int sequence)
@@ -718,6 +744,11 @@ void writeDrawingXml(const QString& path,
                 writeSegmentGeo(writer, *segment, ++segmentSequence);
             }
             writer.writeEndElement();
+            if (group.rebarType == "pointStb") {
+                for (const RebarFaceEdgeGeometry& faceEdge : group.faceEdges) {
+                    writeFaceEdge(writer, faceEdge);
+                }
+            }
             writer.writeEndElement();
         }
 

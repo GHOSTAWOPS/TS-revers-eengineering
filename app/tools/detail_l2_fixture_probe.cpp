@@ -106,6 +106,120 @@ tsrebar::SteelData makeProbeSteelData()
     return steelData;
 }
 
+tsrebar::SteelData makePointFaceEdgeProbeSteelData()
+{
+    tsrebar::SteelBarSegment linePoint;
+    linePoint.segmentId = "todo037-segment-point-line-edge-001";
+    linePoint.barId = "todo037-bar-point-line-edge-001";
+    linePoint.sequenceNo = 1;
+    linePoint.shapeType = tsrebar::SteelBarSegmentShape::Point;
+    linePoint.startPoint = {4.94, -0.08, 0.0};
+    linePoint.offset = {0.0, 1.0, 0.0};
+    linePoint.evidence.push_back(evidenceRef("E-DETAIL-003", "pointStb StbGeo line FaceEdge skeleton"));
+
+    tsrebar::SteelBarSegment arcPoint;
+    arcPoint.segmentId = "todo037-segment-point-arc-edge-001";
+    arcPoint.barId = "todo037-bar-point-arc-edge-001";
+    arcPoint.sequenceNo = 1;
+    arcPoint.shapeType = tsrebar::SteelBarSegmentShape::Point;
+    arcPoint.startPoint = {4.94, 12.2694153788145, 0.0};
+    arcPoint.offset = {-0.859628770301123, -0.510919149445956, 0.0};
+    arcPoint.evidence.push_back(evidenceRef("E-DETAIL-003", "pointStb StbGeo arc FaceEdge skeleton"));
+
+    tsrebar::SteelBar lineBar;
+    lineBar.barId = "todo037-bar-point-line-edge-001";
+    lineBar.groupId = "todo037-group-point-line-edge-001";
+    lineBar.sequenceNo = 1;
+    lineBar.displayNumber = "P-L";
+    lineBar.diameter = 20.0;
+    lineBar.steelLevel = "HRB400";
+    lineBar.shapeType = "pointStb";
+    lineBar.segmentIds = {linePoint.segmentId};
+    lineBar.evidence.push_back(evidenceRef("E-DETAIL-003", "pointStb line FaceEdge sample evidence"));
+
+    tsrebar::SteelBar arcBar;
+    arcBar.barId = "todo037-bar-point-arc-edge-001";
+    arcBar.groupId = "todo037-group-point-arc-edge-001";
+    arcBar.sequenceNo = 1;
+    arcBar.displayNumber = "P-A";
+    arcBar.diameter = 20.0;
+    arcBar.steelLevel = "HRB400";
+    arcBar.shapeType = "pointStb";
+    arcBar.segmentIds = {arcPoint.segmentId};
+    arcBar.evidence.push_back(evidenceRef("E-DETAIL-003", "pointStb arc FaceEdge sample evidence"));
+
+    tsrebar::RebarFaceEdgeGeometry lineEdge;
+    lineEdge.shapeType = tsrebar::RebarFaceEdgeShape::Line;
+    lineEdge.startPoint = {4.94, 0.0, 0.0};
+    lineEdge.endPoint = {-4.99, 0.0, 0.0};
+    lineEdge.evidence.push_back(evidenceRef("E-DETAIL-003", "FaceEdge shapeType=L field skeleton"));
+    lineEdge.unresolvedLegacyFields.push_back({
+        "FaceEdge.line.generationRule",
+        "TODO-037 writes explicit fixture fields only; old generation rule remains a gap.",
+        "GAP-DRAW-002"});
+
+    tsrebar::RebarFaceEdgeGeometry arcEdge;
+    arcEdge.shapeType = tsrebar::RebarFaceEdgeShape::Arc;
+    arcEdge.arcDotReverse = false;
+    arcEdge.startPoint = {4.87122969837591, 12.2285418468588, 0.0};
+    arcEdge.middlePoint = {4.28372389791187, 13.0428913498069, 0.0};
+    arcEdge.endPoint = {-4.92053364269146, 12.1439310957802, 0.0};
+    arcEdge.evidence.push_back(evidenceRef("E-DETAIL-003", "FaceEdge shapeType=A field skeleton"));
+    arcEdge.unresolvedLegacyFields.push_back({
+        "FaceEdge.arc.generationRule",
+        "TODO-037 writes explicit fixture fields only; m_ArcDotReverse source remains a gap.",
+        "GAP-DRAW-002"});
+
+    tsrebar::SteelBarGroup lineGroup;
+    lineGroup.groupId = "todo037-group-point-line-edge-001";
+    lineGroup.rsdId = "PFE-L";
+    lineGroup.displayNumber = "P-L";
+    lineGroup.actualNumber = "2";
+    lineGroup.componentName = "todo037-pier";
+    lineGroup.projectSteelName = "todo037-point-line-edge";
+    lineGroup.createCommand = "Rebar.Create.PointGroup";
+    lineGroup.legacyCommand = "sgroupbarpoint";
+    lineGroup.steelDataId = "todo037-steel-data-point-face-edge-001";
+    lineGroup.diameter = 20.0;
+    lineGroup.secondaryDiameter = 25.0;
+    lineGroup.interval = 20.0;
+    lineGroup.barCount = 2;
+    lineGroup.segmentCount = 1;
+    lineGroup.steelLevel = "HRB400";
+    lineGroup.layer = "inside";
+    lineGroup.profile = "default-profile";
+    lineGroup.use = "main";
+    lineGroup.rangeLess180 = true;
+    lineGroup.steelWay = "OTHER";
+    lineGroup.rebarType = "pointStb";
+    lineGroup.barIds.push_back(lineBar.barId);
+    lineGroup.faceEdges.push_back(lineEdge);
+    lineGroup.evidence.push_back(evidenceRef("E-DETAIL-003", "pointStb FaceEdge line static evidence"));
+
+    tsrebar::SteelBarGroup arcGroup = lineGroup;
+    arcGroup.groupId = "todo037-group-point-arc-edge-001";
+    arcGroup.rsdId = "PFE-A";
+    arcGroup.displayNumber = "P-A";
+    arcGroup.projectSteelName = "todo037-point-arc-edge";
+    arcGroup.barIds = {arcBar.barId};
+    arcGroup.faceEdges = {arcEdge};
+    arcGroup.evidence = {evidenceRef("E-DETAIL-003", "pointStb FaceEdge arc static evidence")};
+
+    tsrebar::SteelData steelData;
+    steelData.steelDataId = "todo037-steel-data-point-face-edge-001";
+    steelData.level = "HRB400";
+    steelData.gradeName = "HRB400";
+    steelData.diameterSet.push_back(20.0);
+    steelData.evidence.push_back(evidenceRef("E-DETAIL-003", "pointStb / FaceEdge static field evidence"));
+    steelData.groups.push_back(lineGroup);
+    steelData.groups.push_back(arcGroup);
+    steelData.bars.push_back(lineBar);
+    steelData.bars.push_back(arcBar);
+    steelData.segments.push_back(linePoint);
+    steelData.segments.push_back(arcPoint);
+    return steelData;
+}
+
 QString rootName(const QString& path)
 {
     QFile file(path);
@@ -238,6 +352,15 @@ QStringList missingAttributes(const QXmlStreamAttributes& attrs, const QStringLi
     return missing;
 }
 
+QJsonObject attributesToJson(const QXmlStreamAttributes& attrs)
+{
+    QJsonObject result;
+    for (const QXmlStreamAttribute& attr : attrs) {
+        result.insert(attr.name().toString(), attr.value().toString());
+    }
+    return result;
+}
+
 QJsonObject childContainerCheck(const QString& path,
                                 const QString& parentName,
                                 const QStringList& expectedChildren)
@@ -346,6 +469,112 @@ QJsonObject complexSkeletonProbe(const QString& detailStlPath)
     result.insert(QStringLiteral("passed"), passed);
     result.insert(QStringLiteral("scope"),
                   QStringLiteral("complex containers + General-Info only; pointStb L2 is deferred"));
+    return result;
+}
+
+QJsonObject pointFaceEdgeProbe(const QString& detailStlPath)
+{
+    QJsonObject result;
+    result.insert(QStringLiteral("file"), QFileInfo(detailStlPath).absoluteFilePath());
+    result.insert(QStringLiteral("scope"),
+                  QStringLiteral("pointStb StbGeo shapeType=C + FaceEdge L/A field skeleton only"));
+
+    int pointGroupCount = 0;
+    int pointGeoCount = 0;
+    int faceEdgeCount = 0;
+    bool lineFaceEdgePassed = false;
+    bool arcFaceEdgePassed = false;
+    bool allPointGeoFieldsPresent = true;
+    QJsonArray faceEdges;
+
+    QFile file(detailStlPath);
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        result.insert(QStringLiteral("passed"), false);
+        result.insert(QStringLiteral("diagnostic"), QStringLiteral("detail file open failed"));
+        return result;
+    }
+
+    QXmlStreamReader reader(&file);
+    while (!reader.atEnd()) {
+        reader.readNext();
+        if (!reader.isStartElement()) {
+            continue;
+        }
+
+        const QString name = reader.name().toString();
+        const QXmlStreamAttributes attrs = reader.attributes();
+        if (name.startsWith(QStringLiteral("StbGroup")) &&
+            attrs.value(QStringLiteral("stbType")).toString() == QStringLiteral("pointStb")) {
+            ++pointGroupCount;
+        }
+        if (name.startsWith(QStringLiteral("StbGeo")) &&
+            attrs.value(QStringLiteral("shapeType")).toString() == QStringLiteral("C")) {
+            ++pointGeoCount;
+            const QStringList required{
+                QStringLiteral("point_x"),
+                QStringLiteral("point_y"),
+                QStringLiteral("point_z"),
+                QStringLiteral("offset_x"),
+                QStringLiteral("offset_y"),
+                QStringLiteral("offset_z"),
+                QStringLiteral("offset_x2"),
+                QStringLiteral("offset_y2"),
+                QStringLiteral("offset_z2"),
+            };
+            if (!missingAttributes(attrs, required).isEmpty()) {
+                allPointGeoFieldsPresent = false;
+            }
+        }
+        if (name == QStringLiteral("FaceEdge")) {
+            ++faceEdgeCount;
+            QJsonObject item;
+            const QString shapeType = attrs.value(QStringLiteral("shapeType")).toString();
+            item.insert(QStringLiteral("shapeType"), shapeType);
+            item.insert(QStringLiteral("attributes"), attributesToJson(attrs));
+            if (shapeType == QStringLiteral("L")) {
+                const QStringList required{
+                    QStringLiteral("start_x"),
+                    QStringLiteral("start_y"),
+                    QStringLiteral("end_x"),
+                    QStringLiteral("end_y"),
+                };
+                const QStringList missing = missingAttributes(attrs, required);
+                item.insert(QStringLiteral("missingAttributes"), toJsonArray(missing));
+                lineFaceEdgePassed = missing.isEmpty() &&
+                    !attrs.hasAttribute(QStringLiteral("middle_x")) &&
+                    !attrs.hasAttribute(QStringLiteral("m_ArcDotReverse"));
+            } else if (shapeType == QStringLiteral("A")) {
+                const QStringList required{
+                    QStringLiteral("m_ArcDotReverse"),
+                    QStringLiteral("start_x"),
+                    QStringLiteral("start_y"),
+                    QStringLiteral("middle_x"),
+                    QStringLiteral("middle_y"),
+                    QStringLiteral("end_x"),
+                    QStringLiteral("end_y"),
+                };
+                const QStringList missing = missingAttributes(attrs, required);
+                item.insert(QStringLiteral("missingAttributes"), toJsonArray(missing));
+                arcFaceEdgePassed = missing.isEmpty();
+            }
+            faceEdges.append(item);
+        }
+    }
+
+    const bool passed = pointGroupCount >= 2 &&
+        pointGeoCount >= 2 &&
+        allPointGeoFieldsPresent &&
+        faceEdgeCount == 2 &&
+        lineFaceEdgePassed &&
+        arcFaceEdgePassed;
+    result.insert(QStringLiteral("pointGroupCount"), pointGroupCount);
+    result.insert(QStringLiteral("pointGeoCount"), pointGeoCount);
+    result.insert(QStringLiteral("allPointGeoFieldsPresent"), allPointGeoFieldsPresent);
+    result.insert(QStringLiteral("faceEdgeCount"), faceEdgeCount);
+    result.insert(QStringLiteral("lineFaceEdgePassed"), lineFaceEdgePassed);
+    result.insert(QStringLiteral("arcFaceEdgePassed"), arcFaceEdgePassed);
+    result.insert(QStringLiteral("faceEdges"), faceEdges);
+    result.insert(QStringLiteral("passed"), passed);
     return result;
 }
 
@@ -487,6 +716,11 @@ int main(int argc, char* argv[])
         QStringLiteral("DetailWriter run id."),
         QStringLiteral("id"),
         QStringLiteral("DW-L2-TODO036-001"));
+    const QCommandLineOption fixtureOption(
+        QStringLiteral("fixture"),
+        QStringLiteral("Fixture to generate: complex-skeleton or point-face-edge."),
+        QStringLiteral("name"),
+        QStringLiteral("complex-skeleton"));
     const QCommandLineOption pluginDirOption(
         QStringLiteral("plugin-dir"),
         QStringLiteral("Directory containing FDrawingObj.dbx and FDrawing.arx."),
@@ -494,6 +728,7 @@ int main(int argc, char* argv[])
     parser.addOption(outputOption);
     parser.addOption(viewsOption);
     parser.addOption(runIdOption);
+    parser.addOption(fixtureOption);
     parser.addOption(pluginDirOption);
     parser.addPositionalArgument(QStringLiteral("outputDir"), QStringLiteral("Output directory fallback."));
     parser.process(app);
@@ -516,15 +751,28 @@ int main(int argc, char* argv[])
 
     tsrebar::DetailWriteOptions options;
     options.runId = parser.value(runIdOption);
-    options.drawingName = QStringLiteral("todo036-complex-skeleton-l2");
-    options.modelFileName = QStringLiteral("todo036-model.step");
+    const QString fixture = parser.value(fixtureOption);
+    if (fixture != QStringLiteral("complex-skeleton") &&
+        fixture != QStringLiteral("point-face-edge")) {
+        QTextStream(stderr) << "fixture must be complex-skeleton or point-face-edge\n";
+        return EXIT_FAILURE;
+    }
+
+    const bool pointFaceEdgeFixture = fixture == QStringLiteral("point-face-edge");
+    options.drawingName = pointFaceEdgeFixture
+        ? QStringLiteral("todo037-point-face-edge")
+        : QStringLiteral("todo036-complex-skeleton-l2");
+    options.modelFileName = pointFaceEdgeFixture
+        ? QStringLiteral("todo037-model.step")
+        : QStringLiteral("todo036-model.step");
     options.drawingUnit = QStringLiteral("m");
     options.drawingScale = QStringLiteral("1");
     for (int index = 1; index <= viewCount; ++index) {
         tsrebar::DetailDrawingViewOptions view;
-        view.viewId = QStringLiteral("todo036-view-%1").arg(index, 3, 10, QLatin1Char('0'));
-        view.drawingName = QStringLiteral("todo036-view-%1").arg(index);
-        view.modelFileName = QStringLiteral("todo036-model-%1.step").arg(index);
+        const QString prefix = pointFaceEdgeFixture ? QStringLiteral("todo037") : QStringLiteral("todo036");
+        view.viewId = QStringLiteral("%1-view-%2").arg(prefix).arg(index, 3, 10, QLatin1Char('0'));
+        view.drawingName = QStringLiteral("%1-view-%2").arg(prefix).arg(index);
+        view.modelFileName = QStringLiteral("%1-model-%2.step").arg(prefix).arg(index);
         view.drawingUnit = QStringLiteral("mm");
         view.drawingScale = QStringLiteral("1:%1").arg(index);
         view.generalScale = QStringLiteral("todo036-general-%1").arg(index);
@@ -533,11 +781,14 @@ int main(int argc, char* argv[])
 
     const tsrebar::DetailWriter writer;
     const tsrebar::DetailWriteResult result =
-        writer.writePackage(outputDir, makeProbeSteelData(), options);
+        writer.writePackage(outputDir,
+                            pointFaceEdgeFixture ? makePointFaceEdgeProbeSteelData() : makeProbeSteelData(),
+                            options);
 
     QJsonObject root;
     root.insert(QStringLiteral("schemaVersion"), QStringLiteral("detail-l2-fixture-probe/v1"));
     root.insert(QStringLiteral("runId"), options.runId);
+    root.insert(QStringLiteral("fixture"), fixture);
     root.insert(QStringLiteral("outputDir"), QFileInfo(outputDir).absoluteFilePath());
     root.insert(QStringLiteral("viewCount"), viewCount);
     root.insert(QStringLiteral("ok"), result.ok);
@@ -550,10 +801,16 @@ int main(int argc, char* argv[])
     root.insert(QStringLiteral("diagnostics"), diagnosticsToJson(result.diagnostics));
     root.insert(QStringLiteral("autocadL2"), QStringLiteral("not_run"));
     root.insert(QStringLiteral("evidence"),
-                QJsonArray{QStringLiteral("E-DEV-055"),
-                           QStringLiteral("E-DETAIL-003"),
-                           QStringLiteral("E-DEV-057"),
-                           QStringLiteral("E-DEV-058")});
+                pointFaceEdgeFixture
+                    ? QJsonArray{QStringLiteral("E-DETAIL-003"),
+                                 QStringLiteral("E-DEV-056"),
+                                 QStringLiteral("E-DEV-057"),
+                                 QStringLiteral("E-DEV-058"),
+                                 QStringLiteral("E-DEV-059")}
+                    : QJsonArray{QStringLiteral("E-DEV-055"),
+                                 QStringLiteral("E-DETAIL-003"),
+                                 QStringLiteral("E-DEV-057"),
+                                 QStringLiteral("E-DEV-058")});
     root.insert(QStringLiteral("gaps"), QJsonArray{QStringLiteral("GAP-DRAW-001"), QStringLiteral("GAP-DRAW-002")});
     root.insert(QStringLiteral("autocadEnvironment"), autocadEnvironmentProbe());
     root.insert(QStringLiteral("fdrawingPlugin"), pluginProbe(parser.value(pluginDirOption)));
@@ -561,6 +818,9 @@ int main(int argc, char* argv[])
     const QString firstDrawing = QDir(outputDir).filePath(QStringLiteral("Detail01.stl"));
     const QJsonObject complexSkeleton = complexSkeletonProbe(firstDrawing);
     root.insert(QStringLiteral("complexSkeleton"), complexSkeleton);
+    if (pointFaceEdgeFixture) {
+        root.insert(QStringLiteral("pointFaceEdge"), pointFaceEdgeProbe(firstDrawing));
+    }
 
     QJsonArray files;
     for (const auto& fileName : result.files) {
@@ -571,6 +831,11 @@ int main(int argc, char* argv[])
     QTextStream(stdout) << QString::fromUtf8(QJsonDocument(root).toJson(QJsonDocument::Indented));
     if (!result.ok) {
         return 2;
+    }
+    if (pointFaceEdgeFixture) {
+        return root.value(QStringLiteral("pointFaceEdge")).toObject().value(QStringLiteral("passed")).toBool()
+            ? EXIT_SUCCESS
+            : 4;
     }
     return complexSkeleton.value(QStringLiteral("passed")).toBool() ? EXIT_SUCCESS : 3;
 }

@@ -244,6 +244,118 @@ tsrebar::SteelData steelDataWithPointGroup()
     return steelData;
 }
 
+tsrebar::SteelData steelDataWithPointFaceEdgeGroups()
+{
+    tsrebar::SteelBarSegment pointLineEdge;
+    pointLineEdge.segmentId = "segment-point-line-edge-001";
+    pointLineEdge.barId = "bar-point-line-edge-001";
+    pointLineEdge.sequenceNo = 1;
+    pointLineEdge.shapeType = tsrebar::SteelBarSegmentShape::Point;
+    pointLineEdge.startPoint = {4.94, -0.08, 0.0};
+    pointLineEdge.offset = {0.0, 1.0, 0.0};
+    pointLineEdge.evidence.push_back({"E-DETAIL-003", "pointStb StbGeo line FaceEdge skeleton"});
+
+    tsrebar::SteelBarSegment pointArcEdge;
+    pointArcEdge.segmentId = "segment-point-arc-edge-001";
+    pointArcEdge.barId = "bar-point-arc-edge-001";
+    pointArcEdge.sequenceNo = 1;
+    pointArcEdge.shapeType = tsrebar::SteelBarSegmentShape::Point;
+    pointArcEdge.startPoint = {4.94, 12.2694153788145, 0.0};
+    pointArcEdge.offset = {-0.859628770301123, -0.510919149445956, 0.0};
+    pointArcEdge.evidence.push_back({"E-DETAIL-003", "pointStb StbGeo arc FaceEdge skeleton"});
+
+    tsrebar::SteelBar lineEdgeBar;
+    lineEdgeBar.barId = "bar-point-line-edge-001";
+    lineEdgeBar.groupId = "group-point-line-edge-001";
+    lineEdgeBar.sequenceNo = 1;
+    lineEdgeBar.displayNumber = "P-L";
+    lineEdgeBar.diameter = 20.0;
+    lineEdgeBar.steelLevel = "HRB400";
+    lineEdgeBar.shapeType = "pointStb";
+    lineEdgeBar.segmentIds = {pointLineEdge.segmentId};
+
+    tsrebar::SteelBar arcEdgeBar;
+    arcEdgeBar.barId = "bar-point-arc-edge-001";
+    arcEdgeBar.groupId = "group-point-arc-edge-001";
+    arcEdgeBar.sequenceNo = 1;
+    arcEdgeBar.displayNumber = "P-A";
+    arcEdgeBar.diameter = 20.0;
+    arcEdgeBar.steelLevel = "HRB400";
+    arcEdgeBar.shapeType = "pointStb";
+    arcEdgeBar.segmentIds = {pointArcEdge.segmentId};
+
+    tsrebar::RebarFaceEdgeGeometry lineEdge;
+    lineEdge.shapeType = tsrebar::RebarFaceEdgeShape::Line;
+    lineEdge.startPoint = {4.94, 0.0, 0.0};
+    lineEdge.endPoint = {-4.99, 0.0, 0.0};
+    lineEdge.evidence.push_back({"E-DETAIL-003", "FaceEdge shapeType=L field skeleton"});
+    lineEdge.unresolvedLegacyFields.push_back({
+        "FaceEdge.line.generationRule",
+        "TODO-037 writes explicit fixture fields only; old generation rule remains a gap.",
+        "GAP-DRAW-002"});
+
+    tsrebar::RebarFaceEdgeGeometry arcEdge;
+    arcEdge.shapeType = tsrebar::RebarFaceEdgeShape::Arc;
+    arcEdge.arcDotReverse = false;
+    arcEdge.startPoint = {4.87122969837591, 12.2285418468588, 0.0};
+    arcEdge.middlePoint = {4.28372389791187, 13.0428913498069, 0.0};
+    arcEdge.endPoint = {-4.92053364269146, 12.1439310957802, 0.0};
+    arcEdge.evidence.push_back({"E-DETAIL-003", "FaceEdge shapeType=A field skeleton"});
+    arcEdge.unresolvedLegacyFields.push_back({
+        "FaceEdge.arc.generationRule",
+        "TODO-037 writes explicit fixture fields only; m_ArcDotReverse source remains a gap.",
+        "GAP-DRAW-002"});
+
+    tsrebar::SteelBarGroup lineGroup;
+    lineGroup.groupId = "group-point-line-edge-001";
+    lineGroup.rsdId = "PFE-L";
+    lineGroup.displayNumber = "P-L";
+    lineGroup.actualNumber = "2";
+    lineGroup.componentName = "pier";
+    lineGroup.projectSteelName = "point line edge";
+    lineGroup.createCommand = "Rebar.Create.PointGroup";
+    lineGroup.legacyCommand = "sgroupbarpoint";
+    lineGroup.steelDataId = "steel-data-point-face-edge-001";
+    lineGroup.diameter = 20.0;
+    lineGroup.secondaryDiameter = 25.0;
+    lineGroup.interval = 20.0;
+    lineGroup.barCount = 2;
+    lineGroup.segmentCount = 1;
+    lineGroup.steelLevel = "HRB400";
+    lineGroup.layer = "inside";
+    lineGroup.profile = "default-profile";
+    lineGroup.use = "main";
+    lineGroup.rangeLess180 = true;
+    lineGroup.steelWay = "OTHER";
+    lineGroup.rebarType = "pointStb";
+    lineGroup.barIds.push_back(lineEdgeBar.barId);
+    lineGroup.faceEdges.push_back(lineEdge);
+    lineGroup.evidence.push_back({"E-DETAIL-003", "pointStb FaceEdge line static evidence"});
+
+    tsrebar::SteelBarGroup arcGroup = lineGroup;
+    arcGroup.groupId = "group-point-arc-edge-001";
+    arcGroup.rsdId = "PFE-A";
+    arcGroup.displayNumber = "P-A";
+    arcGroup.projectSteelName = "point arc edge";
+    arcGroup.barIds = {arcEdgeBar.barId};
+    arcGroup.faceEdges = {arcEdge};
+    arcGroup.evidence = {{"E-DETAIL-003", "pointStb FaceEdge arc static evidence"}};
+
+    tsrebar::SteelData steelData;
+    steelData.steelDataId = "steel-data-point-face-edge-001";
+    steelData.level = "HRB400";
+    steelData.gradeName = "HRB400";
+    steelData.diameterSet.push_back(20.0);
+    steelData.evidence.push_back({"E-DETAIL-003", "pointStb / FaceEdge static field evidence"});
+    steelData.groups.push_back(lineGroup);
+    steelData.groups.push_back(arcGroup);
+    steelData.bars.push_back(lineEdgeBar);
+    steelData.bars.push_back(arcEdgeBar);
+    steelData.segments.push_back(pointLineEdge);
+    steelData.segments.push_back(pointArcEdge);
+    return steelData;
+}
+
 void testDetailWriterMapsDomainRebarToDetailPackage()
 {
     QTemporaryDir temp;
@@ -410,6 +522,58 @@ void testDetailWriterWritesPointStbGeoFieldSkeleton()
     expect(geo.value("offset_z2") == "0", "point StbGeo offset_z2 default mismatch");
     expect(geo.value("start_x").isEmpty(), "point StbGeo must not emit line start_x");
     expect(geo.value("end_x").isEmpty(), "point StbGeo must not emit line end_x");
+}
+
+void testDetailWriterWritesPointStbFaceEdgeFieldSkeleton()
+{
+    QTemporaryDir temp;
+    expect(temp.isValid(), "temporary dir must be valid");
+    const QString outputDir = QDir(temp.path()).filePath("drawings");
+
+    const tsrebar::DetailWriter writer;
+    const auto result = writer.writePackage(outputDir, steelDataWithPointFaceEdgeGroups(), {});
+
+    expect(result.ok, "pointStb FaceEdge field skeleton Detail writer must succeed");
+    expect(result.l2 == "not_run", "pointStb FaceEdge skeleton must not claim AutoCAD L2");
+
+    const QString detailStl = QDir(outputDir).filePath("Detail01.stl");
+    const auto group1 = findElementAttrs(detailStl, "StbGroup1");
+    expect(group1.value("stbType") == "pointStb", "line FaceEdge point group must keep pointStb type");
+    const auto geo1 = findElementAttrs(detailStl, "StbGeo1");
+    expect(geo1.value("shapeType") == "C", "line FaceEdge point StbGeo shape must be C");
+    const auto lineFaceEdge = findElementAttrs(detailStl, "FaceEdge");
+    expect(lineFaceEdge.value("shapeType") == "L", "FaceEdge line shapeType mismatch");
+    expect(lineFaceEdge.value("start_x") == "4.94", "FaceEdge line start_x mismatch");
+    expect(lineFaceEdge.value("start_y") == "0", "FaceEdge line start_y mismatch");
+    expect(lineFaceEdge.value("end_x") == "-4.99", "FaceEdge line end_x mismatch");
+    expect(lineFaceEdge.value("end_y") == "0", "FaceEdge line end_y mismatch");
+    expect(lineFaceEdge.value("middle_x").isEmpty(), "FaceEdge line must not emit middle_x");
+    expect(lineFaceEdge.value("m_ArcDotReverse").isEmpty(), "FaceEdge line must not emit m_ArcDotReverse");
+
+    const auto group2 = findElementAttrs(detailStl, "StbGroup2");
+    expect(group2.value("stbType") == "pointStb", "arc FaceEdge point group must keep pointStb type");
+
+    int faceEdgeCount = 0;
+    bool sawArcFaceEdge = false;
+    QFile file(detailStl);
+    expect(file.open(QIODevice::ReadOnly | QIODevice::Text), "detail stl must open");
+    QXmlStreamReader reader(&file);
+    while (!reader.atEnd()) {
+        reader.readNext();
+        if (reader.isStartElement() && reader.name() == "FaceEdge") {
+            ++faceEdgeCount;
+            const auto attrs = reader.attributes();
+            if (attrs.value("shapeType") == "A") {
+                sawArcFaceEdge = true;
+                expect(attrs.value("m_ArcDotReverse") == "F", "FaceEdge arc reverse flag mismatch");
+                expect(attrs.value("start_x") == "4.87122969837591", "FaceEdge arc start_x mismatch");
+                expect(attrs.value("middle_y") == "13.0428913498069", "FaceEdge arc middle_y mismatch");
+                expect(attrs.value("end_x") == "-4.92053364269146", "FaceEdge arc end_x mismatch");
+            }
+        }
+    }
+    expect(faceEdgeCount == 2, "pointStb fixture must write one FaceEdge per group");
+    expect(sawArcFaceEdge, "pointStb fixture must write arc FaceEdge skeleton");
 }
 
 void testDetailWriterFailurePreservesExistingPackage()
@@ -612,6 +776,7 @@ int main()
     testDetailWriterMapsDomainRebarToDetailPackage();
     testDetailWriterWritesComplexPartDrawingSkeletonAndGeneralInfoDefaults();
     testDetailWriterWritesPointStbGeoFieldSkeleton();
+    testDetailWriterWritesPointStbFaceEdgeFieldSkeleton();
     testDetailWriterFailurePreservesExistingPackage();
     testDetailWriterRejectsBrokenRebarReferencesBeforeWriting();
     testDetailWriterInstallFailureRestoresExistingPackage();

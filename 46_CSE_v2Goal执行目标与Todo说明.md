@@ -930,6 +930,7 @@ Detail / 新设计文件格式输出层
 - `TODO-034 / M2-Drawing-003`：Detail复杂字段静态证据 P0，已从旧 `Detail01.stl` 样例整理 `continue-line / hidden-line / central-line / section-line / hatch-line / Others / steeljoint-line` 容器、section Line/Arc、pointStb 和 FaceEdge 字段；IDA MCP 复核 `FDrawing.arx` 中 `CViewInfo / CWSNLineDim / CWSNPointDim / CWSNSteelBarTable / CWSNMaterialTable` 等旧插件对象符号；该证据只证明静态字段和插件对象模型存在，不证明 AutoCAD L2 通过、旧插件容忍度、剖切线 / 隐藏线 / 填充线 / 接头线算法或 golden。
 - `TODO-035 / M2-Drawing-004`：DetailWriter复杂字段骨架 P0，正式 app `DetailWriter` 已输出 `PartDetailDrawing` 复杂容器骨架、`General-Info` 首批扩展默认字段和 `pointStb StbGeo shapeType=C` 字段骨架；该证据只证明字段骨架可由 writer 输出，不证明 AutoCAD L2 通过、旧插件接受新包、`CompanyName` 旧默认值、FaceEdge、ZValue、剖切线 / 隐藏线 / 填充线 / 接头线算法或 golden。
 - `TODO-036 / M2-Drawing-005`：AutoCAD L2复杂字段骨架导入验证 P0，`detail_l2_fixture_probe` 已生成 TODO-036 三图纸复杂骨架包，离线确认 `PartDetailDrawing num=8`、复杂容器和 `General-Info` 首批扩展字段；旧 `FDrawingObj.dbx / FDrawing.arx` 文件存在且 hash 已记录；当前本机未发现 `acad.exe / accoreconsole.exe` 和 AutoCAD 注册表键，所以 AutoCAD L2 自动导入未运行；xhigh 已指出并修正 pointStb L2 变量污染，本轮不声明旧插件接受、pointStb L2、FaceEdge、完整工程图或 golden。
+- `TODO-037 / M2-Drawing-006`：DetailWriter pointStb / FaceEdge 兼容字段骨架 P0，正式 app `DetailWriter` 已输出 `pointStb StbGeo shapeType=C` 和显式 `FaceEdge shapeType=L/A` 字段骨架；`detail_l2_fixture_probe --fixture point-face-edge` 已生成独立三图纸包并离线确认 `pointFaceEdge.passed=true`；当前本机未发现 `acad.exe / accoreconsole.exe` 和 AutoCAD 注册表键，所以 AutoCAD L2 自动导入仍未运行；本轮不声明旧插件接受、点筋生成算法、FaceEdge 生成规则、完整工程图或 golden。
 
 当前最新验证状态：
 
@@ -943,23 +944,24 @@ TODO-033 xhigh review = allow_commit
 TODO-034 验证 = CTest 17/17 pass, readiness 84/84 pass, OCCT leak scan pass；xhigh first review found doc-status drift and fix is applied
 TODO-035 验证 = CTest 17/17 pass, readiness 84/84 pass, OCCT leak scan pass, xhigh allow_commit
 TODO-036 验证 = complexSkeleton.passed=true, AutoCAD environment not_found, autocadL2 not_run, CTest 17/17 pass, readiness 84/84 pass, OCCT leak scan pass, xhigh needs_fix important fixed
+TODO-037 验证 = pointFaceEdge.passed=true, pointGroupCount=2, pointGeoCount=2, faceEdgeCount=2, AutoCAD environment not_found, autocadL2 not_run, CTest 17/17 pass, readiness 84/84 pass, OCCT leak scan pass, xhigh allow_commit
 ```
 
 当前下一步：
 
 ```text
-TODO-037 / M2-Drawing-006
-  -> DetailWriter pointStb / FaceEdge 兼容字段骨架 P0
-  -> 把 TODO-036 拆出的点筋和 FaceEdge 做成独立干净变量专项
+TODO-038 / M2-Drawing-007
+  -> DetailWriter section-line Line/Arc/ZValue 字段骨架 P0
+  -> 把旧 Detail section-line 中 LineN / ArcN / ZValue 做成独立干净变量专项
   -> 不进入 golden，不声明 AutoCAD L2 通过，不实现真实工程图算法
 ```
 
 原因：
 
 ```text
-TODO-036 已完成 AutoCAD L2 复杂字段骨架导入验证 P0 的包生成、离线检查和环境阻塞记录。
-当前仍未运行 AutoCAD L2，旧插件是否接受当前复杂字段骨架未确认；pointStb / FaceEdge 也不能混入同一个 L2 变量。
-下一步建议做 TODO-037，把 pointStb / FaceEdge 做成独立干净变量字段骨架专项。
+TODO-037 已完成 pointStb / FaceEdge 独立字段骨架专项。
+当前仍未运行 AutoCAD L2，旧插件是否接受当前包未确认；FaceEdge 生成规则也没有关闭。
+下一步建议做 TODO-038，把 section-line 的 Line/Arc/ZValue 样例字段做成独立字段骨架专项。
 golden 采集 TODO-026 暂按用户要求保持 pending。
 ```
 
@@ -1025,19 +1027,19 @@ golden 采集 TODO-026 暂按用户要求保持 pending。
 
 ## CSE v2 Control Contract
 
-- **Primary Setpoint**：下一轮只完成 `TODO-037 / M2-Drawing-006 DetailWriter pointStb / FaceEdge 兼容字段骨架 P0`，把 TODO-036 拆出的点筋和 FaceEdge 做成独立干净变量专项。
-- **Acceptance**：补齐 pointStb / FaceEdge 字段骨架测试和实现；生成独立 probe/report；默认 CTest、readiness gate、OCCT 泄漏检查通过；执行 xhigh 只读 review；更新实现记录、build report、追溯矩阵、缺口文档、46 和 todo。
-- **Guardrail Metrics**：不能在没有运行证据时声明 AutoCAD L2 通过；不能把 pointStb / FaceEdge 字段骨架写成真实点筋算法或 FaceEdge 生成规则已完成；不能实现或假装实现剖切线、隐藏线、填充线、接头线算法；不能改钢筋创建业务；不能迁入父目录 rebar 业务；不能进入 golden 全量采集。
-- **Sampling Plan**：先读 `todo.csv / 05 / 13 / 20 / 70 / 71 / 72 / 99`，再检查现有 `DetailWriter` pointStb 输出、FaceEdge 静态字段证据和 TODO-036 变量污染复审结论；补测试后实现字段骨架；最后运行默认 CTest、readiness gate 和 OCCT 泄漏扫描。
-- **Known Delays**：pointStb / FaceEdge 旧语义仍需 IDA 或旧图石运行确认；本轮只做字段骨架，不能把离线字段存在升级为真实算法或旧插件接受度。
-- **Recovery Target**：如果字段语义证据不足，保留 TODO-036 的复杂骨架成果，把不确定字段写入 `99`，不把推断写成确定结论。
-- **Rollback Trigger**：无运行证据声明 L2 通过；把复杂字段骨架当成完整工程图规则；无证据实现工程图算法；让 `domain/rebar` 泄漏 OCCT/AIS；测试或 gate 失败仍继续堆功能。
+- **Primary Setpoint**：下一轮只完成 `TODO-038 / M2-Drawing-007 DetailWriter section-line Line/Arc/ZValue 字段骨架 P0`，把旧 Detail 样例中的 section-line LineN / ArcN / ZValue 做成独立干净变量专项。
+- **Acceptance**：补齐 section-line Line/Arc/ZValue 字段骨架测试和实现；生成独立 probe/report；默认 CTest、readiness gate、OCCT 泄漏检查通过；执行 xhigh 只读 review；更新实现记录、build report、追溯矩阵、缺口文档、46 和 todo。
+- **Guardrail Metrics**：不能在没有运行证据时声明 AutoCAD L2 通过；不能把 section-line 字段骨架写成真实剖切算法、隐藏线算法或工程图完整算法；不能改钢筋创建业务；不能迁入父目录 rebar 业务；不能进入 golden 全量采集。
+- **Sampling Plan**：先读 `todo.csv / 05 / 13 / 20 / 70 / 73 / 99`，再检查旧样例 section-line 的 Line/Arc/ZValue 静态字段证据；补测试后实现显式 fixture 字段骨架；最后运行默认 CTest、readiness gate 和 OCCT 泄漏扫描。
+- **Known Delays**：section-line 旧生成规则、ZValue 语义和旧插件容忍度仍需 IDA 或旧图石运行确认；下一轮只做字段骨架，不能把离线字段存在升级为真实剖切算法或旧插件接受度。
+- **Recovery Target**：如果字段语义证据不足，保留 TODO-037 的 pointStb / FaceEdge 成果，把不确定字段写入 `99`，不把推断写成确定结论。
+- **Rollback Trigger**：无运行证据声明 L2 通过；把 section-line 字段骨架当成完整工程图规则；无证据实现工程图算法；让 `domain/rebar` 泄漏 OCCT/AIS；测试或 gate 失败仍继续堆功能。
 - **Constraints**：不使用 ACIS / HOOPS / Codejock 等商业库；旧逻辑不确定时优先查 IDA MCP 或旧图石运行确认；xhigh 只读，修改由主流程 agent 完成。
-- **Boundary**：下一轮只允许 DetailWriter 字段骨架、相关测试、独立 probe / 文档 / 报告 / 追溯 / 缺口 / 46 / todo；禁止修改 UI 新功能、钢筋创建业务、真实 OCCT HLR/section 算法、AutoCAD L2 结论和 golden。
-- **Coupling Notes**：`drawing/export` 是 Detail 包输出边界；`domain/rebar` 只提供字段载体；TODO-037 只补兼容字段骨架，不关闭点筋算法、FaceEdge 生成规则或完整工程图缺口。
-- **Approximation Validity**：TODO-037 只能证明 pointStb / FaceEdge 字段骨架能稳定写出和离线检查；不证明旧插件接受、不证明真实点筋生成算法，也不证明 FaceEdge 几何生成规则。
-- **Actuator Budget**：下一轮只推进 `TODO-037`。完成后停止复盘，不自动进入工程图算法实现、AutoCAD L2 或 golden。
-- **Risks**：pointStb / FaceEdge 旧语义未闭合；样式表、下料表和详图三边一致性需要单独控制；旧插件接受度仍需 AutoCAD L2 或旧图石运行确认。
+- **Boundary**：下一轮只允许 DetailWriter section-line 字段骨架、相关测试、独立 probe / 文档 / 报告 / 追溯 / 缺口 / 46 / todo；禁止修改 UI 新功能、钢筋创建业务、真实 OCCT HLR/section 算法、AutoCAD L2 结论和 golden。
+- **Coupling Notes**：`drawing/export` 是 Detail 包输出边界；TODO-038 只补兼容字段骨架，不关闭剖切线生成规则、隐藏线 / 填充线 / 接头线算法或完整工程图缺口。
+- **Approximation Validity**：TODO-038 只能证明 section-line Line/Arc/ZValue 字段骨架能稳定写出和离线检查；不证明旧插件接受、不证明真实剖切线算法，也不证明 ZValue 语义已闭合。
+- **Actuator Budget**：下一轮只推进 `TODO-038`。完成后停止复盘，不自动进入隐藏线、填充线、接头线、AutoCAD L2 或 golden。
+- **Risks**：ZValue 语义未闭合；section-line 生成规则和旧插件接受度仍需 AutoCAD L2 或旧图石运行确认；字段骨架可能被误读为算法完成，必须在报告中明确边界。
 ## Todo CSV 使用方式
 
 `todo.csv` 是后续执行看板。建议每次 goal 模式只拿 `status=next` 或最高优先级 `pending` 的任务推进。
@@ -1064,9 +1066,16 @@ golden 采集 TODO-026 暂按用户要求保持 pending。
 ```text
 TODO-037 / M2-Drawing-006
   -> DetailWriter pointStb / FaceEdge 兼容字段骨架 P0
+  -> 已完成；不声明 AutoCAD L2 通过，不进入 golden
+```
+
+下一步优先执行：
+
+```text
+TODO-038 / M2-Drawing-007
+  -> DetailWriter section-line Line/Arc/ZValue 字段骨架 P0
   -> 做独立干净变量专项；不声明 AutoCAD L2 通过，不进入 golden
 ```
 
-原因很简单：TODO-036 已证明复杂容器和 General-Info 骨架可以生成并离线检查，但 pointStb / FaceEdge 不能混进同一个 L2 变量。
-下一步做 TODO-037，把点筋和 FaceEdge 拆成独立字段骨架专项。
+原因很简单：TODO-037 已把点筋和 FaceEdge 拆成独立字段骨架专项；旧样例里 section-line 的 Line/Arc/ZValue 字段仍只有静态证据，还没有正式 writer 字段骨架。
 TODO-026 golden 采集暂按用户要求保持 pending。
