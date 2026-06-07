@@ -101,6 +101,10 @@ verdict = needs_fix
 critical = none
 important = 34 / 99 曾把 79 写成手工 L2 清单编号
 fix = 主流程已改为 TODO-044 将单独生成 Others / steeljoint-line L2 清单
+route drift = no
+AutoCAD L2 misclaim = no
+algorithm misclaim = no
+evidence consistency = pass
 post-review verification = json ok; gate unit 15/15 OK; strict readiness 84/84 pass; OCCT leak scan pass; diff check pass
 agent closed = true
 ```
