@@ -302,7 +302,7 @@ TODO-038 验证 = sectionLine.passed=true, lineCount=1, arcCount=1, autocadL2=no
 TODO-039 验证 = sectionLine.passed=true, lineCount=1, arcCount=1, AutoCAD environment not_found, autocadL2=not_run, CTest 17/17 pass, readiness 84/84 pass, OCCT leak scan pass, xhigh allow_commit
 TODO-040 验证 = lineContainers.passed=true, containerCount=4, AutoCAD environment not_found, autocadL2=not_run, CTest 17/17 pass, readiness 84/84 pass, OCCT leak scan pass, xhigh round2 allow_commit
 TODO-041 验证 = lineContainers.passed=true, containerCount=4, AutoCAD environment not_found, autocadL2=not_run, CTest 17/17 pass, readiness 84/84 pass, OCCT leak scan pass, xhigh allow_commit
-TODO-042 验证 = pointFaceEdge.passed=true, pointGroupCount=2, pointGeoCount=2, faceEdgeCount=2, AutoCAD environment not_found, autocadL2=not_run, CTest 17/17 pass, readiness 84/84 pass, OCCT leak scan pass, xhigh needs_fix important fixed
+TODO-042 验证 = pointFaceEdge.passed=true, pointGroupCount=2, pointGeoCount=2, faceEdgeCount=2, AutoCAD environment not_found, autocadL2=not_run, CTest 17/17 pass, readiness 84/84 pass, OCCT leak scan pass, xhigh allow_commit
 
 latest completed tag = m2-drawing-010/line-containers-l2-confirmation-ready
 planned tag = m2-drawing-011/point-face-edge-l2-confirmation-ready
@@ -972,7 +972,7 @@ TODO-038 验证 = sectionLine.passed=true, lineCount=1, arcCount=1, AutoCAD envi
 TODO-039 验证 = sectionLine.passed=true, lineCount=1, arcCount=1, AutoCAD environment not_found, autocadL2=not_run, CTest 17/17 pass, readiness 84/84 pass, OCCT leak scan pass, xhigh allow_commit
 TODO-040 验证 = lineContainers.passed=true, containerCount=4, AutoCAD environment not_found, autocadL2=not_run, CTest 17/17 pass, readiness 84/84 pass, OCCT leak scan pass, xhigh round2 allow_commit
 TODO-041 验证 = lineContainers.passed=true, containerCount=4, AutoCAD environment not_found, autocadL2=not_run, CTest 17/17 pass, readiness 84/84 pass, OCCT leak scan pass, xhigh allow_commit
-TODO-042 验证 = pointFaceEdge.passed=true, pointGroupCount=2, pointGeoCount=2, faceEdgeCount=2, AutoCAD environment not_found, autocadL2=not_run, CTest 17/17 pass, readiness 84/84 pass, OCCT leak scan pass, xhigh needs_fix important fixed
+TODO-042 验证 = pointFaceEdge.passed=true, pointGroupCount=2, pointGeoCount=2, faceEdgeCount=2, AutoCAD environment not_found, autocadL2=not_run, CTest 17/17 pass, readiness 84/84 pass, OCCT leak scan pass, xhigh allow_commit
 ```
 
 当前下一步：
