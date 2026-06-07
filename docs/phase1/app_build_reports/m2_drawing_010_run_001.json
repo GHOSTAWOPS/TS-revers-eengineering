@@ -1,0 +1,142 @@
+{
+  "schemaVersion": "app-build-report/v1",
+  "reportId": "m2_drawing_010_run_001",
+  "createdAt": "2026-06-07T17:35:00+08:00",
+  "decision": "line-containers-autocad-l2-ready-not-run",
+  "todoId": "TODO-041",
+  "phase": "M2-Drawing-010",
+  "scope": [
+    "line-containers AutoCAD L2 confirmation checklist",
+    "line-containers independent probe package regenerated for TODO-041",
+    "AutoCAD executable and registry probe",
+    "FDrawing plugin file hash record",
+    "readiness gate done-report mapping for TODO-041"
+  ],
+  "evidence": [
+    "E-DETAIL-003",
+    "E-DEV-056",
+    "E-DEV-061",
+    "E-DEV-062",
+    "E-DEV-063"
+  ],
+  "probe": {
+    "path": "docs/phase1/app_build_reports/m2_drawing_010_detail_probe.json",
+    "schemaVersion": "detail-l2-fixture-probe/v1",
+    "runId": "DW-L2-TODO041-001",
+    "fixture": "line-containers",
+    "decision": "l0-l1-pass",
+    "l0": "passed",
+    "l1": "passed",
+    "l2": "not_run",
+    "autocadL2": "not_run",
+    "lineContainers": {
+      "passed": true,
+      "scope": "continue-line / hidden-line / central-line / hatch-line LineN field skeleton only",
+      "containerCount": 4,
+      "containers": [
+        {
+          "parent": "continue-line",
+          "lineCount": 1,
+          "lineFieldsPassed": true
+        },
+        {
+          "parent": "hidden-line",
+          "lineCount": 1,
+          "lineFieldsPassed": true
+        },
+        {
+          "parent": "central-line",
+          "lineCount": 1,
+          "lineFieldsPassed": true
+        },
+        {
+          "parent": "hatch-line",
+          "lineCount": 1,
+          "lineFieldsPassed": true
+        }
+      ]
+    },
+    "autocadEnvironment": {
+      "status": "not_found",
+      "automaticL2Possible": false
+    },
+    "fdrawingPlugin": {
+      "status": "ready",
+      "allRequiredPresent": true
+    }
+  },
+  "files": [
+    {
+      "name": "Detail.xml",
+      "bytes": 186,
+      "root": "StyleRoot",
+      "sha256": "cbf196dbf3e68fb41486d3cd365f27fdadb394cff6a114ebe4dd020138b56e4d"
+    },
+    {
+      "name": "Detail01.stl",
+      "bytes": 5133,
+      "root": "DrawingRoot",
+      "sha256": "7a570d129125c78638f842cb9e81e1d358dccf54cc43f09ed5eebcaccda0e539"
+    },
+    {
+      "name": "Detail02.stl",
+      "bytes": 5133,
+      "root": "DrawingRoot",
+      "sha256": "c887e9d74386bbca8330e964d06fed215e9a6380fc1ec4929206999544c214f2"
+    },
+    {
+      "name": "Detail03.stl",
+      "bytes": 5133,
+      "root": "DrawingRoot",
+      "sha256": "5a398917d79513847646eab4a6b3ba9dc3ddb6a8e2491233a443c21708bee81a"
+    }
+  ],
+  "validation": {
+    "gateUnitTests": {
+      "result": "pass",
+      "redGreen": "RED failed before TODO-041 known_reports mapping; GREEN passed after mapping",
+      "tests": "13/13"
+    },
+    "lineContainersProbe": "pass",
+    "jsonValidation": "pass",
+    "ctest": {
+      "result": "pass",
+      "tests": "17/17",
+      "command": "ctest --test-dir app/build --output-on-failure"
+    },
+    "readinessGate": {
+      "result": "pass",
+      "decision": "M1-Formal-Ready",
+      "checks": "84/84",
+      "errors": 0,
+      "warnings": 0,
+      "command": "py -3 tools/phase1_readiness_gate/check_phase1_readiness.py --strict"
+    },
+    "occtLeakScan": "pass:no-matches",
+    "diffCheck": "pass",
+    "xhighReview": {
+      "verdict": "allow_commit",
+      "critical": 0,
+      "important": 0,
+      "minor": "pending fields in run report and 46 were noted and then回填 by main flow",
+      "reviewer": "xhigh_todo041_readonly_reviewer",
+      "readOnly": true,
+      "closedAfterReview": true,
+      "routeDrift": "not_found",
+      "autocadL2Misclaim": "not_found",
+      "algorithmMisclaim": "not_found"
+    }
+  },
+  "boundaries": [
+    "AutoCAD L2 import is not_run",
+    "FDrawing acceptance is not confirmed",
+    "line-containers L2 checklist is preparation only",
+    "line-container generation rules remain a gap",
+    "ZValue semantics remain a gap",
+    "No continue, hidden, central, hatch, section, or joint drawing algorithm claim",
+    "No OCCT/AIS dependency in domain/rebar, drawing, or project protected layers",
+    "No parent rebar business migration",
+    "No golden claim"
+  ],
+  "next": "TODO-042 / M2-Drawing-011 proposed as next; do not implement in this goal turn"
+}

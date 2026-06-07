@@ -268,6 +268,14 @@ M2-Drawing-009 状态：
 - `detail_l2_fixture_probe --fixture line-containers` 已生成独立三图纸包并确认 `lineContainers.passed=true`。
 - 当前只证明线容器字段骨架可输出和离线检查，不证明真实连续线 / 隐藏线 / 中心线 / 填充线算法，不证明 AutoCAD L2 或旧插件接受度。
 
+M2-Drawing-010 状态：
+
+- `E-DEV-063` 已把 `line-containers` 独立包转成 AutoCAD L2 运行确认准备项。
+- 已生成 `m2_drawing_010_line_containers_l2_checklist.md`，记录旧样例包和 TODO-041 新包的 APPLOAD / 导入确认步骤。
+- 已记录 `FDrawingObj.dbx / FDrawing.arx`、旧样例 `Detail.xml / Detail01.stl` 和 TODO-041 新包 hash。
+- 当前本机仍未发现 `acad.exe / accoreconsole.exe / AutoCAD registry`，所以 `autocadL2=not_run`。
+- 该状态不等价于旧插件接受新包，也不等价于真实连续线 / 隐藏线 / 中心线 / 填充线算法完成。
+
 ## pointStb / FaceEdge 补充字段
 
 | Detail 字段 | 新模型字段 | 状态 | 说明 |

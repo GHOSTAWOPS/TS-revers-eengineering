@@ -730,3 +730,41 @@ autocadEnvironment.status = not_found
 - 当前未实现真实连续线 / 隐藏线 / 中心线 / 填充线生成规则。
 - 当前未执行 APPLOAD，也未执行旧插件导入命令。
 - 因此不能把本轮写成 AutoCAD L2 通过或旧插件接受。
+
+## M2-Drawing-010 线容器 AutoCAD L2 运行确认准备 P0 状态
+
+当前正式证据已补：
+
+```text
+E-DEV-063
+TODO-041 / M2-Drawing-010
+```
+
+已完成：
+
+- 复用 `line-containers` 独立变量生成 TODO-041 专用三图纸 Detail 包。
+- 生成 `line-containers` AutoCAD L2 手工确认清单。
+- 记录旧样例包、新包、`FDrawingObj.dbx` 和 `FDrawing.arx` 的存在性和 hash。
+- 记录 AutoCAD 可执行文件和注册表探测结果。
+- `Phase1.ReadinessGate` 的 done-report 映射新增 `TODO-041`，防止任务 done 后缺实现记录或 build report。
+
+当前结论：
+
+```text
+decision = l0-l1-pass
+l0 = passed
+l1 = passed
+l2 = not_run
+autocadL2 = not_run
+lineContainers.passed = true
+fdrawingPlugin.status = ready
+autocadEnvironment.status = not_found
+```
+
+注意：
+
+- TODO-041 只证明 L2 运行确认材料、环境探测和阻塞记录齐备。
+- 当前未执行 APPLOAD，也未执行旧插件导入命令。
+- 当前不能声明旧插件接受 `continue-line / hidden-line / central-line / hatch-line` 字段组合。
+- 当前不能声明真实连续线 / 隐藏线 / 中心线 / 填充线生成规则已实现。
+- 当前不能声明 AutoCAD L2 通过、完整工程图或 golden。
