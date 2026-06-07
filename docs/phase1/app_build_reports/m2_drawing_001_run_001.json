@@ -1,0 +1,72 @@
+{
+  "schemaVersion": "app-build-report/v1",
+  "reportId": "m2_drawing_001_run_001",
+  "createdAt": "2026-06-07T09:31:11+08:00",
+  "decision": "m2-drawing-001-pass",
+  "todoId": "TODO-031",
+  "phase": "M2-Drawing-001",
+  "scope": [
+    "DetailWriter multi-view DetailNN output",
+    "Legacy DetailNN naming evidence",
+    "Detail package transaction cleanup",
+    "unit tests"
+  ],
+  "evidence": [
+    "E-IDA-018",
+    "E-IDA-026",
+    "E-DEV-047",
+    "E-DEV-053",
+    "E-DEV-054"
+  ],
+  "validation": {
+    "narrowBuild": "pass",
+    "narrowTest": {
+      "result": "pass",
+      "target": "detail_writer_tests"
+    },
+    "build": {
+      "result": "pass"
+    },
+    "ctest": {
+      "result": "pass",
+      "passed": 16,
+      "failed": 0
+    },
+    "readinessGate": {
+      "result": "pass",
+      "decision": "M1-Formal-Ready",
+      "passed": 84,
+      "failed": 0,
+      "warnings": 0
+    },
+    "occtLeakScan": "pass-no-matches",
+    "diffCheck": "pass",
+    "xhighReview": "allow_commit"
+  },
+  "ida": {
+    "database": "VisualTS.exe.i64",
+    "session": "visualts_i64_todo031_recheck",
+    "confirmedChain": [
+      "sub_140635A80 chooses \\\\Detail0%d.stl when viewIndex < 10",
+      "sub_140635A80 chooses \\\\Detail%d.stl when viewIndex >= 10",
+      "sub_140600AA0 creates drawing package nodes and calls sub_140635A80 per view"
+    ]
+  },
+  "boundaries": [
+    "No OCCT/AIS dependency in domain/rebar, drawing, or project protected layers",
+    "No parent rebar business migration",
+    "No full drawing generation claim",
+    "No section/hidden/hatch line claim",
+    "No AutoCAD L2 or golden claim"
+  ],
+  "xhighReview": {
+    "verdict": "allow_commit",
+    "critical": [],
+    "important": [],
+    "minor": [
+      "Input validation diagnostics still point to Detail01.stl; acceptable for this P0 slice."
+    ],
+    "firstAgentClosed": true
+  },
+  "next": "TODO-033"
+}

@@ -261,6 +261,69 @@ bool numberedNodeName(const QString& name, const QString& prefix)
     return true;
 }
 
+QString detailDrawingFileName(int oneBasedIndex)
+{
+    return oneBasedIndex < 10
+        ? QStringLiteral("Detail0%1.stl").arg(oneBasedIndex)
+        : QStringLiteral("Detail%1.stl").arg(oneBasedIndex);
+}
+
+DetailDrawingViewOptions fallbackViewOptions(const DetailWriteOptions& options,
+                                             int oneBasedIndex)
+{
+    DetailDrawingViewOptions view;
+    view.viewId = QStringLiteral("view_%1").arg(oneBasedIndex, 6, 10, QLatin1Char('0'));
+    view.drawingName = options.drawingName;
+    view.modelFileName = options.modelFileName;
+    view.drawingUnit = options.drawingUnit;
+    view.drawingScale = options.drawingScale;
+    view.generalScale = options.drawingScale;
+    return view;
+}
+
+QVector<DetailDrawingViewOptions> effectiveViews(const DetailWriteOptions& options)
+{
+    if (options.views.empty()) {
+        return {fallbackViewOptions(options, 1)};
+    }
+
+    QVector<DetailDrawingViewOptions> result;
+    result.reserve(options.views.size());
+    for (int index = 0; index < options.views.size(); ++index) {
+        DetailDrawingViewOptions view = options.views.at(index);
+        const DetailDrawingViewOptions fallback = fallbackViewOptions(options, index + 1);
+        if (view.viewId.isEmpty()) {
+            view.viewId = fallback.viewId;
+        }
+        if (view.drawingName.isEmpty()) {
+            view.drawingName = fallback.drawingName;
+        }
+        if (view.modelFileName.isEmpty()) {
+            view.modelFileName = fallback.modelFileName;
+        }
+        if (view.drawingUnit.isEmpty()) {
+            view.drawingUnit = fallback.drawingUnit;
+        }
+        if (view.drawingScale.isEmpty()) {
+            view.drawingScale = fallback.drawingScale;
+        }
+        if (view.generalScale.isEmpty()) {
+            view.generalScale = view.drawingScale;
+        }
+        result.push_back(view);
+    }
+    return result;
+}
+
+QStringList detailPackageFilesForViews(int viewCount)
+{
+    QStringList files{QStringLiteral("Detail.xml")};
+    for (int index = 1; index <= viewCount; ++index) {
+        files.append(detailDrawingFileName(index));
+    }
+    return files;
+}
+
 DetailWriteResult validateInput(const SteelData& steelData)
 {
     DetailWriteResult result;
@@ -428,7 +491,7 @@ void writeScheduleSegment(QXmlStreamWriter& writer,
 
 void writeDrawingXml(const QString& path,
                      const SteelData& steelData,
-                     const DetailWriteOptions& options)
+                     const DetailDrawingViewOptions& view)
 {
     const auto barIndex = barsById(steelData);
     const auto segmentIndex = segmentsById(steelData);
@@ -489,14 +552,14 @@ void writeDrawingXml(const QString& path,
 
         writer.writeStartElement(QStringLiteral("HViewPorts"));
         writer.writeStartElement(QStringLiteral("ViewPort"));
-        writer.writeAttribute(QStringLiteral("id"), QStringLiteral("view_000001"));
+        writer.writeAttribute(QStringLiteral("id"), view.viewId);
         writer.writeStartElement(QStringLiteral("PartDetailDrawing"));
         writer.writeStartElement(QStringLiteral("General-Info"));
-        writer.writeAttribute(QStringLiteral("Model_FileName"), options.modelFileName);
-        writer.writeAttribute(QStringLiteral("DrawingName"), options.drawingName);
-        writer.writeAttribute(QStringLiteral("DrawingUnit"), options.drawingUnit);
-        writer.writeAttribute(QStringLiteral("DrawingScale"), options.drawingScale);
-        writer.writeAttribute(QStringLiteral("GeneralScale"), options.drawingScale);
+        writer.writeAttribute(QStringLiteral("Model_FileName"), view.modelFileName);
+        writer.writeAttribute(QStringLiteral("DrawingName"), view.drawingName);
+        writer.writeAttribute(QStringLiteral("DrawingUnit"), view.drawingUnit);
+        writer.writeAttribute(QStringLiteral("DrawingScale"), view.drawingScale);
+        writer.writeAttribute(QStringLiteral("GeneralScale"), view.generalScale);
         writer.writeEndElement();
         writer.writeEndElement();
 
@@ -567,40 +630,39 @@ QString firstRootName(const QString& path)
     return {};
 }
 
-void validateL0(const QString& dir, DetailWriteResult& result)
+void validateL0(const QString& dir, const QStringList& packageFiles, DetailWriteResult& result)
 {
-    const std::map<QString, QString> expected{
-        {QStringLiteral("Detail.xml"), QStringLiteral("StyleRoot")},
-        {QStringLiteral("Detail01.stl"), QStringLiteral("DrawingRoot")},
-    };
-    for (const auto& item : expected) {
-        const QString path = QDir(dir).filePath(item.first);
+    for (const QString& fileName : packageFiles) {
+        const QString expectedRoot = fileName == QStringLiteral("Detail.xml")
+            ? QStringLiteral("StyleRoot")
+            : QStringLiteral("DrawingRoot");
+        const QString path = QDir(dir).filePath(fileName);
         if (!QFileInfo::exists(path)) {
             appendDiagnostic(result,
                              QString::fromLatin1(kRequiredFieldMissing),
-                             item.first,
+                             fileName,
                              QStringLiteral("required Detail file missing"));
             continue;
         }
         const QString root = firstRootName(path);
-        if (root != item.second) {
+        if (root != expectedRoot) {
             appendDiagnostic(result,
                              QString::fromLatin1(kXmlParseFailed),
-                             item.first,
+                             fileName,
                              QStringLiteral("root is %1, expected %2")
-                                 .arg(root, item.second));
+                                 .arg(root, expectedRoot));
         }
     }
 }
 
-void validateL1(const QString& dir, DetailWriteResult& result)
+void validateL1File(const QString& dir, const QString& fileName, DetailWriteResult& result)
 {
-    QFile file(QDir(dir).filePath(QStringLiteral("Detail01.stl")));
+    QFile file(QDir(dir).filePath(fileName));
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
         appendDiagnostic(result,
                          QString::fromLatin1(kXmlParseFailed),
-                         QStringLiteral("Detail01.stl"),
-                         QStringLiteral("cannot open generated Detail01.stl"));
+                         fileName,
+                         QStringLiteral("cannot open generated %1").arg(fileName));
         return;
     }
 
@@ -630,7 +692,7 @@ void validateL1(const QString& dir, DetailWriteResult& result)
                 if (segmentIds.count(segmentId) != 0) {
                     appendDiagnostic(result,
                                      QString::fromLatin1(kPackageValidationFailed),
-                                     QStringLiteral("Detail01.stl"),
+                                     fileName,
                                      QStringLiteral("duplicate StbGeo.segID %1").arg(segmentId));
                 }
                 segmentIds.insert(segmentId);
@@ -647,21 +709,30 @@ void validateL1(const QString& dir, DetailWriteResult& result)
     if (reader.hasError()) {
         appendDiagnostic(result,
                          QString::fromLatin1(kXmlParseFailed),
-                         QStringLiteral("Detail01.stl"),
+                         fileName,
                          reader.errorString());
     }
     if (groupRsdIds != rowRsdIds) {
         appendDiagnostic(result,
                          QString::fromLatin1(kPackageValidationFailed),
-                         QStringLiteral("Detail01.stl"),
+                         fileName,
                          QStringLiteral("StbGroup.rsdID and StbRow.rsdID mismatch"));
     }
     for (const auto& item : stdExpected) {
         if (item.second != stdActual[item.first]) {
             appendDiagnostic(result,
                              QString::fromLatin1(kPackageValidationFailed),
-                             QStringLiteral("Detail01.stl"),
+                             fileName,
                              QStringLiteral("%1 segCount mismatch").arg(item.first));
+        }
+    }
+}
+
+void validateL1(const QString& dir, const QStringList& packageFiles, DetailWriteResult& result)
+{
+    for (const QString& fileName : packageFiles) {
+        if (fileName.endsWith(QStringLiteral(".stl"))) {
+            validateL1File(dir, fileName, result);
         }
     }
 }
@@ -693,6 +764,7 @@ void removeTargetDetailFiles(const QString& outputDir)
 
 void replacePackage(const QString& outputDir,
                     const QString& candidateDir,
+                    const QStringList& packageFiles,
                     const DetailWriteOptions& options)
 {
     QDir().mkpath(outputDir);
@@ -718,7 +790,7 @@ void replacePackage(const QString& outputDir,
 
     try {
         int copiedCount = 0;
-        for (const QString& fileName : {QStringLiteral("Detail.xml"), QStringLiteral("Detail01.stl")}) {
+        for (const QString& fileName : packageFiles) {
             const QString src = QDir(candidateDir).filePath(fileName);
             const QString dst = QDir(outputDir).filePath(fileName);
             copyFileReplacing(src, dst);
@@ -729,8 +801,7 @@ void replacePackage(const QString& outputDir,
         }
 
         for (const QFileInfo& info : existing) {
-            if (info.fileName() == QStringLiteral("Detail.xml") ||
-                info.fileName() == QStringLiteral("Detail01.stl")) {
+            if (packageFiles.contains(info.fileName())) {
                 continue;
             }
             if (!QFile::remove(info.absoluteFilePath())) {
@@ -778,6 +849,8 @@ DetailWriteResult DetailWriter::writePackage(
 
     DetailWriteResult result;
     result.candidatePackagePath = slashPath(candidate);
+    const QVector<DetailDrawingViewOptions> views = effectiveViews(options);
+    const QStringList packageFiles = detailPackageFilesForViews(views.size());
     const RebarSchedule schedulePreview = RebarScheduleService{}.buildSchedule(steelData);
     if (schedulePreview.massFormulaDeferred) {
         result.warnings.append(QString::fromLatin1(kMaterialDeferred));
@@ -787,12 +860,16 @@ DetailWriteResult DetailWriter::writePackage(
         removeDirIfExists(candidate);
         QDir().mkpath(candidate);
         writeStyleXml(QDir(candidate).filePath(QStringLiteral("Detail.xml")), steelData);
-        writeDrawingXml(QDir(candidate).filePath(QStringLiteral("Detail01.stl")), steelData, options);
+        for (int index = 0; index < views.size(); ++index) {
+            writeDrawingXml(QDir(candidate).filePath(detailDrawingFileName(index + 1)),
+                            steelData,
+                            views.at(index));
+        }
 
-        validateL0(candidate, result);
+        validateL0(candidate, packageFiles, result);
         result.l0 = result.errorCodes.isEmpty() ? QStringLiteral("passed") : QStringLiteral("failed");
         if (result.errorCodes.isEmpty()) {
-            validateL1(candidate, result);
+            validateL1(candidate, packageFiles, result);
         }
         result.l1 = result.errorCodes.isEmpty() ? QStringLiteral("passed") : QStringLiteral("failed");
         if (!result.errorCodes.isEmpty()) {
@@ -803,14 +880,14 @@ DetailWriteResult DetailWriter::writePackage(
             return result;
         }
 
-        replacePackage(root, candidate, options);
+        replacePackage(root, candidate, packageFiles, options);
         removeDirIfExists(candidate);
         result.ok = true;
         result.decision = QStringLiteral("l0-l1-pass");
         result.l0 = QStringLiteral("passed");
         result.l1 = QStringLiteral("passed");
         result.l2 = QStringLiteral("not_run");
-        result.files = {QStringLiteral("Detail.xml"), QStringLiteral("Detail01.stl")};
+        result.files = packageFiles;
         result.dirtyAfter = false;
         result.oldPackagePreserved = true;
         return result;

@@ -1192,6 +1192,66 @@ singleMass 的旧材料表来源仍需继续追 material row 构造逻辑。
 Volume722 依赖旧 ACIS body mass_props；新系统 P0 不声明等价。
 ```
 
+### 工程图 DetailNN 多图纸命名补证
+
+证据 ID：
+
+```text
+E-IDA-026
+```
+
+本轮 IDA MCP 会话：
+
+```text
+session = visualts_i64_todo031_recheck
+database = VisualTS.exe.i64
+Hex-Rays = ready
+```
+
+已确认保存函数：
+
+```text
+sub_140635A80(a1, viewIndex)
+```
+
+关键反编译结论：
+
+```text
+GetTempPathA(...)
+  -> 追加 "msohtmplcllip"
+
+if viewIndex < 10:
+  format "\\Detail0%d.stl"
+else:
+  format "\\Detail%d.stl"
+```
+
+含义：
+
+```text
+Detail01.stl ... Detail09.stl 使用两位补零。
+Detail10.stl 以后使用自然数字。
+Detail100.stl 不是 Detail0100.stl。
+```
+
+与工程图主链关系：
+
+```text
+sub_140600AA0
+  -> 创建 StbTables / HViewPorts / ViewPort / PartDetailDrawing / StbDetailDrawing
+  -> 调用 sub_140609690 写 StbTable / MaterialTable
+  -> 调用 sub_14061F830 写 StbGroups
+  -> 调用 sub_140635A80(ppv, viewIndex) 保存 DetailNN.stl
+```
+
+本轮不能过度推断：
+
+```text
+E-IDA-026 只确认 DetailNN.stl 命名和保存链。
+不证明剖切线、隐藏线、填充线、标注或 AutoCAD L2 已完成。
+旧图石运行输出目录和旧插件是否接受 Detail100.stl 仍需运行确认。
+```
+
 ## 右键命令证据摘要
 
 来自已有迁移资料 `ROOT_CONTEXT_MENU_COMMANDS.csv`：

@@ -131,10 +131,17 @@ Detail99.stl
 Detail100.stl
 ```
 
-首期规则：
+IDA 已确认规则：
 
-- 1 到 99 使用两位补零。
-- 100 以后使用自然数字，不再补零。
+- `E-IDA-026` 复核 `sub_140635A80(a1, viewIndex)`：
+  - `viewIndex < 10` 使用 `\Detail0%d.stl`。
+  - `viewIndex >= 10` 使用 `\Detail%d.stl`。
+- 因此 `Detail01.stl ... Detail09.stl` 两位补零。
+- `Detail10.stl` 以后使用自然数字。
+- `Detail100.stl` 不是 `Detail0100.stl`。
+
+实现规则：
+
 - 编号按 `DrawingPackage.views[]` 顺序生成。
 - 一个 `DrawingView` 对应一个 `DetailNN.stl`。
 - 删除视图后重新生成时，允许重排 `DetailNN` 文件名，但领域模型 ID 不变。
@@ -463,6 +470,34 @@ AutoCAD L2 import: not claimed
 这只说明 Detail writer L0/L1 离线包生成、ID 交叉引用和失败回滚探针通过。
 
 它不说明 AutoCAD 2020 + 旧插件动态导入已经通过。
+
+## M2-Drawing-001 多图纸 P0 状态
+
+当前正式 app 已补：
+
+```text
+E-DEV-054
+TODO-031 / M2-Drawing-001
+```
+
+已完成：
+
+- `DetailWriteOptions.views` 支持多个 `DetailDrawingViewOptions`。
+- `views` 为空时保持旧单图纸行为，输出 `Detail01.stl`。
+- `views` 非空时按顺序输出 `Detail01.stl ... DetailNN.stl`。
+- L0 / L1 校验遍历所有生成的 `DetailNN.stl`。
+- `result.files` 返回 `Detail.xml` 和所有 `DetailNN.stl`。
+- `replacePackage` 成功后删除旧多余 `DetailNN.stl`，保留非 Detail 文件。
+- `replacePackage` 失败时恢复旧 `Detail.xml` 和旧 `DetailNN.stl`。
+
+仍不声明：
+
+```text
+AutoCAD L2 import: not_run
+剖切线 / 隐藏线 / 填充线: not_implemented
+完整工程图: not_complete
+旧插件 Detail100.stl 运行确认: not_run
+```
 
 ## 仍需关闭的缺口
 

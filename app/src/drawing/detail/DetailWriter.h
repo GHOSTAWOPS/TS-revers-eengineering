@@ -4,6 +4,7 @@
 
 #include <QString>
 #include <QStringList>
+#include <QVector>
 
 namespace tsrebar {
 
@@ -14,6 +15,16 @@ struct DetailDiagnostic
     QString message;
 };
 
+struct DetailDrawingViewOptions
+{
+    QString viewId;
+    QString drawingName;
+    QString modelFileName;
+    QString drawingUnit;
+    QString drawingScale;
+    QString generalScale;
+};
+
 struct DetailWriteOptions
 {
     QString runId = QStringLiteral("DW-RUN-001");
@@ -21,6 +32,7 @@ struct DetailWriteOptions
     QString modelFileName;
     QString drawingUnit = QStringLiteral("m");
     QString drawingScale = QStringLiteral("1");
+    QVector<DetailDrawingViewOptions> views;
     bool testInjectInstallFailureAfterFirstCopy = false;
 };
 

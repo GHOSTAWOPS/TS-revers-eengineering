@@ -25,6 +25,13 @@ QString readText(const QString& path)
     return QString::fromUtf8(file.readAll());
 }
 
+void writeText(const QString& path, const QByteArray& text)
+{
+    QFile file(path);
+    expect(file.open(QIODevice::WriteOnly | QIODevice::Text), "file must open for write");
+    file.write(text);
+}
+
 QXmlStreamAttributes findElementAttrs(const QString& path, const QString& name)
 {
     QFile file(path);
@@ -220,16 +227,8 @@ void testDetailWriterFailurePreservesExistingPackage()
     expect(QDir().mkpath(outputDir), "output dir must be created");
     const QString oldXml = QDir(outputDir).filePath("Detail.xml");
     const QString oldStl = QDir(outputDir).filePath("Detail01.stl");
-    {
-        QFile xml(oldXml);
-        expect(xml.open(QIODevice::WriteOnly | QIODevice::Text), "old Detail.xml must open");
-        xml.write("<StyleRoot><Old value=\"style\" /></StyleRoot>");
-    }
-    {
-        QFile stl(oldStl);
-        expect(stl.open(QIODevice::WriteOnly | QIODevice::Text), "old Detail01.stl must open");
-        stl.write("<DrawingRoot><Old value=\"drawing\" /></DrawingRoot>");
-    }
+    writeText(oldXml, "<StyleRoot><Old value=\"style\" /></StyleRoot>");
+    writeText(oldStl, "<DrawingRoot><Old value=\"drawing\" /></DrawingRoot>");
     const QString oldXmlText = readText(oldXml);
     const QString oldStlText = readText(oldStl);
 
@@ -287,21 +286,9 @@ void testDetailWriterInstallFailureRestoresExistingPackage()
     const QString oldXml = QDir(outputDir).filePath("Detail.xml");
     const QString oldStl = QDir(outputDir).filePath("Detail01.stl");
     const QString oldStl2 = QDir(outputDir).filePath("Detail02.stl");
-    {
-        QFile xml(oldXml);
-        expect(xml.open(QIODevice::WriteOnly | QIODevice::Text), "old Detail.xml must open");
-        xml.write("<StyleRoot><Old value=\"style\" /></StyleRoot>");
-    }
-    {
-        QFile stl(oldStl);
-        expect(stl.open(QIODevice::WriteOnly | QIODevice::Text), "old Detail01.stl must open");
-        stl.write("<DrawingRoot><Old value=\"drawing1\" /></DrawingRoot>");
-    }
-    {
-        QFile stl(oldStl2);
-        expect(stl.open(QIODevice::WriteOnly | QIODevice::Text), "old Detail02.stl must open");
-        stl.write("<DrawingRoot><Old value=\"drawing2\" /></DrawingRoot>");
-    }
+    writeText(oldXml, "<StyleRoot><Old value=\"style\" /></StyleRoot>");
+    writeText(oldStl, "<DrawingRoot><Old value=\"drawing1\" /></DrawingRoot>");
+    writeText(oldStl2, "<DrawingRoot><Old value=\"drawing2\" /></DrawingRoot>");
     const QString oldXmlText = readText(oldXml);
     const QString oldStlText = readText(oldStl);
     const QString oldStl2Text = readText(oldStl2);
@@ -322,6 +309,109 @@ void testDetailWriterInstallFailureRestoresExistingPackage()
     expect(readText(oldStl2) == oldStl2Text, "install failure must restore stale Detail02.stl");
 }
 
+void testDetailWriterWritesMultipleDetailViewsWithLegacyNames()
+{
+    QTemporaryDir temp;
+    expect(temp.isValid(), "temporary dir must be valid");
+    const QString outputDir = QDir(temp.path()).filePath("drawings");
+
+    tsrebar::DetailWriteOptions options;
+    options.runId = "DW-UNIT-MULTI-001";
+    options.drawingUnit = "m";
+    options.drawingScale = "1";
+    for (int index = 1; index <= 100; ++index) {
+        tsrebar::DetailDrawingViewOptions view;
+        view.viewId = QStringLiteral("view-%1").arg(index, 3, 10, QLatin1Char('0'));
+        view.drawingName = QStringLiteral("view-name-%1").arg(index);
+        view.modelFileName = QStringLiteral("model-%1.step").arg(index);
+        view.drawingUnit = QStringLiteral("mm");
+        view.drawingScale = QStringLiteral("1:%1").arg(index);
+        view.generalScale = QStringLiteral("general-%1").arg(index);
+        options.views.push_back(view);
+    }
+
+    const tsrebar::DetailWriter writer;
+    const auto result = writer.writePackage(outputDir, steelDataWithMixedGroup(), options);
+
+    expect(result.ok, "multi-view Detail writer must succeed");
+    expect(result.files.contains("Detail.xml"), "multi-view result must report Detail.xml");
+    expect(result.files.contains("Detail01.stl"), "multi-view result must report Detail01.stl");
+    expect(result.files.contains("Detail02.stl"), "multi-view result must report Detail02.stl");
+    expect(result.files.contains("Detail09.stl"), "multi-view result must report Detail09.stl");
+    expect(result.files.contains("Detail10.stl"), "multi-view result must report Detail10.stl");
+    expect(result.files.contains("Detail100.stl"), "multi-view result must report Detail100.stl");
+    expect(!result.files.contains("Detail010.stl"), "legacy naming must not use Detail010.stl");
+    expect(!result.files.contains("Detail0100.stl"), "legacy naming must not use Detail0100.stl");
+    expect(rootName(QDir(outputDir).filePath("Detail01.stl")) == "DrawingRoot",
+           "Detail01.stl root must be DrawingRoot");
+    expect(rootName(QDir(outputDir).filePath("Detail10.stl")) == "DrawingRoot",
+           "Detail10.stl root must be DrawingRoot");
+    expect(rootName(QDir(outputDir).filePath("Detail100.stl")) == "DrawingRoot",
+           "Detail100.stl root must be DrawingRoot");
+
+    const auto view2 = findElementAttrs(QDir(outputDir).filePath("Detail02.stl"), "ViewPort");
+    expect(view2.value("id") == "view-002", "Detail02 ViewPort id mismatch");
+    const auto info2 = findElementAttrs(QDir(outputDir).filePath("Detail02.stl"), "General-Info");
+    expect(info2.value("DrawingName") == "view-name-2",
+           "Detail02 General-Info DrawingName mismatch");
+    expect(info2.value("Model_FileName") == "model-2.step",
+           "Detail02 General-Info Model_FileName mismatch");
+    expect(info2.value("DrawingUnit") == "mm", "Detail02 DrawingUnit mismatch");
+    expect(info2.value("DrawingScale") == "1:2", "Detail02 DrawingScale mismatch");
+    expect(info2.value("GeneralScale") == "general-2", "Detail02 GeneralScale mismatch");
+
+    const auto view10 = findElementAttrs(QDir(outputDir).filePath("Detail10.stl"), "ViewPort");
+    expect(view10.value("id") == "view-010", "Detail10 ViewPort id mismatch");
+    const auto info10 = findElementAttrs(QDir(outputDir).filePath("Detail10.stl"), "General-Info");
+    expect(info10.value("DrawingName") == "view-name-10",
+           "Detail10 General-Info DrawingName mismatch");
+
+    const auto view100 = findElementAttrs(QDir(outputDir).filePath("Detail100.stl"), "ViewPort");
+    expect(view100.value("id") == "view-100", "Detail100 ViewPort id mismatch");
+    const auto info100 = findElementAttrs(QDir(outputDir).filePath("Detail100.stl"), "General-Info");
+    expect(info100.value("DrawingName") == "view-name-100",
+           "Detail100 General-Info DrawingName mismatch");
+}
+
+void testDetailWriterRemovesStaleDetailViewsOnSuccessfulInstall()
+{
+    QTemporaryDir temp;
+    expect(temp.isValid(), "temporary dir must be valid");
+    const QString outputDir = QDir(temp.path()).filePath("drawings");
+    expect(QDir().mkpath(outputDir), "output dir must be created");
+
+    writeText(QDir(outputDir).filePath("Detail.xml"),
+              "<StyleRoot><Old value=\"style\" /></StyleRoot>");
+    writeText(QDir(outputDir).filePath("Detail01.stl"),
+              "<DrawingRoot><Old value=\"drawing1\" /></DrawingRoot>");
+    writeText(QDir(outputDir).filePath("Detail02.stl"),
+              "<DrawingRoot><Old value=\"drawing2\" /></DrawingRoot>");
+    writeText(QDir(outputDir).filePath("Detail03.stl"),
+              "<DrawingRoot><Old value=\"drawing3\" /></DrawingRoot>");
+    writeText(QDir(outputDir).filePath("keep.txt"), "must stay");
+
+    tsrebar::DetailWriteOptions options;
+    for (int index = 1; index <= 2; ++index) {
+        tsrebar::DetailDrawingViewOptions view;
+        view.viewId = QStringLiteral("fresh-view-%1").arg(index);
+        view.drawingName = QStringLiteral("fresh-view-name-%1").arg(index);
+        options.views.push_back(view);
+    }
+
+    const tsrebar::DetailWriter writer;
+    const auto result = writer.writePackage(outputDir, steelDataWithMixedGroup(), options);
+
+    expect(result.ok, "stale cleanup write must succeed");
+    expect(QFile::exists(QDir(outputDir).filePath("Detail01.stl")),
+           "Detail01.stl must remain after two-view write");
+    expect(QFile::exists(QDir(outputDir).filePath("Detail02.stl")),
+           "Detail02.stl must remain after two-view write");
+    expect(!QFile::exists(QDir(outputDir).filePath("Detail03.stl")),
+           "stale Detail03.stl must be removed after successful install");
+    expect(QFile::exists(QDir(outputDir).filePath("keep.txt")),
+           "non-Detail files must be preserved");
+}
+
 } // namespace
 
 int main()
@@ -330,5 +420,7 @@ int main()
     testDetailWriterFailurePreservesExistingPackage();
     testDetailWriterRejectsBrokenRebarReferencesBeforeWriting();
     testDetailWriterInstallFailureRestoresExistingPackage();
+    testDetailWriterWritesMultipleDetailViewsWithLegacyNames();
+    testDetailWriterRemovesStaleDetailViewsOnSuccessfulInstall();
     return 0;
 }
