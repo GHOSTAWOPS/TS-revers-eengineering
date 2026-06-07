@@ -1,0 +1,326 @@
+{
+    "autocadEnvironment": {
+        "autocadExecutableFound": false,
+        "autocadRegistryFound": false,
+        "automaticL2Possible": false,
+        "executables": [
+            {
+                "found": false,
+                "name": "acad.exe",
+                "path": ""
+            },
+            {
+                "found": false,
+                "name": "accoreconsole.exe",
+                "path": ""
+            }
+        ],
+        "registry": [
+            {
+                "childGroupCount": 0,
+                "exists": false,
+                "key": "HKEY_LOCAL_MACHINE\\SOFTWARE\\Autodesk\\AutoCAD"
+            },
+            {
+                "childGroupCount": 0,
+                "exists": false,
+                "key": "HKEY_LOCAL_MACHINE\\SOFTWARE\\WOW6432Node\\Autodesk\\AutoCAD"
+            },
+            {
+                "childGroupCount": 0,
+                "exists": false,
+                "key": "HKEY_CURRENT_USER\\SOFTWARE\\Autodesk\\AutoCAD"
+            }
+        ],
+        "status": "not_found"
+    },
+    "autocadL2": "not_run",
+    "complexSkeleton": {
+        "containerChecks": [
+            {
+                "actualChildren": [
+                    "lines",
+                    "circles",
+                    "Arcs",
+                    "Ellipses",
+                    "EllipseArcs",
+                    "Splines"
+                ],
+                "missingChildren": [
+                ],
+                "parent": "continue-line",
+                "passed": true,
+                "requiredChildren": [
+                    "lines",
+                    "circles",
+                    "Arcs",
+                    "Ellipses",
+                    "EllipseArcs",
+                    "Splines"
+                ]
+            },
+            {
+                "actualChildren": [
+                    "lines",
+                    "circles",
+                    "Arcs",
+                    "Ellipses",
+                    "EllipseArcs",
+                    "Splines"
+                ],
+                "missingChildren": [
+                ],
+                "parent": "hidden-line",
+                "passed": true,
+                "requiredChildren": [
+                    "lines",
+                    "circles",
+                    "Arcs",
+                    "Ellipses",
+                    "EllipseArcs",
+                    "Splines"
+                ]
+            },
+            {
+                "actualChildren": [
+                    "lines"
+                ],
+                "missingChildren": [
+                ],
+                "parent": "central-line",
+                "passed": true,
+                "requiredChildren": [
+                    "lines"
+                ]
+            },
+            {
+                "actualChildren": [
+                    "lines",
+                    "circles",
+                    "Arcs",
+                    "Ellipses",
+                    "EllipseArcs",
+                    "Splines"
+                ],
+                "missingChildren": [
+                ],
+                "parent": "section-line",
+                "passed": true,
+                "requiredChildren": [
+                    "lines",
+                    "circles",
+                    "Arcs",
+                    "Ellipses",
+                    "EllipseArcs",
+                    "Splines"
+                ]
+            },
+            {
+                "actualChildren": [
+                    "lines"
+                ],
+                "missingChildren": [
+                ],
+                "parent": "hatch-line",
+                "passed": true,
+                "requiredChildren": [
+                    "lines"
+                ]
+            },
+            {
+                "actualChildren": [
+                    "joints"
+                ],
+                "missingChildren": [
+                ],
+                "parent": "steeljoint-line",
+                "passed": true,
+                "requiredChildren": [
+                    "joints"
+                ]
+            }
+        ],
+        "file": "C:/Users/ghost/Desktop/reverse_engineering/【03】图石软件/【图石钢筋1比1复刻】/docs/phase1/app_build_reports/m2_drawing_013_detail_package/Detail01.stl",
+        "generalInfo": {
+            "CompanyName": "design-company",
+            "DrawingName": "todo043-view-1",
+            "DrawingScale": "1:1",
+            "DrawingUnit": "mm",
+            "missingAttributes": [
+            ],
+            "passed": true,
+            "requiredAttributes": [
+                "CompanyName",
+                "ExportYesNo",
+                "ExpSteelYesNo",
+                "ExpSteelMark",
+                "DimensionChicunB",
+                "DimensionPointBarB",
+                "DimensionLineBarB",
+                "DimensionLLineBarB",
+                "DimensionBDist",
+                "DispCuttedSymb",
+                "HalfViewH",
+                "HalfViewW",
+                "Range_XMLMin_X",
+                "Range_XMLMax_Y",
+                "CutPlaneDirX0",
+                "CutPlaneDirY0",
+                "CutPlaneDirZ0",
+                "TopDirZ",
+                "DrawingType",
+                "LevelDrawing",
+                "DrawTaoTong"
+            ]
+        },
+        "partDetailDrawingActualChildren": [
+            "General-Info",
+            "continue-line",
+            "hidden-line",
+            "central-line",
+            "section-line",
+            "hatch-line",
+            "Others",
+            "steeljoint-line"
+        ],
+        "partDetailDrawingMissingChildren": [
+        ],
+        "partDetailDrawingNum": "8",
+        "partDetailDrawingRequiredChildren": [
+            "General-Info",
+            "continue-line",
+            "hidden-line",
+            "central-line",
+            "section-line",
+            "hatch-line",
+            "Others",
+            "steeljoint-line"
+        ],
+        "passed": true,
+        "scope": "complex containers + General-Info only; pointStb L2 is deferred"
+    },
+    "decision": "l0-l1-pass",
+    "diagnostics": [
+    ],
+    "errorCodes": [
+    ],
+    "evidence": [
+        "E-DETAIL-003",
+        "E-DEV-056",
+        "E-DEV-065"
+    ],
+    "fdrawingPlugin": {
+        "allRequiredPresent": true,
+        "files": [
+            {
+                "bytes": 2180608,
+                "exists": true,
+                "name": "FDrawingObj.dbx",
+                "path": "C:/Users/ghost/Desktop/reverse_engineering/autocad2020/FDrawingObj.dbx",
+                "root": "missing",
+                "sha256": "a7c8493507de802f4881c0b60db3dbbe4c5982cdf9f9c42a9c805ec2feec97b0"
+            },
+            {
+                "bytes": 8455168,
+                "exists": true,
+                "name": "FDrawing.arx",
+                "path": "C:/Users/ghost/Desktop/reverse_engineering/autocad2020/FDrawing.arx",
+                "root": "missing",
+                "sha256": "30db8152da1d42de0f2550c6a4242bcc4781f8d5b649428c6ddcbf647a29d428"
+            },
+            {
+                "bytes": 1333,
+                "exists": true,
+                "name": "old-sample/Detail.xml",
+                "path": "C:/Users/ghost/Desktop/reverse_engineering/autocad2020/Detail.xml",
+                "root": "StyleRoot",
+                "sha256": "b02abeeb7b9e0ab802566fa617e0627d9883010172efd9cd50dacf940b5afeb5"
+            },
+            {
+                "bytes": 18041,
+                "exists": true,
+                "name": "old-sample/Detail01.stl",
+                "path": "C:/Users/ghost/Desktop/reverse_engineering/autocad2020/Detail01.stl",
+                "root": "DrawingRoot",
+                "sha256": "e3bb220e39f5657a38bfc6793e246208760816913520daf9c97c3544d0421c3e"
+            }
+        ],
+        "pluginDir": "C:\\Users\\ghost\\Desktop\\reverse_engineering\\autocad2020",
+        "status": "ready"
+    },
+    "files": [
+        {
+            "bytes": 186,
+            "exists": true,
+            "name": "Detail.xml",
+            "path": "C:/Users/ghost/Desktop/reverse_engineering/【03】图石软件/【图石钢筋1比1复刻】/docs/phase1/app_build_reports/m2_drawing_013_detail_package/Detail.xml",
+            "root": "StyleRoot",
+            "sha256": "cbf196dbf3e68fb41486d3cd365f27fdadb394cff6a114ebe4dd020138b56e4d"
+        },
+        {
+            "bytes": 4624,
+            "exists": true,
+            "name": "Detail01.stl",
+            "path": "C:/Users/ghost/Desktop/reverse_engineering/【03】图石软件/【图石钢筋1比1复刻】/docs/phase1/app_build_reports/m2_drawing_013_detail_package/Detail01.stl",
+            "root": "DrawingRoot",
+            "sha256": "7e25983036b3150021f42ba47c608340b4ba868a42e88931140105bd061f484a"
+        },
+        {
+            "bytes": 4624,
+            "exists": true,
+            "name": "Detail02.stl",
+            "path": "C:/Users/ghost/Desktop/reverse_engineering/【03】图石软件/【图石钢筋1比1复刻】/docs/phase1/app_build_reports/m2_drawing_013_detail_package/Detail02.stl",
+            "root": "DrawingRoot",
+            "sha256": "d54fbdce40da3487fe524bd028a1c149cb121631b09e37f488a10cf2768a116d"
+        },
+        {
+            "bytes": 4624,
+            "exists": true,
+            "name": "Detail03.stl",
+            "path": "C:/Users/ghost/Desktop/reverse_engineering/【03】图石软件/【图石钢筋1比1复刻】/docs/phase1/app_build_reports/m2_drawing_013_detail_package/Detail03.stl",
+            "root": "DrawingRoot",
+            "sha256": "f2964b47a639f1234158917ef9b29109f99bb9bc997196f8aa6192b6dc4af993"
+        }
+    ],
+    "fixture": "others-steeljoint",
+    "gaps": [
+        "GAP-DRAW-001",
+        "GAP-DRAW-002"
+    ],
+    "l0": "passed",
+    "l1": "passed",
+    "l2": "not_run",
+    "ok": true,
+    "othersSteeljoint": {
+        "algorithmImplemented": false,
+        "autocadL2Claimed": false,
+        "file": "C:/Users/ghost/Desktop/reverse_engineering/【03】图石软件/【图石钢筋1比1复刻】/docs/phase1/app_build_reports/m2_drawing_013_detail_package/Detail01.stl",
+        "others": {
+            "actualChildren": [
+            ],
+            "expectedEmpty": true,
+            "passed": true,
+            "present": true
+        },
+        "passed": true,
+        "scope": "Others empty container + steeljoint-line/joints container skeleton only",
+        "steeljointLine": {
+            "actualChildren": [
+                "joints"
+            ],
+            "jointsPresent": true,
+            "passed": true,
+            "present": true,
+            "requiredChildren": [
+                "joints"
+            ]
+        }
+    },
+    "outputDir": "C:/Users/ghost/Desktop/reverse_engineering/【03】图石软件/【图石钢筋1比1复刻】/docs/phase1/app_build_reports/m2_drawing_013_detail_package",
+    "runId": "DW-L2-TODO044-001",
+    "schemaVersion": "detail-l2-fixture-probe/v1",
+    "viewCount": 3,
+    "warnings": [
+        "DW-WARN-MATERIAL_MASS_FORMULA_DEFERRED"
+    ]
+}

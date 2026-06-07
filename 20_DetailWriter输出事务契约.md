@@ -855,3 +855,49 @@ autocadEnvironment.status = not_found
 - 当前不能声明旧插件接受 `Others / steeljoint-line` 字段组合。
 - 当前不能声明真实接头线算法或 Others 几何算法已实现。
 - 当前不能声明 AutoCAD L2 通过、完整工程图或 golden。
+
+## M2-Drawing-013 Others / steeljoint-line AutoCAD L2 运行确认准备 P0 状态
+
+当前正式证据已补：
+
+```text
+E-DEV-066
+TODO-044 / M2-Drawing-013
+```
+
+已完成：
+
+- 复用 `detail_l2_fixture_probe --fixture others-steeljoint` 生成 TODO-044 三图纸包。
+- 生成 `Others / steeljoint-line` AutoCAD L2 手工确认清单。
+- 记录 `FDrawingObj.dbx / FDrawing.arx` hash。
+- 记录旧样例包 hash 和 TODO-044 新包 hash。
+- 记录 AutoCAD 环境探测：`acad.exe / accoreconsole.exe / AutoCAD registry` 均未发现。
+- `Phase1.ReadinessGate` 的 done-report 映射新增 `TODO-044`，防止任务 done 后缺实现记录或 build report。
+
+当前结论：
+
+```text
+decision = others-steeljoint-autocad-l2-ready-not-run
+probe.decision = l0-l1-pass
+l0 = passed
+l1 = passed
+l2 = not_run
+autocadL2 = not_run
+othersSteeljoint.passed = true
+others.present = true
+others.actualChildren = 0
+steeljointLine.present = true
+steeljointLine.jointsPresent = true
+algorithmImplemented = false
+autocadL2Claimed = false
+fdrawingPlugin.status = ready
+autocadEnvironment.status = not_found
+```
+
+注意：
+
+- TODO-044 只证明 L2 运行确认材料、环境探测和阻塞记录齐备。
+- 当前未执行 APPLOAD，也未执行旧插件导入命令。
+- 当前不能声明旧插件接受 `Others / steeljoint-line` 字段组合。
+- 当前不能声明真实接头线算法或 Others 几何算法已实现。
+- 当前不能声明 AutoCAD L2 通过、完整工程图或 golden。
