@@ -188,6 +188,7 @@ def done_node_report_requirements(root: Path, rows: list[dict[str, str]]) -> tup
         "TODO-042": ("78_M2-Drawing-011DetailWriter点筋FaceEdgeAutoCADL2运行确认准备P0实现记录.md", "docs/phase1/app_build_reports/m2_drawing_011_run_001.md"),
         "TODO-043": ("79_M2-Drawing-012DetailWriterOthersSteeljoint字段骨架P0实现记录.md", "docs/phase1/app_build_reports/m2_drawing_012_run_001.md"),
         "TODO-044": ("80_M2-Drawing-013DetailWriterOthersSteeljointAutoCADL2运行确认准备P0实现记录.md", "docs/phase1/app_build_reports/m2_drawing_013_run_001.md"),
+        "TODO-045": ("81_M2-Drawing-014真实接头线Others几何算法证据补齐P0实现记录.md", "docs/phase1/app_build_reports/m2_drawing_014_run_001.md"),
     }
     missing: list[str] = []
     checked: list[str] = []

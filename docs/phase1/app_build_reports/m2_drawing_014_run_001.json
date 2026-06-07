@@ -1,0 +1,153 @@
+{
+  "schemaVersion": "app-build-report/v1",
+  "reportId": "m2_drawing_014_run_001",
+  "createdAt": "2026-06-07T22:07:04+08:00",
+  "decision": "evidence-gap-recorded",
+  "todoId": "TODO-045",
+  "phase": "M2-Drawing-014",
+  "scope": [
+    "real joint-line and Others geometry evidence audit",
+    "IDA MCP E-IDA-028 joint and Others writer-chain evidence",
+    "IDA MCP session reopen and recheck",
+    "old Tushi runtime confirmation checklist",
+    "no algorithm implementation"
+  ],
+  "evidence": [
+    "E-DETAIL-003",
+    "E-IDA-027",
+    "E-IDA-028",
+    "E-DEV-065",
+    "E-DEV-066",
+    "E-DEV-067"
+  ],
+  "idaMcp": {
+    "status": "reopened_and_rechecked",
+    "probeBeforeOpen": {
+      "idbListCount": 0,
+      "serverHealth": "Session not found: visualts_i64_todo045"
+    },
+    "reopenResult": {
+      "success": true,
+      "sessionId": "visualts_i64_todo045",
+      "hexRaysReady": true,
+      "surveyBinary": {
+        "totalFunctions": 17182,
+        "totalStrings": 16320
+      }
+    },
+    "recordedEvidence": {
+      "database": "visualts_i64_todo045",
+      "hexRays": "ready",
+      "jointCommands": {
+        "barjointnew": "sub_1405DFAA0",
+        "barjointclear": "sub_1405DF710",
+        "barjointmove": "sub_1405DFEF0",
+        "barjointrev": "sub_1405E02D0",
+        "groupjointnew": "sub_1405F0060",
+        "groupjointclear": "sub_1405EFCC0"
+      },
+      "steeljointLineWriterChain": [
+        "sub_14061F970",
+        "sub_1406107F0",
+        "sub_1405398F0"
+      ],
+      "jointsLineFields": [
+        "start_x",
+        "start_y",
+        "end_x",
+        "end_y",
+        "ZValue"
+      ],
+      "othersWriterChain": [
+        "sub_14061F970",
+        "sub_14053A3F0"
+      ],
+      "symbolCutIosFields": [
+        "center_x",
+        "center_y",
+        "center_z",
+        "code"
+      ],
+      "extraGeometryWriterBranch": [
+        "sub_14061F970",
+        "sub_14053A6B0"
+      ],
+      "flagsGetter": "sub_140610AA0 -> *(uint16 *)(context + 232)",
+      "recheckedHandlers": [
+        "sub_1405DFAA0",
+        "sub_1405DF710",
+        "sub_1405DFEF0",
+        "sub_1405E02D0"
+      ]
+    },
+    "activeSession": {
+      "visualTsWorkerActive": true,
+      "sessionId": "visualts_i64_todo045",
+      "sessionIdEmpty": false,
+      "isAnalyzing": false,
+      "inputPath": "C:/Users/ghost/Desktop/reverse_engineering/\u301003\u3011\u56fe\u77f3\u8f6f\u4ef6/VisualTS.exe.i64"
+    },
+    "recheckedFunctions": [
+      "sub_14061F970",
+      "sub_1406107F0",
+      "sub_1405398F0",
+      "sub_14053A3F0",
+      "sub_14053A6B0",
+      "sub_140610AA0",
+      "sub_1405DFAA0",
+      "sub_1405DF710",
+      "sub_1405DFEF0",
+      "sub_1405E02D0"
+    ],
+    "canDecompile": true,
+    "canQueryXrefs": true
+  },
+  "confirmedFacts": {
+    "othersContainerPresent": true,
+    "othersCurrentSampleChildCount": 0,
+    "steeljointLinePresent": true,
+    "jointsContainerPresent": true,
+    "knownJointCommandStrings": [
+      "barjointnew",
+      "barjointclear",
+      "barjointmove",
+      "barjointrev"
+    ],
+    "jointCommandHandlersPartiallyConfirmed": true,
+    "jointsLineSchemaConfirmed": true,
+    "othersSymbolCutIosSchemaConfirmed": true,
+    "idaMcpSessionActive": true
+  },
+  "unconfirmedFacts": [
+    "JointDistbet JointWeldLength JointRuler binding",
+    "pattern + 192 == 76 business enum name",
+    "pattern and point-node structure names",
+    "extra api_curve_arc_center_edge branch output conditions",
+    "Others symbolcutIOS runtime trigger path",
+    "AutoCAD L2 acceptance"
+  ],
+  "validation": {
+    "gateUnitTests": "17/17 pass",
+    "ctest": "18/18 pass",
+    "readinessGate": "M1-Formal-Ready, 84/84 pass",
+    "occtLeakScan": "pass: domain/rebar + drawing + project boundary checks ok",
+    "diffCheck": "pass with CRLF normalization warnings only",
+    "xhighReview": {
+      "verdict": "needs_fix_important_fixed",
+      "readOnly": true,
+      "closedAfterReview": true,
+      "agentId": "019ea286-8ffa-7141-9ed5-a753d2cfb898"
+    }
+  },
+  "boundaries": [
+    "Real joint-line algorithm is not implemented",
+    "Real Others geometry algorithm is not implemented",
+    "AutoCAD L2 import is not_run",
+    "FDrawing acceptance is not confirmed",
+    "No complete drawing algorithm claim",
+    "No golden claim",
+    "No parent rebar business migration",
+    "No OCCT-driven steelbar business implementation"
+  ],
+  "next": "Execute TODO-046 to continue IDA MCP parameter-binding analysis or old Tushi runtime confirmation before implementing joint-line or Others algorithms"
+}

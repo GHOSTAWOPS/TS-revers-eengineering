@@ -901,3 +901,37 @@ autocadEnvironment.status = not_found
 - 当前不能声明旧插件接受 `Others / steeljoint-line` 字段组合。
 - 当前不能声明真实接头线算法或 Others 几何算法已实现。
 - 当前不能声明 AutoCAD L2 通过、完整工程图或 golden。
+
+## M2-Drawing-014 真实接头线 / Others 生成规则证据补齐 P0 状态
+
+当前正式证据已补：
+
+```text
+E-IDA-028
+E-DEV-067
+TODO-045 / M2-Drawing-014
+```
+
+已确认：
+
+- 旧 VisualTS 接头命令 `barjointnew / barjointclear / barjointmove / barjointrev` 已追到 handler。
+- 接头对象由旧 VisualTS steeljoint / steelbar 业务层维护，ACIS 参与几何和事务。
+- `sub_14061F970 -> sub_1406107F0 -> sub_1405398F0` 会写 `steeljoint-line / joints / LineN`。
+- `LineN` 字段为 `start_x / start_y / end_x / end_y / ZValue`。
+- `sub_14061F970 -> sub_14053A3F0` 会写 `Others / symbolcutIOS / SymbolCutIOSN`。
+- `SymbolCutIOSN` 字段为 `center_x / center_y / center_z / code`。
+- `Phase1.ReadinessGate` 的 done-report 映射新增 `TODO-045`，防止任务 done 后缺实现记录或 build report。
+
+仍未确认：
+
+- `JointDistbet / JointWeldLength / JointRuler` 等配置和接头线半长的具体绑定。
+- `pattern + 192 == 76` 的业务枚举名。
+- `sub_14061F970` 额外 `api_curve_arc_center_edge` 分支的完整输出条件。
+- `Others / symbolcutIOS` 的旧 UI 触发路径和非空运行样例。
+- AutoCAD 2020 + FDrawing 是否接受当前新包。
+
+注意：
+
+- TODO-045 是证据补齐，不是算法实现。
+- 当前不能声明真实接头线算法或 Others 几何算法已实现。
+- 当前不能声明 AutoCAD L2 通过、旧插件接受、完整工程图或 golden。

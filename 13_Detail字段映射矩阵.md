@@ -284,6 +284,16 @@ M2-Drawing-012 状态：
 - 当前本机仍未发现 `acad.exe / accoreconsole.exe / AutoCAD registry`，所以 `autocadL2=not_run`。
 - 该状态不等价于旧插件接受新包，也不等价于真实接头线算法或 Others 几何算法完成。
 
+M2-Drawing-014 状态：
+
+- `E-IDA-028` 已确认旧 writer 中 `steeljoint-line / joints` 的 `LineN` 写出链。
+- `LineN` 字段为 `start_x / start_y / end_x / end_y / ZValue`。
+- `E-IDA-028` 已确认旧 writer 中 `Others / symbolcutIOS` 的 `SymbolCutIOSN` 写出链。
+- `SymbolCutIOSN` 字段为 `center_x / center_y / center_z / code`。
+- `ZValue` 会受视图 / 剖切上下文修正，不能只按世界坐标 `z` 简化为完整算法。
+- 接头线半长配置绑定、额外 arc 分支、`Others / symbolcutIOS` 运行触发路径和旧插件接受度仍未闭合。
+- 当前仍不能把 `E-IDA-028` 写成真实接头线 / Others 算法已实现。
+
 ## pointStb / FaceEdge 补充字段
 
 | Detail 字段 | 新模型字段 | 状态 | 说明 |

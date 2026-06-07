@@ -313,10 +313,10 @@ planned tag = m2-drawing-013/others-steeljoint-l2-confirmation-ready
 当前下一步：
 
 ```text
-TODO-045 / M2-Drawing-014
-  -> 真实接头线 / Others 几何算法证据补齐 P0
-  -> 优先用 IDA MCP 或旧图石运行确认查清旧 VisualTS / Detail / 旧图石运行中的生成规则。
-  -> 只补证据、函数、字段、输入、输出和剩余 GAP；不实现真实接头线 / Others 几何算法，不声明 AutoCAD L2 通过，不进入 golden。
+TODO-046 / M2-Drawing-015
+  -> 真实接头线 / Others 旧图石运行确认与参数绑定追踪 P0
+  -> 优先继续追半长参数绑定、pattern 枚举名、额外 arc 分支和 Others 运行触发路径。
+  -> 只补证据、参数绑定、运行样例和剩余 GAP；不实现真实接头线 / Others 几何算法，不声明 AutoCAD L2 通过，不进入 golden。
 ```
 
 长期执行循环：
@@ -560,17 +560,17 @@ commit / tag / push 状态
 
 ### 短期 Goal（推荐下一轮复制）
 
-目标：只完成 `TODO-045 / M2-Drawing-014 真实接头线 / Others 几何算法证据补齐 P0` 这个短期阶段，不自动进入后续长期开发。
+目标：只完成 `TODO-046 / M2-Drawing-015 真实接头线 / Others 旧图石运行确认与参数绑定追踪 P0` 这个短期阶段，不自动进入后续长期开发。
 
-本轮要在实现真实接头线或 Others 几何算法前，先查清旧 VisualTS / Detail / 旧图石运行中的生成规则：
+本轮要在 `TODO-045` 已确认写出链的基础上，继续闭合接头线半长参数绑定、枚举名和运行触发路径：
 
 ```text
-Drawing.GeneratePackage / M2-Drawing-014
-  -> 从 E-DETAIL-003 / E-DEV-065 / E-DEV-066 / GAP-DRAW-002 / GAP-DRAW-003 出发
-  -> 优先用 IDA MCP 查询旧 VisualTS / FDrawing / Detail 相关函数、字段、调用链
-  -> 如 IDA MCP 不可用，则记录阻塞原因，并列出需要旧图石运行确认的操作清单
-  -> 明确 steeljoint-line / joints 是否只是容器，真实接头线由谁生成、输入是什么、输出字段是什么
-  -> 明确 Others 在旧样例为空时是否有其他旧样本或运行路径能生成内容
+Drawing.GeneratePackage / M2-Drawing-015
+  -> 从 E-IDA-028 / E-DEV-067 / GAP-DRAW-002 / GAP-DRAW-003 出发
+  -> 优先用 IDA MCP 继续追 JointDistbet / JointWeldLength / JointRuler 与半长常量的绑定
+  -> 继续追 pattern + 192 == 76 的业务枚举名、pattern / pointNode 结构名
+  -> 继续追 sub_14061F970 中额外 api_curve_arc_center_edge 分支的输出条件
+  -> 如 IDA MCP 无法再闭合，则转旧图石运行确认，拿接头创建 / 移动 / 反向 / 清除后的 Detail 输出样例
   -> 不实现真实接头线 / Others 几何算法
   -> 不用 OCCT 或字段骨架直接推断旧业务规则
 ```
@@ -578,12 +578,11 @@ Drawing.GeneratePackage / M2-Drawing-014
 目标语义：
 
 ```text
-TODO-044 已经把 Others / steeljoint-line 独立包转成 L2 确认准备。
+TODO-045 已确认 steeljoint-line / joints 与 Others / symbolcutIOS 写出链，并通过本轮 continuation 重新打开 IDA session 复核关键函数。
 当前 AutoCAD 环境仍 not_found，autocadL2=not_run。
-当前只知道 Others 空容器存在、steeljoint-line / joints 容器存在。
-真实接头线生成规则和 Others 几何规则仍没有证据闭合。
-下一步不是写算法，而是先用 IDA MCP 或旧图石运行确认补证据。
-本轮只做 TODO-045，不同时做真实工程图算法、golden 采集、UI 新功能或 AutoCAD L2 通过声明。
+当前仍未闭合接头线半长参数绑定、pattern 枚举名、额外 arc 分支条件和 Others 运行触发路径。
+下一步不是写算法，而是继续用 IDA MCP 或旧图石运行确认补参数绑定和运行证据。
+本轮只做 TODO-046，不同时做真实工程图算法、golden 采集、UI 新功能或 AutoCAD L2 通过声明。
 ```
 
 当前已完成前置：
@@ -658,6 +657,14 @@ TODO-034 ~ TODO-044 / M2-Drawing-003..013 = done
 
 TODO-026 / Golden = pending
   -> 用户明确说 golden 先不要，所以本轮不进入 golden 采集。
+
+TODO-045 / M2-Drawing-014 = done
+  -> 已补 `E-IDA-028 / E-DEV-067`，确认 `steeljoint-line / joints`、
+     `Others / symbolcutIOS` 写出链、接头命令 handler 和额外 line/arc writer 分支。
+     continuation 开始时旧 session 缺失，已通过 `idb_open` 重新打开
+     `visualts_i64_todo045` 并复核关键函数。
+     本节点只收敛证据和 GAP，不声明真实接头线算法、Others 几何算法、
+     AutoCAD L2、旧插件接受或 golden。
 ```
 
 工作目录：
@@ -725,17 +732,17 @@ C:\Users\ghost\Desktop\reverse_engineering\【03】图石软件
 
 本轮验收标准：
 
-1. 只执行 TODO-045，不一次铺开完整工程图全部能力。
-2. 优先用 IDA MCP 查询旧 VisualTS / FDrawing / Detail 相关函数、字段、调用链。
-3. 如果 IDA MCP 不可用，必须记录不可用原因，并列出旧图石运行确认清单。
-4. 明确真实接头线 / Others 几何算法的已确认事实、未确认事实和后续实现入口。
+1. 只执行 TODO-046，不一次铺开完整工程图全部能力。
+2. 优先用 IDA MCP 继续查询半长参数绑定、枚举名、额外 arc 分支和运行触发路径。
+3. 如果 IDA MCP 无法继续闭合，必须记录不可用原因或分析止点，并列出旧图石运行确认清单。
+4. 明确真实接头线 / Others 几何算法的参数绑定、运行触发和后续实现入口。
 5. 不得把字段骨架、OCCT 能力或 AutoCAD L2 清单写成算法证据。
 6. 默认 CTest 通过。
 7. readiness gate 严格模式通过。
 8. domain/rebar + drawing + project OCCT / AIS 泄漏扫描通过。
 9. 涉及代码、测试、构建脚本，commit 前必须执行 xhigh 只读 review；Critical / Important 必须修复或写明技术反驳理由。
 10. 更新实现记录、build report、`11 / 13 / 20 / 34 / 99 / 46 / todo.csv`。
-11. `todo.csv` 中 `TODO-045` 只在证据、验证和审查闭合后更新；不能假装真实接头线 / Others 几何算法、AutoCAD L2、完整工程图或 golden 已完成。
+11. `todo.csv` 中 `TODO-046` 只在证据、验证和审查闭合后更新；不能假装真实接头线 / Others 几何算法、AutoCAD L2、完整工程图或 golden 已完成。
 
 本轮完成后必须停止，输出阶段复盘：
 
@@ -743,7 +750,7 @@ C:\Users\ghost\Desktop\reverse_engineering\【03】图石软件
 完成了什么
 验证了什么
 还缺什么
-下一阶段建议做 TODO-046 还是继续补 IDA / 旧图石运行证据
+下一阶段建议做 TODO-047 还是继续补 IDA / 旧图石运行证据
 commit / tag / push 状态
 ```
 
@@ -983,18 +990,18 @@ TODO-044 验证 = othersSteeljoint.passed=true, Others empty, steeljoint-line/jo
 当前下一步：
 
 ```text
-TODO-045 / M2-Drawing-014
-  -> 真实接头线 / Others 几何算法证据补齐 P0
-  -> 优先用 IDA MCP 或旧图石运行确认查清旧 VisualTS / Detail / 旧图石运行中的生成规则
-  -> 只补证据、函数、字段、输入、输出和剩余 GAP；不实现真实接头线 / Others 几何算法，不声明 AutoCAD L2 通过，不进入 golden
+TODO-046 / M2-Drawing-015
+  -> 真实接头线 / Others 旧图石运行确认与参数绑定追踪 P0
+  -> 优先继续追半长参数绑定、pattern 枚举名、额外 arc 分支和 Others 运行触发路径
+  -> 只补证据、参数绑定、运行样例和剩余 GAP；不实现真实接头线 / Others 几何算法，不声明 AutoCAD L2 通过，不进入 golden
 ```
 
 原因：
 
 ```text
-TODO-044 已完成 Others / steeljoint-line L2 确认准备，但 AutoCAD L2 仍为 not_run。
-旧插件是否接受新包未确认；接头线和 Others 真实生成规则也没有关闭。
-下一步建议做 TODO-045，先补真实接头线 / Others 几何算法证据，不能凭字段骨架或 OCCT 能力直接实现算法。
+TODO-045 已完成写出链证据补齐，并通过 continuation 重新打开 IDA session 复核关键函数。
+但旧插件是否接受新包仍未确认；接头线和 Others 的参数绑定、额外 arc 分支和运行触发路径也没有关闭。
+下一步建议做 TODO-046，继续补参数绑定和旧运行证据，不能凭字段骨架或 OCCT 能力直接实现算法。
 golden 采集 TODO-026 暂按用户要求保持 pending。
 ```
 
@@ -1060,19 +1067,19 @@ golden 采集 TODO-026 暂按用户要求保持 pending。
 
 ## CSE v2 Control Contract
 
-- **Primary Setpoint**：下一轮只完成 `TODO-045 / M2-Drawing-014 真实接头线 / Others 几何算法证据补齐 P0`，在实现真实接头线或 Others 几何算法前，先查清旧 VisualTS / Detail / 旧图石运行中的生成规则。
-- **Acceptance**：用 IDA MCP 或旧图石运行确认形成接头线 / Others 生成规则证据；明确函数、字段、输入、输出和剩余 GAP；默认 CTest、readiness gate、OCCT 泄漏检查通过；执行 xhigh 只读 review；更新实现记录、build report、追溯矩阵、缺口文档、46 和 todo。
+- **Primary Setpoint**：下一轮只完成 `TODO-046 / M2-Drawing-015 真实接头线 / Others 旧图石运行确认与参数绑定追踪 P0`，在 TODO-045 写出链证据基础上继续闭合参数绑定和运行触发路径。
+- **Acceptance**：用 IDA MCP 或旧图石运行确认形成接头线半长参数绑定、枚举名、额外 arc 分支或运行样例证据；明确剩余 GAP；默认 CTest、readiness gate、OCCT 泄漏检查通过；执行 xhigh 只读 review；更新实现记录、build report、追溯矩阵、缺口文档、46 和 todo。
 - **Guardrail Metrics**：不能实现真实接头线 / Others 几何算法；不能在没有运行证据时声明 AutoCAD L2 通过；不能把字段骨架写成旧插件接受证明；不能改钢筋创建业务；不能迁入父目录 rebar 业务；不能进入 golden 全量采集。
-- **Sampling Plan**：先读 `todo.csv / 05 / 13 / 20 / 79 / 80 / 99`，再用 IDA MCP 查旧函数 / 字段 / 调用链；如果 IDA MCP 不可用，再记录阻塞并准备旧图石运行确认问题清单；最后运行默认 CTest、readiness gate 和 OCCT 泄漏扫描，证明本轮没有破坏工程基线。
-- **Known Delays**：IDA MCP 可能没有绑定数据库；旧图石运行确认依赖用户操作；旧样例 Others 为空，steeljoint-line 仅确认 joints 容器存在。
-- **Recovery Target**：如果 IDA MCP 或旧图石运行确认不可用，把阻塞原因写入 `99` 和 build report，不继续猜算法、不堆后续工程图实现。
+- **Sampling Plan**：先读 `todo.csv / 03 / 11 / 13 / 20 / 81 / 99`，再用 IDA MCP 查旧函数 / 字段 / 调用链；如果 IDA MCP 无法继续闭合，再记录止点并准备旧图石运行确认问题清单；最后运行默认 CTest、readiness gate 和 OCCT 泄漏扫描，证明本轮没有破坏工程基线。
+- **Known Delays**：IDA MCP 虽已可重新打开，但未必能直接给出业务名；旧图石运行确认依赖用户操作；旧样例 Others 为空，steeljoint-line 仅确认 joints 容器存在。
+- **Recovery Target**：如果 IDA MCP 或旧图石运行确认不可再推进，把阻塞原因写入 `99` 和 build report，不继续猜算法、不堆后续工程图实现。
 - **Rollback Trigger**：无证据实现接头线 / Others / 工程图算法；把字段骨架当成旧插件接受证明；无运行证据声明 L2 通过；让 `domain/rebar` 泄漏 OCCT/AIS；测试或 gate 失败仍继续堆功能。
 - **Constraints**：不使用 ACIS / HOOPS / Codejock 等商业库；旧逻辑不确定时优先查 IDA MCP 或旧图石运行确认；xhigh 只读，修改由主流程 agent 完成。
 - **Boundary**：下一轮只允许 IDA / 旧图石运行证据、Detail 样例分析、文档、追溯、缺口、46/todo 必要更新；禁止实现真实 OCCT HLR/section/hidden-line/steeljoint-line/Others 算法、禁止修改 UI 新功能、钢筋创建业务、无证据 AutoCAD L2 结论和 golden。
-- **Coupling Notes**：`drawing/export` 是 Detail 包输出边界；TODO-045 只补证据，不关闭旧插件容忍度、AutoCAD L2、隐藏线 / 填充线算法或完整工程图缺口。
-- **Approximation Validity**：TODO-045 的产物是证据和 GAP 收敛，不是算法实现；只有函数、字段、输入输出和运行证据足够明确后，后续节点才能实现真实接头线 / Others 几何算法。
-- **Actuator Budget**：下一轮只推进 `TODO-045`。完成后停止复盘，不自动进入真实算法实现、隐藏线、填充线、点筋、FaceEdge 或 golden。
-- **Risks**：IDA MCP 可能不可用；旧图石运行确认可能需要用户操作；旧样例 Others 为空，字段语义可能不足；证据节点容易被误读成算法完成，必须在报告中明确能力边界。
+- **Coupling Notes**：`drawing/export` 是 Detail 包输出边界；TODO-046 只补参数绑定和运行证据，不关闭旧插件容忍度、AutoCAD L2、隐藏线 / 填充线算法或完整工程图缺口。
+- **Approximation Validity**：TODO-046 的产物是参数绑定和运行证据，不是算法实现；只有函数、字段、输入输出和运行证据足够明确后，后续节点才能实现真实接头线 / Others 几何算法。
+- **Actuator Budget**：下一轮只推进 `TODO-046`。完成后停止复盘，不自动进入真实算法实现、隐藏线、填充线、点筋、FaceEdge 或 golden。
+- **Risks**：IDA MCP 可能只能给出局部常量而不给业务名；旧图石运行确认可能需要用户操作；旧样例 Others 为空，字段语义可能不足；证据节点容易被误读成算法完成，必须在报告中明确能力边界。
 ## Todo CSV 使用方式
 
 `todo.csv` 是后续执行看板。建议每次 goal 模式只拿 `status=next` 或最高优先级 `pending` 的任务推进。
@@ -1097,11 +1104,11 @@ golden 采集 TODO-026 暂按用户要求保持 pending。
 下一步优先执行：
 
 ```text
-TODO-045 / M2-Drawing-014
-  -> 真实接头线 / Others 几何算法证据补齐 P0
-  -> 优先用 IDA MCP 或旧图石运行确认查清旧 VisualTS / Detail / 旧图石运行中的生成规则
-  -> 只补证据、函数、字段、输入、输出和剩余 GAP；不实现真实接头线 / Others 几何算法，不声明 AutoCAD L2 通过，不进入 golden
+TODO-046 / M2-Drawing-015
+  -> 真实接头线 / Others 旧图石运行确认与参数绑定追踪 P0
+  -> 优先继续追半长参数绑定、pattern 枚举名、额外 arc 分支和 Others 运行触发路径
+  -> 只补证据、参数绑定、运行样例和剩余 GAP；不实现真实接头线 / Others 几何算法，不声明 AutoCAD L2 通过，不进入 golden
 ```
 
-原因很简单：TODO-044 已把 Others / steeljoint-line 独立包转成 L2 运行确认准备，但 AutoCAD L2 仍为 not_run；真实接头线 / Others 几何算法仍没有旧 VisualTS / 旧图石运行证据，下一步必须先补证据，不能凭 OCCT 能力或字段骨架直接写算法。
+原因很简单：TODO-045 已把接头线 / Others 写出链证据补齐，但真实参数绑定和运行触发路径仍没有闭合；下一步必须继续补证据，不能凭 OCCT 能力或字段骨架直接写算法。
 TODO-026 golden 采集暂按用户要求保持 pending。

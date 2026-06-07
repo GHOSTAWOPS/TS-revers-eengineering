@@ -138,7 +138,7 @@ a1 + 1280 = copy flag
 
 - `E-IDA-024`
 
-本轮 IDA MCP 会话：
+本轮复核时重开后的 IDA MCP 会话：
 
 ```text
 session = visualts_i64_todo032
@@ -1117,7 +1117,7 @@ E-IDA-021:
 E-IDA-025
 ```
 
-本轮 IDA MCP 会话：
+本轮复核时重开后的 IDA MCP 会话：
 
 ```text
 session = visualts_i64_todo030
@@ -1200,7 +1200,7 @@ Volume722 依赖旧 ACIS body mass_props；新系统 P0 不声明等价。
 E-IDA-026
 ```
 
-本轮 IDA MCP 会话：
+本轮复核时重开后的 IDA MCP 会话：
 
 ```text
 session = visualts_i64_todo031_recheck
@@ -1403,10 +1403,171 @@ input = C:\Users\ghost\Desktop\reverse_engineering\autocad2020\FDrawing.arx
 - 因此复杂 XML 字段名的直接证据仍来自旧 `Detail01.stl` 样例，`FDrawing.arx` 只作为旧插件对象模型存在的静态补强证据。
 - 旧插件是否接受缺失 / 空复杂字段容器，仍需 AutoCAD L2 导入或进一步反编译确认。
 
+## TODO-045 真实接头线 / Others 生成规则 IDA MCP 补证
+
+Evidence ID：
+
+- `E-IDA-028`
+
+本轮复核时重开后的 IDA MCP 会话：
+
+```text
+database = visualts_i64_todo045
+input = C:\Users\ghost\Desktop\reverse_engineering\【03】图石软件\VisualTS.exe.i64
+Hex-Rays = ready
+```
+
+### 命令入口和旧业务对象
+
+字符串和命令表可确认以下接头命令：
+
+```text
+barjointnew   -> sub_1405DFAA0
+barjointclear -> sub_1405DF710
+barjointmove  -> sub_1405DFEF0
+barjointrev   -> sub_1405E02D0
+groupjointnew -> sub_1405F0060
+groupjointclear -> sub_1405EFCC0
+featjointnew / goujianjointnew -> sub_1405EF140 系列
+```
+
+这些函数共同特征：
+
+- 先从当前选择集取对象。
+- 通过 `sub_1405C6820`、`selected + 13` 或 `sub_1405E0E70` 做旧钢筋 / 构件对象筛选。
+- 进入 `api_bb_begin / update_from_bb / api_bb_end` ACIS transaction。
+- 调用 `sub_1405DB6C0 / sub_1405DC870 / sub_1405E1D20 / sub_1405E1CC0` 等旧 VisualTS steeljoint 业务函数。
+
+结论：
+
+```text
+接头对象由旧 VisualTS steeljoint / steelbar 业务层创建和维护。
+ACIS 参与几何和事务。
+Detail writer 只在出图阶段消费旧对象 / 渲染上下文，不是凭空生成接头业务。
+```
+
+### steeljoint-line / joints 写出链
+
+`sub_14061F970` 是 `PartDetailDrawing` 复杂线容器 writer。
+
+其中接头线相关链路为：
+
+```text
+sub_14061F970
+  -> 查找或创建 "steeljoint-line"
+  -> 查找或创建子节点 "joints"
+  -> 遍历 *(v8 + 528) 的 ha_rendering_context 链
+  -> sub_1406107F0(v8, ..., renderingContext, transform, xmlDoc, jointsNode, v8 + 1048)
+  -> sub_1405398F0(xmlDoc, jointsNode, start/end positions, counter)
+```
+
+`sub_1406107F0` 确认：
+
+- 参数 `a5` 为 `ha_rendering_context *`。
+- 调用 `ha_rendering_context::GetPattern(a5)`。
+- 遍历 pattern 链：`pattern = *(pattern + 56)`。
+- 只处理 `*(int16 *)(pattern + 194) >= 1` 且 `*(byte *)(pattern + 192) == 76` 的 pattern。
+- 从 `pattern + 344 -> +128` 取得 joint 点链。
+- 每个 joint 点从 `APOINT::coords(*(pointNode + 64))` 取坐标。
+- 从关联 `EDGE` 起点 / 终点求方向并 `normalise`。
+- 当前全局半长为 `dword_14095D62C / qword_14075CEE8`。
+  - `dword_14095D62C = 400`
+  - `qword_14075CEE8 = 2000.0`
+  - 当前半长数值为 `0.2`
+- 对每个 joint 点生成沿 edge 方向的前后两端点，并在存在 transform 时变换。
+- 调用 `sub_1405398F0` 写入 `joints` 下的 `LineN`。
+
+`sub_1405398F0` 确认 `LineN` 字段：
+
+```text
+Line%ld
+  start_x
+  start_y
+  end_x
+  end_y
+  ZValue
+```
+
+`ZValue` 格式：
+
+```text
+"%f:%f:%f"
+  -> z_start_or_projected
+  -> z_end_or_projected
+  -> distance_to_point(start, end)
+```
+
+其中 `sub_1405398F0` 会在存在视图/剖切上下文时，用 `sub_14054C6F0()` 返回的平面/方向数据修正 Z 值；因此当前不能只按世界坐标 `z` 简化实现完整算法。
+
+### Others / symbolcutIOS 写出链
+
+`sub_14061F970` 中 `Others` 相关链路为：
+
+```text
+sub_14061F970
+  -> 查找或创建 "Others"
+  -> 如果 *(v8 + 848) 存在且当前不是外部传入 transform 分支
+  -> 创建 "symbolcutIOS" 子节点
+  -> 遍历 *(v8 + 840) 环形链
+  -> sub_14053A3F0(xmlDoc, symbolcutIOSNode, transformedCenter, code, counter)
+```
+
+`sub_14053A3F0` 确认 `SymbolCutIOSN` 字段：
+
+```text
+SymbolCutIOS%ld
+  center_x
+  center_y
+  center_z
+  code
+```
+
+结论：
+
+```text
+Others 在旧样例中为空，不代表旧系统永远为空。
+旧 writer 存在 symbolcutIOS / SymbolCutIOSN 写出路径。
+其输入来自 v8 + 840 / v8 + 848 的切割符号链，而不是普通线容器。
+```
+
+### 额外接头弧线分支
+
+`sub_14061F970` 在 `sub_1406107F0` 之后还有一个分支：
+
+```text
+if (!sub_140610AA0(v8)) {
+  遍历 ha_rendering_context pattern
+  取 joint / segment 相关 edge
+  proj_pt_to_plane
+  api_curve_arc_center_edge
+  sub_14053A6B0(...)
+  ++*(v8 + 1052)
+}
+```
+
+`sub_140610AA0(v8)` 只是读取 `*(uint16 *)(v8 + 232)`，它是视图 / 出图上下文 flags。
+
+结论：
+
+```text
+旧接头线不只有 joints/LineN 这一种输出。
+在特定 flags 下，还可能额外生成 arc/line 类几何并走 sub_14053A6B0。
+```
+
+本轮不能过度推断：
+
+- `dword_14095D62C` 当前值和 `JointDistbet / JointWeldLength / JointRuler` 配置项的具体绑定仍未闭合。
+- `pattern + 192 == 76` 的业务枚举名未确认。
+- `pattern + 344 / +128 / pointNode + 64 / pointNode + 88` 的结构名未完全闭合。
+- `sub_14061F970` 额外 `api_curve_arc_center_edge` 分支的完整输出条件和旧 UI 关系未闭合。
+- 旧 AutoCAD FDrawing 插件是否接受 TODO-043/044 的空容器包仍需 L2 运行确认。
+- 本轮只补证据，不实现真实接头线 / Others 几何算法。
+
 ## 待继续分析
 
 - `sub_1404DE110` 和 `sub_1404DE720` 已完成第二轮 IDA MCP 补证，公共生成链已追到 `sub_1404D10C0 -> sub_140451730 -> sub_1405D5670 -> sub_1405BD0C0 / sub_1405C7260 / sub_1405E49D0`。
 - `sub_1405D5670` 已确认 split / spline / trim / min-distance / 写回主规则，但第 4 个 double 参数来源、字段业务名和对象名仍需继续闭合。
+- `TODO-045 / E-IDA-028` 已确认 `steeljoint-line/joints` 的旧写出链和 `Others/symbolcutIOS` 写出链，但接头线半长参数绑定、额外 arc 分支和旧插件接受度仍需继续闭合。
 - `rebarz` / `rebarpost` 业务含义未闭合。
 - 顶部 Ribbon 按钮和英文命令并非一一对应，需要结合运行界面确认。
 - `生成工程图` 顶部按钮的命令表入口仍需继续追。
