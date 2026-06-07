@@ -311,6 +311,7 @@ Blocker GAPs: none
 - `TODO-035 / M2-Drawing-004` DetailWriter复杂字段骨架 P0 已落地并通过：正式 app `DetailWriter` 输出 `PartDetailDrawing` 复杂容器骨架、`General-Info` 首批扩展默认字段和 `pointStb StbGeo shapeType=C` 字段骨架；当前 CTest 17/17 pass，strict readiness gate 84/84 pass，保护层 OCCT/AIS 泄漏扫描无匹配，xhigh 只读 review 为 `allow_commit`；该阶段不是 AutoCAD L2 通过、旧插件接受新包、`CompanyName` 旧默认值、完整工程图、FaceEdge、ZValue、剖切线、隐藏线、填充线、接头线或 golden 证明。
 - `TODO-036 / M2-Drawing-005` AutoCAD L2复杂字段骨架导入验证 P0 已落地并通过离线检查：`detail_l2_fixture_probe` 生成 TODO-036 三图纸复杂骨架包，离线确认 `PartDetailDrawing num=8`、复杂容器和 `General-Info` 首批扩展字段；本机未发现 AutoCAD 可执行文件或注册表键，所以 `autocadL2=not_run`；xhigh 已指出并修正 pointStb L2 变量污染。
 - `TODO-037 / M2-Drawing-006` DetailWriter pointStb / FaceEdge 兼容字段骨架 P0 已落地并通过离线检查：`DetailWriter` 输出 `pointStb StbGeo shapeType=C` 和显式 `FaceEdge shapeType=L/A` 字段骨架；`detail_l2_fixture_probe --fixture point-face-edge` 生成独立三图纸包并确认 `pointFaceEdge.passed=true`；当前 CTest 17/17 pass，strict readiness gate 84/84 pass，保护层 OCCT/AIS 泄漏扫描无匹配；该阶段不是 AutoCAD L2 通过、旧插件接受新包、点筋生成算法、FaceEdge 生成规则、完整工程图或 golden 证明。
+- `TODO-038 / M2-Drawing-007` DetailWriter section-line Line/Arc/ZValue 字段骨架 P0 已落地并通过离线检查：`DetailWriter` 输出 `section-line / lines / LineN` 和 `section-line / Arcs / ArcN` 字段骨架，并保留旧样例确认的 `ZValue` 字符串；`detail_l2_fixture_probe --fixture section-line` 生成独立三图纸包并确认 `sectionLine.passed=true`；当前 AutoCAD L2 仍为 `not_run`。该阶段不是 AutoCAD L2 通过、旧插件接受新包、真实剖切线算法、隐藏线 / 填充线 / 接头线算法、`ZValue` 语义或 golden 证明。
 - Detail writer L0/L1 离线 gate 已落地并通过，不再作为当前 M1 阻塞。
 - `GAP-DEV-001/GAP-DEV-007` 不再阻塞进入 Qt6 + OCCT 开发入口，但旧图石业务复刻缺口仍按功能专项继续闭合。
 
@@ -376,4 +377,4 @@ none
 2. 保留 Qt6 runtime gate，防止 Save/Open 和 binding repair 报告退回 simulation。
 3. 保留 Detail writer L0/L1 报告；AutoCAD L2 导入另走工程图专项。
 4. 新增真实工程 STEP 样本时继续跑 STEP selection gate。
-5. 后续开发仍按旧图石运行、IDA、SFL、Detail 证据闭合业务缺口；`TODO-029 / Rebar.Edit.Move P0`、`TODO-032 / Rebar.Edit.Copy P0`、`TODO-030 / M2-Stats-001`、`TODO-031 / M2-Drawing-001`、`TODO-033 / M2-Drawing-002`、`TODO-034 / M2-Drawing-003`、`TODO-035 / M2-Drawing-004`、`TODO-036 / M2-Drawing-005` 和 `TODO-037 / M2-Drawing-006` 已纳入 done-report 映射。下一步建议按 `TODO-038 / M2-Drawing-007` 做 `section-line Line/Arc/ZValue` 独立干净变量字段骨架专项，或在用户能启动 AutoCAD 2020 时继续执行 `69/72/73` 的手工 L2 导入清单；`TODO-026` golden 采集保持 pending，不自动进入。
+5. 后续开发仍按旧图石运行、IDA、SFL、Detail 证据闭合业务缺口；`TODO-029 / Rebar.Edit.Move P0`、`TODO-032 / Rebar.Edit.Copy P0`、`TODO-030 / M2-Stats-001`、`TODO-031 / M2-Drawing-001`、`TODO-033 / M2-Drawing-002`、`TODO-034 / M2-Drawing-003`、`TODO-035 / M2-Drawing-004`、`TODO-036 / M2-Drawing-005`、`TODO-037 / M2-Drawing-006` 和 `TODO-038 / M2-Drawing-007` 已纳入 done-report 映射。下一步建议按 `TODO-039 / M2-Drawing-008` 做 `section-line` AutoCAD L2 运行确认准备，或在用户能启动 AutoCAD 2020 时继续执行 `69/72/73/74` 的手工 L2 导入清单；`TODO-026` golden 采集保持 pending，不自动进入。

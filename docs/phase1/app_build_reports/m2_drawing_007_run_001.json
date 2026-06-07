@@ -1,0 +1,115 @@
+{
+  "schemaVersion": "app-build-report/v1",
+  "reportId": "m2_drawing_007_run_001",
+  "createdAt": "2026-06-07T14:35:00+08:00",
+  "decision": "section-line-field-skeleton-l2-not-run",
+  "todoId": "TODO-038",
+  "phase": "M2-Drawing-007",
+  "scope": [
+    "DetailWriter section-line LineN field skeleton",
+    "DetailWriter section-line ArcN field skeleton",
+    "ZValue string passthrough field skeleton",
+    "section-line independent probe package",
+    "AutoCAD executable and registry probe",
+    "FDrawing plugin file hash record"
+  ],
+  "evidence": [
+    "E-DETAIL-003",
+    "E-DEV-056",
+    "E-DEV-057",
+    "E-DEV-059",
+    "E-DEV-060"
+  ],
+  "probe": {
+    "path": "docs/phase1/app_build_reports/m2_drawing_007_detail_probe.json",
+    "schemaVersion": "detail-l2-fixture-probe/v1",
+    "runId": "DW-L2-TODO038-001",
+    "fixture": "section-line",
+    "decision": "l0-l1-pass",
+    "l0": "passed",
+    "l1": "passed",
+    "l2": "not_run",
+    "autocadL2": "not_run",
+    "sectionLine": {
+      "passed": true,
+      "scope": "section-line LineN / ArcN / ZValue field skeleton only",
+      "lineCount": 1,
+      "arcCount": 1,
+      "lineFieldsPassed": true,
+      "arcFieldsPassed": true
+    },
+    "autocadEnvironment": {
+      "status": "not_found",
+      "automaticL2Possible": false
+    },
+    "fdrawingPlugin": {
+      "status": "ready",
+      "allRequiredPresent": true
+    }
+  },
+  "files": [
+    {
+      "name": "Detail.xml",
+      "bytes": 186,
+      "root": "StyleRoot",
+      "sha256": "cbf196dbf3e68fb41486d3cd365f27fdadb394cff6a114ebe4dd020138b56e4d"
+    },
+    {
+      "name": "Detail01.stl",
+      "bytes": 5021,
+      "root": "DrawingRoot",
+      "sha256": "e56dfe1df05924bbaf96f25ca5a94f2af42f301c2cfbaa2900e105649e8720c8"
+    },
+    {
+      "name": "Detail02.stl",
+      "bytes": 5021,
+      "root": "DrawingRoot",
+      "sha256": "1af17e716f21796f2e4bc9ad132edb15dea93e89e9584b65b712581d4bbc7bed"
+    },
+    {
+      "name": "Detail03.stl",
+      "bytes": 5021,
+      "root": "DrawingRoot",
+      "sha256": "453356eb35160647479bc4dded9c80a9f6d531dc5818f67d8f5963d1da766fec"
+    }
+  ],
+  "validation": {
+    "build": "pass",
+    "detailWriterTests": "pass",
+    "sectionLineProbe": "pass",
+    "ctest": {
+      "result": "pass",
+      "tests": "17/17",
+      "command": "ctest --test-dir app/build --output-on-failure"
+    },
+    "readinessGate": {
+      "result": "pass",
+      "decision": "M1-Formal-Ready",
+      "checks": "84/84",
+      "errors": 0,
+      "warnings": 0,
+      "command": "py -3 tools/phase1_readiness_gate/check_phase1_readiness.py --strict"
+    },
+    "occtLeakScan": "pass",
+    "jsonValidation": "pass",
+    "xhighReview": {
+      "verdict": "allow_commit",
+      "critical": 0,
+      "important": 0,
+      "minor": "sectionLineProbe currently validates at least one legal Line/Arc for this fixture; multi-element all-pass tightening deferred to L2/algorithm follow-up"
+    },
+    "diffCheck": "pass with CRLF normalization warnings only"
+  },
+  "boundaries": [
+    "AutoCAD L2 import is not_run",
+    "FDrawing acceptance is not confirmed",
+    "section-line fields are explicit fixture skeleton only",
+    "section-line generation rule remains a gap",
+    "ZValue semantics remain a gap",
+    "No section, hidden, hatch, or joint drawing algorithm claim",
+    "No OCCT/AIS dependency in domain/rebar, drawing, or project protected layers",
+    "No parent rebar business migration",
+    "No golden claim"
+  ],
+  "next": "TODO-039 pending selection after TODO-038 review; do not auto-continue in this goal turn"
+}

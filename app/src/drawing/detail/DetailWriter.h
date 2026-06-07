@@ -15,6 +15,26 @@ struct DetailDiagnostic
     QString message;
 };
 
+struct DetailSectionLineGeometry
+{
+    double startX = 0.0;
+    double startY = 0.0;
+    double endX = 0.0;
+    double endY = 0.0;
+    QString zValue;
+};
+
+struct DetailSectionArcGeometry
+{
+    double centerX = 0.0;
+    double centerY = 0.0;
+    double centerZ = 0.0;
+    double radius = 0.0;
+    double startAngle = 0.0;
+    double endAngle = 0.0;
+    QString zValue;
+};
+
 struct DetailDrawingViewOptions
 {
     QString viewId;
@@ -23,6 +43,8 @@ struct DetailDrawingViewOptions
     QString drawingUnit;
     QString drawingScale;
     QString generalScale;
+    QVector<DetailSectionLineGeometry> sectionLines;
+    QVector<DetailSectionArcGeometry> sectionArcs;
 };
 
 struct DetailWriteOptions

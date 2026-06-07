@@ -576,6 +576,68 @@ void testDetailWriterWritesPointStbFaceEdgeFieldSkeleton()
     expect(sawArcFaceEdge, "pointStb fixture must write arc FaceEdge skeleton");
 }
 
+void testDetailWriterWritesSectionLineFieldSkeleton()
+{
+    QTemporaryDir temp;
+    expect(temp.isValid(), "temporary dir must be valid");
+    const QString outputDir = QDir(temp.path()).filePath("drawings");
+
+    tsrebar::DetailWriteOptions options;
+    tsrebar::DetailDrawingViewOptions view;
+    view.viewId = "section-line-view-001";
+    view.drawingName = "todo038-section-line";
+    view.modelFileName = "todo038-model.step";
+    view.drawingUnit = "mm";
+    view.drawingScale = "1:50";
+    view.generalScale = "50";
+    view.sectionLines.push_back({
+        6.00000000005,
+        -1.0,
+        -6.0,
+        -1.0,
+        "-1.000000:-1.000000:12.000000"});
+    view.sectionArcs.push_back({
+        1.38015820994e-13,
+        9.33333333333,
+        0.5,
+        6.66666666667,
+        0.451026811805728,
+        2.69056584178407,
+        "12.239266:9.333333:12.239266"});
+    options.views.push_back(view);
+
+    const tsrebar::DetailWriter writer;
+    const auto result = writer.writePackage(outputDir, steelDataWithMixedGroup(), options);
+
+    expect(result.ok, "section-line field skeleton Detail writer must succeed");
+    expect(result.l2 == "not_run", "section-line skeleton must not claim AutoCAD L2");
+
+    const QString detailStl = QDir(outputDir).filePath("Detail01.stl");
+    expectDirectChildren(detailStl,
+                         "section-line",
+                         {"lines", "circles", "Arcs", "Ellipses", "EllipseArcs", "Splines"});
+
+    const auto line = findElementAttrs(detailStl, "Line1");
+    expect(line.value("start_x") == "6.00000000005", "section Line1 start_x mismatch");
+    expect(line.value("start_y") == "-1", "section Line1 start_y mismatch");
+    expect(line.value("end_x") == "-6", "section Line1 end_x mismatch");
+    expect(line.value("end_y") == "-1", "section Line1 end_y mismatch");
+    expect(line.value("ZValue") == "-1.000000:-1.000000:12.000000",
+           "section Line1 ZValue mismatch");
+
+    const auto arc = findElementAttrs(detailStl, "Arc1");
+    expect(arc.hasAttribute("center_x"), "section Arc1 center_x must exist");
+    expect(arc.value("center_y") == "9.33333333333", "section Arc1 center_y mismatch");
+    expect(arc.value("center_z") == "0.5", "section Arc1 center_z mismatch");
+    expect(arc.value("radius") == "6.66666666667", "section Arc1 radius mismatch");
+    expect(arc.value("start_angle") == "0.451026811805728",
+           "section Arc1 start_angle mismatch");
+    expect(arc.value("end_angle") == "2.69056584178407",
+           "section Arc1 end_angle mismatch");
+    expect(arc.value("ZValue") == "12.239266:9.333333:12.239266",
+           "section Arc1 ZValue mismatch");
+}
+
 void testDetailWriterFailurePreservesExistingPackage()
 {
     QTemporaryDir temp;
@@ -777,6 +839,7 @@ int main()
     testDetailWriterWritesComplexPartDrawingSkeletonAndGeneralInfoDefaults();
     testDetailWriterWritesPointStbGeoFieldSkeleton();
     testDetailWriterWritesPointStbFaceEdgeFieldSkeleton();
+    testDetailWriterWritesSectionLineFieldSkeleton();
     testDetailWriterFailurePreservesExistingPackage();
     testDetailWriterRejectsBrokenRebarReferencesBeforeWriting();
     testDetailWriterInstallFailureRestoresExistingPackage();

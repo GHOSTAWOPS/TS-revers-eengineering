@@ -594,11 +594,59 @@ void writeLegacyGeneralInfo(QXmlStreamWriter& writer, const DetailDrawingViewOpt
     writer.writeEndElement();
 }
 
+void writeLegacyLineContainer(QXmlStreamWriter& writer,
+                              const QVector<DetailSectionLineGeometry>* sectionLines = nullptr)
+{
+    writer.writeStartElement(QStringLiteral("lines"));
+    if (sectionLines) {
+        int sequence = 0;
+        for (const DetailSectionLineGeometry& line : *sectionLines) {
+            writer.writeEmptyElement(QStringLiteral("Line%1").arg(++sequence));
+            writer.writeAttribute(QStringLiteral("start_x"), formatNumber(line.startX));
+            writer.writeAttribute(QStringLiteral("start_y"), formatNumber(line.startY));
+            writer.writeAttribute(QStringLiteral("end_x"), formatNumber(line.endX));
+            writer.writeAttribute(QStringLiteral("end_y"), formatNumber(line.endY));
+            writer.writeAttribute(QStringLiteral("ZValue"), line.zValue);
+        }
+    }
+    writer.writeEndElement();
+}
+
+void writeLegacyArcContainer(QXmlStreamWriter& writer,
+                             const QVector<DetailSectionArcGeometry>* sectionArcs = nullptr)
+{
+    writer.writeStartElement(QStringLiteral("Arcs"));
+    if (sectionArcs) {
+        int sequence = 0;
+        for (const DetailSectionArcGeometry& arc : *sectionArcs) {
+            writer.writeEmptyElement(QStringLiteral("Arc%1").arg(++sequence));
+            writer.writeAttribute(QStringLiteral("center_x"), formatNumber(arc.centerX));
+            writer.writeAttribute(QStringLiteral("center_y"), formatNumber(arc.centerY));
+            writer.writeAttribute(QStringLiteral("center_z"), formatNumber(arc.centerZ));
+            writer.writeAttribute(QStringLiteral("radius"), formatNumber(arc.radius));
+            writer.writeAttribute(QStringLiteral("start_angle"), formatNumber(arc.startAngle));
+            writer.writeAttribute(QStringLiteral("end_angle"), formatNumber(arc.endAngle));
+            writer.writeAttribute(QStringLiteral("ZValue"), arc.zValue);
+        }
+    }
+    writer.writeEndElement();
+}
+
 void writeLegacyCurveGeometryContainers(QXmlStreamWriter& writer)
 {
-    writer.writeEmptyElement(QStringLiteral("lines"));
+    writeLegacyLineContainer(writer);
     writer.writeEmptyElement(QStringLiteral("circles"));
-    writer.writeEmptyElement(QStringLiteral("Arcs"));
+    writeLegacyArcContainer(writer);
+    writer.writeEmptyElement(QStringLiteral("Ellipses"));
+    writer.writeEmptyElement(QStringLiteral("EllipseArcs"));
+    writer.writeEmptyElement(QStringLiteral("Splines"));
+}
+
+void writeSectionLineGeometryContainers(QXmlStreamWriter& writer, const DetailDrawingViewOptions& view)
+{
+    writeLegacyLineContainer(writer, &view.sectionLines);
+    writer.writeEmptyElement(QStringLiteral("circles"));
+    writeLegacyArcContainer(writer, &view.sectionArcs);
     writer.writeEmptyElement(QStringLiteral("Ellipses"));
     writer.writeEmptyElement(QStringLiteral("EllipseArcs"));
     writer.writeEmptyElement(QStringLiteral("Splines"));
@@ -623,7 +671,7 @@ void writePartDetailDrawingSkeleton(QXmlStreamWriter& writer, const DetailDrawin
     writer.writeEndElement();
 
     writer.writeStartElement(QStringLiteral("section-line"));
-    writeLegacyCurveGeometryContainers(writer);
+    writeSectionLineGeometryContainers(writer, view);
     writer.writeEndElement();
 
     writer.writeStartElement(QStringLiteral("hatch-line"));

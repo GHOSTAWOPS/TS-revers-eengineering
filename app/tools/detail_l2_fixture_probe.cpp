@@ -352,6 +352,19 @@ QStringList missingAttributes(const QXmlStreamAttributes& attrs, const QStringLi
     return missing;
 }
 
+bool numberedElementName(const QString& name, const QString& prefix)
+{
+    if (!name.startsWith(prefix) || name.size() == prefix.size()) {
+        return false;
+    }
+    for (int index = prefix.size(); index < name.size(); ++index) {
+        if (!name.at(index).isDigit()) {
+            return false;
+        }
+    }
+    return true;
+}
+
 QJsonObject attributesToJson(const QXmlStreamAttributes& attrs)
 {
     QJsonObject result;
@@ -578,6 +591,98 @@ QJsonObject pointFaceEdgeProbe(const QString& detailStlPath)
     return result;
 }
 
+QJsonObject sectionLineProbe(const QString& detailStlPath)
+{
+    QJsonObject result;
+    result.insert(QStringLiteral("file"), QFileInfo(detailStlPath).absoluteFilePath());
+    result.insert(QStringLiteral("scope"),
+                  QStringLiteral("section-line LineN / ArcN / ZValue field skeleton only"));
+
+    int lineCount = 0;
+    int arcCount = 0;
+    bool lineFieldsPassed = false;
+    bool arcFieldsPassed = false;
+    QJsonArray lines;
+    QJsonArray arcs;
+
+    QFile file(detailStlPath);
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        result.insert(QStringLiteral("passed"), false);
+        result.insert(QStringLiteral("diagnostic"), QStringLiteral("detail file open failed"));
+        return result;
+    }
+
+    QXmlStreamReader reader(&file);
+    bool inSectionLine = false;
+    int sectionDepth = 0;
+    while (!reader.atEnd()) {
+        reader.readNext();
+        if (reader.isStartElement()) {
+            const QString name = reader.name().toString();
+            if (!inSectionLine && name == QStringLiteral("section-line")) {
+                inSectionLine = true;
+                sectionDepth = 1;
+                continue;
+            }
+            if (!inSectionLine) {
+                continue;
+            }
+            ++sectionDepth;
+            const QXmlStreamAttributes attrs = reader.attributes();
+            if (numberedElementName(name, QStringLiteral("Line"))) {
+                ++lineCount;
+                const QStringList required{
+                    QStringLiteral("start_x"),
+                    QStringLiteral("start_y"),
+                    QStringLiteral("end_x"),
+                    QStringLiteral("end_y"),
+                    QStringLiteral("ZValue"),
+                };
+                const QStringList missing = missingAttributes(attrs, required);
+                QJsonObject item;
+                item.insert(QStringLiteral("name"), name);
+                item.insert(QStringLiteral("attributes"), attributesToJson(attrs));
+                item.insert(QStringLiteral("missingAttributes"), toJsonArray(missing));
+                lineFieldsPassed = lineFieldsPassed || missing.isEmpty();
+                lines.append(item);
+            } else if (numberedElementName(name, QStringLiteral("Arc"))) {
+                ++arcCount;
+                const QStringList required{
+                    QStringLiteral("center_x"),
+                    QStringLiteral("center_y"),
+                    QStringLiteral("center_z"),
+                    QStringLiteral("radius"),
+                    QStringLiteral("start_angle"),
+                    QStringLiteral("end_angle"),
+                    QStringLiteral("ZValue"),
+                };
+                const QStringList missing = missingAttributes(attrs, required);
+                QJsonObject item;
+                item.insert(QStringLiteral("name"), name);
+                item.insert(QStringLiteral("attributes"), attributesToJson(attrs));
+                item.insert(QStringLiteral("missingAttributes"), toJsonArray(missing));
+                arcFieldsPassed = arcFieldsPassed || missing.isEmpty();
+                arcs.append(item);
+            }
+        } else if (reader.isEndElement() && inSectionLine) {
+            --sectionDepth;
+            if (sectionDepth == 0) {
+                break;
+            }
+        }
+    }
+
+    const bool passed = lineCount >= 1 && arcCount >= 1 && lineFieldsPassed && arcFieldsPassed;
+    result.insert(QStringLiteral("lineCount"), lineCount);
+    result.insert(QStringLiteral("arcCount"), arcCount);
+    result.insert(QStringLiteral("lineFieldsPassed"), lineFieldsPassed);
+    result.insert(QStringLiteral("arcFieldsPassed"), arcFieldsPassed);
+    result.insert(QStringLiteral("lines"), lines);
+    result.insert(QStringLiteral("arcs"), arcs);
+    result.insert(QStringLiteral("passed"), passed);
+    return result;
+}
+
 QJsonObject executableProbe(const QString& executable)
 {
     QJsonObject result;
@@ -718,7 +823,7 @@ int main(int argc, char* argv[])
         QStringLiteral("DW-L2-TODO036-001"));
     const QCommandLineOption fixtureOption(
         QStringLiteral("fixture"),
-        QStringLiteral("Fixture to generate: complex-skeleton or point-face-edge."),
+        QStringLiteral("Fixture to generate: complex-skeleton, point-face-edge, or section-line."),
         QStringLiteral("name"),
         QStringLiteral("complex-skeleton"));
     const QCommandLineOption pluginDirOption(
@@ -753,29 +858,53 @@ int main(int argc, char* argv[])
     options.runId = parser.value(runIdOption);
     const QString fixture = parser.value(fixtureOption);
     if (fixture != QStringLiteral("complex-skeleton") &&
-        fixture != QStringLiteral("point-face-edge")) {
-        QTextStream(stderr) << "fixture must be complex-skeleton or point-face-edge\n";
+        fixture != QStringLiteral("point-face-edge") &&
+        fixture != QStringLiteral("section-line")) {
+        QTextStream(stderr) << "fixture must be complex-skeleton, point-face-edge, or section-line\n";
         return EXIT_FAILURE;
     }
 
     const bool pointFaceEdgeFixture = fixture == QStringLiteral("point-face-edge");
+    const bool sectionLineFixture = fixture == QStringLiteral("section-line");
     options.drawingName = pointFaceEdgeFixture
         ? QStringLiteral("todo037-point-face-edge")
-        : QStringLiteral("todo036-complex-skeleton-l2");
+        : (sectionLineFixture
+               ? QStringLiteral("todo038-section-line")
+               : QStringLiteral("todo036-complex-skeleton-l2"));
     options.modelFileName = pointFaceEdgeFixture
         ? QStringLiteral("todo037-model.step")
-        : QStringLiteral("todo036-model.step");
+        : (sectionLineFixture
+               ? QStringLiteral("todo038-model.step")
+               : QStringLiteral("todo036-model.step"));
     options.drawingUnit = QStringLiteral("m");
     options.drawingScale = QStringLiteral("1");
     for (int index = 1; index <= viewCount; ++index) {
         tsrebar::DetailDrawingViewOptions view;
-        const QString prefix = pointFaceEdgeFixture ? QStringLiteral("todo037") : QStringLiteral("todo036");
+        const QString prefix = pointFaceEdgeFixture
+            ? QStringLiteral("todo037")
+            : (sectionLineFixture ? QStringLiteral("todo038") : QStringLiteral("todo036"));
         view.viewId = QStringLiteral("%1-view-%2").arg(prefix).arg(index, 3, 10, QLatin1Char('0'));
         view.drawingName = QStringLiteral("%1-view-%2").arg(prefix).arg(index);
         view.modelFileName = QStringLiteral("%1-model-%2.step").arg(prefix).arg(index);
         view.drawingUnit = QStringLiteral("mm");
         view.drawingScale = QStringLiteral("1:%1").arg(index);
-        view.generalScale = QStringLiteral("todo036-general-%1").arg(index);
+        view.generalScale = QStringLiteral("%1-general-%2").arg(prefix).arg(index);
+        if (sectionLineFixture) {
+            view.sectionLines.push_back({
+                6.00000000005,
+                -1.0,
+                -6.0,
+                -1.0,
+                QStringLiteral("-1.000000:-1.000000:12.000000")});
+            view.sectionArcs.push_back({
+                1.38015820994e-13,
+                9.33333333333,
+                0.5,
+                6.66666666667,
+                0.451026811805728,
+                2.69056584178407,
+                QStringLiteral("12.239266:9.333333:12.239266")});
+        }
         options.views.push_back(view);
     }
 
@@ -807,6 +936,12 @@ int main(int argc, char* argv[])
                                  QStringLiteral("E-DEV-057"),
                                  QStringLiteral("E-DEV-058"),
                                  QStringLiteral("E-DEV-059")}
+                    : sectionLineFixture
+                    ? QJsonArray{QStringLiteral("E-DETAIL-003"),
+                                 QStringLiteral("E-DEV-056"),
+                                 QStringLiteral("E-DEV-057"),
+                                 QStringLiteral("E-DEV-059"),
+                                 QStringLiteral("E-DEV-060")}
                     : QJsonArray{QStringLiteral("E-DEV-055"),
                                  QStringLiteral("E-DETAIL-003"),
                                  QStringLiteral("E-DEV-057"),
@@ -820,6 +955,9 @@ int main(int argc, char* argv[])
     root.insert(QStringLiteral("complexSkeleton"), complexSkeleton);
     if (pointFaceEdgeFixture) {
         root.insert(QStringLiteral("pointFaceEdge"), pointFaceEdgeProbe(firstDrawing));
+    }
+    if (sectionLineFixture) {
+        root.insert(QStringLiteral("sectionLine"), sectionLineProbe(firstDrawing));
     }
 
     QJsonArray files;
@@ -836,6 +974,11 @@ int main(int argc, char* argv[])
         return root.value(QStringLiteral("pointFaceEdge")).toObject().value(QStringLiteral("passed")).toBool()
             ? EXIT_SUCCESS
             : 4;
+    }
+    if (sectionLineFixture) {
+        return root.value(QStringLiteral("sectionLine")).toObject().value(QStringLiteral("passed")).toBool()
+            ? EXIT_SUCCESS
+            : 5;
     }
     return complexSkeleton.value(QStringLiteral("passed")).toBool() ? EXIT_SUCCESS : 3;
 }
