@@ -9,7 +9,7 @@
 - 记录 `FDrawingObj.dbx / FDrawing.arx` 文件存在和 hash。
 - 记录旧样例包和 TODO-044 新包 hash。
 - 记录本机 `acad.exe / accoreconsole.exe / AutoCAD registry` 探测结果。
-- 当前本机仍未发现 AutoCAD 可执行文件或注册表键，所以 `autocadL2 = not_run`。
+- 当前本机未发现 `acad.exe / accoreconsole.exe`，AutoCAD 注册表根键存在但没有版本子项，所以 `autocadL2 = not_run`。
 
 本轮只把 `TODO-043` 的 `Others / steeljoint-line` 独立字段骨架包转成 L2 运行确认材料，不声明 AutoCAD L2 通过、旧插件接受新包、真实接头线算法、Others 几何算法、剖切线 / 隐藏线 / 填充线算法、点筋算法、FaceEdge 生成规则、完整工程图或 golden 已完成。
 
@@ -175,7 +175,7 @@ AutoCAD 环境探测：
 ```text
 acad.exe = not_found
 accoreconsole.exe = not_found
-HKLM/HKCU AutoCAD registry keys = not_found
+HKLM/HKCU AutoCAD registry root keys = exists; version child groups = 0
 automaticL2Possible = false
 ```
 

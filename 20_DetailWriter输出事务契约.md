@@ -871,7 +871,7 @@ TODO-044 / M2-Drawing-013
 - 生成 `Others / steeljoint-line` AutoCAD L2 手工确认清单。
 - 记录 `FDrawingObj.dbx / FDrawing.arx` hash。
 - 记录旧样例包 hash 和 TODO-044 新包 hash。
-- 记录 AutoCAD 环境探测：`acad.exe / accoreconsole.exe / AutoCAD registry` 均未发现。
+- 记录 AutoCAD 环境探测：`acad.exe / accoreconsole.exe` 未发现，AutoCAD registry 根键存在但无版本子项。
 - `Phase1.ReadinessGate` 的 done-report 映射新增 `TODO-044`，防止任务 done 后缺实现记录或 build report。
 
 当前结论：

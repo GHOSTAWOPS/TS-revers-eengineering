@@ -101,7 +101,7 @@ old-sample/Detail01.stl
 ```text
 acad.exe = not_found
 accoreconsole.exe = not_found
-HKLM/HKCU AutoCAD registry keys = not_found
+HKLM/HKCU AutoCAD registry root keys = exists; version child groups = 0
 automaticL2Possible = false
 ```
 
@@ -133,36 +133,37 @@ cmake --build app/build
   -> pass; ninja: no work to do
 
 ctest --test-dir app/build --output-on-failure
-  -> 17/17 passed; total 147.18 sec
+  -> pending fresh rerun after registry probe correction
 
 py -3 tools/phase1_readiness_gate/test_phase1_readiness_gate.py
-  -> 16/16 OK
+  -> pending fresh rerun after registry probe correction
 
 py -3 tools/phase1_readiness_gate/check_phase1_readiness.py --strict
-  -> M1-Formal-Ready; 84/84 pass; 0 errors; 0 warnings
+  -> pending fresh rerun after registry probe correction
 
 py -3 app/tools/check_domain_rebar_boundary.py app/src/domain/rebar
 py -3 app/tools/check_domain_rebar_boundary.py app/src/drawing
 py -3 app/tools/check_domain_rebar_boundary.py app/src/project
-  -> pass; boundary ok for all three protected layers
+  -> pending fresh rerun after registry probe correction
 
 git diff --check
-  -> pass; exit 0, CRLF warnings only
+  -> pending fresh rerun after registry probe correction
 ```
 
 ## xhigh 只读 Review
 
 ```text
-verdict = needs_fix
-Critical = none
-Important = xhigh 状态未回填；已由主流程回填本节、JSON 和 46 文档
-Minor = none
-Route drift = no
-Misclaim check = no
-Evidence consistency = fail before回填 / pass after回填
-Protected OCCT leak = pass
-agent = Dewey / 019ea216-21f4-70f0-a469-cb5753eb6adc
-agent closed after review = true
+verdict = pending fresh xhigh read-only review after registry probe correction
+Critical = pending
+Important = pending
+Fixed = pending
+Minor = pending
+Route drift = pending
+L2 claim audit = pending
+Algorithm claim audit = pending
+Protected OCCT leak = pending
+agent = pending
+agent closed after review = pending
 ```
 
 ## 明确不声明

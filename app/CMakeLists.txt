@@ -296,6 +296,11 @@ add_test(
         ${CMAKE_CURRENT_BINARY_DIR}/detail_l2_fixture_probe_test_package
         --fixture others-steeljoint
         --views 3)
+add_test(
+    NAME detail_l2_fixture_probe_environment_tests
+    COMMAND Python3::Interpreter
+        ${CMAKE_CURRENT_SOURCE_DIR}/tests/integration/test_detail_l2_fixture_probe_environment.py
+        $<TARGET_FILE:detail_l2_fixture_probe>)
 add_test(NAME app_smoke COMMAND tsrebar_app --smoke)
 set_tests_properties(app_smoke PROPERTIES
     ENVIRONMENT "QT_QPA_PLATFORM=minimal;QT_QPA_PLATFORM_PLUGIN_PATH=${TSREBAR_QT_PLATFORM_PLUGIN_PATH}")

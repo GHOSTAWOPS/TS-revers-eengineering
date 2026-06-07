@@ -40,7 +40,11 @@
     },
     "autocadEnvironment": {
       "status": "not_found",
-      "automaticL2Possible": false
+      "automaticL2Possible": false,
+      "autocadExecutableFound": false,
+      "autocadRegistryFound": true,
+      "registryRootKeysExist": true,
+      "registryVersionEntryCount": 0
     },
     "fdrawingPlugin": {
       "status": "ready",
@@ -82,32 +86,33 @@
     "othersSteeljointProbe": "pass; rerun detail_l2_fixture_probe DW-L2-TODO044-001 OK",
     "jsonValidation": "pass; detail_probe and run_001 parsed by py -3 -m json.tool",
     "ctest": {
-      "result": "pass",
-      "tests": "17/17 passed; total 147.18 sec",
+      "result": "pending fresh rerun after registry probe correction",
+      "tests": "pending",
       "command": "ctest --test-dir app/build --output-on-failure"
     },
     "readinessGate": {
-      "result": "pass",
-      "decision": "M1-Formal-Ready",
-      "checks": "84/84 pass",
-      "errors": 0,
-      "warnings": 0,
+      "result": "pending fresh rerun after registry probe correction",
+      "decision": "pending",
+      "checks": "pending",
+      "errors": null,
+      "warnings": null,
       "command": "py -3 tools/phase1_readiness_gate/check_phase1_readiness.py --strict"
     },
-    "occtLeakScan": "pass; domain/rebar, drawing, project boundary ok",
-    "diffCheck": "pass; git diff --check exit 0 with CRLF warnings only",
+    "occtLeakScan": "pending fresh rerun after registry probe correction",
+    "diffCheck": "pending fresh rerun after registry probe correction",
     "xhighReview": {
-      "verdict": "needs_fix_then_fixed",
-      "critical": "none",
-      "important": "xhigh status was still pending in run_001 md/json and 46; main flow filled review result after Dewey returned",
-      "minor": "none",
-      "reviewer": "Dewey / 019ea216-21f4-70f0-a469-cb5753eb6adc",
+      "verdict": "pending fresh xhigh read-only review after registry probe correction",
+      "critical": "pending",
+      "important": "pending",
+      "minor": "pending",
+      "reviewer": "pending",
       "readOnly": true,
-      "closedAfterReview": true,
-      "routeDrift": "no",
-      "autocadL2Misclaim": "no",
-      "algorithmMisclaim": "no"
-    }
+      "closedAfterReview": false,
+      "routeDrift": "pending",
+      "autocadL2Misclaim": "pending",
+      "algorithmMisclaim": "pending"
+    },
+    "environmentProbeRegression": "RED confirmed against old HEAD probe: current environment test failed with three registry exists mismatches; GREEN pending fresh rerun after RegOpenKeyExW registry root-key detection"
   },
   "boundaries": [
     "AutoCAD L2 import is not_run",

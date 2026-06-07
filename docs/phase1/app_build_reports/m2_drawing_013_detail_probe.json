@@ -1,7 +1,7 @@
 {
     "autocadEnvironment": {
         "autocadExecutableFound": false,
-        "autocadRegistryFound": false,
+        "autocadRegistryFound": true,
         "automaticL2Possible": false,
         "executables": [
             {
@@ -18,17 +18,20 @@
         "registry": [
             {
                 "childGroupCount": 0,
-                "exists": false,
+                "childKeyCount": 0,
+                "exists": true,
                 "key": "HKEY_LOCAL_MACHINE\\SOFTWARE\\Autodesk\\AutoCAD"
             },
             {
                 "childGroupCount": 0,
-                "exists": false,
+                "childKeyCount": 0,
+                "exists": true,
                 "key": "HKEY_LOCAL_MACHINE\\SOFTWARE\\WOW6432Node\\Autodesk\\AutoCAD"
             },
             {
                 "childGroupCount": 0,
-                "exists": false,
+                "childKeyCount": 0,
+                "exists": true,
                 "key": "HKEY_CURRENT_USER\\SOFTWARE\\Autodesk\\AutoCAD"
             }
         ],

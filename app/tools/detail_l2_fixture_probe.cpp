@@ -19,6 +19,10 @@
 #include <cstdlib>
 #include <string>
 
+#ifdef Q_OS_WIN
+#include <windows.h>
+#endif
+
 namespace {
 
 tsrebar::RebarEvidenceRef evidenceRef(const std::string& id, const std::string& note)
@@ -823,14 +827,45 @@ QJsonObject registryKeyProbe(const QString& key)
     QJsonObject result;
     result.insert(QStringLiteral("key"), key);
 #ifdef Q_OS_WIN
+    auto keyExists = [](const QString& registryKey) -> bool {
+        const QString hklm = QStringLiteral("HKEY_LOCAL_MACHINE\\");
+        const QString hkcu = QStringLiteral("HKEY_CURRENT_USER\\");
+
+        HKEY root = nullptr;
+        QString subKey;
+        if (registryKey.startsWith(hklm)) {
+            root = HKEY_LOCAL_MACHINE;
+            subKey = registryKey.mid(hklm.size());
+        } else if (registryKey.startsWith(hkcu)) {
+            root = HKEY_CURRENT_USER;
+            subKey = registryKey.mid(hkcu.size());
+        } else {
+            return false;
+        }
+
+        HKEY opened = nullptr;
+        const LONG status = RegOpenKeyExW(root,
+                                          reinterpret_cast<LPCWSTR>(subKey.utf16()),
+                                          0,
+                                          KEY_READ,
+                                          &opened);
+        if (status == ERROR_SUCCESS) {
+            RegCloseKey(opened);
+            return true;
+        }
+        return false;
+    };
+
     QSettings settings(key, QSettings::NativeFormat);
     const QStringList childGroups = settings.childGroups();
     const QStringList childKeys = settings.childKeys();
-    result.insert(QStringLiteral("exists"), !childGroups.isEmpty() || !childKeys.isEmpty());
+    result.insert(QStringLiteral("exists"), keyExists(key));
     result.insert(QStringLiteral("childGroupCount"), childGroups.size());
+    result.insert(QStringLiteral("childKeyCount"), childKeys.size());
 #else
     result.insert(QStringLiteral("exists"), false);
     result.insert(QStringLiteral("childGroupCount"), 0);
+    result.insert(QStringLiteral("childKeyCount"), 0);
 #endif
     return result;
 }
