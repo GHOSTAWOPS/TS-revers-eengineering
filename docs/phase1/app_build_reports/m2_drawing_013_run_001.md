@@ -133,37 +133,48 @@ cmake --build app/build
   -> pass; ninja: no work to do
 
 ctest --test-dir app/build --output-on-failure
-  -> pending fresh rerun after registry probe correction
+  -> 18/18 passed; total 125.83 sec
 
 py -3 tools/phase1_readiness_gate/test_phase1_readiness_gate.py
-  -> pending fresh rerun after registry probe correction
+  -> 16/16 OK
 
 py -3 tools/phase1_readiness_gate/check_phase1_readiness.py --strict
-  -> pending fresh rerun after registry probe correction
+  -> M1-Formal-Ready; 84/84 pass; 0 errors; 0 warnings
 
 py -3 app/tools/check_domain_rebar_boundary.py app/src/domain/rebar
 py -3 app/tools/check_domain_rebar_boundary.py app/src/drawing
 py -3 app/tools/check_domain_rebar_boundary.py app/src/project
-  -> pending fresh rerun after registry probe correction
+  -> pass; boundary ok for all three protected layers
 
 git diff --check
-  -> pending fresh rerun after registry probe correction
+  -> pass; exit 0
+
+py -3 app/tests/integration/test_detail_l2_fixture_probe_environment.py \
+  ../__tdd_red_todo044_probe/app/build/detail_l2_fixture_probe.exe
+  -> RED confirmed on old HEAD probe:
+     HKEY_LOCAL_MACHINE\SOFTWARE\Autodesk\AutoCAD exists mismatch
+     HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\Autodesk\AutoCAD exists mismatch
+     HKEY_CURRENT_USER\SOFTWARE\Autodesk\AutoCAD exists mismatch
+
+py -3 app/tests/integration/test_detail_l2_fixture_probe_environment.py \
+  app/build/detail_l2_fixture_probe.exe
+  -> GREEN; exit 0
 ```
 
 ## xhigh 只读 Review
 
 ```text
-verdict = pending fresh xhigh read-only review after registry probe correction
-Critical = pending
-Important = pending
-Fixed = pending
-Minor = pending
-Route drift = pending
-L2 claim audit = pending
-Algorithm claim audit = pending
-Protected OCCT leak = pending
-agent = pending
-agent closed after review = pending
+verdict = allow_commit
+Critical = none
+Important = none
+Fixed = no code/doc fix required after review
+Minor = none
+Route drift = no
+L2 claim audit = no misclaim
+Algorithm claim audit = no misclaim
+Protected OCCT leak = no leak
+agent = todo044_report_xhigh_reviewer / Faraday / 019ea247-5a97-7310-ac0e-77d3e1e3b054
+agent closed after review = true
 ```
 
 ## 明确不声明

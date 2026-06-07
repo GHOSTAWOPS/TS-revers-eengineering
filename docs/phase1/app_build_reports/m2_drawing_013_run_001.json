@@ -86,33 +86,34 @@
     "othersSteeljointProbe": "pass; rerun detail_l2_fixture_probe DW-L2-TODO044-001 OK",
     "jsonValidation": "pass; detail_probe and run_001 parsed by py -3 -m json.tool",
     "ctest": {
-      "result": "pending fresh rerun after registry probe correction",
-      "tests": "pending",
+      "result": "pass",
+      "tests": "18/18 passed; total 125.83 sec",
       "command": "ctest --test-dir app/build --output-on-failure"
     },
     "readinessGate": {
-      "result": "pending fresh rerun after registry probe correction",
-      "decision": "pending",
-      "checks": "pending",
-      "errors": null,
-      "warnings": null,
+      "result": "pass",
+      "decision": "M1-Formal-Ready",
+      "checks": "84/84 pass",
+      "errors": 0,
+      "warnings": 0,
       "command": "py -3 tools/phase1_readiness_gate/check_phase1_readiness.py --strict"
     },
-    "occtLeakScan": "pending fresh rerun after registry probe correction",
-    "diffCheck": "pending fresh rerun after registry probe correction",
+    "occtLeakScan": "pass; domain/rebar, drawing, project boundary ok",
+    "diffCheck": "pass; git diff --check exit 0",
     "xhighReview": {
-      "verdict": "pending fresh xhigh read-only review after registry probe correction",
-      "critical": "pending",
-      "important": "pending",
-      "minor": "pending",
-      "reviewer": "pending",
+      "verdict": "allow_commit",
+      "critical": "none",
+      "important": "none",
+      "minor": "none",
+      "reviewer": "todo044_report_xhigh_reviewer / Faraday / 019ea247-5a97-7310-ac0e-77d3e1e3b054",
       "readOnly": true,
-      "closedAfterReview": false,
-      "routeDrift": "pending",
-      "autocadL2Misclaim": "pending",
-      "algorithmMisclaim": "pending"
+      "closedAfterReview": true,
+      "routeDrift": "no",
+      "autocadL2Misclaim": "no",
+      "algorithmMisclaim": "no",
+      "protectedOcctLeak": "no"
     },
-    "environmentProbeRegression": "RED confirmed against old HEAD probe: current environment test failed with three registry exists mismatches; GREEN pending fresh rerun after RegOpenKeyExW registry root-key detection"
+    "environmentProbeRegression": "pass; RED confirmed against old HEAD probe with three registry exists mismatches; GREEN passed after RegOpenKeyExW registry root-key detection"
   },
   "boundaries": [
     "AutoCAD L2 import is not_run",
