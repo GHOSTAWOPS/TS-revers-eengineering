@@ -1,0 +1,23 @@
+{
+  "todoId": "TODO-049",
+  "phase": "M2-Drawing-018",
+  "decision": "local-precheck-plus-ida-fallback-supplement-recorded-user-manual-confirmation-pending",
+  "userActionRequired": true,
+  "algorithmImplemented": false,
+  "autocadL2": "not_run",
+  "idaSupplement": {
+    "completed": true,
+    "fallbackIsGenericLicenseBootstrapFailure": true,
+    "startupFallbackDirectReturnCodeObserved": 500,
+    "stringsAreLicenseStackMarkersOnly": true,
+    "stringXrefs": {
+      "HL_LICENSEDIR": "sub_14031C11B",
+      "hlrus_license_file.alf": "sub_14031C11B",
+      "hasp_enabled": "sub_1401882A8",
+      "nethasptype": "sub_14018B7D0",
+      "NETHASP_00112233445566zz": "sub_140237E8A"
+    }
+  },
+  "manualConfirmationCompleted": false,
+  "oldRuntimeAutomaticallyLaunched": false
+}

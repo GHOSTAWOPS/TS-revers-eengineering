@@ -316,6 +316,8 @@ planned tag = evidence-049/visualts-startup-manual-prereq-p0
 TODO-049 / 旧图石启动前置条件用户手工确认 P0
   -> 基于 TODO-048 已闭合的启动阻塞主链和手工清单，
      由用户手工确认许可 / 服务 / 网络 / license file 环境后再重试旧图石启动。
+  -> 当前 agent 侧本机预检已完成：网络基础在线、`SafeNet Sentinel / Sentinel LDK`
+     数据目录存在，但本地典型许可服务、监听端口和环境变量仍未出现。
   -> 若仍失败，记录完整弹框文本、环境状态和下一轮所需输入。
   -> 若成功进入主界面，再回到非空 `steeljoint-line / joints / Others` 运行样例采集。
 ```
@@ -585,6 +587,9 @@ TODO-048 已静态确认：
   - 41 -> 许可已过期
   - 其他非 0 -> 请检查网线是否接好
   - 当前阻塞与 Sentinel / HASP / SuperDog / NetHASP 许可栈强相关
+  - 本机预检：基础网络在线，`SafeNet Sentinel / Sentinel LDK` 数据目录存在，
+    但 `hasplms / aksfridge` 未安装，`127.0.0.1:1947/475/6001` 未监听，
+    相关环境变量未命中，常见 `SafeNet` 安装目录未发现
 
 当前仍未闭合：
   - 本机真实失败码 / 许可模式 / 服务状态
@@ -696,6 +701,17 @@ TODO-048 / Evidence = done
      并形成用户手工解除前置条件清单。
      本节点只补静态证据和手工清单，不声明旧图石已能正常启动、
      真实接头线算法、Others 几何算法、AutoCAD L2、旧插件接受或 golden。
+
+TODO-049 / Evidence = in_progress
+  -> 已补 `E-DEV-071`，完成 agent 侧本机预检：
+     网络基础在线、`SafeNet Sentinel / Sentinel LDK` 数据目录存在，
+     但本地典型许可服务、监听端口和环境变量仍未出现。
+  -> 已补 `E-IDA-031`，确认 `sub_14070C760` 会在许可上下文未 ready
+     或对象映射失败时直接走 fallback；
+     `请检查网线是否接好` 是宽兜底许可初始化失败文案，
+     不能只按“网络断了”理解。
+     当前节点仍必须等待用户现场手工确认 USB 狗 / 网络许可 / 内网或 VPN /
+     手工启动结果，不能写成 done。
 ```
 
 工作目录：
@@ -763,7 +779,8 @@ C:\Users\ghost\Desktop\reverse_engineering\【03】图石软件
 本轮验收标准：
 
 1. 只执行 TODO-049，不一次铺开完整工程图全部能力。
-2. 基于 `E-IDA-030 / E-DEV-070` 的手工清单，由用户自己确认许可 / 服务 / 网络 / license file 环境并手工重试旧图石启动。
+2. 基于 `E-IDA-030 / E-DEV-070 / E-IDA-031` 的手工清单，由用户自己确认许可 / 服务 / 网络 / license file 环境并手工重试旧图石启动。
+   本机预检 `E-DEV-071` 已完成，不需要再重复做 agent 侧环境扫描。
 3. 如果旧图石仍无法进入主界面，必须记录完整弹框文本、环境状态和下一轮所需输入。
 4. 如果旧图石可以进入主界面，必须记录成功进入主界面的证据，并把下一步切回非空运行样例采集，而不是直接写算法。
 5. 不得把字段骨架、OCCT 能力或 AutoCAD L2 清单写成算法证据。
@@ -1025,6 +1042,7 @@ TODO-048 验证 = startup chain closed, error41=许可已过期, otherNonZeroFal
 ```text
 TODO-049 / 旧图石启动前置条件用户手工确认 P0
   -> 按 TODO-048 已形成的手工清单检查许可 / 服务 / 网络 / license file 环境
+  -> agent 侧本机预检已完成，不再重复自动环境扫描
   -> 用户自己手工重试旧图石启动
   -> 只补手工确认结果和剩余 GAP；不自动启动旧图石，不实现真实接头线 / Others 几何算法，不声明 AutoCAD L2 通过，不进入 golden
 ```
@@ -1102,8 +1120,9 @@ golden 采集 TODO-026 暂按用户要求保持 pending。
 
 - **Primary Setpoint**：下一轮只完成 `TODO-049 / 旧图石启动前置条件用户手工确认 P0`，按 TODO-048 已闭合的静态阻塞链逐项确认外部前置条件，并得到“仍阻塞”或“可进主界面”的人工结果。
 - **Acceptance**：形成用户手工确认结果；若仍阻塞则记录完整弹框文本和环境状态，若已进入主界面则记录成功证据并把下一步切回非空样例采集；默认 CTest、readiness gate、OCCT 泄漏检查通过；按需执行 xhigh 只读 review；更新实现记录、build report、追溯矩阵、缺口文档、46 和 todo。
+- **Acceptance**：形成用户手工确认结果；若仍阻塞则记录完整弹框文本和环境状态，若已进入主界面则记录成功证据并把下一步切回非空样例采集；`E-DEV-071` 的本机预检和 `E-IDA-031` 的 fallback 语义补证都只能作为准备证据，不能替代现场结果；默认 CTest、readiness gate、OCCT 泄漏检查通过；按需执行 xhigh 只读 review；更新实现记录、build report、追溯矩阵、缺口文档、46 和 todo。
 - **Guardrail Metrics**：不能实现真实接头线 / Others 几何算法；不能在没有运行证据时声明 AutoCAD L2 通过；不能把单次阻塞截图写成旧业务算法证据；不能改钢筋创建业务；不能迁入父目录 rebar 业务；不能进入 golden 全量采集。
-- **Sampling Plan**：先读 `todo.csv / 03 / 34 / 84 / 99`，再由用户按清单手工确认许可 / 服务 / 网络 / license file 环境并手工重试旧图石；agent 不自动启动旧图石；最后运行默认 CTest、readiness gate 和 OCCT 泄漏扫描，证明本轮没有破坏工程基线。
+- **Sampling Plan**：先读 `todo.csv / 03 / 34 / 84 / 85 / 99`，确认 `E-DEV-071` 已记录本机预检，再由用户按清单手工确认许可 / 服务 / 网络 / license file 环境并手工重试旧图石；agent 不自动启动旧图石；最后运行默认 CTest、readiness gate 和 OCCT 泄漏扫描，证明本轮没有破坏工程基线。
 - **Known Delays**：启动阻塞当前依赖用户手工环境确认；agent 不能代替用户完成加密狗、服务、网络许可和 license file 现场状态确认。
 - **Recovery Target**：如果手工确认后仍不可推进，把阻塞原因写入 `99` 和 build report，不继续猜算法、不堆后续工程图实现。
 - **Rollback Trigger**：无证据实现接头线 / Others / 工程图算法；把字段骨架或单次截图当成旧插件接受证明；无运行证据声明 L2 通过；让 `domain/rebar` 泄漏 OCCT/AIS；测试或 gate 失败仍继续堆功能。
@@ -1139,9 +1158,10 @@ golden 采集 TODO-026 暂按用户要求保持 pending。
 ```text
 TODO-049 / 旧图石启动前置条件用户手工确认 P0
   -> 按 TODO-048 已形成的手工清单检查许可 / 服务 / 网络 / license file 环境
+  -> agent 侧本机预检已由 E-DEV-071 记录完成
   -> 用户自己手工重试旧图石启动
   -> 只补手工确认结果和剩余 GAP；不自动启动旧图石，不实现真实接头线 / Others 几何算法，不声明 AutoCAD L2 通过，不进入 golden
 ```
 
-原因很简单：TODO-048 已把启动阻塞链和手工前置条件静态闭合；下一步不该继续让 agent 自动碰旧图石，而是该由用户按清单做一次现场环境确认，再决定是否回到非空样例采集。
+原因很简单：TODO-048 已把启动阻塞链和手工前置条件静态闭合，E-DEV-071 又补完了 agent 侧本机预检；下一步不该继续让 agent 自动碰旧图石，而是该由用户按清单做一次现场环境确认，再决定是否回到非空样例采集。
 TODO-026 golden 采集暂按用户要求保持 pending。

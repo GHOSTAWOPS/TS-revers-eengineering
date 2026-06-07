@@ -1,0 +1,37 @@
+{
+  "todoId": "TODO-049",
+  "phase": "M2-Drawing-018",
+  "decision": "local-precheck-recorded-user-manual-confirmation-pending",
+  "userActionRequired": true,
+  "algorithmImplemented": false,
+  "autocadL2": "not_run",
+  "localPrecheck": {
+    "services": {
+      "hasplms": "not_installed",
+      "aksfridge": "not_installed"
+    },
+    "ports": {
+      "1947": false,
+      "475": false,
+      "6001": false
+    },
+    "envVarsMatched": false,
+    "paths": {
+      "programDataSafeNetSentinel": true,
+      "programDataSentinelLDK": true,
+      "programFilesSafeNetSentinel": false,
+      "programFilesX86SafeNetSentinel": false,
+      "commonFilesSafeNet": false,
+      "commonFilesX86SafeNet": false
+    },
+    "network": {
+      "upAdapters": [
+        "WLAN",
+        "vEthernet (FSE HostVnic)",
+        "vEthernet (Default Switch)"
+      ]
+    }
+  },
+  "manualConfirmationCompleted": false,
+  "oldRuntimeAutomaticallyLaunched": false
+}

@@ -1856,12 +1856,107 @@ sub_140605B20
 - 1~4：高。
 - 5：中；当前属于许可栈侧证据，不是已闭合的主因。
 
+## TODO-049 启动前置条件 IDA 补充
+
+Evidence ID：
+
+- `E-IDA-031`
+
+本轮复核时重开的 IDA MCP 会话：
+
+```text
+database = visualts_i64_todo049
+input = C:\Users\ghost\Desktop\reverse_engineering\【03】图石软件\VisualTS.exe.i64
+Hex-Rays = ready
+```
+
+### fallback 不是纯“网络报错”
+
+`sub_14070C760` 当前可确认：
+
+```text
+sub_14070CBF0(&v9)
+if (licenseContextReady && sub_14070D178(&v9, a1 + 8) != 0)
+  return sub_14070D454(...)
+else
+  return 500
+```
+
+其中：
+
+```text
+sub_14070CBF0
+  -> 先取线程级许可上下文
+  -> 再用 sub_14070D618(v2 + 24) 判断上下文是否 ready
+
+sub_14070D618
+  -> *(byte *)(ctx + 40) == 0 时直接返回 0
+  -> 否则 EnterCriticalSection(ctx) 后返回 1
+
+sub_14070D178
+  -> 如果 ready 标志为 0，直接返回 0
+  -> ready 为 1 时，再按映射表取具体许可对象
+```
+
+工程含义：
+
+```text
+“请检查网线是否接好” 这条旧文案并不等于
+“已经明确走到网络许可握手失败”。
+
+只要许可上下文没 ready、对象映射失败，
+sub_14070C760 就会先返回 fallback 路径。
+```
+
+所以当前更准确的表述应该是：
+
+```text
+这是一条宽兜底的许可 / 环境初始化失败文案，
+不是只能解释成“网线没插”。
+```
+
+### 许可字符串更像底层栈标记，不是 app 级直接配置口
+
+本轮复核字符串 xref：
+
+```text
+HL_LICENSEDIR             -> sub_14031C11B
+hlrus_license_file.alf   -> sub_14031C11B
+hasp_enabled              -> sub_1401882A8
+nethasptype               -> sub_14018B7D0
+NETHASP_00112233445566zz  -> sub_140237E8A
+```
+
+当前可保守确认：
+
+```text
+这些字符串都落在 Sentinel / HASP / NetHASP 许可栈内部函数里，
+当前没有直接落到旧图石启动 wrapper 自己的 app 级配置分支。
+```
+
+这说明 `TODO-049` 的人工动作优先级应该保持为：
+
+```text
+1. 先确认许可模式：USB 狗 / 网络许可 / 其他。
+2. 再确认服务、内网 / VPN、宿主机可达性。
+3. 最后再查 HL_LICENSEDIR / license file 目录链。
+```
+
+本轮不能过度推断：
+
+```text
+- 不能据此写成“当前一定是 network license”。
+- 不能据此写成“当前一定是 license file 缺失”。
+- 不能据此写成“当前 fallback = 500 就是唯一失败码”。
+- 不能据此替代用户现场手工启动结果。
+```
+
 ## 待继续分析
 
 - `sub_1404DE110` 和 `sub_1404DE720` 已完成第二轮 IDA MCP 补证，公共生成链已追到 `sub_1404D10C0 -> sub_140451730 -> sub_1405D5670 -> sub_1405BD0C0 / sub_1405C7260 / sub_1405E49D0`。
 - `sub_1405D5670` 已确认 split / spline / trim / min-distance / 写回主规则，但第 4 个 double 参数来源、字段业务名和对象名仍需继续闭合。
 - `TODO-046 / E-IDA-029` 已把 `JointRuler / JointDistbet / JointWeldLength` 的旧参数链、`JointWeldLength / 2000.0` 半长公式、`pattern` raw byte `'L'`、`Others / symbolcutIOS` gate 和额外弧线 / `DrawTaoTong` 关系继续补证；但 owning enum / 结构名、旧 UI 触发、旧运行非空样例和旧插件接受度仍需继续闭合。
-- `TODO-048 / E-IDA-030` 已把旧图石启动期阻塞链闭合到 `sub_1406BBFC0 -> sub_1406BC3B0 -> sub_14070C760`，并确认 `41 -> 许可已过期`、其他非 0 -> `请检查网线是否接好`、`ChaspBase` 许可对象和 `HASP / SuperDog / NetHASP` 许可栈侧证据；但当前本机究竟卡在“许可过期 / 网络不可达 / 许可服务未就绪 / 许可文件链异常”的哪一种真实环境原因，仍需用户手工确认。
+- `TODO-048 / E-IDA-030` 已把旧图石启动期阻塞链闭合到 `sub_1406BBFC0 -> sub_1406BC3B0 -> sub_14070C760`，并确认 `41 -> 许可已过期`、其他非 0 -> `请检查网线是否接好`、`ChaspBase` 许可对象和 `HASP / SuperDog / NetHASP` 许可栈侧证据；`TODO-049 / E-IDA-031` 又补充了 fallback 是宽兜底许可初始化失败文案，不是纯网络专用报错；但当前本机究竟卡在“许可过期 / 网络不可达 / 许可服务未就绪 / 许可文件链异常”的哪一种真实环境原因，仍需用户手工确认。
 - `rebarz` / `rebarpost` 业务含义未闭合。
 - 顶部 Ribbon 按钮和英文命令并非一一对应，需要结合运行界面确认。
 - `生成工程图` 顶部按钮的命令表入口仍需继续追。
