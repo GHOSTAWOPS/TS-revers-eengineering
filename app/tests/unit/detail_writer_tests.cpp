@@ -736,6 +736,36 @@ void testDetailWriterWritesLineContainerFieldSkeleton()
     expect(hatchLine.value("ZValue") == "hatch-z", "hatch-line Line1 ZValue mismatch");
 }
 
+void testDetailWriterWritesOthersAndSteeljointContainerSkeleton()
+{
+    QTemporaryDir temp;
+    expect(temp.isValid(), "temporary dir must be valid");
+    const QString outputDir = QDir(temp.path()).filePath("drawings");
+
+    tsrebar::DetailWriteOptions options;
+    tsrebar::DetailDrawingViewOptions view;
+    view.viewId = "others-steeljoint-view-001";
+    view.drawingName = "todo043-others-steeljoint";
+    view.modelFileName = "todo043-model.step";
+    options.views.push_back(view);
+
+    const tsrebar::DetailWriter writer;
+    const auto result = writer.writePackage(outputDir, steelDataWithMixedGroup(), options);
+
+    expect(result.ok, "Others / steeljoint-line field skeleton Detail writer must succeed");
+    expect(result.l2 == "not_run", "Others / steeljoint-line skeleton must not claim AutoCAD L2");
+
+    const QString detailStl = QDir(outputDir).filePath("Detail01.stl");
+    const QStringList partChildren = directChildElementNames(detailStl, "PartDetailDrawing");
+    expect(partChildren.contains("Others"), "PartDetailDrawing must contain Others");
+    expect(partChildren.contains("steeljoint-line"), "PartDetailDrawing must contain steeljoint-line");
+    expect(directChildElementNames(detailStl, "Others").isEmpty(),
+           "Others skeleton must stay empty until old semantics are confirmed");
+    expectDirectChildren(detailStl, "steeljoint-line", {"joints"});
+    expect(directChildElementNames(detailStl, "joints").isEmpty(),
+           "steeljoint-line joints skeleton must stay empty until old joint algorithm is confirmed");
+}
+
 void testDetailWriterFailurePreservesExistingPackage()
 {
     QTemporaryDir temp;
@@ -939,6 +969,7 @@ int main()
     testDetailWriterWritesPointStbFaceEdgeFieldSkeleton();
     testDetailWriterWritesSectionLineFieldSkeleton();
     testDetailWriterWritesLineContainerFieldSkeleton();
+    testDetailWriterWritesOthersAndSteeljointContainerSkeleton();
     testDetailWriterFailurePreservesExistingPackage();
     testDetailWriterRejectsBrokenRebarReferencesBeforeWriting();
     testDetailWriterInstallFailureRestoresExistingPackage();

@@ -276,6 +276,14 @@ M2-Drawing-010 状态：
 - 当前本机仍未发现 `acad.exe / accoreconsole.exe / AutoCAD registry`，所以 `autocadL2=not_run`。
 - 该状态不等价于旧插件接受新包，也不等价于真实连续线 / 隐藏线 / 中心线 / 填充线算法完成。
 
+M2-Drawing-012 状态：
+
+- `E-DEV-065` 已让 `detail_l2_fixture_probe --fixture others-steeljoint` 生成独立三图纸包。
+- 离线 probe 已确认 `Others` 存在且为空，`steeljoint-line / joints` 容器存在。
+- `Others` 仍只保留为空容器骨架；`steeljoint-line` 仍只保留空 `joints` 容器。
+- 当前本机仍未发现 `acad.exe / accoreconsole.exe / AutoCAD registry`，所以 `autocadL2=not_run`。
+- 该状态不等价于旧插件接受新包，也不等价于真实接头线算法或 Others 几何算法完成。
+
 ## pointStb / FaceEdge 补充字段
 
 | Detail 字段 | 新模型字段 | 状态 | 说明 |

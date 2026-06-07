@@ -294,6 +294,7 @@ add_test(
     NAME detail_l2_fixture_probe_tests
     COMMAND detail_l2_fixture_probe
         ${CMAKE_CURRENT_BINARY_DIR}/detail_l2_fixture_probe_test_package
+        --fixture others-steeljoint
         --views 3)
 add_test(NAME app_smoke COMMAND tsrebar_app --smoke)
 set_tests_properties(app_smoke PROPERTIES

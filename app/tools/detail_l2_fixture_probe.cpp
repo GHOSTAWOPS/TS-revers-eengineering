@@ -769,6 +769,45 @@ QJsonObject lineContainersProbe(const QString& detailStlPath)
     return result;
 }
 
+QJsonObject othersSteeljointProbe(const QString& detailStlPath)
+{
+    QJsonObject result;
+    result.insert(QStringLiteral("file"), QFileInfo(detailStlPath).absoluteFilePath());
+    result.insert(QStringLiteral("scope"),
+                  QStringLiteral("Others empty container + steeljoint-line/joints container skeleton only"));
+
+    const QStringList partChildren =
+        directChildElementNames(detailStlPath, QStringLiteral("PartDetailDrawing"));
+    const bool othersPresent = partChildren.contains(QStringLiteral("Others"));
+    const bool steeljointPresent = partChildren.contains(QStringLiteral("steeljoint-line"));
+    const QStringList othersChildren = directChildElementNames(detailStlPath, QStringLiteral("Others"));
+    const QStringList steeljointChildren =
+        directChildElementNames(detailStlPath, QStringLiteral("steeljoint-line"));
+    const bool jointsPresent = steeljointChildren.contains(QStringLiteral("joints"));
+
+    QJsonObject others;
+    others.insert(QStringLiteral("present"), othersPresent);
+    others.insert(QStringLiteral("expectedEmpty"), true);
+    others.insert(QStringLiteral("actualChildren"), toJsonArray(othersChildren));
+    others.insert(QStringLiteral("passed"), othersPresent && othersChildren.isEmpty());
+
+    QJsonObject steeljoint;
+    steeljoint.insert(QStringLiteral("present"), steeljointPresent);
+    steeljoint.insert(QStringLiteral("requiredChildren"), QJsonArray{QStringLiteral("joints")});
+    steeljoint.insert(QStringLiteral("actualChildren"), toJsonArray(steeljointChildren));
+    steeljoint.insert(QStringLiteral("jointsPresent"), jointsPresent);
+    steeljoint.insert(QStringLiteral("passed"), steeljointPresent && jointsPresent);
+
+    result.insert(QStringLiteral("others"), others);
+    result.insert(QStringLiteral("steeljointLine"), steeljoint);
+    result.insert(QStringLiteral("algorithmImplemented"), false);
+    result.insert(QStringLiteral("autocadL2Claimed"), false);
+    result.insert(QStringLiteral("passed"),
+                  others.value(QStringLiteral("passed")).toBool() &&
+                      steeljoint.value(QStringLiteral("passed")).toBool());
+    return result;
+}
+
 QJsonObject executableProbe(const QString& executable)
 {
     QJsonObject result;
@@ -909,7 +948,7 @@ int main(int argc, char* argv[])
         QStringLiteral("DW-L2-TODO036-001"));
     const QCommandLineOption fixtureOption(
         QStringLiteral("fixture"),
-        QStringLiteral("Fixture to generate: complex-skeleton, point-face-edge, section-line, or line-containers."),
+        QStringLiteral("Fixture to generate: complex-skeleton, point-face-edge, section-line, line-containers, or others-steeljoint."),
         QStringLiteral("name"),
         QStringLiteral("complex-skeleton"));
     const QCommandLineOption pluginDirOption(
@@ -946,28 +985,34 @@ int main(int argc, char* argv[])
     if (fixture != QStringLiteral("complex-skeleton") &&
         fixture != QStringLiteral("point-face-edge") &&
         fixture != QStringLiteral("section-line") &&
-        fixture != QStringLiteral("line-containers")) {
-        QTextStream(stderr) << "fixture must be complex-skeleton, point-face-edge, section-line, or line-containers\n";
+        fixture != QStringLiteral("line-containers") &&
+        fixture != QStringLiteral("others-steeljoint")) {
+        QTextStream(stderr) << "fixture must be complex-skeleton, point-face-edge, section-line, line-containers, or others-steeljoint\n";
         return EXIT_FAILURE;
     }
 
     const bool pointFaceEdgeFixture = fixture == QStringLiteral("point-face-edge");
     const bool sectionLineFixture = fixture == QStringLiteral("section-line");
     const bool lineContainersFixture = fixture == QStringLiteral("line-containers");
+    const bool othersSteeljointFixture = fixture == QStringLiteral("others-steeljoint");
     options.drawingName = pointFaceEdgeFixture
         ? QStringLiteral("todo037-point-face-edge")
         : (sectionLineFixture
                ? QStringLiteral("todo038-section-line")
                : (lineContainersFixture
                       ? QStringLiteral("todo040-line-containers")
-                      : QStringLiteral("todo036-complex-skeleton-l2")));
+                      : (othersSteeljointFixture
+                             ? QStringLiteral("todo043-others-steeljoint")
+                             : QStringLiteral("todo036-complex-skeleton-l2"))));
     options.modelFileName = pointFaceEdgeFixture
         ? QStringLiteral("todo037-model.step")
         : (sectionLineFixture
                ? QStringLiteral("todo038-model.step")
                : (lineContainersFixture
                       ? QStringLiteral("todo040-model.step")
-                      : QStringLiteral("todo036-model.step")));
+                      : (othersSteeljointFixture
+                             ? QStringLiteral("todo043-model.step")
+                             : QStringLiteral("todo036-model.step"))));
     options.drawingUnit = QStringLiteral("m");
     options.drawingScale = QStringLiteral("1");
     for (int index = 1; index <= viewCount; ++index) {
@@ -976,7 +1021,9 @@ int main(int argc, char* argv[])
             ? QStringLiteral("todo037")
             : (sectionLineFixture
                    ? QStringLiteral("todo038")
-                   : (lineContainersFixture ? QStringLiteral("todo040") : QStringLiteral("todo036")));
+                   : (lineContainersFixture
+                          ? QStringLiteral("todo040")
+                          : (othersSteeljointFixture ? QStringLiteral("todo043") : QStringLiteral("todo036"))));
         view.viewId = QStringLiteral("%1-view-%2").arg(prefix).arg(index, 3, 10, QLatin1Char('0'));
         view.drawingName = QStringLiteral("%1-view-%2").arg(prefix).arg(index);
         view.modelFileName = QStringLiteral("%1-model-%2.step").arg(prefix).arg(index);
@@ -1046,6 +1093,10 @@ int main(int argc, char* argv[])
                     ? QJsonArray{QStringLiteral("E-DETAIL-003"),
                                  QStringLiteral("E-DEV-056"),
                                  QStringLiteral("E-DEV-061")}
+                    : othersSteeljointFixture
+                    ? QJsonArray{QStringLiteral("E-DETAIL-003"),
+                                 QStringLiteral("E-DEV-056"),
+                                 QStringLiteral("E-DEV-065")}
                     : QJsonArray{QStringLiteral("E-DEV-055"),
                                  QStringLiteral("E-DETAIL-003"),
                                  QStringLiteral("E-DEV-057"),
@@ -1065,6 +1116,9 @@ int main(int argc, char* argv[])
     }
     if (lineContainersFixture) {
         root.insert(QStringLiteral("lineContainers"), lineContainersProbe(firstDrawing));
+    }
+    if (othersSteeljointFixture) {
+        root.insert(QStringLiteral("othersSteeljoint"), othersSteeljointProbe(firstDrawing));
     }
 
     QJsonArray files;
@@ -1091,6 +1145,11 @@ int main(int argc, char* argv[])
         return root.value(QStringLiteral("lineContainers")).toObject().value(QStringLiteral("passed")).toBool()
             ? EXIT_SUCCESS
             : 6;
+    }
+    if (othersSteeljointFixture) {
+        return root.value(QStringLiteral("othersSteeljoint")).toObject().value(QStringLiteral("passed")).toBool()
+            ? EXIT_SUCCESS
+            : 7;
     }
     return complexSkeleton.value(QStringLiteral("passed")).toBool() ? EXIT_SUCCESS : 3;
 }

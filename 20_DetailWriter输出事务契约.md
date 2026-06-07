@@ -811,3 +811,47 @@ autocadEnvironment.status = not_found
 - 当前不能声明旧插件接受 `pointStb / FaceEdge` 字段组合。
 - 当前不能声明点筋真实生成算法或 FaceEdge 生成规则已实现。
 - 当前不能声明 AutoCAD L2 通过、完整工程图或 golden。
+
+## M2-Drawing-012 Others / steeljoint-line 字段骨架 P0 状态
+
+当前正式证据已补：
+
+```text
+E-DEV-065
+TODO-043 / M2-Drawing-012
+```
+
+已完成：
+
+- `DetailWriter` 保持输出 `Others` 空容器。
+- `DetailWriter` 保持输出 `steeljoint-line / joints` 空容器骨架。
+- 新增 `detail_l2_fixture_probe --fixture others-steeljoint` 独立变量。
+- probe 离线确认 `Others` 存在且没有子节点。
+- probe 离线确认 `steeljoint-line` 存在且包含 `joints`。
+- `Phase1.ReadinessGate` 的 done-report 映射新增 `TODO-043`，防止任务 done 后缺实现记录或 build report。
+
+当前结论：
+
+```text
+decision = l0-l1-pass
+l0 = passed
+l1 = passed
+l2 = not_run
+autocadL2 = not_run
+othersSteeljoint.passed = true
+others.present = true
+others.actualChildren = 0
+steeljointLine.present = true
+steeljointLine.jointsPresent = true
+algorithmImplemented = false
+fdrawingPlugin.status = ready
+autocadEnvironment.status = not_found
+```
+
+注意：
+
+- TODO-043 只证明 `Others` 和 `steeljoint-line / joints` 字段骨架可输出并可离线检查。
+- 当前未执行 APPLOAD，也未执行旧插件导入命令。
+- 当前不能声明旧插件接受 `Others / steeljoint-line` 字段组合。
+- 当前不能声明真实接头线算法或 Others 几何算法已实现。
+- 当前不能声明 AutoCAD L2 通过、完整工程图或 golden。

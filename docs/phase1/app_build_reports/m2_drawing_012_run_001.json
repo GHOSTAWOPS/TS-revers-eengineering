@@ -1,0 +1,140 @@
+{
+  "schemaVersion": "app-build-report/v1",
+  "reportId": "m2_drawing_012_run_001",
+  "createdAt": "2026-06-07T00:00:00+08:00",
+  "decision": "others-steeljoint-field-skeleton-ready-not-run",
+  "todoId": "TODO-043",
+  "phase": "M2-Drawing-012",
+  "scope": [
+    "DetailWriter Others / steeljoint-line field skeleton P0",
+    "others-steeljoint independent probe package generated for TODO-043",
+    "readiness gate done-report mapping for TODO-043",
+    "no real joint-line or Others geometry algorithm implementation"
+  ],
+  "evidence": [
+    "E-DETAIL-003",
+    "E-DEV-056",
+    "E-DEV-065"
+  ],
+  "probe": {
+    "path": "docs/phase1/app_build_reports/m2_drawing_012_detail_probe.json",
+    "schemaVersion": "detail-l2-fixture-probe/v1",
+    "runId": "DW-L2-TODO043-001",
+    "fixture": "others-steeljoint",
+    "decision": "l0-l1-pass",
+    "l0": "passed",
+    "l1": "passed",
+    "l2": "not_run",
+    "autocadL2": "not_run",
+    "othersSteeljoint": {
+      "algorithmImplemented": false,
+      "autocadL2Claimed": false,
+      "file": "C:/Users/ghost/Desktop/reverse_engineering/【03】图石软件/【图石钢筋1比1复刻】/docs/phase1/app_build_reports/m2_drawing_012_detail_package/Detail01.stl",
+      "others": {
+        "actualChildren": [],
+        "expectedEmpty": true,
+        "passed": true,
+        "present": true
+      },
+      "passed": true,
+      "scope": "Others empty container + steeljoint-line/joints container skeleton only",
+      "steeljointLine": {
+        "actualChildren": [
+          "joints"
+        ],
+        "jointsPresent": true,
+        "passed": true,
+        "present": true,
+        "requiredChildren": [
+          "joints"
+        ]
+      }
+    },
+    "autocadEnvironment": {
+      "status": "not_found",
+      "automaticL2Possible": false
+    },
+    "fdrawingPlugin": {
+      "status": "ready",
+      "allRequiredPresent": true
+    }
+  },
+  "files": [
+    {
+      "name": "Detail.xml",
+      "bytes": 186,
+      "root": "StyleRoot",
+      "sha256": "cbf196dbf3e68fb41486d3cd365f27fdadb394cff6a114ebe4dd020138b56e4d"
+    },
+    {
+      "name": "Detail01.stl",
+      "bytes": 4624,
+      "root": "DrawingRoot",
+      "sha256": "7e25983036b3150021f42ba47c608340b4ba868a42e88931140105bd061f484a"
+    },
+    {
+      "name": "Detail02.stl",
+      "bytes": 4624,
+      "root": "DrawingRoot",
+      "sha256": "d54fbdce40da3487fe524bd028a1c149cb121631b09e37f488a10cf2768a116d"
+    },
+    {
+      "name": "Detail03.stl",
+      "bytes": 4624,
+      "root": "DrawingRoot",
+      "sha256": "f2964b47a639f1234158917ef9b29109f99bb9bc997196f8aa6192b6dc4af993"
+    }
+  ],
+  "validation": {
+    "tdd": {
+      "red": "app/build/detail_l2_fixture_probe.exe --fixture others-steeljoint failed before fixture support: unsupported fixture",
+      "green": "detail_writer_tests and detail_l2_fixture_probe_tests passed after implementation"
+    },
+    "gateUnitTests": {
+      "result": "pass",
+      "redGreen": "TODO-043 done-report guard test failed before mapping; passed after mapping",
+      "tests": "15/15"
+    },
+    "othersSteeljointProbe": "pass",
+    "jsonValidation": "pass",
+    "ctest": {
+      "result": "pass",
+      "command": "ctest --test-dir app/build --output-on-failure",
+      "tests": "17/17"
+    },
+    "readinessGate": {
+      "result": "pass",
+      "command": "py -3 tools/phase1_readiness_gate/check_phase1_readiness.py --strict",
+      "checks": "84/84",
+      "decision": "M1-Formal-Ready"
+    },
+    "occtLeakScan": "pass",
+    "diffCheck": "pass",
+    "xhighReview": {
+      "verdict": "needs_fix",
+      "critical": "none",
+      "important": "34_Phase1ReadinessGate实际运行记录.md and 99_缺口和待确认项.md incorrectly listed 79 as a manual L2 checklist; fixed by main flow by clarifying that TODO-044 will generate the Others / steeljoint-line L2 checklist",
+      "minor": "none",
+      "reviewer": "Sartre / 019ea1dd-e207-7132-bd09-eccf2173670a",
+      "readOnly": true,
+      "closedAfterReview": true,
+      "routeDrift": "no",
+      "autocadL2Misclaim": "no",
+      "algorithmMisclaim": "no",
+      "evidenceConsistency": "pass",
+      "postReviewVerification": "json ok; gate unit tests 15/15 OK; strict readiness 84/84 pass; OCCT leak scan pass; git diff --check pass"
+    }
+  },
+  "boundaries": [
+    "AutoCAD L2 import is not_run",
+    "FDrawing acceptance is not confirmed",
+    "Others is an empty container skeleton only",
+    "steeljoint-line/joints is a container skeleton only",
+    "real joint-line generation rule remains a gap",
+    "real Others geometry rule remains a gap",
+    "no OCCT/AIS dependency in domain/rebar, drawing, or project protected layers",
+    "no parent rebar business migration",
+    "no golden claim"
+  ],
+  "next": "TODO-044 / M2-Drawing-013 proposed as next; do not implement in this goal turn"
+}
