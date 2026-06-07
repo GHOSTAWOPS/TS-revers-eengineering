@@ -294,6 +294,16 @@ M2-Drawing-014 状态：
 - 接头线半长配置绑定、额外 arc 分支、`Others / symbolcutIOS` 运行触发路径和旧插件接受度仍未闭合。
 - 当前仍不能把 `E-IDA-028` 写成真实接头线 / Others 算法已实现。
 
+M2-Drawing-015 状态：
+
+- `E-IDA-029` 已把 `JointWeldLength -> dword_14095D62C -> sub_1406107F0 / 2000.0` 的半长公式闭合。
+- `E-IDA-029` 已确认 `JointRuler -> dword_140994AB8` 和 `JointDistbet -> dword_14095D628` 在 `sub_1405DB340 / sub_1405E9640 / sub_1405EBA30 / sub_1405DFEF0` 中的字段 / 偏移链。
+- `pattern + 192` 当前至少能确认是字节字面量 `0x4C ('L')`，不再只是裸 `76`；拥有它的枚举 / 结构名仍未闭合。
+- `Others / symbolcutIOS` 当前已确认 gate = `*(v8 + 848)` 非空且 `a4 == 0`，节点来自 `*(v8 + 840)` 环形链，写出字段仍是 `center_x / center_y / center_z / code`。
+- 额外 `api_curve_arc_center_edge` 分支当前已确认与 `flags==0`、plane distance `< 0.4` 和 `DrawTaoTong` 置位相关，但容器业务名和旧 UI 触发仍未闭合。
+- `E-DEV-069` 已补旧图石运行 stop point：当前 `VisualTS.exe` 启动后先弹出 `提示 / 请检查网线是否...` 阻塞框，尚未进入可打开 `SFL` 的主界面，所以仍没有旧运行非空 `steeljoint-line / joints / Others / symbolcutIOS` 样例。
+- 当前仍不能把 `E-IDA-029` 写成真实接头线 / Others 算法已实现。
+
 ## pointStb / FaceEdge 补充字段
 
 | Detail 字段 | 新模型字段 | 状态 | 说明 |

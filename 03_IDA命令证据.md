@@ -1466,14 +1466,17 @@ sub_14061F970
 - 参数 `a5` 为 `ha_rendering_context *`。
 - 调用 `ha_rendering_context::GetPattern(a5)`。
 - 遍历 pattern 链：`pattern = *(pattern + 56)`。
-- 只处理 `*(int16 *)(pattern + 194) >= 1` 且 `*(byte *)(pattern + 192) == 76` 的 pattern。
+- 只处理 `*(int16 *)(pattern + 194) >= 1` 且 `*(byte *)(pattern + 192) == 0x4C ('L')` 的 pattern。
 - 从 `pattern + 344 -> +128` 取得 joint 点链。
 - 每个 joint 点从 `APOINT::coords(*(pointNode + 64))` 取坐标。
 - 从关联 `EDGE` 起点 / 终点求方向并 `normalise`。
-- 当前全局半长为 `dword_14095D62C / qword_14075CEE8`。
-  - `dword_14095D62C = 400`
-  - `qword_14075CEE8 = 2000.0`
-  - 当前半长数值为 `0.2`
+- 当前对称半长公式为 `dword_14095D62C / 2000.0`，不是固定常量样例值。
+- `sub_1406ED5E0 / sub_1406EDF80 / sub_1406AC410 / sub_1406AC6A0` 已闭合：
+  - `JointWeldLength <-> dword_14095D62C`
+  - 保存 / 读取口径为 `dword_14095D62C = dialogValue * 10`
+  - 所以 writer 使用的对称半长 = `dialogValue / 200.0` 模型单位
+  - 整条 `LineN` 总长 = `dialogValue / 100.0` 模型单位
+- `sub_1407306A0` 旧 HOOPS 显示链也使用 `(double)dword_14095D62C / 2000.0`，可作为独立旁证。
 - 对每个 joint 点生成沿 edge 方向的前后两端点，并在存在 transform 时变换。
 - 调用 `sub_1405398F0` 写入 `joints` 下的 `LineN`。
 
@@ -1554,20 +1557,311 @@ if (!sub_140610AA0(v8)) {
 在特定 flags 下，还可能额外生成 arc/line 类几何并走 sub_14053A6B0。
 ```
 
+### TODO-046 参数绑定与运行触发补证
+
+本轮继续追 `JointRuler / JointDistbet / JointWeldLength`、`pattern + 192`、
+额外 `api_curve_arc_center_edge` 分支和 `Others / symbolcutIOS` 触发链，当前可确认：
+
+- `sub_1406ED5E0 / sub_1406EDF80 / sub_1406AC410 / sub_1406AC6A0` 已把三个旧参数闭合为：
+
+```text
+JointRuler      <-> dword_140994AB8
+JointDistbet    <-> dword_14095D628
+JointWeldLength <-> dword_14095D62C
+```
+
+- `sub_1405DB340`（`__SteelBar` 构造）会把 `dword_140994AB8`
+  直接写到对象字段 `+108 / +112`。
+- `sub_1405E9640` 和 `sub_1405DFAA0(barjointnew)` 会用
+  `JointRuler` 作为基础长度，并在偶数 / 奇数位上用
+  `JointDistbet` 做错位修正：
+
+```text
+odd/even parity
+  -> end = JointRuler
+  -> or end = JointRuler - JointDistbet
+```
+
+- `sub_1405EBA30` 延续同样的 `JointDistbet` 纠偏规则。
+- `sub_1405DFEF0(barjointmove)` 会把对象字段 `+112` 归一化到
+  `field112 mod field108`，说明 `JointRuler` 和当前相位 / 偏移字段
+  已落到旧对象内部，而不是只停留在对话框全局值。
+
+- `pattern + 192 == 76` 这一点，现在至少能从汇编确认成：
+
+```text
+cmp byte ptr [pattern + 0xC0], 0x4C
+  -> raw discriminant is literal 'L'
+```
+
+这比“裸 76”更明确，但拥有该字段的结构名 / 枚举名仍未闭合。
+
+- `Others / symbolcutIOS` 当前 gate 已进一步明确：
+
+```text
+if (*(v8 + 848) && a4 == 0)
+  -> create Others/symbolcutIOS
+  -> iterate ring list *(v8 + 840)
+```
+
+其中单个 list node 至少可确认包含：
+
+```text
+node + 16  -> int code
+node + 24  -> SPAposition center
+```
+
+写出前会先经过当前 `SPAtransf` 变换，再调用 `sub_14053A3F0`。
+
+- `sub_14061F970` 额外 `api_curve_arc_center_edge` 分支当前已能确认更细的触发条件：
+
+```text
+sub_140610AA0(v8) == 0
+  -> flags word at (context + 232) is zero
+pattern[43] != 0
+distance_to_plane(firstPoint, viewPlane) < 0.4
+visibility / direction gate passes
+  -> based on *(v8 + 728 / 732) and dot(viewDir, candidateDir)
+```
+
+一旦进入该分支：
+
+```text
+*(byte *)(v8 + 832) = 1
+api_curve_arc_center_edge(...)
+sub_14053A6B0(...)
+++*(v8 + 1052)
+```
+
+随后函数尾部会把 `General-Info/DrawTaoTong` 写成 `T`。
+因此当前至少可以确认：额外弧线分支和 `DrawTaoTong` 置位存在直接关系，
+不是普通 `joints/LineN` writer 单独决定的。
+
 本轮不能过度推断：
 
-- `dword_14095D62C` 当前值和 `JointDistbet / JointWeldLength / JointRuler` 配置项的具体绑定仍未闭合。
-- `pattern + 192 == 76` 的业务枚举名未确认。
+- `JointWeldLength` 的数学绑定已闭合，但旧 UI 显示单位名仍需运行确认。
+- `pattern + 192` 的 raw byte `'L'` 已确认，但 owning enum / 结构名未确认。
 - `pattern + 344 / +128 / pointNode + 64 / pointNode + 88` 的结构名未完全闭合。
-- `sub_14061F970` 额外 `api_curve_arc_center_edge` 分支的完整输出条件和旧 UI 关系未闭合。
+- `sub_14061F970` 额外 `api_curve_arc_center_edge` 分支的容器业务名和旧 UI 关系未闭合。
+- `sub_1406BA2C0` 在特定文件元数据包含 `Varies_ShangH_LZ` 时会把 `dword_14095D62C` 改写为 `800`；这是否属于旧项目默认值或专项导入规则仍需运行确认。
+- `*(v8 + 840 / 848)` 的 producer 和旧 UI 触发路径未闭合。
 - 旧 AutoCAD FDrawing 插件是否接受 TODO-043/044 的空容器包仍需 L2 运行确认。
 - 本轮只补证据，不实现真实接头线 / Others 几何算法。
+
+## TODO-048 旧图石启动阻塞提示链补证
+
+Evidence ID：
+
+- `E-IDA-030`
+
+本轮复核使用的 IDA MCP 会话：
+
+```text
+database = visualts_i64_todo045
+input = C:\Users\ghost\Desktop\reverse_engineering\【03】图石软件\VisualTS.exe.i64
+Hex-Rays = ready
+```
+
+### 启动阻塞主链
+
+当前可确认旧图石启动期阻塞链为：
+
+```text
+sub_1406BBFC0
+  -> sub_1406BC3B0
+  -> sub_14070C760(&qword_140994BF8, a1szphyqnlqkepf, 0)
+```
+
+`sub_1406BBFC0` 当前确认：
+
+- `AfxOleInit()` 成功后进入旧图石启动主流程。
+- 如果 `sub_1406BC3B0() > 0`：
+
+```text
+dword_140994BF0 = 2
+appFlag(+178) = 1
+continue -> sub_1406FF100(this)
+```
+
+- 如果 `dword_140994BF0 == -1`：
+
+```text
+appFlag(+178) = 0
+return 0
+```
+
+- 如果 `dword_140994BF0 == 0`：
+
+```text
+appFlag(+178) = 0
+CWnd::MessageBoxA(..., "请检查网线是否接好", "提示", MB_ICONHAND)
+return 0
+```
+
+工程含义：
+
+```text
+旧图石启动不是“点开就进主界面”。
+它先过一层旧许可 / 网络相关检查。
+失败时先弹阻塞框，再直接终止进入主界面的路径。
+```
+
+### 错误码 41 和提示文案映射
+
+`sub_1406BC3B0` 当前确认：
+
+```text
+v0 = sub_14070C760(&qword_140994BF8, a1szphyqnlqkepf, 0)
+if (v0 == 41) {
+  dword_140994BF0 = -1
+  MessageBoxA(..., "许可已过期", "提示", MB_ICONHAND)
+  return 0
+}
+return !v0
+```
+
+可开发级结论：
+
+```text
+v0 == 0
+  -> 启动检查通过
+
+v0 == 41
+  -> 明确映射到“许可已过期”
+
+其他非 0 值
+  -> 启动主链会落到“请检查网线是否接好”
+```
+
+这说明当前用户看到的 `提示 / 请检查网线是否接好`，
+不是一个泛化的随机文案，而是旧启动检查对“非 0 且非 41”
+失败码的统一 fallback。
+
+### 文案字符串闭合
+
+IDA 反编译里能直接看到三个字节地址：
+
+```text
+byte_14075A738  -> MessageBox title
+byte_14078D7A8  -> expired text
+byte_14078D820  -> fallback text
+```
+
+本轮同时用 `VisualTS.exe` 原始二进制按 GB2312 解码复核了对应 raw offset：
+
+```text
+0x758F38 -> 提示
+0x78BFA8 -> 许可已过期
+0x78C020 -> 请检查网线是否接好
+```
+
+并且 data-ref 已和启动链闭合：
+
+```text
+0x14078D820 -> 0x1406bc094  -> sub_1406BBFC0 fallback MessageBoxA
+0x14078D7A8 -> 0x1406bc3fc  -> sub_1406BC3B0 expired MessageBoxA
+0x14075A738 -> 多个 MessageBox title 引用，其中包含上述两处启动链
+```
+
+### 许可栈侧证据
+
+`sub_14070C428` 当前确认：
+
+```text
+*a1 = &ChaspBase::vftable
+```
+
+这说明 `sub_14070C760` 所在检查链至少和一类 `ChaspBase`
+许可对象相关。
+
+本轮 `find_regex` 继续命中的侧证据包括：
+
+```text
+NETHASP_00112233445566zz
+HASP-HL
+HASP-SL
+HASP-SL-AdminMode
+HASP-SL-UserMode
+SuperDog
+sentinelhl,hasphl
+hasp_enabled
+nethasptype
+HL_LICENSEDIR
+hlrus_license_file.alf
+```
+
+对应 xref 当前可确认：
+
+```text
+NETHASP_00112233445566zz -> sub_140237E8A
+nethasptype             -> sub_14018B7D0
+hasp_enabled            -> sub_1401882A8
+HL_LICENSEDIR           -> sub_14031C11B
+hlrus_license_file.alf  -> sub_14031C11B
+```
+
+工程含义：
+
+```text
+旧图石启动阻塞高度相关于 Sentinel / HASP / SuperDog / NetHASP 一类许可栈。
+HL_LICENSEDIR / hlrus_license_file.alf 也是同一许可生态中的文件侧证据。
+```
+
+但本轮不能过度推断：
+
+- `HL_LICENSEDIR / hlrus_license_file.alf` 当前只作为侧证据，不能写成“本机当前一定就是这个文件缺失”。
+- 当前仍不能单靠 IDA 静态证据判断用户这台机器是本地加密狗、网络许可，还是其他同栈模式。
+
+### 共用许可 gate，不只启动时触发
+
+`sub_1404DEA40` 当前确认也会复用：
+
+```text
+sub_14070C760
+sub_14070C428
+sub_14070C7E0
+```
+
+其 caller 当前可见包含：
+
+```text
+sub_14055C1F0
+sub_140600AA0
+sub_140605B20
+...
+```
+
+结论：
+
+```text
+这不是只在程序启动时用一次的孤立弹窗链。
+它还是旧图石多处钢筋 / 工程图 / 输出功能共用的许可 gate。
+所以当前启动先被挡住，后面也不应该假设接头命令、工程图命令一定能直接跑。
+```
+
+### 用户手工解除前置条件清单
+
+基于当前静态证据，后续用户手工排查建议按以下优先级执行：
+
+```text
+1. 先确认旧许可本身没有过期。
+2. 确认 Sentinel / HASP / SuperDog 相关许可环境或服务已就绪。
+3. 如果是网络许可，先确认本机网络可用。
+4. 如果是网络许可，确认 license server / 网络狗宿主机可达。
+5. 若仍失败，再检查 HL_LICENSEDIR 和 hlrus_license_file.alf 相关文件链。
+```
+
+置信度边界：
+
+- 1~4：高。
+- 5：中；当前属于许可栈侧证据，不是已闭合的主因。
 
 ## 待继续分析
 
 - `sub_1404DE110` 和 `sub_1404DE720` 已完成第二轮 IDA MCP 补证，公共生成链已追到 `sub_1404D10C0 -> sub_140451730 -> sub_1405D5670 -> sub_1405BD0C0 / sub_1405C7260 / sub_1405E49D0`。
 - `sub_1405D5670` 已确认 split / spline / trim / min-distance / 写回主规则，但第 4 个 double 参数来源、字段业务名和对象名仍需继续闭合。
-- `TODO-045 / E-IDA-028` 已确认 `steeljoint-line/joints` 的旧写出链和 `Others/symbolcutIOS` 写出链，但接头线半长参数绑定、额外 arc 分支和旧插件接受度仍需继续闭合。
+- `TODO-046 / E-IDA-029` 已把 `JointRuler / JointDistbet / JointWeldLength` 的旧参数链、`JointWeldLength / 2000.0` 半长公式、`pattern` raw byte `'L'`、`Others / symbolcutIOS` gate 和额外弧线 / `DrawTaoTong` 关系继续补证；但 owning enum / 结构名、旧 UI 触发、旧运行非空样例和旧插件接受度仍需继续闭合。
+- `TODO-048 / E-IDA-030` 已把旧图石启动期阻塞链闭合到 `sub_1406BBFC0 -> sub_1406BC3B0 -> sub_14070C760`，并确认 `41 -> 许可已过期`、其他非 0 -> `请检查网线是否接好`、`ChaspBase` 许可对象和 `HASP / SuperDog / NetHASP` 许可栈侧证据；但当前本机究竟卡在“许可过期 / 网络不可达 / 许可服务未就绪 / 许可文件链异常”的哪一种真实环境原因，仍需用户手工确认。
 - `rebarz` / `rebarpost` 业务含义未闭合。
 - 顶部 Ribbon 按钮和英文命令并非一一对应，需要结合运行界面确认。
 - `生成工程图` 顶部按钮的命令表入口仍需继续追。

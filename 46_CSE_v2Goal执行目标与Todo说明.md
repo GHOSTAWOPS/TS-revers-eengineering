@@ -306,17 +306,18 @@ TODO-042 验证 = pointFaceEdge.passed=true, pointGroupCount=2, pointGeoCount=2,
 TODO-043 验证 = othersSteeljoint.passed=true, Others empty container, steeljoint-line/joints present, acad.exe/accoreconsole.exe not_found, AutoCAD registry root keys exist but no version child groups, autocadL2=not_run, CTest 17/17 pass, readiness 84/84 pass, OCCT leak scan pass, xhigh needs_fix important fixed, agent closed
 TODO-044 验证 = othersSteeljoint.passed=true, Others empty container, steeljoint-line/joints present, acad.exe/accoreconsole.exe not_found, AutoCAD registry root keys exist but no version child groups, autocadL2=not_run, CTest 18/18 pass, readiness 84/84 pass, OCCT leak scan pass, xhigh needs_fix important fixed, agent closed
 
-latest completed tag = m2-drawing-012/others-steeljoint-field-skeleton-p0
-planned tag = m2-drawing-013/others-steeljoint-l2-confirmation-ready
+latest completed tag = evidence-048/visualts-startup-block-chain-p0
+planned tag = evidence-049/visualts-startup-manual-prereq-p0
 ```
 
 当前下一步：
 
 ```text
-TODO-046 / M2-Drawing-015
-  -> 真实接头线 / Others 旧图石运行确认与参数绑定追踪 P0
-  -> 优先继续追半长参数绑定、pattern 枚举名、额外 arc 分支和 Others 运行触发路径。
-  -> 只补证据、参数绑定、运行样例和剩余 GAP；不实现真实接头线 / Others 几何算法，不声明 AutoCAD L2 通过，不进入 golden。
+TODO-049 / 旧图石启动前置条件用户手工确认 P0
+  -> 基于 TODO-048 已闭合的启动阻塞主链和手工清单，
+     由用户手工确认许可 / 服务 / 网络 / license file 环境后再重试旧图石启动。
+  -> 若仍失败，记录完整弹框文本、环境状态和下一轮所需输入。
+  -> 若成功进入主界面，再回到非空 `steeljoint-line / joints / Others` 运行样例采集。
 ```
 
 长期执行循环：
@@ -560,17 +561,18 @@ commit / tag / push 状态
 
 ### 短期 Goal（推荐下一轮复制）
 
-目标：只完成 `TODO-046 / M2-Drawing-015 真实接头线 / Others 旧图石运行确认与参数绑定追踪 P0` 这个短期阶段，不自动进入后续长期开发。
+目标：只完成 `TODO-049 / 旧图石启动前置条件用户手工确认 P0` 这个短期阶段，不自动进入后续长期开发。
 
-本轮要在 `TODO-045` 已确认写出链的基础上，继续闭合接头线半长参数绑定、枚举名和运行触发路径：
+本轮要在 `TODO-048` 已静态闭合启动阻塞主链的基础上，由用户手工确认外部前置条件并决定是否继续旧图石运行样例采集：
 
 ```text
-Drawing.GeneratePackage / M2-Drawing-015
-  -> 从 E-IDA-028 / E-DEV-067 / GAP-DRAW-002 / GAP-DRAW-003 出发
-  -> 优先用 IDA MCP 继续追 JointDistbet / JointWeldLength / JointRuler 与半长常量的绑定
-  -> 继续追 pattern + 192 == 76 的业务枚举名、pattern / pointNode 结构名
-  -> 继续追 sub_14061F970 中额外 api_curve_arc_center_edge 分支的输出条件
-  -> 如 IDA MCP 无法再闭合，则转旧图石运行确认，拿接头创建 / 移动 / 反向 / 清除后的 Detail 输出样例
+VisualTS.StartupManualCheck / TODO-049
+  -> 从 E-IDA-030 / E-DEV-070 / GAP-DRAW-002 / GAP-DEV-010 出发
+  -> 不自动再次启动旧图石
+  -> 由用户按手工清单确认许可 / 服务 / 网络 / license file 环境
+  -> 用户自己手工重试旧图石启动
+  -> 若仍失败，记录完整弹框文本和环境状态
+  -> 若成功进入主界面，再回到非空样例采集
   -> 不实现真实接头线 / Others 几何算法
   -> 不用 OCCT 或字段骨架直接推断旧业务规则
 ```
@@ -578,11 +580,19 @@ Drawing.GeneratePackage / M2-Drawing-015
 目标语义：
 
 ```text
-TODO-045 已确认 steeljoint-line / joints 与 Others / symbolcutIOS 写出链，并通过本轮 continuation 重新打开 IDA session 复核关键函数。
-当前 AutoCAD 环境仍 not_found，autocadL2=not_run。
-当前仍未闭合接头线半长参数绑定、pattern 枚举名、额外 arc 分支条件和 Others 运行触发路径。
-下一步不是写算法，而是继续用 IDA MCP 或旧图石运行确认补参数绑定和运行证据。
-本轮只做 TODO-046，不同时做真实工程图算法、golden 采集、UI 新功能或 AutoCAD L2 通过声明。
+TODO-048 已静态确认：
+  - 启动主链 = sub_1406BBFC0 -> sub_1406BC3B0 -> sub_14070C760(...)
+  - 41 -> 许可已过期
+  - 其他非 0 -> 请检查网线是否接好
+  - 当前阻塞与 Sentinel / HASP / SuperDog / NetHASP 许可栈强相关
+
+当前仍未闭合：
+  - 本机真实失败码 / 许可模式 / 服务状态
+  - 用户手工处理前置条件后，旧图石能否稳定进入主界面
+  - 旧运行非空样例、旧 UI 触发路径、owning enum / 结构名和旧插件接受度
+
+下一步不是继续猜算法，而是先做人手环境确认。
+本轮只做 TODO-049，不同时做真实工程图算法、golden 采集、UI 新功能或 AutoCAD L2 通过声明。
 ```
 
 当前已完成前置：
@@ -665,6 +675,27 @@ TODO-045 / M2-Drawing-014 = done
      `visualts_i64_todo045` 并复核关键函数。
      本节点只收敛证据和 GAP，不声明真实接头线算法、Others 几何算法、
      AutoCAD L2、旧插件接受或 golden。
+
+TODO-046 / M2-Drawing-015 = done
+  -> 已补 `E-IDA-029 / E-DEV-068`，确认 `JointRuler / JointDistbet / JointWeldLength`
+     的对话框 / 配置链、`JointWeldLength / 2000.0` 半长公式、`pattern` raw byte `'L'`、
+     `Others / symbolcutIOS` gate、额外弧线 / `DrawTaoTong` 条件和 IDA 止点。
+     本节点只补参数绑定和运行触发证据，不声明真实接头线算法、Others 几何算法、
+     AutoCAD L2、旧插件接受或 golden。
+
+TODO-047 / M2-Drawing-016 = done
+  -> 已补 `E-DEV-069`，确认当前旧图石运行样例采集在启动期就被阻塞：
+     `VisualTS.exe` 先弹出标题为 `提示` 的阻塞框，截图可见文本前缀
+     `请检查网线是否...`，尚未进入主界面、尚未打开 `SFL`、尚未导出新的 `DetailNN.stl`。
+     本节点只记录 stop point，不声明旧运行样例已拿到、真实接头线算法、
+     Others 几何算法、AutoCAD L2、旧插件接受或 golden。
+
+TODO-048 / Evidence = done
+  -> 已补 `E-IDA-030 / E-DEV-070`，静态闭合旧图石启动阻塞主链、
+     `41 -> 许可已过期`、其他非 `0` 失败码回落到 `请检查网线是否接好`，
+     并形成用户手工解除前置条件清单。
+     本节点只补静态证据和手工清单，不声明旧图石已能正常启动、
+     真实接头线算法、Others 几何算法、AutoCAD L2、旧插件接受或 golden。
 ```
 
 工作目录：
@@ -682,15 +713,14 @@ C:\Users\ghost\Desktop\reverse_engineering\【03】图石软件
 本轮必须先读这些参考文档：
 
 1. `【图石钢筋1比1复刻】\00_总览.md`
-2. `【图石钢筋1比1复刻】\05_Detail工程图包证据.md`
+2. `【图石钢筋1比1复刻】\03_IDA命令证据.md`
 3. `【图石钢筋1比1复刻】\11_需求证据追溯矩阵.md`
-4. `【图石钢筋1比1复刻】\13_Detail字段映射矩阵.md`
-5. `【图石钢筋1比1复刻】\20_DetailWriter输出事务契约.md`
-6. `【图石钢筋1比1复刻】\70_M2-Drawing-003Detail复杂字段静态证据P0实现记录.md`
-7. `【图石钢筋1比1复刻】\79_M2-Drawing-012DetailWriterOthersSteeljoint字段骨架P0实现记录.md`
-8. `【图石钢筋1比1复刻】\80_M2-Drawing-013DetailWriterOthersSteeljointAutoCADL2运行确认准备P0实现记录.md`
-9. `【图石钢筋1比1复刻】\99_缺口和待确认项.md`
-10. `【图石钢筋1比1复刻】\todo.csv`
+4. `【图石钢筋1比1复刻】\34_Phase1ReadinessGate实际运行记录.md`
+5. `【图石钢筋1比1复刻】\46_CSE_v2Goal执行目标与Todo说明.md`
+6. `【图石钢筋1比1复刻】\83_M2-Drawing-016真实接头线Others旧图石运行样例采集P0实现记录.md`
+7. `【图石钢筋1比1复刻】\84_M2-Drawing-017旧图石启动阻塞提示链补证P0实现记录.md`
+8. `【图石钢筋1比1复刻】\99_缺口和待确认项.md`
+9. `【图石钢筋1比1复刻】\todo.csv`
 
 如果任务涉及 UI / 命令入口，补读：
 
@@ -709,9 +739,9 @@ C:\Users\ghost\Desktop\reverse_engineering\【03】图石软件
 
 本轮允许修改：
 
-- IDA / 旧图石运行确认相关证据报告、调用链记录、缺口文档和 todo
-- 必要的 Detail 静态证据补充，但必须明确它不能替代运行确认
-- 对应实现记录、build report、`03 / 05 / 11 / 13 / 20 / 34 / 99 / 46 / todo.csv`
+- 用户手工确认清单、运行记录、证据报告、缺口文档和 todo
+- 必要的旧图石启动环境说明，但必须明确它不能替代运行确认
+- 对应实现记录、build report、`03 / 11 / 34 / 46 / 84 / 99 / todo.csv`
 
 本轮禁止修改或迁移：
 
@@ -732,17 +762,17 @@ C:\Users\ghost\Desktop\reverse_engineering\【03】图石软件
 
 本轮验收标准：
 
-1. 只执行 TODO-046，不一次铺开完整工程图全部能力。
-2. 优先用 IDA MCP 继续查询半长参数绑定、枚举名、额外 arc 分支和运行触发路径。
-3. 如果 IDA MCP 无法继续闭合，必须记录不可用原因或分析止点，并列出旧图石运行确认清单。
-4. 明确真实接头线 / Others 几何算法的参数绑定、运行触发和后续实现入口。
+1. 只执行 TODO-049，不一次铺开完整工程图全部能力。
+2. 基于 `E-IDA-030 / E-DEV-070` 的手工清单，由用户自己确认许可 / 服务 / 网络 / license file 环境并手工重试旧图石启动。
+3. 如果旧图石仍无法进入主界面，必须记录完整弹框文本、环境状态和下一轮所需输入。
+4. 如果旧图石可以进入主界面，必须记录成功进入主界面的证据，并把下一步切回非空运行样例采集，而不是直接写算法。
 5. 不得把字段骨架、OCCT 能力或 AutoCAD L2 清单写成算法证据。
 6. 默认 CTest 通过。
 7. readiness gate 严格模式通过。
 8. domain/rebar + drawing + project OCCT / AIS 泄漏扫描通过。
-9. 涉及代码、测试、构建脚本，commit 前必须执行 xhigh 只读 review；Critical / Important 必须修复或写明技术反驳理由。
-10. 更新实现记录、build report、`11 / 13 / 20 / 34 / 99 / 46 / todo.csv`。
-11. `todo.csv` 中 `TODO-046` 只在证据、验证和审查闭合后更新；不能假装真实接头线 / Others 几何算法、AutoCAD L2、完整工程图或 golden 已完成。
+9. 涉及代码、测试、构建脚本，commit 前必须执行 xhigh 只读 review；若只是 docs / 手工确认节点，可明确写 `xhigh not_required_docs_only`。
+10. 更新实现记录、build report、`03 / 11 / 34 / 46 / 84 / 99 / todo.csv`。
+11. `todo.csv` 中 `TODO-049` 只在用户手工确认结果和文档闭合后更新；不能假装旧图石已可运行、真实接头线 / Others 几何算法、AutoCAD L2、完整工程图或 golden 已完成。
 
 本轮完成后必须停止，输出阶段复盘：
 
@@ -750,7 +780,7 @@ C:\Users\ghost\Desktop\reverse_engineering\【03】图石软件
 完成了什么
 验证了什么
 还缺什么
-下一阶段建议做 TODO-047 还是继续补 IDA / 旧图石运行证据
+下一阶段建议回到旧图石非空运行样例采集还是继续补许可环境
 commit / tag / push 状态
 ```
 
@@ -985,23 +1015,26 @@ TODO-041 验证 = lineContainers.passed=true, containerCount=4, acad.exe/accorec
 TODO-042 验证 = pointFaceEdge.passed=true, pointGroupCount=2, pointGeoCount=2, faceEdgeCount=2, acad.exe/accoreconsole.exe not_found, AutoCAD registry root keys exist but no version child groups, autocadL2=not_run, CTest 17/17 pass, readiness 84/84 pass, OCCT leak scan pass, xhigh allow_commit
 TODO-043 验证 = othersSteeljoint.passed=true, Others empty, steeljoint-line/joints present, acad.exe/accoreconsole.exe not_found, AutoCAD registry root keys exist but no version child groups, autocadL2=not_run, CTest 17/17 pass, readiness 84/84 pass, OCCT leak scan pass, xhigh needs_fix important fixed, agent closed
 TODO-044 验证 = othersSteeljoint.passed=true, Others empty, steeljoint-line/joints present, acad.exe/accoreconsole.exe not_found, AutoCAD registry root keys exist but no version child groups, autocadL2=not_run, CTest 18/18 pass, readiness 84/84 pass, OCCT leak scan pass, xhigh needs_fix important fixed, agent closed
+TODO-046 验证 = JointWeldLength half-length formula closed, pattern raw byte = 0x4C('L'), Others gate = *(v8+848)&&a4==0, extra arc branch ties to DrawTaoTong, autocadL2=not_run, CTest 18/18 pass, readiness 84/84 pass, OCCT leak scan pass, xhigh not_required_docs_only
+TODO-047 验证 = VisualTS startup stop point recorded, mainWindowTitle=提示, visible text prefix=请检查网线是否..., SFL not opened, runtime non-empty sample not collected, autocadL2=not_run, CTest 18/18 pass, readiness 84/84 pass, OCCT leak scan pass, xhigh not_required_docs_only
+TODO-048 验证 = startup chain closed, error41=许可已过期, otherNonZeroFallback=请检查网线是否接好, manualPrereqChecklistReady=true, autocadL2=not_run, CTest 18/18 pass, readiness 84/84 pass, OCCT leak scan pass, xhigh not_required_docs_only
 ```
 
 当前下一步：
 
 ```text
-TODO-046 / M2-Drawing-015
-  -> 真实接头线 / Others 旧图石运行确认与参数绑定追踪 P0
-  -> 优先继续追半长参数绑定、pattern 枚举名、额外 arc 分支和 Others 运行触发路径
-  -> 只补证据、参数绑定、运行样例和剩余 GAP；不实现真实接头线 / Others 几何算法，不声明 AutoCAD L2 通过，不进入 golden
+TODO-049 / 旧图石启动前置条件用户手工确认 P0
+  -> 按 TODO-048 已形成的手工清单检查许可 / 服务 / 网络 / license file 环境
+  -> 用户自己手工重试旧图石启动
+  -> 只补手工确认结果和剩余 GAP；不自动启动旧图石，不实现真实接头线 / Others 几何算法，不声明 AutoCAD L2 通过，不进入 golden
 ```
 
 原因：
 
 ```text
-TODO-045 已完成写出链证据补齐，并通过 continuation 重新打开 IDA session 复核关键函数。
-但旧插件是否接受新包仍未确认；接头线和 Others 的参数绑定、额外 arc 分支和运行触发路径也没有关闭。
-下一步建议做 TODO-046，继续补参数绑定和旧运行证据，不能凭字段骨架或 OCCT 能力直接实现算法。
+TODO-047 已证明当前旧图石运行样例采集卡在启动期阻塞框，继续自动重试运行没有意义。
+但旧插件是否接受新包、旧 UI 触发路径和非空运行样例仍未确认。
+下一步建议做 TODO-049，先按已闭合的启动阻塞链逐项确认外部前置条件，再决定是否回到旧图石非空样例采集；不能凭字段骨架或 OCCT 能力直接实现算法。
 golden 采集 TODO-026 暂按用户要求保持 pending。
 ```
 
@@ -1067,19 +1100,19 @@ golden 采集 TODO-026 暂按用户要求保持 pending。
 
 ## CSE v2 Control Contract
 
-- **Primary Setpoint**：下一轮只完成 `TODO-046 / M2-Drawing-015 真实接头线 / Others 旧图石运行确认与参数绑定追踪 P0`，在 TODO-045 写出链证据基础上继续闭合参数绑定和运行触发路径。
-- **Acceptance**：用 IDA MCP 或旧图石运行确认形成接头线半长参数绑定、枚举名、额外 arc 分支或运行样例证据；明确剩余 GAP；默认 CTest、readiness gate、OCCT 泄漏检查通过；执行 xhigh 只读 review；更新实现记录、build report、追溯矩阵、缺口文档、46 和 todo。
-- **Guardrail Metrics**：不能实现真实接头线 / Others 几何算法；不能在没有运行证据时声明 AutoCAD L2 通过；不能把字段骨架写成旧插件接受证明；不能改钢筋创建业务；不能迁入父目录 rebar 业务；不能进入 golden 全量采集。
-- **Sampling Plan**：先读 `todo.csv / 03 / 11 / 13 / 20 / 81 / 99`，再用 IDA MCP 查旧函数 / 字段 / 调用链；如果 IDA MCP 无法继续闭合，再记录止点并准备旧图石运行确认问题清单；最后运行默认 CTest、readiness gate 和 OCCT 泄漏扫描，证明本轮没有破坏工程基线。
-- **Known Delays**：IDA MCP 虽已可重新打开，但未必能直接给出业务名；旧图石运行确认依赖用户操作；旧样例 Others 为空，steeljoint-line 仅确认 joints 容器存在。
-- **Recovery Target**：如果 IDA MCP 或旧图石运行确认不可再推进，把阻塞原因写入 `99` 和 build report，不继续猜算法、不堆后续工程图实现。
-- **Rollback Trigger**：无证据实现接头线 / Others / 工程图算法；把字段骨架当成旧插件接受证明；无运行证据声明 L2 通过；让 `domain/rebar` 泄漏 OCCT/AIS；测试或 gate 失败仍继续堆功能。
-- **Constraints**：不使用 ACIS / HOOPS / Codejock 等商业库；旧逻辑不确定时优先查 IDA MCP 或旧图石运行确认；xhigh 只读，修改由主流程 agent 完成。
-- **Boundary**：下一轮只允许 IDA / 旧图石运行证据、Detail 样例分析、文档、追溯、缺口、46/todo 必要更新；禁止实现真实 OCCT HLR/section/hidden-line/steeljoint-line/Others 算法、禁止修改 UI 新功能、钢筋创建业务、无证据 AutoCAD L2 结论和 golden。
-- **Coupling Notes**：`drawing/export` 是 Detail 包输出边界；TODO-046 只补参数绑定和运行证据，不关闭旧插件容忍度、AutoCAD L2、隐藏线 / 填充线算法或完整工程图缺口。
-- **Approximation Validity**：TODO-046 的产物是参数绑定和运行证据，不是算法实现；只有函数、字段、输入输出和运行证据足够明确后，后续节点才能实现真实接头线 / Others 几何算法。
-- **Actuator Budget**：下一轮只推进 `TODO-046`。完成后停止复盘，不自动进入真实算法实现、隐藏线、填充线、点筋、FaceEdge 或 golden。
-- **Risks**：IDA MCP 可能只能给出局部常量而不给业务名；旧图石运行确认可能需要用户操作；旧样例 Others 为空，字段语义可能不足；证据节点容易被误读成算法完成，必须在报告中明确能力边界。
+- **Primary Setpoint**：下一轮只完成 `TODO-049 / 旧图石启动前置条件用户手工确认 P0`，按 TODO-048 已闭合的静态阻塞链逐项确认外部前置条件，并得到“仍阻塞”或“可进主界面”的人工结果。
+- **Acceptance**：形成用户手工确认结果；若仍阻塞则记录完整弹框文本和环境状态，若已进入主界面则记录成功证据并把下一步切回非空样例采集；默认 CTest、readiness gate、OCCT 泄漏检查通过；按需执行 xhigh 只读 review；更新实现记录、build report、追溯矩阵、缺口文档、46 和 todo。
+- **Guardrail Metrics**：不能实现真实接头线 / Others 几何算法；不能在没有运行证据时声明 AutoCAD L2 通过；不能把单次阻塞截图写成旧业务算法证据；不能改钢筋创建业务；不能迁入父目录 rebar 业务；不能进入 golden 全量采集。
+- **Sampling Plan**：先读 `todo.csv / 03 / 34 / 84 / 99`，再由用户按清单手工确认许可 / 服务 / 网络 / license file 环境并手工重试旧图石；agent 不自动启动旧图石；最后运行默认 CTest、readiness gate 和 OCCT 泄漏扫描，证明本轮没有破坏工程基线。
+- **Known Delays**：启动阻塞当前依赖用户手工环境确认；agent 不能代替用户完成加密狗、服务、网络许可和 license file 现场状态确认。
+- **Recovery Target**：如果手工确认后仍不可推进，把阻塞原因写入 `99` 和 build report，不继续猜算法、不堆后续工程图实现。
+- **Rollback Trigger**：无证据实现接头线 / Others / 工程图算法；把字段骨架或单次截图当成旧插件接受证明；无运行证据声明 L2 通过；让 `domain/rebar` 泄漏 OCCT/AIS；测试或 gate 失败仍继续堆功能。
+- **Constraints**：不使用 ACIS / HOOPS / Codejock 等商业库；旧逻辑不确定时优先查 IDA MCP 或旧图石运行确认；xhigh 只读，修改由主流程 agent 完成；不自动再次启动旧图石。
+- **Boundary**：下一轮只允许手工确认记录、文档、追溯、缺口、46/todo 必要更新；禁止实现真实 OCCT HLR/section/hidden-line/steeljoint-line/Others 算法、禁止修改 UI 新功能、钢筋创建业务、无证据 AutoCAD L2 结论和 golden。
+- **Coupling Notes**：`drawing/export` 是 Detail 包输出边界；TODO-049 只收集外部前置条件确认结果，不关闭旧插件容忍度、AutoCAD L2、隐藏线 / 填充线算法或完整工程图缺口。
+- **Approximation Validity**：TODO-049 的产物是用户手工环境确认结果，不是算法实现；只有旧图石能稳定进入主界面后，后续节点才能继续采接头样例。
+- **Actuator Budget**：下一轮只推进 `TODO-049`。完成后停止复盘，不自动进入真实算法实现、隐藏线、填充线、点筋、FaceEdge 或 golden。
+- **Risks**：当前节点依赖用户现场环境；即使静态链已闭合，也可能因为许可模式、服务状态或网络条件不同而继续阻塞，必须在报告中明确能力边界。
 ## Todo CSV 使用方式
 
 `todo.csv` 是后续执行看板。建议每次 goal 模式只拿 `status=next` 或最高优先级 `pending` 的任务推进。
@@ -1104,11 +1137,11 @@ golden 采集 TODO-026 暂按用户要求保持 pending。
 下一步优先执行：
 
 ```text
-TODO-046 / M2-Drawing-015
-  -> 真实接头线 / Others 旧图石运行确认与参数绑定追踪 P0
-  -> 优先继续追半长参数绑定、pattern 枚举名、额外 arc 分支和 Others 运行触发路径
-  -> 只补证据、参数绑定、运行样例和剩余 GAP；不实现真实接头线 / Others 几何算法，不声明 AutoCAD L2 通过，不进入 golden
+TODO-049 / 旧图石启动前置条件用户手工确认 P0
+  -> 按 TODO-048 已形成的手工清单检查许可 / 服务 / 网络 / license file 环境
+  -> 用户自己手工重试旧图石启动
+  -> 只补手工确认结果和剩余 GAP；不自动启动旧图石，不实现真实接头线 / Others 几何算法，不声明 AutoCAD L2 通过，不进入 golden
 ```
 
-原因很简单：TODO-045 已把接头线 / Others 写出链证据补齐，但真实参数绑定和运行触发路径仍没有闭合；下一步必须继续补证据，不能凭 OCCT 能力或字段骨架直接写算法。
+原因很简单：TODO-048 已把启动阻塞链和手工前置条件静态闭合；下一步不该继续让 agent 自动碰旧图石，而是该由用户按清单做一次现场环境确认，再决定是否回到非空样例采集。
 TODO-026 golden 采集暂按用户要求保持 pending。

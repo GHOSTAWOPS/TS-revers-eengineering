@@ -1,0 +1,80 @@
+{
+  "schemaVersion": "app-build-report/v1",
+  "reportId": "m2_drawing_016_run_001",
+  "createdAt": "2026-06-07T23:40:00+08:00",
+  "decision": "old-runtime-startup-stop-point-recorded",
+  "todoId": "TODO-047",
+  "phase": "M2-Drawing-016",
+  "scope": [
+    "old VisualTS runtime startup probe",
+    "startup stop-point recording",
+    "no SFL opened",
+    "no runtime joint sample exported",
+    "no algorithm implementation"
+  ],
+  "evidence": [
+    "E-IDA-029",
+    "E-DEV-068",
+    "E-DEV-069"
+  ],
+  "runtimeProbe": {
+    "visualTsExe": {
+      "path": "C:\\Users\\ghost\\Desktop\\reverse_engineering\\【03】图石软件\\VisualTS.exe",
+      "sha256": "8233C1BE3702202D9AB5610700463B8BDC2DAD888993B76A6AC3C4344837C046"
+    },
+    "process": {
+      "processId": 59928,
+      "processName": "VisualTS",
+      "mainWindowTitle": "提示",
+      "responding": true,
+      "startTime": "2026-06-07T23:23:39+08:00"
+    },
+    "startupPrompt": {
+      "screenshotPath": "docs/phase1/app_build_reports/m2_drawing_016_visualts_startup_prompt.png",
+      "screenshotSha256": "56C44CEF1FB7211131A0239264AD4BE931C7BB487E9676D59488C3A346B3E101",
+      "visibleTextPrefix": "请检查网线是否..."
+    },
+    "sflOpened": false,
+    "jointCommandsExecuted": false,
+    "detailExportGenerated": false,
+    "nonEmptyJointOthersSampleCollected": false
+  },
+  "confirmedFacts": {
+    "oldRuntimeStartupBlocked": true,
+    "mainWindowTitleCaptured": true,
+    "startupPromptScreenshotArchived": true,
+    "sflOpened": false,
+    "detailGenerated": false,
+    "nonEmptyJointOthersSampleCollected": false,
+    "algorithmImplemented": false
+  },
+  "unconfirmedFacts": [
+    "full startup prompt text",
+    "startup blocking function and configuration chain",
+    "old UI trigger path for joint operations",
+    "non-empty steeljoint-line and symbolcutIOS runtime sample",
+    "AutoCAD L2 acceptance"
+  ],
+  "validation": {
+    "gateUnitTests": "17/17 pass",
+    "ctest": "18/18 pass",
+    "readinessGate": "M1-Formal-Ready, 84/84 pass",
+    "occtLeakScan": "pass: domain/rebar + drawing + project boundary checks ok",
+    "diffCheck": "pass",
+    "xhighReview": {
+      "required": false,
+      "reason": "docs_only_node"
+    }
+  },
+  "boundaries": [
+    "No SFL was opened",
+    "No new Detail package was exported",
+    "Real joint-line algorithm is not implemented",
+    "Real Others geometry algorithm is not implemented",
+    "AutoCAD L2 import is not_run",
+    "FDrawing acceptance is not confirmed",
+    "No complete drawing algorithm claim",
+    "No golden claim"
+  ],
+  "next": "Execute TODO-048 to trace the old VisualTS startup blocking prompt chain with IDA/static evidence before any further manual runtime sampling"
+}

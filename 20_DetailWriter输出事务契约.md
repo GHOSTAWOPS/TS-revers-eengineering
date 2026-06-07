@@ -935,3 +935,69 @@ TODO-045 / M2-Drawing-014
 - TODO-045 是证据补齐，不是算法实现。
 - 当前不能声明真实接头线算法或 Others 几何算法已实现。
 - 当前不能声明 AutoCAD L2 通过、旧插件接受、完整工程图或 golden。
+
+## M2-Drawing-015 真实接头线 / Others 旧图石运行确认与参数绑定追踪 P0 状态
+
+当前正式证据已补：
+
+```text
+E-IDA-029
+E-DEV-068
+TODO-046 / M2-Drawing-015
+```
+
+已确认：
+
+- `JointRuler <-> dword_140994AB8`、`JointDistbet <-> dword_14095D628`、`JointWeldLength <-> dword_14095D62C` 已通过对话框 / 配置读写链闭合。
+- `sub_1406107F0` 用 `dword_14095D62C / 2000.0` 作为接头线对称半长，沿归一化 edge 方向生成 `LineN` 两端点。
+- 同一 `JointWeldLength / 2000.0` 公式在旧 HOOPS 显示链 `sub_1407306A0` 中也出现，可作为独立旁证。
+- `sub_1405DB340 / sub_1405E9640 / sub_1405EBA30 / sub_1405DFEF0` 已把 `JointRuler / JointDistbet` 落到旧对象字段和错位 / 移动链。
+- `pattern + 192` 当前已能确认是字节字面量 `0x4C ('L')`，不再只是裸 `76`。
+- `Others / symbolcutIOS` 当前 gate 已确认需要 `*(v8 + 848)` 且 `a4 == 0`，输入节点来自 `*(v8 + 840)` 环形链，节点至少包含 `code` 和 `center`。
+- `sub_14061F970` 额外 `api_curve_arc_center_edge` 分支当前已确认和 `flags==0`、plane distance `< 0.4`、可见性 / 方向 gate 以及 `DrawTaoTong` 置位相关。
+- `Phase1.ReadinessGate` 的 done-report 映射当前已覆盖到 `TODO-046`，防止任务 done 后缺实现记录或 build report。
+
+仍未确认：
+
+- `JointWeldLength` 的旧 UI 单位名和专项导入覆盖口径（`sub_1406BA2C0` 中 `Varies_ShangH_LZ -> 800`）。
+- `pattern / pointNode` 的 owning 结构名和业务枚举名。
+- `sub_14061F970` 额外弧线分支最终落到哪类工程图业务容器。
+- `Others / symbolcutIOS` 的旧 UI 触发路径和非空运行样例。
+- AutoCAD 2020 + FDrawing 是否接受当前新包。
+
+注意：
+
+- TODO-046 是参数绑定和运行触发补证，不是算法实现。
+- 当前不能声明真实接头线算法或 Others 几何算法已实现。
+- 当前不能声明 AutoCAD L2 通过、旧插件接受、完整工程图或 golden。
+
+## M2-Drawing-016 真实接头线 / Others 旧图石运行样例采集 P0 状态
+
+当前正式证据已补：
+
+```text
+E-DEV-069
+TODO-047 / M2-Drawing-016
+```
+
+已确认：
+
+- 本轮旧图石运行探测确认 `VisualTS.exe` 当前可启动进程。
+- 启动后先弹出标题为 `提示` 的阻塞框，截图可见文本前缀 `请检查网线是否...`。
+- 阻塞发生在打开旧 `SFL` 之前。
+- 因此本轮未进入旧图石主工作界面，未执行新建接头 / 移动接头 / 接头反向 / 清除接头。
+- 本轮未导出新的 `DetailNN.stl`，也未拿到非空 `steeljoint-line / joints / Others / symbolcutIOS` 节点样例。
+- `Phase1.ReadinessGate` 的 done-report 映射当前已覆盖到 `TODO-047`，防止任务 done 后缺实现记录或 build report。
+
+仍未确认：
+
+- 启动阻塞提示的完整文本、来源函数和配置 / 许可 / 网络前置条件。
+- 旧图石可进入主界面后的 `SFL` 打开路径、接头菜单路径、参数窗口和状态提示。
+- 旧图石非空 `steeljoint-line / joints / Others / symbolcutIOS` 运行样例。
+- AutoCAD 2020 + FDrawing 是否接受当前新包。
+
+注意：
+
+- TODO-047 以运行 stop point 形式闭环，不等于拿到了旧运行样例。
+- 当前不能声明真实接头线算法或 Others 几何算法已实现。
+- 当前不能声明 AutoCAD L2 通过、旧插件接受、完整工程图或 golden。

@@ -1,0 +1,150 @@
+{
+  "schemaVersion": "app-build-report/v1",
+  "reportId": "m2_drawing_017_run_001",
+  "createdAt": "2026-06-08T00:20:00+08:00",
+  "decision": "startup-block-chain-closed-manual-prereq-pending",
+  "todoId": "TODO-048",
+  "phase": "M2-Drawing-017",
+  "scope": [
+    "old VisualTS startup blocking prompt chain",
+    "startup error-code mapping",
+    "prompt string closure",
+    "license stack side evidence",
+    "shared license gate reuse",
+    "manual prerequisite checklist",
+    "no runtime retry"
+  ],
+  "evidence": [
+    "E-DEV-069",
+    "E-IDA-030",
+    "E-DEV-070"
+  ],
+  "idaMcp": {
+    "status": "active_and_rechecked",
+    "sessionId": "visualts_i64_todo045",
+    "hexRaysReady": true,
+    "startupChain": [
+      "sub_1406BBFC0",
+      "sub_1406BC3B0",
+      "sub_14070C760"
+    ],
+    "startupMapping": {
+      "zero": "startup check pass",
+      "fortyOne": "许可已过期",
+      "otherNonZero": "请检查网线是否接好"
+    },
+    "messageRefs": {
+      "titleRef": "byte_14075A738",
+      "expiredRef": "byte_14078D7A8",
+      "networkRef": "byte_14078D820"
+    },
+    "licenseObject": {
+      "constructor": "sub_14070C428",
+      "vftable": "ChaspBase::vftable"
+    },
+    "sharedGate": {
+      "function": "sub_1404DEA40",
+      "reusedCalls": [
+        "sub_14070C760",
+        "sub_14070C428",
+        "sub_14070C7E0"
+      ],
+      "callers": [
+        "sub_14055C1F0",
+        "sub_140600AA0",
+        "sub_140605B20"
+      ]
+    }
+  },
+  "staticBinaryDecode": {
+    "file": "C:\\Users\\ghost\\Desktop\\reverse_engineering\\【03】图石软件\\VisualTS.exe",
+    "encoding": "GB2312",
+    "strings": [
+      {
+        "name": "title",
+        "rawOffset": "0x758F38",
+        "text": "提示"
+      },
+      {
+        "name": "expired",
+        "rawOffset": "0x78BFA8",
+        "text": "许可已过期"
+      },
+      {
+        "name": "network",
+        "rawOffset": "0x78C020",
+        "text": "请检查网线是否接好"
+      }
+    ]
+  },
+  "licenseHints": {
+    "strings": [
+      "NETHASP_00112233445566zz",
+      "HASP-HL",
+      "HASP-SL",
+      "SuperDog",
+      "sentinelhl,hasphl",
+      "hasp_enabled",
+      "nethasptype",
+      "HL_LICENSEDIR",
+      "hlrus_license_file.alf"
+    ],
+    "xrefFunctions": {
+      "NETHASP_00112233445566zz": "sub_140237E8A",
+      "nethasptype": "sub_14018B7D0",
+      "hasp_enabled": "sub_1401882A8",
+      "HL_LICENSEDIR": "sub_14031C11B",
+      "hlrus_license_file.alf": "sub_14031C11B"
+    }
+  },
+  "manualChecklist": [
+    "确认旧许可本身没有过期",
+    "确认 Sentinel/HASP/SuperDog 许可环境或服务已就绪",
+    "若使用网络许可，确认本机网络可用",
+    "若使用网络许可，确认 license server / 网络狗宿主机可达",
+    "若仍失败，再检查 HL_LICENSEDIR 和 hlrus_license_file.alf 相关文件链"
+  ],
+  "confirmedFacts": {
+    "startupPromptTitleClosed": true,
+    "startupExpiredTextClosed": true,
+    "startupNetworkTextClosed": true,
+    "startupChainClosed": true,
+    "error41MappingClosed": true,
+    "otherNonZeroFallbackClosed": true,
+    "chaspBaseClosed": true,
+    "haspSideEvidenceClosed": true,
+    "sharedLicenseGateClosed": true,
+    "runtimeRetriedAutomatically": false,
+    "algorithmImplemented": false
+  },
+  "unconfirmedFacts": [
+    "current machine real failure code",
+    "current machine real license mode",
+    "current environment service state",
+    "HL_LICENSEDIR/hlrus_license_file.alf runtime participation",
+    "manual prerequisite fixes unblock startup",
+    "non-empty old runtime joint sample",
+    "AutoCAD L2 acceptance"
+  ],
+  "validation": {
+    "gateUnitTests": "17/17 pass",
+    "ctest": "18/18 pass",
+    "readinessGate": "M1-Formal-Ready, 84/84 pass",
+    "occtLeakScan": "pass: domain/rebar + drawing + project boundary checks ok",
+    "diffCheck": "pass",
+    "xhighReview": {
+      "required": false,
+      "reason": "docs_only_node"
+    }
+  },
+  "boundaries": [
+    "No automatic VisualTS relaunch",
+    "No real joint-line algorithm implementation",
+    "No real Others geometry algorithm implementation",
+    "AutoCAD L2 import is not_run",
+    "FDrawing acceptance is not confirmed",
+    "No complete drawing algorithm claim",
+    "No golden claim"
+  ],
+  "next": "Execute TODO-049 to let the user manually verify startup license/network prerequisites and retry old VisualTS without agent auto-launch"
+}

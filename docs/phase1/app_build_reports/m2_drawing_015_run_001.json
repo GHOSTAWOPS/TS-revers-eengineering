@@ -1,0 +1,115 @@
+{
+  "schemaVersion": "app-build-report/v1",
+  "reportId": "m2_drawing_015_run_001",
+  "createdAt": "2026-06-07T23:09:29+08:00",
+  "decision": "ida-binding-closed-runtime-sample-pending",
+  "todoId": "TODO-046",
+  "phase": "M2-Drawing-015",
+  "scope": [
+    "joint parameter binding closure",
+    "JointWeldLength half-length writer formula",
+    "pattern raw byte closure",
+    "Others symbolcutIOS gate closure",
+    "extra arc branch and DrawTaoTong relation",
+    "no algorithm implementation"
+  ],
+  "evidence": [
+    "E-IDA-028",
+    "E-IDA-029",
+    "E-DEV-067",
+    "E-DEV-068"
+  ],
+  "idaMcp": {
+    "status": "active_and_rechecked",
+    "sessionId": "visualts_i64_todo045",
+    "serverHealth": "ok",
+    "hexRaysReady": true,
+    "parameterMapping": {
+      "JointRuler": "dword_140994AB8",
+      "JointDistbet": "dword_14095D628",
+      "JointWeldLength": "dword_14095D62C"
+    },
+    "writerBinding": {
+      "function": "sub_1406107F0",
+      "halfLengthFormula": "dword_14095D62C / 2000.0",
+      "dialogToGlobal": "JointWeldLength * 10",
+      "dialogToHalfLengthModel": "JointWeldLength / 200.0",
+      "dialogToFullLineLengthModel": "JointWeldLength / 100.0"
+    },
+    "renderingCorroboration": {
+      "function": "sub_1407306A0",
+      "formula": "dword_14095D62C / 2000.0"
+    },
+    "patternDiscriminant": {
+      "offset": 192,
+      "rawByteHex": "0x4C",
+      "ascii": "L",
+      "countGate": "*(int16 *)(pattern + 194) >= 1"
+    },
+    "othersGate": {
+      "condition": "*(v8 + 848) != 0 && a4 == 0",
+      "ringList": "*(v8 + 840)",
+      "nodeCodeOffset": 16,
+      "nodeCenterOffset": 24
+    },
+    "extraArcBranch": {
+      "flagsGate": "sub_140610AA0(v8) == 0",
+      "planeDistanceGate": "< 0.4",
+      "drawTaoTongFlagOffset": 832,
+      "drawTaoTongOutput": "General-Info/DrawTaoTong = T"
+    },
+    "recheckedFunctions": [
+      "sub_1406ED5E0",
+      "sub_1406EDF80",
+      "sub_1406AC410",
+      "sub_1406AC6A0",
+      "sub_1406107F0",
+      "sub_14061F970",
+      "sub_1407306A0",
+      "sub_1405DB340",
+      "sub_1405E9640",
+      "sub_1405EBA30",
+      "sub_1405DFEF0",
+      "sub_1406BA2C0"
+    ]
+  },
+  "confirmedFacts": {
+    "jointParameterMappingClosed": true,
+    "jointHalfLengthFormulaClosed": true,
+    "patternRawByteClosed": true,
+    "othersGateClosed": true,
+    "drawTaoTongArcRelationClosed": true,
+    "oldRuntimeNonEmptySampleCollected": false,
+    "algorithmImplemented": false
+  },
+  "unconfirmedFacts": [
+    "JointWeldLength UI unit label",
+    "pattern and point-node owning struct names",
+    "Varies_ShangH_LZ override semantics",
+    "Others symbolcutIOS UI trigger path",
+    "non-empty old runtime sample",
+    "AutoCAD L2 acceptance"
+  ],
+  "validation": {
+    "gateUnitTests": "17/17 pass",
+    "ctest": "18/18 pass",
+    "readinessGate": "M1-Formal-Ready, 84/84 pass",
+    "occtLeakScan": "pass: domain/rebar + drawing + project boundary checks ok",
+    "diffCheck": "pass",
+    "xhighReview": {
+      "required": false,
+      "reason": "docs_only_node"
+    }
+  },
+  "boundaries": [
+    "Real joint-line algorithm is not implemented",
+    "Real Others geometry algorithm is not implemented",
+    "AutoCAD L2 import is not_run",
+    "FDrawing acceptance is not confirmed",
+    "No complete drawing algorithm claim",
+    "No golden claim",
+    "No parent rebar business migration",
+    "No OCCT-driven steelbar business implementation"
+  ],
+  "next": "Execute TODO-047 to collect old Tushi runtime non-empty joint-line and Others samples before implementing algorithms"
+}
