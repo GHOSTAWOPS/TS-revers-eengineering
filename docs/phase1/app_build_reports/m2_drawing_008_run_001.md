@@ -143,11 +143,20 @@ git diff --check
 xhigh read-only review:
 
 ```text
-verdict = allow_commit
-critical = 0
-important = 0
-minor = pending review fields before final backfill only
-route = no deviation found
+first review
+  -> Verdict: block
+  -> Critical: None
+  -> Important: 46 still contained an old TODO-033 short-term goal block.
+
+fix
+  -> 46 short-term goal, current next, current execution suggestion and CSE
+     control contract now point to TODO-040.
+
+rerun review
+  -> Verdict: allow_commit
+  -> Critical: None
+  -> Important: None
+  -> Minor: None
 ```
 
 ## Boundary

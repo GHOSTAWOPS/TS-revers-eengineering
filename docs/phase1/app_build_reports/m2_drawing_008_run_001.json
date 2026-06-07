@@ -100,7 +100,18 @@
       "verdict": "allow_commit",
       "critical": 0,
       "important": 0,
-      "minor": "xhigh noted only pending review fields before this final backfill"
+      "minor": "none",
+      "firstReview": {
+        "verdict": "block",
+        "critical": "None",
+        "important": "46 still contained an old TODO-033 short-term goal block"
+      },
+      "rerunReview": {
+        "verdict": "allow_commit",
+        "critical": "None",
+        "important": "None",
+        "minor": "None"
+      }
     }
   },
   "boundaries": [

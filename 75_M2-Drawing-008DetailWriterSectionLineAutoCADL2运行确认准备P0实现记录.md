@@ -241,7 +241,9 @@ git diff --check
   -> no whitespace errors
 
 xhigh 只读 review
-  -> allow_commit; Critical 0; Important 0; Minor 仅提示回填 review 字段
+  -> first review block: Important 指出 46 仍有旧 TODO-033 短期 Goal 块
+  -> 已修复 46，使短期 Goal / 当前下一步 / 当前执行建议 / CSE 控制合同指向 TODO-040
+  -> rerun allow_commit; Critical 0; Important 0; Minor 0
 ```
 
 ## 不声明
