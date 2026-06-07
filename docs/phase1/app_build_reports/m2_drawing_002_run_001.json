@@ -1,0 +1,107 @@
+{
+  "schemaVersion": "app-build-report/v1",
+  "reportId": "m2_drawing_002_run_001",
+  "createdAt": "2026-06-07T10:10:00+08:00",
+  "decision": "autocad-l2-blocked-package-ready",
+  "todoId": "TODO-033",
+  "phase": "M2-Drawing-002",
+  "scope": [
+    "Detail L2 fixture package generation",
+    "AutoCAD environment probe",
+    "FDrawing plugin file evidence",
+    "manual L2 run checklist"
+  ],
+  "evidence": [
+    "E-DEV-054",
+    "E-DEV-055",
+    "E-IDA-026"
+  ],
+  "gaps": [
+    "GAP-DRAW-001",
+    "GAP-DRAW-002",
+    "GAP-DRAW-005"
+  ],
+  "detailPackage": {
+    "dir": "docs/phase1/app_build_reports/m2_drawing_002_detail_package",
+    "probe": "docs/phase1/app_build_reports/m2_drawing_002_detail_probe.json",
+    "files": [
+      {
+        "name": "Detail.xml",
+        "bytes": 186,
+        "root": "StyleRoot",
+        "sha256": "CBF196DBF3E68FB41486D3CD365F27FDADB394CFF6A114EBE4DD020138B56E4D"
+      },
+      {
+        "name": "Detail01.stl",
+        "bytes": 2542,
+        "root": "DrawingRoot",
+        "sha256": "7F3D8B57F3E22AA3C1777033A268EBD6128398F1680C2CC6BF72097D88221F73"
+      },
+      {
+        "name": "Detail02.stl",
+        "bytes": 2542,
+        "root": "DrawingRoot",
+        "sha256": "512082F29863382929ED15B369A86B4AFB3C99FDFFE900AFA07AF294278AC5E4"
+      },
+      {
+        "name": "Detail03.stl",
+        "bytes": 2542,
+        "root": "DrawingRoot",
+        "sha256": "2C98ABBEE840D687979619A013B9FB89E54E0EA37E8AD51303FE329FE90671B2"
+      }
+    ]
+  },
+  "autocad": {
+    "l2": "not_run",
+    "reason": "AutoCAD executable not found in current environment",
+    "pathChecks": {
+      "acadExeInPath": false,
+      "accoreconsoleExeInPath": false,
+      "registryAutoCADKeys": false,
+      "limitedScanAcadExe": false,
+      "limitedScanAccoreconsoleExe": false
+    }
+  },
+  "fdrawingPlugin": {
+    "dir": "C:/Users/ghost/Desktop/reverse_engineering/autocad2020",
+    "files": [
+      {
+        "name": "FDrawing.arx",
+        "sha256": "30DB8152DA1D42DE0F2550C6A4242BCC4781F8D5B649428C6DDCBF647A29D428"
+      },
+      {
+        "name": "FDrawingObj.dbx",
+        "sha256": "A7C8493507DE802F4881C0B60DB3DBBE4C5982CDF9F9C42A9C805EC2FEEC97B0"
+      }
+    ]
+  },
+  "validation": {
+    "narrowBuild": "pass",
+    "narrowTest": {
+      "detail_writer_tests": "pass",
+      "detail_l2_fixture_probe": "pass"
+    },
+    "ctest": {
+      "result": "pass",
+      "passed": 17,
+      "failed": 0
+    },
+    "readinessGate": {
+      "result": "pass",
+      "decision": "M1-Formal-Ready",
+      "passed": 84,
+      "failed": 0,
+      "warnings": 0
+    },
+    "occtLeakScan": "pass-no-matches",
+    "diffCheck": "pass"
+  },
+  "boundaries": [
+    "No AutoCAD L2 pass claim",
+    "No full drawing generation claim",
+    "No section/hidden/hatch line implementation",
+    "No golden collection",
+    "No parent rebar business migration"
+  ],
+  "next": "Manual AutoCAD 2020 + FDrawing import confirmation or Detail complex field evidence, depending on user runtime result"
+}

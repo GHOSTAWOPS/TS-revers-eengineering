@@ -1,0 +1,61 @@
+{
+    "autocadL2": "not_run",
+    "decision": "l0-l1-pass",
+    "diagnostics": [
+    ],
+    "errorCodes": [
+    ],
+    "evidence": [
+        "E-DEV-054",
+        "E-DEV-055"
+    ],
+    "files": [
+        {
+            "bytes": 186,
+            "exists": true,
+            "name": "Detail.xml",
+            "path": "C:/Users/ghost/Desktop/reverse_engineering/【03】图石软件/【图石钢筋1比1复刻】/docs/phase1/app_build_reports/m2_drawing_002_detail_package/Detail.xml",
+            "root": "StyleRoot",
+            "sha256": "cbf196dbf3e68fb41486d3cd365f27fdadb394cff6a114ebe4dd020138b56e4d"
+        },
+        {
+            "bytes": 2542,
+            "exists": true,
+            "name": "Detail01.stl",
+            "path": "C:/Users/ghost/Desktop/reverse_engineering/【03】图石软件/【图石钢筋1比1复刻】/docs/phase1/app_build_reports/m2_drawing_002_detail_package/Detail01.stl",
+            "root": "DrawingRoot",
+            "sha256": "7f3d8b57f3e22aa3c1777033a268ebd6128398f1680c2cc6bf72097d88221f73"
+        },
+        {
+            "bytes": 2542,
+            "exists": true,
+            "name": "Detail02.stl",
+            "path": "C:/Users/ghost/Desktop/reverse_engineering/【03】图石软件/【图石钢筋1比1复刻】/docs/phase1/app_build_reports/m2_drawing_002_detail_package/Detail02.stl",
+            "root": "DrawingRoot",
+            "sha256": "512082f29863382929ed15b369a86b4afb3c99fdffe900afa07af294278ac5e4"
+        },
+        {
+            "bytes": 2542,
+            "exists": true,
+            "name": "Detail03.stl",
+            "path": "C:/Users/ghost/Desktop/reverse_engineering/【03】图石软件/【图石钢筋1比1复刻】/docs/phase1/app_build_reports/m2_drawing_002_detail_package/Detail03.stl",
+            "root": "DrawingRoot",
+            "sha256": "2c98abbee840d687979619a013b9fb89e54e0ea37e8ad51303fe329fe90671b2"
+        }
+    ],
+    "gaps": [
+        "GAP-DRAW-001",
+        "GAP-DRAW-002"
+    ],
+    "l0": "passed",
+    "l1": "passed",
+    "l2": "not_run",
+    "ok": true,
+    "outputDir": "C:/Users/ghost/Desktop/reverse_engineering/【03】图石软件/【图石钢筋1比1复刻】/docs/phase1/app_build_reports/m2_drawing_002_detail_package",
+    "runId": "DW-L2-TODO033-001",
+    "schemaVersion": "detail-l2-fixture-probe/v1",
+    "viewCount": 3,
+    "warnings": [
+        "DW-WARN-MATERIAL_MASS_FORMULA_DEFERRED"
+    ]
+}

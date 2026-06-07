@@ -506,3 +506,37 @@ AutoCAD L2 import: not_run
 - `GAP-DRAW-004`：下料表和图上钢筋一致性。
 - `GAP-IDA-005`：旧图石生成工程图入口。
 - `GAP-IDA-006`：旧图石下料表入口。
+
+## M2-Drawing-002 AutoCAD L2 验证准备状态
+
+当前正式 app 已补：
+
+```text
+E-DEV-055
+TODO-033 / M2-Drawing-002
+```
+
+已完成：
+
+- 新增 `detail_l2_fixture_probe`，用正式 `DetailWriter` 生成 AutoCAD L2 验证用包。
+- 生成 3 图纸 Detail 包：
+  - `Detail.xml`
+  - `Detail01.stl`
+  - `Detail02.stl`
+  - `Detail03.stl`
+- `Detail.xml` 根节点是 `StyleRoot`。
+- `DetailNN.stl` 根节点是 `DrawingRoot`。
+- probe JSON 记录文件 hash、L0/L1/L2 状态和 GAP。
+- 旧 FDrawing 插件文件存在，hash 已记录。
+- 本机未发现 `acad.exe` / `accoreconsole.exe`，AutoCAD L2 自动导入未运行。
+- 已形成手工 L2 导入确认清单。
+
+仍不声明：
+
+```text
+AutoCAD L2 import: not_run
+FDrawing command name: not_confirmed
+section / hidden / hatch line: not_implemented
+full drawing generation: not_complete
+golden: not_collected
+```

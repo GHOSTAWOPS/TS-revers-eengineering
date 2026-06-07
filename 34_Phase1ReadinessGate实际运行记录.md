@@ -306,6 +306,7 @@ Blocker GAPs: none
 - `TODO-032 / M2-Edit-002` Rebar.Edit.Copy / 钢筋拷贝 P0 已落地并通过：IDA MCP 已补证 `scopy -> Input_Choice copyFlag=1 -> sub_1405989C0 -> sub_1405AA5D0` 拷贝链，domain/rebar 新增 `RebarEditCopyService`；当前 CTest 15/15 pass，readiness gate 84/84 pass；该阶段不是旧 ACIS topology clone、旧编号、dirty/undo 或 golden 证明。
 - `TODO-030 / M2-Stats-001` 钢筋统计 / 下料表 P0 已落地并通过：IDA MCP 已补证 Detail / XML writer 侧 `StbTable / MaterialTable` 写出链，domain/rebar 新增 `RebarScheduleService`，DetailWriter 改为消费同一 schedule service；当前 CTest 16/16 pass，strict readiness gate 84/84 pass，xhigh 复审 `allow_commit`；该阶段不是完整下料合并规则、旧 `singleMass` 来源、`Volume722` ACIS 等价、AutoCAD L2 或 golden 证明。
 - `TODO-031 / M2-Drawing-001` DetailWriter 多图纸 P0 已落地并通过：IDA MCP 已补证 `sub_140600AA0 -> sub_140635A80` 的旧 `Detail01..Detail09 / Detail10+` 命名规则，DetailWriter 可按多个 `DrawingView` 输出多张 `DetailNN.stl`，并覆盖多文件 L0/L1 校验、成功清理旧多余 DetailNN、失败恢复旧包；当前 CTest 16/16 pass，strict readiness gate 84/84 pass，保护层 OCCT/AIS 泄漏扫描无匹配；该阶段不是完整工程图、剖切线、隐藏线、填充线、AutoCAD L2 或 golden 证明。
+- `TODO-033 / M2-Drawing-002` AutoCAD L2 导入验证 P0 已落地验证准备和阻塞记录：新增 `detail_l2_fixture_probe`，用正式 `DetailWriter` 生成 `Detail.xml + Detail01.stl + Detail02.stl + Detail03.stl` 三图纸包并记录 hash；旧 `FDrawing.arx / FDrawingObj.dbx` 文件存在且 hash 已记录；当前本机未发现 `acad.exe / accoreconsole.exe`，所以 AutoCAD L2 自动导入未运行；当前 CTest 17/17 pass，strict readiness gate 84/84 pass，保护层 OCCT/AIS 泄漏扫描无匹配；该阶段不是 AutoCAD L2 通过、完整工程图、剖切线、隐藏线、填充线或 golden 证明。
 - Detail writer L0/L1 离线 gate 已落地并通过，不再作为当前 M1 阻塞。
 - `GAP-DEV-001/GAP-DEV-007` 不再阻塞进入 Qt6 + OCCT 开发入口，但旧图石业务复刻缺口仍按功能专项继续闭合。
 
@@ -371,4 +372,4 @@ none
 2. 保留 Qt6 runtime gate，防止 Save/Open 和 binding repair 报告退回 simulation。
 3. 保留 Detail writer L0/L1 报告；AutoCAD L2 导入另走工程图专项。
 4. 新增真实工程 STEP 样本时继续跑 STEP selection gate。
-5. 后续开发仍按旧图石运行、IDA、SFL、Detail 证据闭合业务缺口；`TODO-029 / Rebar.Edit.Move P0`、`TODO-032 / Rebar.Edit.Copy P0`、`TODO-030 / M2-Stats-001` 和 `TODO-031 / M2-Drawing-001` 已纳入 done-report 映射。下一步建议按 `TODO-033 / M2-Drawing-002` 继续补工程图复杂字段与 AutoCAD L2 证据；`TODO-026` golden 采集保持 pending，不自动进入。
+5. 后续开发仍按旧图石运行、IDA、SFL、Detail 证据闭合业务缺口；`TODO-029 / Rebar.Edit.Move P0`、`TODO-032 / Rebar.Edit.Copy P0`、`TODO-030 / M2-Stats-001`、`TODO-031 / M2-Drawing-001` 和 `TODO-033 / M2-Drawing-002` 已纳入 done-report 映射。下一步建议按 `TODO-034 / M2-Drawing-003` 先补 Detail 复杂字段静态证据，或在用户能启动 AutoCAD 2020 时继续执行 `69` 的手工 L2 导入清单；`TODO-026` golden 采集保持 pending，不自动进入。

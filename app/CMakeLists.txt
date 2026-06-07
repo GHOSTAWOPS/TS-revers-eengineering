@@ -250,6 +250,11 @@ add_executable(detail_writer_tests
 
 target_link_libraries(detail_writer_tests PRIVATE tsrebar_core)
 
+add_executable(detail_l2_fixture_probe
+    tools/detail_l2_fixture_probe.cpp)
+
+target_link_libraries(detail_l2_fixture_probe PRIVATE tsrebar_core)
+
 add_executable(step_import_probe
     src/step/StepImportProbe.cpp)
 
@@ -285,6 +290,11 @@ add_test(NAME rebar_schedule_service_tests COMMAND rebar_schedule_service_tests)
 add_test(NAME rebar_ais_presentation_tests COMMAND rebar_ais_presentation_tests)
 add_test(NAME project_runtime_tests COMMAND project_runtime_tests)
 add_test(NAME detail_writer_tests COMMAND detail_writer_tests)
+add_test(
+    NAME detail_l2_fixture_probe_tests
+    COMMAND detail_l2_fixture_probe
+        ${CMAKE_CURRENT_BINARY_DIR}/detail_l2_fixture_probe_test_package
+        --views 3)
 add_test(NAME app_smoke COMMAND tsrebar_app --smoke)
 set_tests_properties(app_smoke PROPERTIES
     ENVIRONMENT "QT_QPA_PLATFORM=minimal;QT_QPA_PLATFORM_PLUGIN_PATH=${TSREBAR_QT_PLATFORM_PLUGIN_PATH}")
