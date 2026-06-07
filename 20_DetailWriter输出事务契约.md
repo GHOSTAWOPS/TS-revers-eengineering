@@ -590,7 +590,7 @@ P1: 真实剖切线 / 隐藏线 / 填充线 / 接头线算法
 
 ```text
 AutoCAD L2 import: not_run
-FDrawing accepts complex skeleton: not_confirmed
+FDrawing acceptance: unknown
 section / hidden / hatch / joint algorithm: not_implemented
 ZValue semantics: gap
 FaceEdge generation rule: gap
@@ -635,11 +635,61 @@ TODO-035 / M2-Drawing-004
 
 ```text
 AutoCAD L2 import: not_run
-FDrawing accepts complex skeleton: not_confirmed
+FDrawing acceptance: unknown
 section / hidden / hatch / joint algorithm: not_implemented
 section-line LineN / ArcN geometry: not_generated
 ZValue semantics: gap
 FaceEdge generation: not_implemented
 full drawing generation: not_complete
 golden: not_collected
+```
+
+## M2-Drawing-005 AutoCAD L2复杂字段骨架导入验证状态
+
+当前正式证据已补：
+
+```text
+E-DEV-058
+TODO-036 / M2-Drawing-005
+```
+
+已完成：
+
+- `detail_l2_fixture_probe` 生成 TODO-036 专用复杂字段骨架包。
+- 输出 `Detail.xml + Detail01.stl + Detail02.stl + Detail03.stl`。
+- probe JSON 记录文件 hash、根节点、L0/L1/L2 状态、复杂骨架检查结果和 GAP。
+- `complexSkeleton.passed = true`。
+- `complexSkeleton.scope = complex containers + General-Info only; pointStb L2 is deferred`。
+- `FDrawingObj.dbx / FDrawing.arx` 文件存在，hash 已记录。
+- AutoCAD 可执行文件和注册表未发现。
+
+当前结论：
+
+```text
+decision = l0-l1-pass
+l0 = passed
+l1 = passed
+l2 = not_run
+autocadL2 = not_run
+fdrawingPlugin.status = ready
+autocadEnvironment.status = not_found
+```
+
+注意：
+
+- `fdrawingPlugin.status = ready` 只表示插件文件存在，不表示插件运行成功。
+- 当前未执行 APPLOAD，也未执行旧插件导入命令。
+- 因此不能把本轮写成 AutoCAD L2 通过。
+- xhigh review 已指出点筋变量污染风险，主流程已从 TODO-036 包中移除 `pointStb` fixture。
+
+未确认事项：
+
+```text
+AutoCAD L2 import 未通过。
+FDrawing accepts complex skeleton 未确认。
+pointStb L2 未通过。
+FaceEdge generation 未实现。
+section / hidden / hatch / joint algorithm 未实现。
+full drawing generation 未完成。
+golden 未采集。
 ```

@@ -374,4 +374,4 @@ none
 2. 保留 Qt6 runtime gate，防止 Save/Open 和 binding repair 报告退回 simulation。
 3. 保留 Detail writer L0/L1 报告；AutoCAD L2 导入另走工程图专项。
 4. 新增真实工程 STEP 样本时继续跑 STEP selection gate。
-5. 后续开发仍按旧图石运行、IDA、SFL、Detail 证据闭合业务缺口；`TODO-029 / Rebar.Edit.Move P0`、`TODO-032 / Rebar.Edit.Copy P0`、`TODO-030 / M2-Stats-001`、`TODO-031 / M2-Drawing-001`、`TODO-033 / M2-Drawing-002`、`TODO-034 / M2-Drawing-003` 和 `TODO-035 / M2-Drawing-004` 已纳入 done-report 映射。下一步建议按 `TODO-036 / M2-Drawing-005` 做 AutoCAD L2 复杂字段骨架导入验证 P0，或在用户能启动 AutoCAD 2020 时继续执行 `69/71` 的手工 L2 导入清单；`TODO-026` golden 采集保持 pending，不自动进入。
+5. 后续开发仍按旧图石运行、IDA、SFL、Detail 证据闭合业务缺口；`TODO-029 / Rebar.Edit.Move P0`、`TODO-032 / Rebar.Edit.Copy P0`、`TODO-030 / M2-Stats-001`、`TODO-031 / M2-Drawing-001`、`TODO-033 / M2-Drawing-002`、`TODO-034 / M2-Drawing-003`、`TODO-035 / M2-Drawing-004` 和 `TODO-036 / M2-Drawing-005` 已纳入 done-report 映射。下一步建议按 `TODO-037 / M2-Drawing-006` 做 `pointStb / FaceEdge` 独立干净变量字段骨架专项，或在用户能启动 AutoCAD 2020 时继续执行 `69/72` 的手工 L2 导入清单；`TODO-026` golden 采集保持 pending，不自动进入。

@@ -213,6 +213,12 @@ M2-Drawing-004 补充：
 - `CompanyName` 当前使用 `design-company` 作为 ASCII 中性占位，不是旧样例 `设计公司` 的 1:1 默认值确认。
 - 视图范围、剖切方向、上方向、剖切位置等字段当前是骨架默认值；真实公式和旧插件容忍度仍需 AutoCAD L2 或进一步 IDA / 运行确认。
 
+M2-Drawing-005 补充：
+
+- `E-DEV-058` 已用 `detail_l2_fixture_probe` 生成 TODO-036 复杂字段骨架包，并离线确认 `General-Info` 首批扩展字段存在。
+- 本机未发现 `acad.exe / accoreconsole.exe` 或 AutoCAD 注册表键，所以 AutoCAD L2 自动导入未运行。
+- 当前只证明复杂骨架包可生成并可离线检查，不证明旧插件接受默认字段。
+
 ## PartDetailDrawing 复杂线容器
 
 | Detail 字段 | 新模型字段 | 状态 | 说明 |
@@ -249,6 +255,12 @@ M2-Drawing-004 状态：
 - `steeljoint-line` 当前只输出空 `joints` 容器，不输出真实接头线。
 - 该状态不等价于 AutoCAD L2 导入通过，也不等价于工程图算法完成。
 
+M2-Drawing-005 状态：
+
+- `E-DEV-058` 已离线检查 TODO-036 包中的 `PartDetailDrawing num="8"`、复杂容器和子容器存在。
+- 检查范围固定为 `complex containers + General-Info only; pointStb L2 is deferred`。
+- 旧 FDrawing 插件文件存在并记录 hash，但 AutoCAD L2 仍是 `not_run`。
+
 ## pointStb / FaceEdge 补充字段
 
 | Detail 字段 | 新模型字段 | 状态 | 说明 |
@@ -265,6 +277,12 @@ M2-Drawing-004 状态：
 - `E-DEV-057` 已让正式 app `DetailWriter` 在 `SteelBarSegmentShape::Point` 时输出 `shapeType=C`、`point_x/y/z`、`offset_x/y/z`、`offset_x2/y2/z2` 字段骨架。
 - 当前 P0 用 `SteelBarSegment.startPoint` 作为 `point_*`，`SteelBarSegment.offset` 作为 `offset_*`，`offset_*2` 默认 0。
 - `FaceEdge` 本轮未实现；线段 / 圆弧 FaceEdge 生成规则仍是缺口。
+
+M2-Drawing-005 状态：
+
+- xhigh review 指出把 `pointStb` 混入 TODO-036 L2 包会污染变量。
+- 主流程已从 TODO-036 包中移除点筋 fixture。
+- `pointStb / FaceEdge` 后续必须作为独立干净变量专项验证，不能借 TODO-036 的复杂容器骨架结论关闭。
 
 ## 必须保持一致的字段
 

@@ -10,7 +10,10 @@
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QSettings>
+#include <QStandardPaths>
 #include <QTextStream>
+#include <QXmlStreamAttributes>
 #include <QXmlStreamReader>
 
 #include <cstdlib>
@@ -29,8 +32,8 @@ tsrebar::RebarEvidenceRef evidenceRef(const std::string& id, const std::string& 
 tsrebar::SteelData makeProbeSteelData()
 {
     tsrebar::SteelBarSegment line;
-    line.segmentId = "todo033-segment-line-001";
-    line.barId = "todo033-bar-001";
+    line.segmentId = "todo036-segment-line-001";
+    line.barId = "todo036-bar-001";
     line.sequenceNo = 1;
     line.shapeType = tsrebar::SteelBarSegmentShape::Line;
     line.startPoint = {0.0, 0.0, 0.0};
@@ -40,8 +43,8 @@ tsrebar::SteelData makeProbeSteelData()
     line.evidence.push_back(evidenceRef("E-IDA-018", "StbGeo write chain"));
 
     tsrebar::SteelBarSegment arc;
-    arc.segmentId = "todo033-segment-arc-001";
-    arc.barId = "todo033-bar-001";
+    arc.segmentId = "todo036-segment-arc-001";
+    arc.barId = "todo036-bar-001";
     arc.sequenceNo = 2;
     arc.shapeType = tsrebar::SteelBarSegmentShape::Arc;
     arc.startPoint = {10.0, 0.0, 0.0};
@@ -53,8 +56,8 @@ tsrebar::SteelData makeProbeSteelData()
     arc.evidence.push_back(evidenceRef("E-IDA-018", "StbGeo write chain"));
 
     tsrebar::SteelBar bar;
-    bar.barId = "todo033-bar-001";
-    bar.groupId = "todo033-group-001";
+    bar.barId = "todo036-bar-001";
+    bar.groupId = "todo036-group-001";
     bar.sequenceNo = 1;
     bar.displayNumber = "12A";
     bar.diameter = 25.0;
@@ -65,15 +68,15 @@ tsrebar::SteelData makeProbeSteelData()
     bar.evidence.push_back(evidenceRef("E-IDA-017", "steelbar evidence"));
 
     tsrebar::SteelBarGroup group;
-    group.groupId = "todo033-group-001";
+    group.groupId = "todo036-group-001";
     group.rsdId = "Y12";
     group.displayNumber = "12A";
     group.actualNumber = "12";
-    group.componentName = "todo033-pier";
-    group.projectSteelName = "todo033-main-bar";
+    group.componentName = "todo036-pier";
+    group.projectSteelName = "todo036-main-bar";
     group.createCommand = "Rebar.Create.LineGroup";
     group.legacyCommand = "sgroupbarline";
-    group.steelDataId = "todo033-steel-data-001";
+    group.steelDataId = "todo036-steel-data-001";
     group.diameter = 25.0;
     group.interval = 200.0;
     group.barCount = 3;
@@ -90,11 +93,12 @@ tsrebar::SteelData makeProbeSteelData()
     group.evidence.push_back(evidenceRef("E-IDA-019", "StbTable write chain"));
 
     tsrebar::SteelData steelData;
-    steelData.steelDataId = "todo033-steel-data-001";
+    steelData.steelDataId = "todo036-steel-data-001";
     steelData.level = "HRB400";
     steelData.gradeName = "HRB400";
     steelData.diameterSet.push_back(25.0);
     steelData.evidence.push_back(evidenceRef("E-DETAIL-001", "Detail package evidence"));
+    steelData.evidence.push_back(evidenceRef("E-DETAIL-003", "Detail complex field evidence"));
     steelData.groups.push_back(group);
     steelData.bars.push_back(bar);
     steelData.segments.push_back(line);
@@ -119,12 +123,20 @@ QString rootName(const QString& path)
     return QStringLiteral("missing");
 }
 
+QJsonObject fileSummaryForPath(const QString& path, const QString& displayName = {});
+
 QJsonObject fileSummary(const QString& outputDir, const QString& fileName)
 {
     const QString path = QDir(outputDir).filePath(fileName);
+    return fileSummaryForPath(path, fileName);
+}
+
+QJsonObject fileSummaryForPath(const QString& path, const QString& displayName)
+{
     QFile file(path);
     QJsonObject item;
-    item.insert(QStringLiteral("name"), fileName);
+    item.insert(QStringLiteral("name"),
+                displayName.isEmpty() ? QFileInfo(path).fileName() : displayName);
     item.insert(QStringLiteral("path"), QFileInfo(path).absoluteFilePath());
     item.insert(QStringLiteral("exists"), file.exists());
     if (!file.open(QIODevice::ReadOnly)) {
@@ -140,6 +152,293 @@ QJsonObject fileSummary(const QString& outputDir, const QString& fileName)
     item.insert(QStringLiteral("bytes"), bytes.size());
     item.insert(QStringLiteral("root"), rootName(path));
     return item;
+}
+
+QStringList directChildElementNames(const QString& path, const QString& parentName)
+{
+    QFile file(path);
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        return {};
+    }
+
+    QXmlStreamReader reader(&file);
+    QStringList children;
+    bool inParent = false;
+    int depth = 0;
+    while (!reader.atEnd()) {
+        reader.readNext();
+        if (reader.isStartElement()) {
+            const QString name = reader.name().toString();
+            if (!inParent && name == parentName) {
+                inParent = true;
+                depth = 1;
+                continue;
+            }
+            if (inParent) {
+                if (depth == 1) {
+                    children.append(name);
+                }
+                ++depth;
+            }
+        } else if (reader.isEndElement() && inParent) {
+            --depth;
+            if (depth == 0) {
+                break;
+            }
+        }
+    }
+    return children;
+}
+
+QXmlStreamAttributes firstElementAttributes(const QString& path, const QString& elementName)
+{
+    QFile file(path);
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        return {};
+    }
+
+    QXmlStreamReader reader(&file);
+    while (!reader.atEnd()) {
+        reader.readNext();
+        if (reader.isStartElement() && reader.name() == elementName) {
+            return reader.attributes();
+        }
+    }
+    return {};
+}
+
+QJsonArray toJsonArray(const QStringList& values)
+{
+    QJsonArray result;
+    for (const QString& value : values) {
+        result.append(value);
+    }
+    return result;
+}
+
+QStringList missingItems(const QStringList& actual, const QStringList& expected)
+{
+    QStringList missing;
+    for (const QString& item : expected) {
+        if (!actual.contains(item)) {
+            missing.append(item);
+        }
+    }
+    return missing;
+}
+
+QStringList missingAttributes(const QXmlStreamAttributes& attrs, const QStringList& expected)
+{
+    QStringList missing;
+    for (const QString& item : expected) {
+        if (!attrs.hasAttribute(item)) {
+            missing.append(item);
+        }
+    }
+    return missing;
+}
+
+QJsonObject childContainerCheck(const QString& path,
+                                const QString& parentName,
+                                const QStringList& expectedChildren)
+{
+    const QStringList actual = directChildElementNames(path, parentName);
+    const QStringList missing = missingItems(actual, expectedChildren);
+    QJsonObject result;
+    result.insert(QStringLiteral("parent"), parentName);
+    result.insert(QStringLiteral("actualChildren"), toJsonArray(actual));
+    result.insert(QStringLiteral("requiredChildren"), toJsonArray(expectedChildren));
+    result.insert(QStringLiteral("missingChildren"), toJsonArray(missing));
+    result.insert(QStringLiteral("passed"), missing.isEmpty());
+    return result;
+}
+
+QJsonObject complexSkeletonProbe(const QString& detailStlPath)
+{
+    const QStringList partChildren{
+        QStringLiteral("General-Info"),
+        QStringLiteral("continue-line"),
+        QStringLiteral("hidden-line"),
+        QStringLiteral("central-line"),
+        QStringLiteral("section-line"),
+        QStringLiteral("hatch-line"),
+        QStringLiteral("Others"),
+        QStringLiteral("steeljoint-line"),
+    };
+    const QStringList curveChildren{
+        QStringLiteral("lines"),
+        QStringLiteral("circles"),
+        QStringLiteral("Arcs"),
+        QStringLiteral("Ellipses"),
+        QStringLiteral("EllipseArcs"),
+        QStringLiteral("Splines"),
+    };
+    const QStringList generalAttrs{
+        QStringLiteral("CompanyName"),
+        QStringLiteral("ExportYesNo"),
+        QStringLiteral("ExpSteelYesNo"),
+        QStringLiteral("ExpSteelMark"),
+        QStringLiteral("DimensionChicunB"),
+        QStringLiteral("DimensionPointBarB"),
+        QStringLiteral("DimensionLineBarB"),
+        QStringLiteral("DimensionLLineBarB"),
+        QStringLiteral("DimensionBDist"),
+        QStringLiteral("DispCuttedSymb"),
+        QStringLiteral("HalfViewH"),
+        QStringLiteral("HalfViewW"),
+        QStringLiteral("Range_XMLMin_X"),
+        QStringLiteral("Range_XMLMax_Y"),
+        QStringLiteral("CutPlaneDirX0"),
+        QStringLiteral("CutPlaneDirY0"),
+        QStringLiteral("CutPlaneDirZ0"),
+        QStringLiteral("TopDirZ"),
+        QStringLiteral("DrawingType"),
+        QStringLiteral("LevelDrawing"),
+        QStringLiteral("DrawTaoTong"),
+    };
+    QJsonObject result;
+    result.insert(QStringLiteral("file"), QFileInfo(detailStlPath).absoluteFilePath());
+
+    const QXmlStreamAttributes partAttrs =
+        firstElementAttributes(detailStlPath, QStringLiteral("PartDetailDrawing"));
+    const QStringList actualPartChildren =
+        directChildElementNames(detailStlPath, QStringLiteral("PartDetailDrawing"));
+    const QStringList missingPartChildren = missingItems(actualPartChildren, partChildren);
+    result.insert(QStringLiteral("partDetailDrawingNum"),
+                  partAttrs.value(QStringLiteral("num")).toString());
+    result.insert(QStringLiteral("partDetailDrawingRequiredChildren"), toJsonArray(partChildren));
+    result.insert(QStringLiteral("partDetailDrawingActualChildren"), toJsonArray(actualPartChildren));
+    result.insert(QStringLiteral("partDetailDrawingMissingChildren"), toJsonArray(missingPartChildren));
+
+    QJsonArray containerChecks;
+    containerChecks.append(childContainerCheck(detailStlPath, QStringLiteral("continue-line"), curveChildren));
+    containerChecks.append(childContainerCheck(detailStlPath, QStringLiteral("hidden-line"), curveChildren));
+    containerChecks.append(childContainerCheck(detailStlPath, QStringLiteral("central-line"), {QStringLiteral("lines")}));
+    containerChecks.append(childContainerCheck(detailStlPath, QStringLiteral("section-line"), curveChildren));
+    containerChecks.append(childContainerCheck(detailStlPath, QStringLiteral("hatch-line"), {QStringLiteral("lines")}));
+    containerChecks.append(childContainerCheck(detailStlPath, QStringLiteral("steeljoint-line"), {QStringLiteral("joints")}));
+    result.insert(QStringLiteral("containerChecks"), containerChecks);
+
+    bool containersPassed = true;
+    for (const auto item : containerChecks) {
+        if (!item.toObject().value(QStringLiteral("passed")).toBool()) {
+            containersPassed = false;
+        }
+    }
+
+    const QXmlStreamAttributes general =
+        firstElementAttributes(detailStlPath, QStringLiteral("General-Info"));
+    const QStringList missingGeneralAttrs = missingAttributes(general, generalAttrs);
+    QJsonObject generalInfo;
+    generalInfo.insert(QStringLiteral("requiredAttributes"), toJsonArray(generalAttrs));
+    generalInfo.insert(QStringLiteral("missingAttributes"), toJsonArray(missingGeneralAttrs));
+    generalInfo.insert(QStringLiteral("CompanyName"), general.value(QStringLiteral("CompanyName")).toString());
+    generalInfo.insert(QStringLiteral("DrawingName"), general.value(QStringLiteral("DrawingName")).toString());
+    generalInfo.insert(QStringLiteral("DrawingUnit"), general.value(QStringLiteral("DrawingUnit")).toString());
+    generalInfo.insert(QStringLiteral("DrawingScale"), general.value(QStringLiteral("DrawingScale")).toString());
+    generalInfo.insert(QStringLiteral("passed"), missingGeneralAttrs.isEmpty());
+    result.insert(QStringLiteral("generalInfo"), generalInfo);
+
+    const bool passed = partAttrs.value(QStringLiteral("num")).toString() == QStringLiteral("8") &&
+        missingPartChildren.isEmpty() &&
+        containersPassed &&
+        missingGeneralAttrs.isEmpty();
+    result.insert(QStringLiteral("passed"), passed);
+    result.insert(QStringLiteral("scope"),
+                  QStringLiteral("complex containers + General-Info only; pointStb L2 is deferred"));
+    return result;
+}
+
+QJsonObject executableProbe(const QString& executable)
+{
+    QJsonObject result;
+    result.insert(QStringLiteral("name"), executable);
+    const QString path = QStandardPaths::findExecutable(executable);
+    result.insert(QStringLiteral("found"), !path.isEmpty());
+    result.insert(QStringLiteral("path"), path);
+    return result;
+}
+
+QJsonObject registryKeyProbe(const QString& key)
+{
+    QJsonObject result;
+    result.insert(QStringLiteral("key"), key);
+#ifdef Q_OS_WIN
+    QSettings settings(key, QSettings::NativeFormat);
+    const QStringList childGroups = settings.childGroups();
+    const QStringList childKeys = settings.childKeys();
+    result.insert(QStringLiteral("exists"), !childGroups.isEmpty() || !childKeys.isEmpty());
+    result.insert(QStringLiteral("childGroupCount"), childGroups.size());
+#else
+    result.insert(QStringLiteral("exists"), false);
+    result.insert(QStringLiteral("childGroupCount"), 0);
+#endif
+    return result;
+}
+
+QJsonObject autocadEnvironmentProbe()
+{
+    QJsonArray executables;
+    executables.append(executableProbe(QStringLiteral("acad.exe")));
+    executables.append(executableProbe(QStringLiteral("accoreconsole.exe")));
+
+    QJsonArray registry;
+    registry.append(registryKeyProbe(QStringLiteral("HKEY_LOCAL_MACHINE\\SOFTWARE\\Autodesk\\AutoCAD")));
+    registry.append(registryKeyProbe(QStringLiteral("HKEY_LOCAL_MACHINE\\SOFTWARE\\WOW6432Node\\Autodesk\\AutoCAD")));
+    registry.append(registryKeyProbe(QStringLiteral("HKEY_CURRENT_USER\\SOFTWARE\\Autodesk\\AutoCAD")));
+
+    bool anyExecutable = false;
+    for (const auto item : executables) {
+        if (item.toObject().value(QStringLiteral("found")).toBool()) {
+            anyExecutable = true;
+        }
+    }
+
+    bool anyRegistry = false;
+    for (const auto item : registry) {
+        if (item.toObject().value(QStringLiteral("exists")).toBool()) {
+            anyRegistry = true;
+        }
+    }
+
+    QJsonObject result;
+    result.insert(QStringLiteral("executables"), executables);
+    result.insert(QStringLiteral("registry"), registry);
+    result.insert(QStringLiteral("autocadExecutableFound"), anyExecutable);
+    result.insert(QStringLiteral("autocadRegistryFound"), anyRegistry);
+    result.insert(QStringLiteral("automaticL2Possible"), anyExecutable);
+    result.insert(QStringLiteral("status"), anyExecutable ? QStringLiteral("available") : QStringLiteral("not_found"));
+    return result;
+}
+
+QJsonObject pluginProbe(const QString& pluginDir)
+{
+    QJsonObject result;
+    result.insert(QStringLiteral("pluginDir"), pluginDir);
+    if (pluginDir.isEmpty()) {
+        result.insert(QStringLiteral("status"), QStringLiteral("not_configured"));
+        result.insert(QStringLiteral("allRequiredPresent"), false);
+        return result;
+    }
+
+    const QDir dir(pluginDir);
+    QJsonArray files;
+    files.append(fileSummaryForPath(dir.filePath(QStringLiteral("FDrawingObj.dbx"))));
+    files.append(fileSummaryForPath(dir.filePath(QStringLiteral("FDrawing.arx"))));
+    files.append(fileSummaryForPath(dir.filePath(QStringLiteral("Detail.xml")), QStringLiteral("old-sample/Detail.xml")));
+    files.append(fileSummaryForPath(dir.filePath(QStringLiteral("Detail01.stl")), QStringLiteral("old-sample/Detail01.stl")));
+
+    bool allRequiredPresent = true;
+    for (int index = 0; index < 2; ++index) {
+        if (!files.at(index).toObject().value(QStringLiteral("exists")).toBool()) {
+            allRequiredPresent = false;
+        }
+    }
+
+    result.insert(QStringLiteral("status"), allRequiredPresent ? QStringLiteral("ready") : QStringLiteral("missing_required"));
+    result.insert(QStringLiteral("allRequiredPresent"), allRequiredPresent);
+    result.insert(QStringLiteral("files"), files);
+    return result;
 }
 
 QJsonArray diagnosticsToJson(const QVector<tsrebar::DetailDiagnostic>& diagnostics)
@@ -183,8 +482,19 @@ int main(int argc, char* argv[])
         QStringLiteral("Number of drawing views to generate."),
         QStringLiteral("count"),
         QStringLiteral("3"));
+    const QCommandLineOption runIdOption(
+        QStringLiteral("run-id"),
+        QStringLiteral("DetailWriter run id."),
+        QStringLiteral("id"),
+        QStringLiteral("DW-L2-TODO036-001"));
+    const QCommandLineOption pluginDirOption(
+        QStringLiteral("plugin-dir"),
+        QStringLiteral("Directory containing FDrawingObj.dbx and FDrawing.arx."),
+        QStringLiteral("dir"));
     parser.addOption(outputOption);
     parser.addOption(viewsOption);
+    parser.addOption(runIdOption);
+    parser.addOption(pluginDirOption);
     parser.addPositionalArgument(QStringLiteral("outputDir"), QStringLiteral("Output directory fallback."));
     parser.process(app);
 
@@ -205,19 +515,19 @@ int main(int argc, char* argv[])
     }
 
     tsrebar::DetailWriteOptions options;
-    options.runId = QStringLiteral("DW-L2-TODO033-001");
-    options.drawingName = QStringLiteral("todo033-autocad-l2");
-    options.modelFileName = QStringLiteral("todo033-model.step");
+    options.runId = parser.value(runIdOption);
+    options.drawingName = QStringLiteral("todo036-complex-skeleton-l2");
+    options.modelFileName = QStringLiteral("todo036-model.step");
     options.drawingUnit = QStringLiteral("m");
     options.drawingScale = QStringLiteral("1");
     for (int index = 1; index <= viewCount; ++index) {
         tsrebar::DetailDrawingViewOptions view;
-        view.viewId = QStringLiteral("todo033-view-%1").arg(index, 3, 10, QLatin1Char('0'));
-        view.drawingName = QStringLiteral("todo033-view-%1").arg(index);
-        view.modelFileName = QStringLiteral("todo033-model-%1.step").arg(index);
+        view.viewId = QStringLiteral("todo036-view-%1").arg(index, 3, 10, QLatin1Char('0'));
+        view.drawingName = QStringLiteral("todo036-view-%1").arg(index);
+        view.modelFileName = QStringLiteral("todo036-model-%1.step").arg(index);
         view.drawingUnit = QStringLiteral("mm");
         view.drawingScale = QStringLiteral("1:%1").arg(index);
-        view.generalScale = QStringLiteral("todo033-general-%1").arg(index);
+        view.generalScale = QStringLiteral("todo036-general-%1").arg(index);
         options.views.push_back(view);
     }
 
@@ -240,8 +550,17 @@ int main(int argc, char* argv[])
     root.insert(QStringLiteral("diagnostics"), diagnosticsToJson(result.diagnostics));
     root.insert(QStringLiteral("autocadL2"), QStringLiteral("not_run"));
     root.insert(QStringLiteral("evidence"),
-                QJsonArray{QStringLiteral("E-DEV-054"), QStringLiteral("E-DEV-055")});
+                QJsonArray{QStringLiteral("E-DEV-055"),
+                           QStringLiteral("E-DETAIL-003"),
+                           QStringLiteral("E-DEV-057"),
+                           QStringLiteral("E-DEV-058")});
     root.insert(QStringLiteral("gaps"), QJsonArray{QStringLiteral("GAP-DRAW-001"), QStringLiteral("GAP-DRAW-002")});
+    root.insert(QStringLiteral("autocadEnvironment"), autocadEnvironmentProbe());
+    root.insert(QStringLiteral("fdrawingPlugin"), pluginProbe(parser.value(pluginDirOption)));
+
+    const QString firstDrawing = QDir(outputDir).filePath(QStringLiteral("Detail01.stl"));
+    const QJsonObject complexSkeleton = complexSkeletonProbe(firstDrawing);
+    root.insert(QStringLiteral("complexSkeleton"), complexSkeleton);
 
     QJsonArray files;
     for (const auto& fileName : result.files) {
@@ -250,5 +569,8 @@ int main(int argc, char* argv[])
     root.insert(QStringLiteral("files"), files);
 
     QTextStream(stdout) << QString::fromUtf8(QJsonDocument(root).toJson(QJsonDocument::Indented));
-    return result.ok ? EXIT_SUCCESS : 2;
+    if (!result.ok) {
+        return 2;
+    }
+    return complexSkeleton.value(QStringLiteral("passed")).toBool() ? EXIT_SUCCESS : 3;
 }

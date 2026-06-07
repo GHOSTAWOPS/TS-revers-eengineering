@@ -1,0 +1,122 @@
+{
+  "schemaVersion": "app-build-report/v1",
+  "reportId": "m2_drawing_005_run_001",
+  "createdAt": "2026-06-07T12:36:00+08:00",
+  "decision": "complex-skeleton-l2-not-run",
+  "todoId": "TODO-036",
+  "phase": "M2-Drawing-005",
+  "scope": [
+    "TODO-036 Detail package generation",
+    "complex PartDetailDrawing skeleton offline probe",
+    "General-Info extended field probe",
+    "AutoCAD executable and registry probe",
+    "FDrawing plugin file hash record",
+    "readiness done-report mapping"
+  ],
+  "evidence": [
+    "E-DEV-055",
+    "E-DETAIL-003",
+    "E-DEV-057",
+    "E-DEV-058"
+  ],
+  "probe": {
+    "path": "docs/phase1/app_build_reports/m2_drawing_005_detail_probe.json",
+    "schemaVersion": "detail-l2-fixture-probe/v1",
+    "runId": "DW-L2-TODO036-001",
+    "decision": "l0-l1-pass",
+    "l0": "passed",
+    "l1": "passed",
+    "l2": "not_run",
+    "autocadL2": "not_run",
+    "complexSkeleton": {
+      "passed": true,
+      "scope": "complex containers + General-Info only; pointStb L2 is deferred"
+    },
+    "autocadEnvironment": {
+      "status": "not_found",
+      "automaticL2Possible": false
+    },
+    "fdrawingPlugin": {
+      "status": "ready",
+      "allRequiredPresent": true
+    }
+  },
+  "files": [
+    {
+      "name": "Detail.xml",
+      "bytes": 186,
+      "root": "StyleRoot",
+      "sha256": "cbf196dbf3e68fb41486d3cd365f27fdadb394cff6a114ebe4dd020138b56e4d"
+    },
+    {
+      "name": "Detail01.stl",
+      "bytes": 4624,
+      "root": "DrawingRoot",
+      "sha256": "664ef81b821316a89808dfee5b9fee1c704552739314eecdf062b8908c851580"
+    },
+    {
+      "name": "Detail02.stl",
+      "bytes": 4624,
+      "root": "DrawingRoot",
+      "sha256": "5383f724471a82d56d90bbe27230e930f3f9d6cb9fd72434fc08dad3d3365657"
+    },
+    {
+      "name": "Detail03.stl",
+      "bytes": 4624,
+      "root": "DrawingRoot",
+      "sha256": "e58a3e2492cb6cf3f94c95b2b3c3542e9aeeba3ea030cd05722fc24702ba23f8"
+    }
+  ],
+  "fdrawingPlugin": {
+    "FDrawingObj.dbx": "a7c8493507de802f4881c0b60db3dbbe4c5982cdf9f9c42a9c805ec2feec97b0",
+    "FDrawing.arx": "30db8152da1d42de0f2550c6a4242bcc4781f8d5b649428c6ddcbf647a29d428",
+    "oldDetailXml": "b02abeeb7b9e0ab802566fa617e0627d9883010172efd9cd50dacf940b5afeb5",
+    "oldDetail01Stl": "e3bb220e39f5657a38bfc6793e246208760816913520daf9c97c3544d0421c3e"
+  },
+  "validation": {
+    "build": "pass",
+    "probe": "pass",
+    "ctest": {
+      "result": "pass",
+      "passed": 17,
+      "failed": 0
+    },
+    "readinessGate": {
+      "result": "pass",
+      "decision": "M1-Formal-Ready",
+      "passed": 84,
+      "failed": 0,
+      "warnings": 0
+    },
+    "occtLeakScan": "pass-no-matches",
+    "diffCheck": "pass",
+    "xhighReview": "allow_commit"
+  },
+  "boundaries": [
+    "AutoCAD L2 import is not_run",
+    "FDrawing acceptance is not confirmed",
+    "pointStb L2 is deferred to a clean variable follow-up",
+    "FaceEdge generation is not implemented",
+    "No section, hidden, hatch, or joint drawing algorithm claim",
+    "No OCCT/AIS dependency in domain/rebar, drawing, or project protected layers",
+    "No parent rebar business migration",
+    "No golden claim"
+  ],
+  "xhighReview": {
+    "firstVerdict": "needs_fix",
+    "firstImportant": [
+      "pointStb L2 variable pollution"
+    ],
+    "mainFlowFix": [
+      "removed pointStb from TODO-036 L2 package",
+      "kept TODO-036 scope to complex containers + General-Info only"
+    ],
+    "finalVerdict": "allow_commit",
+    "critical": [],
+    "important": [],
+    "routeAlignment": "pass",
+    "autocadL2FalseClaimCheck": "ok",
+    "todo46Consistency": "pass"
+  },
+  "next": "TODO-037 / M2-Drawing-006 DetailWriter pointStb / FaceEdge compatible field skeleton P0"
+}
