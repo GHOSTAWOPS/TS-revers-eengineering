@@ -597,3 +597,49 @@ FaceEdge generation rule: gap
 full drawing generation: not_complete
 golden: not_collected
 ```
+
+## M2-Drawing-004 复杂字段骨架 P0 状态
+
+当前正式 app 已补：
+
+```text
+E-DEV-057
+TODO-035 / M2-Drawing-004
+```
+
+已完成：
+
+- `DetailWriter` 输出 `PartDetailDrawing num="8"`。
+- `DetailWriter` 输出复杂容器骨架：
+  - `continue-line`
+  - `hidden-line`
+  - `central-line`
+  - `section-line`
+  - `hatch-line`
+  - `Others`
+  - `steeljoint-line`
+- `continue-line / hidden-line / section-line` 输出 `lines / circles / Arcs / Ellipses / EllipseArcs / Splines` 空子容器。
+- `central-line / hatch-line` 输出空 `lines`。
+- `steeljoint-line` 输出空 `joints`。
+- `General-Info` 输出首批扩展默认字段。
+- `SteelBarSegmentShape::Point` 输出 `StbGeo shapeType=C` 的 `point_x/y/z`、`offset_x/y/z`、`offset_x2/y2/z2`。
+- `detail_writer_tests` 覆盖复杂容器、默认字段、点筋字段、L2 不声明和既有失败回滚。
+
+注意：
+
+- `CompanyName` 当前写 `design-company`，只是中性占位，不是旧图石默认值闭合。
+- `FaceEdge` 本轮未实现。
+- 空容器不代表旧插件一定接受，也不代表真实工程图算法完成。
+
+仍不声明：
+
+```text
+AutoCAD L2 import: not_run
+FDrawing accepts complex skeleton: not_confirmed
+section / hidden / hatch / joint algorithm: not_implemented
+section-line LineN / ArcN geometry: not_generated
+ZValue semantics: gap
+FaceEdge generation: not_implemented
+full drawing generation: not_complete
+golden: not_collected
+```

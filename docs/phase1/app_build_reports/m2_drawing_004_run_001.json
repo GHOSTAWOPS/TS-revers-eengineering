@@ -1,0 +1,94 @@
+{
+  "schemaVersion": "app-build-report/v1",
+  "reportId": "m2_drawing_004_run_001",
+  "createdAt": "2026-06-07T23:50:00+08:00",
+  "decision": "detail-complex-skeleton-p0-pass",
+  "todoId": "TODO-035",
+  "phase": "M2-Drawing-004",
+  "scope": [
+    "DetailWriter PartDetailDrawing complex container skeleton",
+    "General-Info extended default field skeleton",
+    "pointStb StbGeo field skeleton",
+    "unit tests",
+    "readiness done-report mapping"
+  ],
+  "evidence": [
+    "E-DETAIL-003",
+    "E-IDA-027",
+    "E-DEV-056",
+    "E-DEV-057"
+  ],
+  "validation": {
+    "narrowTest": {
+      "result": "pass",
+      "target": "detail_writer_tests"
+    },
+    "ctest": {
+      "result": "pass",
+      "passed": 17,
+      "failed": 0
+    },
+    "readinessGate": {
+      "result": "pass",
+      "decision": "M1-Formal-Ready",
+      "passed": 84,
+      "failed": 0,
+      "warnings": 0
+    },
+    "occtLeakScan": "pass-no-matches",
+    "diffCheck": "pass",
+    "xhighReview": "allow_commit"
+  },
+  "implementedFields": {
+    "partDetailDrawing": [
+      "General-Info",
+      "continue-line",
+      "hidden-line",
+      "central-line",
+      "section-line",
+      "hatch-line",
+      "Others",
+      "steeljoint-line"
+    ],
+    "curveContainers": [
+      "lines",
+      "circles",
+      "Arcs",
+      "Ellipses",
+      "EllipseArcs",
+      "Splines"
+    ],
+    "pointStb": [
+      "shapeType=C",
+      "point_x",
+      "point_y",
+      "point_z",
+      "offset_x",
+      "offset_y",
+      "offset_z",
+      "offset_x2",
+      "offset_y2",
+      "offset_z2"
+    ]
+  },
+  "boundaries": [
+    "No OCCT/AIS dependency in domain/rebar, drawing, or project protected layers",
+    "No parent rebar business migration",
+    "No full drawing generation claim",
+    "No section/hidden/hatch/joint algorithm claim",
+    "No AutoCAD L2 or golden claim",
+    "CompanyName is an ASCII placeholder, not a confirmed old default",
+    "FaceEdge is not implemented in this P0 slice"
+  ],
+  "xhighReview": {
+    "verdict": "allow_commit",
+    "critical": [],
+    "important": [],
+    "minor": [
+      "CompanyName uses design-company rather than the old sample value; documented as placeholder.",
+      "FaceEdge is not implemented; documented as remaining gap.",
+      "Review did not run tests; main flow ran CTest/readiness/leak scan."
+    ]
+  },
+  "next": "TODO-036 / M2-Drawing-005 AutoCAD L2 complex skeleton import verification P0"
+}

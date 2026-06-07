@@ -442,6 +442,13 @@ void writePointAttributes(QXmlStreamWriter& writer,
     writer.writeAttribute(prefix + QStringLiteral("_z"), formatNumber(point.z));
 }
 
+void writeZeroSecondaryOffsetAttributes(QXmlStreamWriter& writer)
+{
+    writer.writeAttribute(QStringLiteral("offset_x2"), QStringLiteral("0"));
+    writer.writeAttribute(QStringLiteral("offset_y2"), QStringLiteral("0"));
+    writer.writeAttribute(QStringLiteral("offset_z2"), QStringLiteral("0"));
+}
+
 void writeSegmentGeo(QXmlStreamWriter& writer,
                      const SteelBarSegment& segment,
                      int sequence)
@@ -451,12 +458,20 @@ void writeSegmentGeo(QXmlStreamWriter& writer,
     writer.writeAttribute(QStringLiteral("stbSeqNum"),
                           QString::number(segment.sequenceNo > 0 ? segment.sequenceNo : sequence));
     writer.writeAttribute(QStringLiteral("shapeType"), detailShapeCode(segment));
-    writePointAttributes(writer, QStringLiteral("start"), segment.startPoint);
-    writePointAttributes(writer, QStringLiteral("middle"), segment.middlePoint);
-    writePointAttributes(writer, QStringLiteral("end"), segment.endPoint);
-    writer.writeAttribute(QStringLiteral("start_r"), formatNumber(segment.startRadius));
-    writer.writeAttribute(QStringLiteral("end_r"), formatNumber(segment.endRadius));
-    writePointAttributes(writer, QStringLiteral("offset"), segment.offset);
+    if (segment.shapeType == SteelBarSegmentShape::Point) {
+        // P0 field skeleton: the existing domain point is mapped to old pointStb fields.
+        // Full point-bar generation and secondary offset semantics remain evidence gaps.
+        writePointAttributes(writer, QStringLiteral("point"), segment.startPoint);
+        writePointAttributes(writer, QStringLiteral("offset"), segment.offset);
+        writeZeroSecondaryOffsetAttributes(writer);
+    } else {
+        writePointAttributes(writer, QStringLiteral("start"), segment.startPoint);
+        writePointAttributes(writer, QStringLiteral("middle"), segment.middlePoint);
+        writePointAttributes(writer, QStringLiteral("end"), segment.endPoint);
+        writer.writeAttribute(QStringLiteral("start_r"), formatNumber(segment.startRadius));
+        writer.writeAttribute(QStringLiteral("end_r"), formatNumber(segment.endRadius));
+        writePointAttributes(writer, QStringLiteral("offset"), segment.offset);
+    }
     writer.writeAttribute(QStringLiteral("length"), formatNumber(segment.length));
     writer.writeEndElement();
 }
@@ -486,6 +501,115 @@ void writeScheduleSegment(QXmlStreamWriter& writer,
         writer.writeAttribute(QStringLiteral("end_x"), formatNumber(segment.endPoint.x));
         writer.writeAttribute(QStringLiteral("end_y"), formatNumber(segment.endPoint.y));
     }
+    writer.writeEndElement();
+}
+
+void writeLegacyGeneralInfo(QXmlStreamWriter& writer, const DetailDrawingViewOptions& view)
+{
+    writer.writeStartElement(QStringLiteral("General-Info"));
+    writer.writeAttribute(QStringLiteral("CompanyName"), QStringLiteral("design-company"));
+    writer.writeAttribute(QStringLiteral("ExportYesNo"), QStringLiteral("T"));
+    writer.writeAttribute(QStringLiteral("ExpSteelYesNo"), QStringLiteral("T"));
+    writer.writeAttribute(QStringLiteral("ExpSteelMark"), QStringLiteral("T"));
+    writer.writeAttribute(QStringLiteral("DimensionChicunB"), QStringLiteral("T"));
+    writer.writeAttribute(QStringLiteral("DimensionChicunT"), QStringLiteral("F"));
+    writer.writeAttribute(QStringLiteral("DimensionChicunL"), QStringLiteral("T"));
+    writer.writeAttribute(QStringLiteral("DimensionChicunR"), QStringLiteral("F"));
+    writer.writeAttribute(QStringLiteral("DimensionPointBarB"), QStringLiteral("F"));
+    writer.writeAttribute(QStringLiteral("DimensionPointBarT"), QStringLiteral("F"));
+    writer.writeAttribute(QStringLiteral("DimensionPointBarL"), QStringLiteral("F"));
+    writer.writeAttribute(QStringLiteral("DimensionPointBarR"), QStringLiteral("F"));
+    writer.writeAttribute(QStringLiteral("DimensionLineBarB"), QStringLiteral("F"));
+    writer.writeAttribute(QStringLiteral("DimensionLineBarT"), QStringLiteral("F"));
+    writer.writeAttribute(QStringLiteral("DimensionLineBarL"), QStringLiteral("F"));
+    writer.writeAttribute(QStringLiteral("DimensionLineBarR"), QStringLiteral("F"));
+    writer.writeAttribute(QStringLiteral("DimensionLLineBarB"), QStringLiteral("F"));
+    writer.writeAttribute(QStringLiteral("DimensionLLineBarT"), QStringLiteral("F"));
+    writer.writeAttribute(QStringLiteral("DimensionLLineBarL"), QStringLiteral("F"));
+    writer.writeAttribute(QStringLiteral("DimensionLLineBarR"), QStringLiteral("F"));
+    writer.writeAttribute(QStringLiteral("DimensionBDist"), QStringLiteral("15"));
+    writer.writeAttribute(QStringLiteral("DimensionTDist"), QStringLiteral("15"));
+    writer.writeAttribute(QStringLiteral("DimensionLDist"), QStringLiteral("15"));
+    writer.writeAttribute(QStringLiteral("DimensionRDist"), QStringLiteral("15"));
+    writer.writeAttribute(QStringLiteral("Detail"), QString());
+    writer.writeAttribute(QStringLiteral("Model_FileName"), view.modelFileName);
+    writer.writeAttribute(QStringLiteral("DispCuttedSymb"), QStringLiteral("T"));
+    writer.writeAttribute(QStringLiteral("HalfViewH"), QStringLiteral("F"));
+    writer.writeAttribute(QStringLiteral("HalfViewW"), QStringLiteral("F"));
+    writer.writeAttribute(QStringLiteral("BasePoint_X"), QStringLiteral("0"));
+    writer.writeAttribute(QStringLiteral("BasePoint_Y"), QStringLiteral("0"));
+    writer.writeAttribute(QStringLiteral("Range_Min_X"), QStringLiteral("0"));
+    writer.writeAttribute(QStringLiteral("Range_Max_X"), QStringLiteral("0"));
+    writer.writeAttribute(QStringLiteral("Range_Min_Y"), QStringLiteral("0"));
+    writer.writeAttribute(QStringLiteral("Range_Max_Y"), QStringLiteral("0"));
+    writer.writeAttribute(QStringLiteral("Range_XMLMin_X"), QStringLiteral("0"));
+    writer.writeAttribute(QStringLiteral("Range_XMLMax_X"), QStringLiteral("0"));
+    writer.writeAttribute(QStringLiteral("Range_XMLMin_Y"), QStringLiteral("0"));
+    writer.writeAttribute(QStringLiteral("Range_XMLMax_Y"), QStringLiteral("0"));
+    writer.writeAttribute(QStringLiteral("CutPlaneDirX0"), QStringLiteral("0"));
+    writer.writeAttribute(QStringLiteral("CutPlaneDirY0"), QStringLiteral("-1"));
+    writer.writeAttribute(QStringLiteral("CutPlaneDirZ0"), QStringLiteral("0"));
+    writer.writeAttribute(QStringLiteral("CutPlaneDirX"), QStringLiteral("0"));
+    writer.writeAttribute(QStringLiteral("CutPlaneDirY"), QStringLiteral("-1"));
+    writer.writeAttribute(QStringLiteral("CutPlaneDirZ"), QStringLiteral("0"));
+    writer.writeAttribute(QStringLiteral("TopDirX"), QStringLiteral("0"));
+    writer.writeAttribute(QStringLiteral("TopDirY"), QStringLiteral("0"));
+    writer.writeAttribute(QStringLiteral("TopDirZ"), QStringLiteral("1"));
+    writer.writeAttribute(QStringLiteral("DrawingName"), view.drawingName);
+    writer.writeAttribute(QStringLiteral("DrawingUnit"), view.drawingUnit);
+    writer.writeAttribute(QStringLiteral("DrawingScale"), view.drawingScale);
+    writer.writeAttribute(QStringLiteral("GeneralScale"), view.generalScale);
+    writer.writeAttribute(QStringLiteral("DrawingType"), QStringLiteral("0"));
+    writer.writeAttribute(QStringLiteral("LevelDrawing"), QStringLiteral("0"));
+    writer.writeAttribute(QStringLiteral("CutPlanePosX"), QStringLiteral("0"));
+    writer.writeAttribute(QStringLiteral("CutPlanePosY"), QStringLiteral("0"));
+    writer.writeAttribute(QStringLiteral("CutPlanePosZ"), QStringLiteral("0"));
+    writer.writeAttribute(QStringLiteral("DrawTaoTong"), QStringLiteral("F"));
+    writer.writeEndElement();
+}
+
+void writeLegacyCurveGeometryContainers(QXmlStreamWriter& writer)
+{
+    writer.writeEmptyElement(QStringLiteral("lines"));
+    writer.writeEmptyElement(QStringLiteral("circles"));
+    writer.writeEmptyElement(QStringLiteral("Arcs"));
+    writer.writeEmptyElement(QStringLiteral("Ellipses"));
+    writer.writeEmptyElement(QStringLiteral("EllipseArcs"));
+    writer.writeEmptyElement(QStringLiteral("Splines"));
+}
+
+void writePartDetailDrawingSkeleton(QXmlStreamWriter& writer, const DetailDrawingViewOptions& view)
+{
+    writer.writeStartElement(QStringLiteral("PartDetailDrawing"));
+    writer.writeAttribute(QStringLiteral("num"), QStringLiteral("8"));
+    writeLegacyGeneralInfo(writer, view);
+
+    writer.writeStartElement(QStringLiteral("continue-line"));
+    writeLegacyCurveGeometryContainers(writer);
+    writer.writeEndElement();
+
+    writer.writeStartElement(QStringLiteral("hidden-line"));
+    writeLegacyCurveGeometryContainers(writer);
+    writer.writeEndElement();
+
+    writer.writeStartElement(QStringLiteral("central-line"));
+    writer.writeEmptyElement(QStringLiteral("lines"));
+    writer.writeEndElement();
+
+    writer.writeStartElement(QStringLiteral("section-line"));
+    writeLegacyCurveGeometryContainers(writer);
+    writer.writeEndElement();
+
+    writer.writeStartElement(QStringLiteral("hatch-line"));
+    writer.writeEmptyElement(QStringLiteral("lines"));
+    writer.writeEndElement();
+
+    writer.writeEmptyElement(QStringLiteral("Others"));
+
+    writer.writeStartElement(QStringLiteral("steeljoint-line"));
+    writer.writeEmptyElement(QStringLiteral("joints"));
+    writer.writeEndElement();
+
     writer.writeEndElement();
 }
 
@@ -553,15 +677,7 @@ void writeDrawingXml(const QString& path,
         writer.writeStartElement(QStringLiteral("HViewPorts"));
         writer.writeStartElement(QStringLiteral("ViewPort"));
         writer.writeAttribute(QStringLiteral("id"), view.viewId);
-        writer.writeStartElement(QStringLiteral("PartDetailDrawing"));
-        writer.writeStartElement(QStringLiteral("General-Info"));
-        writer.writeAttribute(QStringLiteral("Model_FileName"), view.modelFileName);
-        writer.writeAttribute(QStringLiteral("DrawingName"), view.drawingName);
-        writer.writeAttribute(QStringLiteral("DrawingUnit"), view.drawingUnit);
-        writer.writeAttribute(QStringLiteral("DrawingScale"), view.drawingScale);
-        writer.writeAttribute(QStringLiteral("GeneralScale"), view.generalScale);
-        writer.writeEndElement();
-        writer.writeEndElement();
+        writePartDetailDrawingSkeleton(writer, view);
 
         writer.writeStartElement(QStringLiteral("StbDetailDrawing"));
         writer.writeStartElement(QStringLiteral("StbGroups"));

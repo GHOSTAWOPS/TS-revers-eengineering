@@ -295,18 +295,19 @@ TODO-030 xhigh 复审 = allow_commit
 TODO-031 xhigh review = allow_commit
 TODO-033 xhigh review = allow_commit
 TODO-034 IDA MCP 复核 = fdrawing_arx_todo034 active session
+TODO-035 验证 = CTest 17/17 pass, readiness 84/84 pass, OCCT leak scan pass, xhigh allow_commit
 
-latest completed tag = m2-drawing-002/autocad-l2-package-ready
-planned tag = m2-drawing-003/detail-complex-fields-static
+latest completed tag = m2-drawing-003/detail-complex-fields-static
+planned tag = m2-drawing-004/detail-complex-skeleton-p0
 ```
 
 当前下一步：
 
 ```text
-TODO-035 / M2-Drawing-004
-  -> DetailWriter复杂字段骨架 P0
-  -> 根据 TODO-034 的静态字段证据，只输出复杂容器骨架和可追溯默认字段。
-  -> 不实现剖切线、隐藏线、填充线或接头线算法，不声明 AutoCAD L2 通过。
+TODO-036 / M2-Drawing-005
+  -> AutoCAD L2 复杂字段骨架导入验证 P0
+  -> 验证旧 AutoCAD 2020 + FDrawing 插件是否接受 TODO-035 的复杂字段骨架。
+  -> 如果自动环境不可用，只形成手工运行确认清单和阻塞 / GAP 记录，不声明 L2 通过。
 ```
 
 长期执行循环：
@@ -926,6 +927,7 @@ Detail / 新设计文件格式输出层
 - `TODO-031 / M2-Drawing-001`：DetailWriter 多图纸 DetailNN P0，IDA MCP 已补证旧 `Detail01..Detail09 / Detail10+` 命名规则；DetailWriter 可按多个 `DrawingView` 输出多张 `DetailNN.stl`，L0/L1 校验覆盖所有生成图纸，成功安装会删除旧多余 DetailNN 并保留非 Detail 文件，安装失败恢复旧 Detail 包；该证据只证明多图纸命名和事务 P0，不证明完整工程图、剖切线、隐藏线、填充线、AutoCAD L2 或 golden。
 - `TODO-033 / M2-Drawing-002`：AutoCAD L2 导入验证 P0，新增 `detail_l2_fixture_probe`，用正式 `DetailWriter` 生成 `Detail.xml + Detail01.stl + Detail02.stl + Detail03.stl` 三图纸验证包并记录 hash；旧 `FDrawing.arx / FDrawingObj.dbx` 文件存在且 hash 已记录；当前本机未发现 `acad.exe / accoreconsole.exe`，所以 AutoCAD L2 自动导入未运行；该证据只证明验证包和阻塞记录齐备，不证明旧插件已接受新包、完整工程图、剖切线、隐藏线、填充线或 golden。
 - `TODO-034 / M2-Drawing-003`：Detail复杂字段静态证据 P0，已从旧 `Detail01.stl` 样例整理 `continue-line / hidden-line / central-line / section-line / hatch-line / Others / steeljoint-line` 容器、section Line/Arc、pointStb 和 FaceEdge 字段；IDA MCP 复核 `FDrawing.arx` 中 `CViewInfo / CWSNLineDim / CWSNPointDim / CWSNSteelBarTable / CWSNMaterialTable` 等旧插件对象符号；该证据只证明静态字段和插件对象模型存在，不证明 AutoCAD L2 通过、旧插件容忍度、剖切线 / 隐藏线 / 填充线 / 接头线算法或 golden。
+- `TODO-035 / M2-Drawing-004`：DetailWriter复杂字段骨架 P0，正式 app `DetailWriter` 已输出 `PartDetailDrawing` 复杂容器骨架、`General-Info` 首批扩展默认字段和 `pointStb StbGeo shapeType=C` 字段骨架；该证据只证明字段骨架可由 writer 输出，不证明 AutoCAD L2 通过、旧插件接受新包、`CompanyName` 旧默认值、FaceEdge、ZValue、剖切线 / 隐藏线 / 填充线 / 接头线算法或 golden。
 
 当前最新验证状态：
 
@@ -937,23 +939,24 @@ TODO-030 xhigh 复审 = allow_commit
 TODO-031 xhigh review = allow_commit
 TODO-033 xhigh review = allow_commit
 TODO-034 验证 = CTest 17/17 pass, readiness 84/84 pass, OCCT leak scan pass；xhigh first review found doc-status drift and fix is applied
+TODO-035 验证 = CTest 17/17 pass, readiness 84/84 pass, OCCT leak scan pass, xhigh allow_commit
 ```
 
 当前下一步：
 
 ```text
-TODO-035 / M2-Drawing-004
-  -> DetailWriter复杂字段骨架 P0
-  -> 按 TODO-034 静态证据输出复杂字段容器骨架和默认字段
-  -> 不实现剖切线、隐藏线、填充线或接头线算法，不声明 AutoCAD L2 通过
+TODO-036 / M2-Drawing-005
+  -> AutoCAD L2复杂字段骨架导入验证 P0
+  -> 验证旧 AutoCAD 2020 + FDrawing 插件是否接受当前复杂字段骨架
+  -> 自动环境不可用时只记录手工确认清单和 GAP，不声明 AutoCAD L2 通过
 ```
 
 原因：
 
 ```text
-TODO-034 已完成旧 Detail 复杂字段静态证据。
-当前仍未运行 AutoCAD L2，剖切线 / 隐藏线 / 填充线 / 接头线真实算法也未实现。
-下一步建议先做 TODO-035，只补 DetailWriter 复杂字段骨架和离线 L0/L1 验证；若用户能启动 AutoCAD，则可按 69 的手工清单继续 L2。
+TODO-035 已完成 DetailWriter 复杂字段骨架 P0。
+当前仍未运行 AutoCAD L2，旧插件是否接受当前复杂字段骨架未确认，剖切线 / 隐藏线 / 填充线 / 接头线真实算法也未实现。
+下一步建议做 TODO-036，验证旧 AutoCAD 2020 + FDrawing 插件是否接受当前复杂字段骨架；若自动环境仍不可用，则形成手工运行确认清单和 GAP。
 golden 采集 TODO-026 暂按用户要求保持 pending。
 ```
 
@@ -1019,19 +1022,19 @@ golden 采集 TODO-026 暂按用户要求保持 pending。
 
 ## CSE v2 Control Contract
 
-- **Primary Setpoint**：下一轮只完成 `TODO-035 / M2-Drawing-004 DetailWriter复杂字段骨架 P0`，按 TODO-034 的静态字段证据让 DetailWriter 输出复杂字段容器骨架和可追溯默认字段。
-- **Acceptance**：DetailWriter 输出 `continue-line / hidden-line / central-line / section-line / hatch-line / Others / steeljoint-line` 容器骨架，补 General-Info 扩展默认字段，必要时补 pointStb / FaceEdge 字段骨架；测试覆盖空容器、默认值、L0/L1 校验和失败回滚；默认 CTest、readiness gate、OCCT 泄漏检查和 xhigh 只读 review 通过；更新实现记录、build report、追溯矩阵、缺口文档、46 和 todo。
-- **Guardrail Metrics**：不能把字段骨架写成 AutoCAD L2 通过；不能实现或假装实现剖切线、隐藏线、填充线、接头线算法；不能改钢筋创建业务；不能迁入父目录 rebar 业务；不能进入 golden 全量采集。
-- **Sampling Plan**：先读 `todo.csv / 05 / 13 / 20 / 70 / 99`，再读 DetailWriter 代码和测试；先补失败测试，再实现最小字段骨架；最后运行默认 CTest、readiness gate、OCCT 泄漏扫描和 xhigh 只读 review。
-- **Known Delays**：旧插件字段容忍度仍需 AutoCAD L2 验证；骨架输出只能证明新 writer 有字段结构，不能证明运行导入成功或算法正确。
-- **Recovery Target**：如果字段证据不足，记录 GAP，不凭推断写确定算法。
-- **Rollback Trigger**：把复杂字段骨架当成完整工程图规则；无证据实现工程图算法；让 `domain/rebar` 泄漏 OCCT/AIS；测试或 gate 失败仍继续堆功能。
+- **Primary Setpoint**：下一轮只完成 `TODO-036 / M2-Drawing-005 AutoCAD L2复杂字段骨架导入验证 P0`，验证旧 AutoCAD 2020 + FDrawing 插件是否接受 TODO-035 生成的复杂字段骨架。
+- **Acceptance**：生成或定位包含复杂字段骨架的 Detail 包；记录 AutoCAD / FDrawing 环境探测、APPLOAD / 导入步骤、截图或命令输出、成功 / 失败 / 阻塞原因；默认 CTest、readiness gate、OCCT 泄漏检查通过；如涉及代码 / 脚本修改则执行 xhigh 只读 review；更新实现记录、build report、追溯矩阵、缺口文档、46 和 todo。
+- **Guardrail Metrics**：不能在没有运行证据时声明 AutoCAD L2 通过；不能实现或假装实现剖切线、隐藏线、填充线、接头线算法；不能改钢筋创建业务；不能迁入父目录 rebar 业务；不能进入 golden 全量采集。
+- **Sampling Plan**：先读 `todo.csv / 05 / 13 / 20 / 69 / 70 / 71 / 99`，再检查现有 Detail 包和 AutoCAD / FDrawing 环境；能自动运行则执行 L2 probe，不能自动运行则形成手工确认清单和阻塞记录；最后运行默认 CTest、readiness gate 和 OCCT 泄漏扫描。
+- **Known Delays**：AutoCAD 2020 / FDrawing 插件环境可能需要人工操作；自动环境不可用时只能记录 blocked/gap，不能把离线 L0/L1 结果升级为 L2。
+- **Recovery Target**：如果 AutoCAD / FDrawing 环境不可用，保留当前 DetailWriter 骨架成果，记录明确阻塞原因和手工验证步骤。
+- **Rollback Trigger**：无运行证据声明 L2 通过；把复杂字段骨架当成完整工程图规则；无证据实现工程图算法；让 `domain/rebar` 泄漏 OCCT/AIS；测试或 gate 失败仍继续堆功能。
 - **Constraints**：不使用 ACIS / HOOPS / Codejock 等商业库；旧逻辑不确定时优先查 IDA MCP 或旧图石运行确认；xhigh 只读，修改由主流程 agent 完成。
-- **Boundary**：下一轮只允许 drawing/detail writer、drawing tests、必要 DTO、实现记录、build report、追溯矩阵、缺口文档、46 和 todo；禁止修改 UI 新功能、钢筋创建业务、真实 OCCT HLR/section 算法和 golden。
-- **Coupling Notes**：`drawing/export` 是 Detail 包输出边界；AutoCAD / FDrawing 是外部验证环境；TODO-035 只把 TODO-034 的静态证据转成 writer 骨架，不关闭算法和 L2 运行缺口。
-- **Approximation Validity**：TODO-035 是字段骨架节点，不证明旧插件接受新包，不证明完整工程图、剖切线、隐藏线、填充线、接头线或 golden 已完成。
-- **Actuator Budget**：下一轮只推进 `TODO-035`。完成后停止复盘，不自动进入工程图算法实现或 AutoCAD L2。
-- **Risks**：旧插件可能不接受空容器或默认字段；`ZValue / FaceEdge / steeljoint-line` 语义未闭合；AutoCAD L2 仍需人工或外部环境验证。
+- **Boundary**：下一轮只允许 AutoCAD L2 probe / 文档 / 报告 / 追溯 / 缺口 / 46 / todo，以及必要的轻量验证脚本；禁止修改 UI 新功能、钢筋创建业务、真实 OCCT HLR/section 算法和 golden。
+- **Coupling Notes**：`drawing/export` 是 Detail 包输出边界；AutoCAD / FDrawing 是外部验证环境；TODO-036 只验证当前骨架包导入接受度，不关闭算法和完整工程图缺口。
+- **Approximation Validity**：TODO-036 的自动环境探测若失败，只能证明本机环境不可自动运行；手工清单不是 L2 pass，必须等用户运行确认。
+- **Actuator Budget**：下一轮只推进 `TODO-036`。完成后停止复盘，不自动进入工程图算法实现或 golden。
+- **Risks**：旧插件可能不接受空容器或默认字段；本机可能仍无法自动启动 AutoCAD；`ZValue / FaceEdge / steeljoint-line` 语义仍未闭合。
 ## Todo CSV 使用方式
 
 `todo.csv` 是后续执行看板。建议每次 goal 模式只拿 `status=next` 或最高优先级 `pending` 的任务推进。
@@ -1056,11 +1059,11 @@ golden 采集 TODO-026 暂按用户要求保持 pending。
 下一步优先执行：
 
 ```text
-TODO-035 / M2-Drawing-004
-  -> DetailWriter复杂字段骨架 P0
-  -> 输出复杂字段容器骨架和可追溯默认字段，不实现工程图算法
+TODO-036 / M2-Drawing-005
+  -> AutoCAD L2复杂字段骨架导入验证 P0
+  -> 验证旧插件是否接受当前复杂字段骨架；自动环境不可用时记录手工确认清单和 GAP
 ```
 
-原因很简单：TODO-034 已把复杂字段证据补齐到可开发状态，但 DetailWriter 还没有输出这些容器骨架。
-下一步先做 TODO-035，把字段结构落到 writer 和离线测试；若用户能启动 AutoCAD，再按 `69` 的手工清单继续 L2。
+原因很简单：TODO-035 已把字段结构落到 writer 和离线测试，但旧插件是否接受还没有 L2 证据。
+下一步做 TODO-036，优先验证 AutoCAD / FDrawing 导入；若自动环境不可用，则形成手工确认清单和阻塞记录。
 TODO-026 golden 采集暂按用户要求保持 pending。

@@ -207,6 +207,12 @@ M2-Drawing-003 补充：
 - `E-IDA-027` 已确认 `FDrawing.arx` 中 `CViewInfo` 存在视图范围、剖切方向、剖切位置、上方向、比例和尺寸相关方法符号。
 - 字段默认值、写入公式和旧插件容忍度仍需 AutoCAD L2 或进一步 IDA 反编译确认。
 
+M2-Drawing-004 补充：
+
+- `E-DEV-057` 已让正式 app `DetailWriter` 输出 `General-Info` 首批扩展字段骨架。
+- `CompanyName` 当前使用 `design-company` 作为 ASCII 中性占位，不是旧样例 `设计公司` 的 1:1 默认值确认。
+- 视图范围、剖切方向、上方向、剖切位置等字段当前是骨架默认值；真实公式和旧插件容忍度仍需 AutoCAD L2 或进一步 IDA / 运行确认。
+
 ## PartDetailDrawing 复杂线容器
 
 | Detail 字段 | 新模型字段 | 状态 | 说明 |
@@ -236,6 +242,13 @@ ArcN:
 不得把容器存在写成完整剖切线、隐藏线或填充线算法完成。
 ```
 
+M2-Drawing-004 状态：
+
+- `E-DEV-057` 已让正式 app `DetailWriter` 输出这些复杂容器空骨架。
+- `section-line` 当前只输出空 `lines / circles / Arcs / Ellipses / EllipseArcs / Splines` 容器，不输出真实 `LineN / ArcN / ZValue` 几何。
+- `steeljoint-line` 当前只输出空 `joints` 容器，不输出真实接头线。
+- 该状态不等价于 AutoCAD L2 导入通过，也不等价于工程图算法完成。
+
 ## pointStb / FaceEdge 补充字段
 
 | Detail 字段 | 新模型字段 | 状态 | 说明 |
@@ -246,6 +259,12 @@ ArcN:
 | `offset_x2/y2/z2` | `RebarSegment.secondaryOffset` | 样例确认字段 | 第二偏移字段，语义未闭合。 |
 | `FaceEdge shapeType=L` | `RebarGroup.faceEdgeGeometry.line` | 样例确认字段 | 面边界线段表达。 |
 | `FaceEdge shapeType=A` | `RebarGroup.faceEdgeGeometry.arc` | 样例确认字段 | 面边界圆弧表达，含 `m_ArcDotReverse`。 |
+
+M2-Drawing-004 状态：
+
+- `E-DEV-057` 已让正式 app `DetailWriter` 在 `SteelBarSegmentShape::Point` 时输出 `shapeType=C`、`point_x/y/z`、`offset_x/y/z`、`offset_x2/y2/z2` 字段骨架。
+- 当前 P0 用 `SteelBarSegment.startPoint` 作为 `point_*`，`SteelBarSegment.offset` 作为 `offset_*`，`offset_*2` 默认 0。
+- `FaceEdge` 本轮未实现；线段 / 圆弧 FaceEdge 生成规则仍是缺口。
 
 ## 必须保持一致的字段
 

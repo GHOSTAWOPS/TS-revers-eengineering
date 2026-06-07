@@ -47,6 +47,52 @@ QXmlStreamAttributes findElementAttrs(const QString& path, const QString& name)
     return {};
 }
 
+QStringList directChildElementNames(const QString& path, const QString& parentName)
+{
+    QFile file(path);
+    expect(file.open(QIODevice::ReadOnly | QIODevice::Text), "xml file must open");
+    QXmlStreamReader reader(&file);
+    QStringList children;
+    bool inParent = false;
+    int depth = 0;
+    while (!reader.atEnd()) {
+        reader.readNext();
+        if (reader.isStartElement()) {
+            const QString name = reader.name().toString();
+            if (!inParent && name == parentName) {
+                inParent = true;
+                depth = 1;
+                continue;
+            }
+            if (inParent) {
+                if (depth == 1) {
+                    children.append(name);
+                }
+                ++depth;
+            }
+        } else if (reader.isEndElement() && inParent) {
+            --depth;
+            if (depth == 0) {
+                break;
+            }
+        }
+    }
+    expect(inParent, qPrintable(QStringLiteral("missing parent element %1").arg(parentName)));
+    return children;
+}
+
+void expectDirectChildren(const QString& path,
+                          const QString& parentName,
+                          const QStringList& expectedChildren)
+{
+    const QStringList actual = directChildElementNames(path, parentName);
+    for (const QString& expected : expectedChildren) {
+        expect(actual.contains(expected),
+               qPrintable(QStringLiteral("%1 must contain child %2")
+                               .arg(parentName, expected)));
+    }
+}
+
 QString rootName(const QString& path)
 {
     QFile file(path);
@@ -138,6 +184,66 @@ tsrebar::SteelData steelDataWithMixedGroup()
     return steelData;
 }
 
+tsrebar::SteelData steelDataWithPointGroup()
+{
+    tsrebar::SteelBarSegment point;
+    point.segmentId = "segment-point-001";
+    point.barId = "bar-point-001";
+    point.sequenceNo = 1;
+    point.shapeType = tsrebar::SteelBarSegmentShape::Point;
+    point.startPoint = {1.0, 2.0, 3.0};
+    point.offset = {0.1, 0.2, 0.3};
+    point.length = 0.0;
+    point.evidence.push_back({"E-DETAIL-003", "pointStb StbGeo field skeleton"});
+
+    tsrebar::SteelBar bar;
+    bar.barId = "bar-point-001";
+    bar.groupId = "group-point-001";
+    bar.sequenceNo = 1;
+    bar.displayNumber = "P1";
+    bar.diameter = 20.0;
+    bar.steelLevel = "HRB400";
+    bar.length = 0.0;
+    bar.shapeType = "pointStb";
+    bar.segmentIds = {point.segmentId};
+    bar.evidence.push_back({"E-DETAIL-003", "pointStb sample evidence"});
+
+    tsrebar::SteelBarGroup group;
+    group.groupId = "group-point-001";
+    group.rsdId = "P1";
+    group.displayNumber = "P1";
+    group.actualNumber = "1";
+    group.componentName = "pier";
+    group.projectSteelName = "point bar";
+    group.createCommand = "Rebar.Create.PointGroup";
+    group.legacyCommand = "sgroupbarpoint";
+    group.steelDataId = "steel-data-point-001";
+    group.diameter = 20.0;
+    group.interval = 200.0;
+    group.barCount = 1;
+    group.segmentCount = 1;
+    group.steelLevel = "HRB400";
+    group.layer = "inside";
+    group.profile = "default-profile";
+    group.use = "main";
+    group.rangeLess180 = true;
+    group.steelWay = "OTHER";
+    group.rebarType = "pointStb";
+    group.barIds.push_back(bar.barId);
+    group.evidence.push_back({"E-DETAIL-003", "pointStb / FaceEdge static field evidence"});
+
+    tsrebar::SteelData steelData;
+    steelData.steelDataId = "steel-data-point-001";
+    steelData.level = "HRB400";
+    steelData.gradeName = "HRB400";
+    steelData.diameterSet.push_back(20.0);
+    steelData.evidence.push_back({"E-DETAIL-003", "Detail complex field evidence"});
+    steelData.groups.push_back(group);
+    steelData.bars.push_back(bar);
+    steelData.segments.push_back(point);
+    return steelData;
+}
+
 void testDetailWriterMapsDomainRebarToDetailPackage()
 {
     QTemporaryDir temp;
@@ -217,6 +323,93 @@ void testDetailWriterMapsDomainRebarToDetailPackage()
     expect(matRow.value("diameter") == "25", "MatRow.diameter mismatch");
     expect(matRow.value("lenSum") == "45", "MatRow.lenSum mismatch");
     expect(matRow.value("countSum") == "3", "MatRow.countSum mismatch");
+}
+
+void testDetailWriterWritesComplexPartDrawingSkeletonAndGeneralInfoDefaults()
+{
+    QTemporaryDir temp;
+    expect(temp.isValid(), "temporary dir must be valid");
+    const QString outputDir = QDir(temp.path()).filePath("drawings");
+
+    tsrebar::DetailWriteOptions options;
+    options.runId = "DW-UNIT-COMPLEX-001";
+    options.drawingName = "complex-detail";
+    options.modelFileName = "complex-model.step";
+
+    const tsrebar::DetailWriter writer;
+    const auto result = writer.writePackage(outputDir, steelDataWithMixedGroup(), options);
+
+    expect(result.ok, "complex skeleton Detail writer must succeed");
+    expect(result.l2 == "not_run", "complex skeleton must not claim AutoCAD L2");
+
+    const QString detailStl = QDir(outputDir).filePath("Detail01.stl");
+    const auto part = findElementAttrs(detailStl, "PartDetailDrawing");
+    expect(part.value("num") == "8", "PartDetailDrawing.num must keep old sample skeleton value");
+
+    const auto info = findElementAttrs(detailStl, "General-Info");
+    expect(info.hasAttribute("CompanyName"), "General-Info.CompanyName must exist");
+    expect(info.value("ExportYesNo") == "T", "General-Info.ExportYesNo default mismatch");
+    expect(info.value("ExpSteelYesNo") == "T", "General-Info.ExpSteelYesNo default mismatch");
+    expect(info.value("ExpSteelMark") == "T", "General-Info.ExpSteelMark default mismatch");
+    expect(info.value("DimensionChicunB") == "T", "DimensionChicunB default mismatch");
+    expect(info.value("DimensionChicunT") == "F", "DimensionChicunT default mismatch");
+    expect(info.hasAttribute("DimensionPointBarB"), "DimensionPointBarB must exist");
+    expect(info.hasAttribute("DimensionLineBarB"), "DimensionLineBarB must exist");
+    expect(info.hasAttribute("DimensionLLineBarB"), "DimensionLLineBarB must exist");
+    expect(info.value("DimensionBDist") == "15", "DimensionBDist default mismatch");
+    expect(info.value("DispCuttedSymb") == "T", "DispCuttedSymb default mismatch");
+    expect(info.hasAttribute("Range_XMLMin_X"), "Range_XMLMin_X must exist");
+    expect(info.hasAttribute("Range_XMLMax_Y"), "Range_XMLMax_Y must exist");
+    expect(info.value("CutPlaneDirY0") == "-1", "CutPlaneDirY0 default mismatch");
+    expect(info.value("TopDirZ") == "1", "TopDirZ default mismatch");
+    expect(info.value("DrawingType") == "0", "DrawingType default mismatch");
+    expect(info.value("LevelDrawing") == "0", "LevelDrawing default mismatch");
+    expect(info.value("DrawTaoTong") == "F", "DrawTaoTong default mismatch");
+
+    expectDirectChildren(detailStl,
+                         "continue-line",
+                         {"lines", "circles", "Arcs", "Ellipses", "EllipseArcs", "Splines"});
+    expectDirectChildren(detailStl,
+                         "hidden-line",
+                         {"lines", "circles", "Arcs", "Ellipses", "EllipseArcs", "Splines"});
+    expectDirectChildren(detailStl, "central-line", {"lines"});
+    expectDirectChildren(detailStl,
+                         "section-line",
+                         {"lines", "circles", "Arcs", "Ellipses", "EllipseArcs", "Splines"});
+    expectDirectChildren(detailStl, "hatch-line", {"lines"});
+    expectDirectChildren(detailStl, "steeljoint-line", {"joints"});
+    findElementAttrs(detailStl, "Others");
+}
+
+void testDetailWriterWritesPointStbGeoFieldSkeleton()
+{
+    QTemporaryDir temp;
+    expect(temp.isValid(), "temporary dir must be valid");
+    const QString outputDir = QDir(temp.path()).filePath("drawings");
+
+    const tsrebar::DetailWriter writer;
+    const auto result = writer.writePackage(outputDir, steelDataWithPointGroup(), {});
+
+    expect(result.ok, "pointStb field skeleton Detail writer must succeed");
+    expect(result.l2 == "not_run", "pointStb skeleton must not claim AutoCAD L2");
+
+    const QString detailStl = QDir(outputDir).filePath("Detail01.stl");
+    const auto group = findElementAttrs(detailStl, "StbGroup1");
+    expect(group.value("stbType") == "pointStb", "point group must keep pointStb type");
+
+    const auto geo = findElementAttrs(detailStl, "StbGeo1");
+    expect(geo.value("shapeType") == "C", "point StbGeo shape must be C");
+    expect(geo.value("point_x") == "1", "point StbGeo point_x mismatch");
+    expect(geo.value("point_y") == "2", "point StbGeo point_y mismatch");
+    expect(geo.value("point_z") == "3", "point StbGeo point_z mismatch");
+    expect(geo.value("offset_x") == "0.1", "point StbGeo offset_x mismatch");
+    expect(geo.value("offset_y") == "0.2", "point StbGeo offset_y mismatch");
+    expect(geo.value("offset_z") == "0.3", "point StbGeo offset_z mismatch");
+    expect(geo.value("offset_x2") == "0", "point StbGeo offset_x2 default mismatch");
+    expect(geo.value("offset_y2") == "0", "point StbGeo offset_y2 default mismatch");
+    expect(geo.value("offset_z2") == "0", "point StbGeo offset_z2 default mismatch");
+    expect(geo.value("start_x").isEmpty(), "point StbGeo must not emit line start_x");
+    expect(geo.value("end_x").isEmpty(), "point StbGeo must not emit line end_x");
 }
 
 void testDetailWriterFailurePreservesExistingPackage()
@@ -417,6 +610,8 @@ void testDetailWriterRemovesStaleDetailViewsOnSuccessfulInstall()
 int main()
 {
     testDetailWriterMapsDomainRebarToDetailPackage();
+    testDetailWriterWritesComplexPartDrawingSkeletonAndGeneralInfoDefaults();
+    testDetailWriterWritesPointStbGeoFieldSkeleton();
     testDetailWriterFailurePreservesExistingPackage();
     testDetailWriterRejectsBrokenRebarReferencesBeforeWriting();
     testDetailWriterInstallFailureRestoresExistingPackage();
