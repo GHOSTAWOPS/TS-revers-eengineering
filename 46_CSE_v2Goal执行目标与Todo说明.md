@@ -300,6 +300,7 @@ TODO-036 验证 = complexSkeleton.passed=true, AutoCAD environment not_found, au
 TODO-037 验证 = pointFaceEdge.passed=true, AutoCAD environment not_found, autocadL2 not_run, CTest 17/17 pass, readiness 84/84 pass, OCCT leak scan pass, xhigh allow_commit
 TODO-038 验证 = sectionLine.passed=true, lineCount=1, arcCount=1, autocadL2=not_run, CTest 17/17 pass, readiness 84/84 pass, OCCT leak scan pass, xhigh allow_commit
 TODO-039 验证 = sectionLine.passed=true, lineCount=1, arcCount=1, AutoCAD environment not_found, autocadL2=not_run, CTest 17/17 pass, readiness 84/84 pass, OCCT leak scan pass, xhigh allow_commit
+TODO-040 验证 = lineContainers.passed=true, containerCount=4, AutoCAD environment not_found, autocadL2=not_run, CTest 17/17 pass, readiness 84/84 pass, OCCT leak scan pass, xhigh round2 allow_commit
 
 latest completed tag = m2-drawing-008/section-line-l2-confirmation-ready
 planned tag = m2-drawing-009/line-containers-field-skeleton-p0
@@ -308,10 +309,10 @@ planned tag = m2-drawing-009/line-containers-field-skeleton-p0
 当前下一步：
 
 ```text
-TODO-040 / M2-Drawing-009
-  -> DetailWriter continue-line / hidden-line / central-line / hatch-line 线容器字段骨架 P0
-  -> 把旧 Detail 样例中线类容器的 LineN 字段做成独立干净变量字段骨架专项。
-  -> 不实现真实隐藏线 / 填充线 / 剖切线 / 接头线算法，不声明 AutoCAD L2 通过，不进入 golden。
+TODO-041 / M2-Drawing-010
+  -> DetailWriter line-containers AutoCAD L2 运行确认准备 P0
+  -> 把 TODO-040 的 line-containers 独立包转成 AutoCAD L2 手工或自动运行确认准备项。
+  -> 不实现真实连续线 / 隐藏线 / 中心线 / 填充线算法，不声明 AutoCAD L2 通过，不进入 golden。
 ```
 
 长期执行循环：
@@ -555,28 +556,28 @@ commit / tag / push 状态
 
 ### 短期 Goal（推荐下一轮复制）
 
-目标：只完成 `TODO-040 / M2-Drawing-009 DetailWriter continue-line / hidden-line / central-line / hatch-line 线容器字段骨架 P0` 这个短期阶段，不自动进入后续长期开发。
+目标：只完成 `TODO-041 / M2-Drawing-010 DetailWriter line-containers AutoCAD L2 运行确认准备 P0` 这个短期阶段，不自动进入后续长期开发。
 
-本轮要把旧 Detail 样例中线类容器的 `LineN` 字段做成独立干净变量字段骨架专项：
+本轮要把 TODO-040 的 `line-containers` 独立包转成 AutoCAD L2 手工或自动运行确认准备项：
 
 ```text
-Drawing.GeneratePackage / M2-Drawing-009
-  -> 从 E-DETAIL-003 / E-DEV-061 和 GAP-DRAW-002/003/005 出发
-  -> 覆盖 continue-line / hidden-line / central-line / hatch-line 下 LineN 字段骨架
-  -> 补测试和独立 probe/report
-  -> 记录字段摘要、hash、能力边界和剩余 GAP
-  -> 不实现真实隐藏线 / 填充线 / 剖切线 / 接头线算法
-  -> 不声明 AutoCAD L2 通过或旧插件接受新包
+Drawing.GeneratePackage / M2-Drawing-010
+  -> 从 E-DEV-062 / GAP-DRAW-001 / GAP-DRAW-002 出发
+  -> 复用 line-containers 独立变量包
+  -> 生成 line-containers AutoCAD L2 手工确认清单
+  -> 记录 AutoCAD / FDrawing 环境探测、文件 hash 和阻塞状态
+  -> 不实现真实连续线 / 隐藏线 / 中心线 / 填充线算法
+  -> 没有真实运行证据不得声明 AutoCAD L2 通过或旧插件接受新包
 ```
 
 目标语义：
 
 ```text
-TODO-039 已经完成 section-line AutoCAD L2 运行确认准备。
+TODO-040 已经完成 line-containers 字段骨架。
 当前 AutoCAD 环境仍 not_found，autocadL2=not_run。
-下一步不是写真实隐藏线、填充线或 OCCT HLR 算法。
-下一步只把旧 Detail 样例确认的线容器 LineN 字段做成可输出、可检查的字段骨架。
-本轮只做 TODO-040，不同时做 golden 采集、UI 新功能、AutoCAD L2 通过声明或多个专项。
+下一步不是写真实连续线、隐藏线、中心线、填充线或 OCCT HLR 算法。
+下一步只把 TODO-040 的 line-containers 包转成 L2 运行确认准备材料和环境阻塞记录。
+本轮只做 TODO-041，不同时做 golden 采集、UI 新功能、AutoCAD L2 通过声明或多个专项。
 ```
 
 当前已完成前置：
@@ -641,9 +642,10 @@ TODO-033 / M2-Drawing-002 = done
   -> AutoCAD L2 导入验证 P0 已生成三图纸验证包和手工清单。
      当前本机 AutoCAD 环境 not_found，所以 autocadL2=not_run。
 
-TODO-034 ~ TODO-039 / M2-Drawing-003..008 = done
+TODO-034 ~ TODO-040 / M2-Drawing-003..009 = done
   -> 已完成复杂字段静态证据、复杂字段骨架、pointStb / FaceEdge 字段骨架、
-     section-line Line/Arc/ZValue 字段骨架，以及 section-line L2 运行确认准备。
+     section-line Line/Arc/ZValue 字段骨架、section-line L2 运行确认准备，
+     以及 line-containers LineN 字段骨架。
      这些证据均不声明旧插件接受、真实工程图算法、AutoCAD L2 pass 或 golden。
 
 TODO-026 / Golden = pending
@@ -693,9 +695,9 @@ C:\Users\ghost\Desktop\reverse_engineering\【03】图石软件
 
 本轮允许修改：
 
-- DetailWriter 线容器字段骨架、probe/tests/docs
+- line-containers L2 probe/report/docs
 - 必要的 Detail 包生成 / 导出辅助测试，但必须保留旧 Detail 字段语义
-- 对应独立 probe/report 和干净变量 fixture
+- 对应 L2 手工确认清单、环境探测和阻塞记录
 - 对应实现记录、build report、`11 / 34 / 99 / 46 / todo.csv`
 
 本轮禁止修改或迁移：
@@ -708,25 +710,25 @@ C:\Users\ghost\Desktop\reverse_engineering\【03】图石软件
 - 任何 OCCT 直接造钢筋业务逻辑
 - `domain/rebar` 中引入 AIS / OCCT / `TopoDS_ / AIS_ / BRep / TopAbs_`
 - 把 OCCT HLR / section 结果直接当成旧图石工程图业务真相
-- 把 TODO-040 扩成完整工程图全量功能
+- 把 TODO-041 扩成完整工程图全量功能
 - 在没有真实运行证据时声明 AutoCAD L2 通过
-- 实现真实隐藏线 / 填充线 / 剖切线 / 接头线算法
+- 实现真实连续线 / 隐藏线 / 中心线 / 填充线 / 剖切线 / 接头线算法
 - UI 新功能或命令入口扩展同轮实现
 - golden 采集同轮实现
 - 把缺证剖切线、隐藏线、填充线、标注或 AutoCAD 字段写成确定结论
 
 本轮验收标准：
 
-1. 只执行 TODO-040，不一次铺开完整工程图全部能力。
-2. `continue-line / hidden-line / central-line / hatch-line` 下 `LineN` 字段骨架可由正式 `DetailWriter` 输出。
-3. 补测试和独立 probe/report，记录文件列表、hash、字段摘要和能力边界。
-4. 明确不声明真实隐藏线 / 填充线 / 剖切线 / 接头线算法或 AutoCAD L2 通过。
+1. 只执行 TODO-041，不一次铺开完整工程图全部能力。
+2. 生成 line-containers L2 运行确认清单，记录旧样例包 / TODO-040 新包的确认步骤。
+3. 记录 AutoCAD / FDrawing 环境探测、文件列表、hash、字段摘要和能力边界。
+4. 若本机仍无法运行 AutoCAD，必须明确 `autocadL2=not_run`，不得写成通过。
 5. 默认 CTest 通过。
 6. readiness gate 严格模式通过。
 7. domain/rebar + drawing + project OCCT / AIS 泄漏扫描通过。
 8. 涉及代码、测试、构建脚本，commit 前必须执行 xhigh 只读 review；Critical / Important 必须修复或写明技术反驳理由。
 9. 更新实现记录、build report、`11 / 34 / 99 / 46 / todo.csv`。
-10. `todo.csv` 中 `TODO-040` 只在字段骨架、probe、验证和审查闭合后更新；不能假装完整工程图或 golden 已完成。
+10. `todo.csv` 中 `TODO-041` 只在 L2 准备材料、probe、验证和审查闭合后更新；不能假装 AutoCAD L2 通过、完整工程图或 golden 已完成。
 
 本轮完成后必须停止，输出阶段复盘：
 
@@ -734,7 +736,7 @@ C:\Users\ghost\Desktop\reverse_engineering\【03】图石软件
 完成了什么
 验证了什么
 还缺什么
-下一阶段建议继续线容器字段专项，还是先补 IDA / 旧图石运行证据
+下一阶段建议继续 AutoCAD L2 运行确认准备，还是先补 IDA / 旧图石运行证据
 commit / tag / push 状态
 ```
 
@@ -946,6 +948,7 @@ Detail / 新设计文件格式输出层
 - `TODO-037 / M2-Drawing-006`：DetailWriter pointStb / FaceEdge 兼容字段骨架 P0，正式 app `DetailWriter` 已输出 `pointStb StbGeo shapeType=C` 和显式 `FaceEdge shapeType=L/A` 字段骨架；`detail_l2_fixture_probe --fixture point-face-edge` 已生成独立三图纸包并离线确认 `pointFaceEdge.passed=true`；当前本机未发现 `acad.exe / accoreconsole.exe` 和 AutoCAD 注册表键，所以 AutoCAD L2 自动导入仍未运行；本轮不声明旧插件接受、点筋生成算法、FaceEdge 生成规则、完整工程图或 golden。
 - `TODO-038 / M2-Drawing-007`：DetailWriter section-line Line/Arc/ZValue 字段骨架 P0，正式 app `DetailWriter` 已输出 `section-line / lines / LineN` 和 `section-line / Arcs / ArcN` 字段骨架，并保留旧样例确认的 `ZValue` 字符串；`detail_l2_fixture_probe --fixture section-line` 已生成独立三图纸包并离线确认 `sectionLine.passed=true`；本轮不声明旧插件接受、真实剖切线算法、隐藏线 / 填充线 / 接头线算法、`ZValue` 语义、完整工程图或 golden。
 - `TODO-039 / M2-Drawing-008`：DetailWriter section-line AutoCAD L2 运行确认准备 P0，复用 `section-line` 独立变量生成 TODO-039 三图纸 Detail 包和手工 L2 确认清单，记录 FDrawing 插件 hash，并确认本机 `acad.exe / accoreconsole.exe / AutoCAD registry` 均未发现，所以 `autocadL2=not_run`；默认 CTest、strict readiness 和保护层 OCCT/AIS 泄漏扫描已通过；本轮不声明旧插件接受、AutoCAD L2 通过、真实剖切线算法、`ZValue` 语义、完整工程图或 golden。
+- `TODO-040 / M2-Drawing-009`：DetailWriter 线容器字段骨架 P0，正式 app `DetailWriter` 已输出 `continue-line / hidden-line / central-line / hatch-line` 下的 `LineN start_x/start_y/end_x/end_y/ZValue` 字段骨架；`detail_l2_fixture_probe --fixture line-containers` 已生成独立三图纸包并离线确认 `lineContainers.passed=true`；本轮不声明旧插件接受、AutoCAD L2 通过、真实连续线 / 隐藏线 / 中心线 / 填充线算法、完整工程图或 golden。
 
 当前最新验证状态：
 
@@ -962,23 +965,24 @@ TODO-036 验证 = complexSkeleton.passed=true, AutoCAD environment not_found, au
 TODO-037 验证 = pointFaceEdge.passed=true, pointGroupCount=2, pointGeoCount=2, faceEdgeCount=2, AutoCAD environment not_found, autocadL2 not_run, CTest 17/17 pass, readiness 84/84 pass, OCCT leak scan pass, xhigh allow_commit
 TODO-038 验证 = sectionLine.passed=true, lineCount=1, arcCount=1, AutoCAD environment not_found, autocadL2=not_run, CTest 17/17 pass, readiness 84/84 pass, OCCT leak scan pass, xhigh allow_commit
 TODO-039 验证 = sectionLine.passed=true, lineCount=1, arcCount=1, AutoCAD environment not_found, autocadL2=not_run, CTest 17/17 pass, readiness 84/84 pass, OCCT leak scan pass, xhigh allow_commit
+TODO-040 验证 = lineContainers.passed=true, containerCount=4, AutoCAD environment not_found, autocadL2=not_run, CTest 17/17 pass, readiness 84/84 pass, OCCT leak scan pass, xhigh round2 allow_commit
 ```
 
 当前下一步：
 
 ```text
-TODO-040 / M2-Drawing-009
-  -> DetailWriter continue-line / hidden-line / central-line / hatch-line 线容器字段骨架 P0
-  -> 把旧 Detail 样例中线类容器的 LineN 字段做成独立干净变量字段骨架专项
-  -> 不实现真实隐藏线 / 填充线 / 剖切线 / 接头线算法，不声明 AutoCAD L2 通过，不进入 golden
+TODO-041 / M2-Drawing-010
+  -> DetailWriter line-containers AutoCAD L2 运行确认准备 P0
+  -> 把 TODO-040 line-containers 独立包转成 AutoCAD L2 手工或自动运行确认准备项
+  -> 不实现真实连续线 / 隐藏线 / 中心线 / 填充线算法，不声明 AutoCAD L2 通过，不进入 golden
 ```
 
 原因：
 
 ```text
-TODO-039 已完成 section-line AutoCAD L2 运行确认准备。
-当前仍未运行 AutoCAD L2，旧插件是否接受当前包未确认；section-line 生成规则和 ZValue 语义也没有关闭。
-下一步建议做 TODO-040，把 continue-line / hidden-line / central-line / hatch-line 的 LineN 字段做成独立字段骨架专项。
+TODO-040 已完成 line-containers 字段骨架。
+当前仍未运行 AutoCAD L2，旧插件是否接受当前包未确认；line-container 生成规则也没有关闭。
+下一步建议做 TODO-041，把 line-containers 包转成 AutoCAD L2 运行确认准备和手工清单。
 golden 采集 TODO-026 暂按用户要求保持 pending。
 ```
 
@@ -1044,19 +1048,19 @@ golden 采集 TODO-026 暂按用户要求保持 pending。
 
 ## CSE v2 Control Contract
 
-- **Primary Setpoint**：下一轮只完成 `TODO-040 / M2-Drawing-009 DetailWriter continue-line / hidden-line / central-line / hatch-line 线容器字段骨架 P0`，把旧 Detail 样例中线类容器的 `LineN` 字段做成独立干净变量字段骨架专项。
-- **Acceptance**：覆盖 `continue-line / hidden-line / central-line / hatch-line` 下 `LineN` 字段骨架；补测试；生成独立 probe/report；默认 CTest、readiness gate、OCCT 泄漏检查通过；执行 xhigh 只读 review；更新实现记录、build report、追溯矩阵、缺口文档、46 和 todo。
-- **Guardrail Metrics**：不能实现或声明真实隐藏线、填充线、剖切线、接头线算法；不能在没有运行证据时声明 AutoCAD L2 通过；不能把字段骨架写成旧插件接受证明；不能改钢筋创建业务；不能迁入父目录 rebar 业务；不能进入 golden 全量采集。
-- **Sampling Plan**：先读 `todo.csv / 05 / 13 / 20 / 70 / 75 / 99`，再检查旧 Detail 样例和 TODO-039 L2 准备边界；先补测试或 probe 断言，再实现线容器字段骨架；最后运行默认 CTest、readiness gate 和 OCCT 泄漏扫描。
-- **Known Delays**：真实隐藏线 / 填充线 / 中心线 / 连续线生成规则和旧插件容忍度仍需 IDA 或旧图石运行确认；下一轮只做字段骨架，不能把字段存在升级为真实工程图算法或旧插件接受度。
-- **Recovery Target**：如果字段骨架或 probe 失败，保持 TODO-039 成果不变，把失败原因写入 `99` 和 build report，不继续堆后续工程图算法。
-- **Rollback Trigger**：无证据实现工程图算法；把线容器字段骨架当成旧插件接受证明；无运行证据声明 L2 通过；让 `domain/rebar` 泄漏 OCCT/AIS；测试或 gate 失败仍继续堆功能。
+- **Primary Setpoint**：下一轮只完成 `TODO-041 / M2-Drawing-010 DetailWriter line-containers AutoCAD L2 运行确认准备 P0`，把 TODO-040 的线容器独立包转成 AutoCAD L2 手工或自动运行确认准备项。
+- **Acceptance**：生成 line-containers L2 运行确认清单；记录 AutoCAD / FDrawing 环境探测、文件 hash、包摘要和阻塞状态；默认 CTest、readiness gate、OCCT 泄漏检查通过；执行 xhigh 只读 review；更新实现记录、build report、追溯矩阵、缺口文档、46 和 todo。
+- **Guardrail Metrics**：不能实现或声明真实连续线、隐藏线、中心线、填充线、剖切线、接头线算法；不能在没有运行证据时声明 AutoCAD L2 通过；不能把 L2 准备清单写成旧插件接受证明；不能改钢筋创建业务；不能迁入父目录 rebar 业务；不能进入 golden 全量采集。
+- **Sampling Plan**：先读 `todo.csv / 05 / 13 / 20 / 76 / 99`，再检查 TODO-040 line-containers 包和既有 L2 准备清单模式；先补 gate / checklist 断言，再生成 L2 准备材料；最后运行默认 CTest、readiness gate 和 OCCT 泄漏扫描。
+- **Known Delays**：真实连续线 / 隐藏线 / 中心线 / 填充线生成规则和旧插件容忍度仍需 IDA 或旧图石运行确认；下一轮只做 L2 运行确认准备，不能把准备材料升级为真实工程图算法或旧插件接受度。
+- **Recovery Target**：如果 L2 准备包或清单失败，保持 TODO-040 成果不变，把失败原因写入 `99` 和 build report，不继续堆后续工程图算法。
+- **Rollback Trigger**：无证据实现工程图算法；把 L2 准备清单当成旧插件接受证明；无运行证据声明 L2 通过；让 `domain/rebar` 泄漏 OCCT/AIS；测试或 gate 失败仍继续堆功能。
 - **Constraints**：不使用 ACIS / HOOPS / Codejock 等商业库；旧逻辑不确定时优先查 IDA MCP 或旧图石运行确认；xhigh 只读，修改由主流程 agent 完成。
-- **Boundary**：下一轮只允许 DetailWriter 线容器字段骨架、probe/tests/report/docs/追溯/缺口/46/todo 必要更新；禁止修改 UI 新功能、钢筋创建业务、真实 OCCT HLR/section/hidden-line 算法、无证据 AutoCAD L2 结论和 golden。
-- **Coupling Notes**：`drawing/export` 是 Detail 包输出边界；TODO-040 只补旧 Detail 线容器字段骨架，不关闭隐藏线 / 填充线 / 接头线算法或完整工程图缺口。
-- **Approximation Validity**：TODO-040 只能证明旧样例确认的线容器字段可由 writer 输出并被离线 probe 检查；不证明旧插件接受、不证明真实隐藏线 / 填充线算法，也不证明工程图完整性。
-- **Actuator Budget**：下一轮只推进 `TODO-040`。完成后停止复盘，不自动进入真实隐藏线、填充线、接头线算法或 golden。
-- **Risks**：旧 Detail 样例字段语义可能不足；旧插件接受度仍需真实运行确认；字段骨架可能被误读为算法完成，必须在报告中明确 capability boundary。
+- **Boundary**：下一轮只允许 line-containers L2 probe/report/checklist/docs/追溯/缺口/46/todo 必要更新；禁止修改 UI 新功能、钢筋创建业务、真实 OCCT HLR/section/hidden-line 算法、无证据 AutoCAD L2 结论和 golden。
+- **Coupling Notes**：`drawing/export` 是 Detail 包输出边界；TODO-041 只把 TODO-040 字段骨架包转成 L2 运行确认准备，不关闭隐藏线 / 填充线 / 接头线算法或完整工程图缺口。
+- **Approximation Validity**：TODO-041 只能证明 line-containers 包、环境探测和手工确认材料齐备；不证明旧插件接受、不证明真实连续线 / 隐藏线 / 填充线算法，也不证明工程图完整性。
+- **Actuator Budget**：下一轮只推进 `TODO-041`。完成后停止复盘，不自动进入真实隐藏线、填充线、接头线算法或 golden。
+- **Risks**：AutoCAD 环境可能继续不可用；旧插件接受度仍需真实运行确认；L2 准备材料可能被误读为 L2 通过，必须在报告中明确 `autocadL2=not_run` 或真实运行结果。
 ## Todo CSV 使用方式
 
 `todo.csv` 是后续执行看板。建议每次 goal 模式只拿 `status=next` 或最高优先级 `pending` 的任务推进。
@@ -1081,11 +1085,11 @@ golden 采集 TODO-026 暂按用户要求保持 pending。
 下一步优先执行：
 
 ```text
-TODO-040 / M2-Drawing-009
-  -> DetailWriter continue-line / hidden-line / central-line / hatch-line 线容器字段骨架 P0
-  -> 把旧 Detail 样例中线类容器的 LineN 字段做成独立干净变量字段骨架专项
-  -> 不实现真实隐藏线 / 填充线 / 剖切线 / 接头线算法，不声明 AutoCAD L2 通过，不进入 golden
+TODO-041 / M2-Drawing-010
+  -> DetailWriter line-containers AutoCAD L2 运行确认准备 P0
+  -> 把 TODO-040 line-containers 独立包转成 AutoCAD L2 手工或自动运行确认准备项
+  -> 不实现真实连续线 / 隐藏线 / 中心线 / 填充线算法，不声明 AutoCAD L2 通过，不进入 golden
 ```
 
-原因很简单：TODO-039 已把 section-line 独立包转成 AutoCAD L2 运行确认准备项，但 AutoCAD 环境仍不可用；下一步继续按旧 Detail 样例拆线类容器字段骨架，不能把字段存在直接升级成真实工程图算法。
+原因很简单：TODO-040 已把 line-containers 独立包做成可输出、可离线检查的字段骨架，但 AutoCAD 环境仍不可用；下一步应先补 L2 运行确认准备和阻塞记录，不能把字段存在直接升级成真实工程图算法或旧插件接受。
 TODO-026 golden 采集暂按用户要求保持 pending。

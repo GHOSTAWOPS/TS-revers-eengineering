@@ -693,3 +693,40 @@ section / hidden / hatch / joint algorithm 未实现。
 full drawing generation 未完成。
 golden 未采集。
 ```
+
+## M2-Drawing-009 线容器字段骨架 P0 状态
+
+当前正式证据已补：
+
+```text
+E-DEV-062
+TODO-040 / M2-Drawing-009
+```
+
+已完成：
+
+- `DetailWriter` 输出 `continue-line / hidden-line / central-line / hatch-line` 下的 `lines / LineN` 字段骨架。
+- `LineN` 字段覆盖 `start_x / start_y / end_x / end_y / ZValue`。
+- `detail_writer_tests` 覆盖四类线容器的显式字段输出，并确认 `l2 = not_run`。
+- `detail_l2_fixture_probe --fixture line-containers` 生成 TODO-040 三图纸独立包。
+- probe 离线确认 `lineContainers.passed = true`，四类容器各有 1 个字段完整的 `Line1`。
+- `Phase1.ReadinessGate` 的 done-report 映射新增 `TODO-040`，防止任务 done 后缺实现记录或 build report。
+
+当前结论：
+
+```text
+decision = l0-l1-pass
+l0 = passed
+l1 = passed
+l2 = not_run
+autocadL2 = not_run
+fdrawingPlugin.status = ready
+autocadEnvironment.status = not_found
+```
+
+注意：
+
+- 线容器 `LineN` 是旧 Detail 样例字段骨架，不是算法输出证明。
+- 当前未实现真实连续线 / 隐藏线 / 中心线 / 填充线生成规则。
+- 当前未执行 APPLOAD，也未执行旧插件导入命令。
+- 因此不能把本轮写成 AutoCAD L2 通过或旧插件接受。

@@ -15,7 +15,7 @@ struct DetailDiagnostic
     QString message;
 };
 
-struct DetailSectionLineGeometry
+struct DetailLegacyLineGeometry
 {
     double startX = 0.0;
     double startY = 0.0;
@@ -23,6 +23,8 @@ struct DetailSectionLineGeometry
     double endY = 0.0;
     QString zValue;
 };
+
+using DetailSectionLineGeometry = DetailLegacyLineGeometry;
 
 struct DetailSectionArcGeometry
 {
@@ -43,8 +45,12 @@ struct DetailDrawingViewOptions
     QString drawingUnit;
     QString drawingScale;
     QString generalScale;
+    QVector<DetailLegacyLineGeometry> continueLines;
+    QVector<DetailLegacyLineGeometry> hiddenLines;
+    QVector<DetailLegacyLineGeometry> centralLines;
     QVector<DetailSectionLineGeometry> sectionLines;
     QVector<DetailSectionArcGeometry> sectionArcs;
+    QVector<DetailLegacyLineGeometry> hatchLines;
 };
 
 struct DetailWriteOptions

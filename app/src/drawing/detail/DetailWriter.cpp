@@ -595,12 +595,12 @@ void writeLegacyGeneralInfo(QXmlStreamWriter& writer, const DetailDrawingViewOpt
 }
 
 void writeLegacyLineContainer(QXmlStreamWriter& writer,
-                              const QVector<DetailSectionLineGeometry>* sectionLines = nullptr)
+                              const QVector<DetailLegacyLineGeometry>* lines = nullptr)
 {
     writer.writeStartElement(QStringLiteral("lines"));
-    if (sectionLines) {
+    if (lines) {
         int sequence = 0;
-        for (const DetailSectionLineGeometry& line : *sectionLines) {
+        for (const DetailLegacyLineGeometry& line : *lines) {
             writer.writeEmptyElement(QStringLiteral("Line%1").arg(++sequence));
             writer.writeAttribute(QStringLiteral("start_x"), formatNumber(line.startX));
             writer.writeAttribute(QStringLiteral("start_y"), formatNumber(line.startY));
@@ -632,9 +632,10 @@ void writeLegacyArcContainer(QXmlStreamWriter& writer,
     writer.writeEndElement();
 }
 
-void writeLegacyCurveGeometryContainers(QXmlStreamWriter& writer)
+void writeLegacyCurveGeometryContainers(QXmlStreamWriter& writer,
+                                        const QVector<DetailLegacyLineGeometry>* lines = nullptr)
 {
-    writeLegacyLineContainer(writer);
+    writeLegacyLineContainer(writer, lines);
     writer.writeEmptyElement(QStringLiteral("circles"));
     writeLegacyArcContainer(writer);
     writer.writeEmptyElement(QStringLiteral("Ellipses"));
@@ -659,15 +660,15 @@ void writePartDetailDrawingSkeleton(QXmlStreamWriter& writer, const DetailDrawin
     writeLegacyGeneralInfo(writer, view);
 
     writer.writeStartElement(QStringLiteral("continue-line"));
-    writeLegacyCurveGeometryContainers(writer);
+    writeLegacyCurveGeometryContainers(writer, &view.continueLines);
     writer.writeEndElement();
 
     writer.writeStartElement(QStringLiteral("hidden-line"));
-    writeLegacyCurveGeometryContainers(writer);
+    writeLegacyCurveGeometryContainers(writer, &view.hiddenLines);
     writer.writeEndElement();
 
     writer.writeStartElement(QStringLiteral("central-line"));
-    writer.writeEmptyElement(QStringLiteral("lines"));
+    writeLegacyLineContainer(writer, &view.centralLines);
     writer.writeEndElement();
 
     writer.writeStartElement(QStringLiteral("section-line"));
@@ -675,7 +676,7 @@ void writePartDetailDrawingSkeleton(QXmlStreamWriter& writer, const DetailDrawin
     writer.writeEndElement();
 
     writer.writeStartElement(QStringLiteral("hatch-line"));
-    writer.writeEmptyElement(QStringLiteral("lines"));
+    writeLegacyLineContainer(writer, &view.hatchLines);
     writer.writeEndElement();
 
     writer.writeEmptyElement(QStringLiteral("Others"));

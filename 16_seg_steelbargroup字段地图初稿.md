@@ -438,9 +438,9 @@ read_int()    -> a1 + 64
 
 | 旧 ACIS 调用 | 旧用途 | OCCT 替代方向 |
 |---|---|---|
-| `api_edge` | 从实体取 EDGE | 领域对象直接保存 `TopoDS_Edge` / curve handle |
+| `api_edge` | 从实体取 EDGE | `LegacyGeometryAdapter` 返回 `LegacyCurveRef` / `geometryRef.curveRefs`；`TopoDS_Edge` 和 OCCT curve handle 只能留在 `geometry/occ` 或 adapter 内部缓存，禁止进入领域对象 |
 | `api_entity_entity_distance` | 边到实体距离 | `BRepExtrema_DistShapeShape` 或曲线距离封装 |
-| `api_split_curve` | 按点切边 | 曲线参数定位 + `Geom_TrimmedCurve` / 拆 `TopoDS_Edge` |
+| `api_split_curve` | 按点切边 | adapter 内做曲线参数定位、`Geom_TrimmedCurve` / 拆 `TopoDS_Edge`，业务层只接收 `LegacyCurveInterval` / `LegacyCurveRef` summary |
 | `EDGE::length` | 取边长 | `GCPnts_AbscissaPoint::Length` / `BRepGProp` |
 | `api_curve_spline` | 点列拟合样条边 | `GeomAPI_PointsToBSpline` + `BRepBuilderAPI_MakeEdge` |
 | `api_entity_point_distance` | 点到组内边最小距离 | `GeomAPI_ProjectPointOnCurve` / `BRepExtrema` |

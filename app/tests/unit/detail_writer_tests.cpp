@@ -47,6 +47,43 @@ QXmlStreamAttributes findElementAttrs(const QString& path, const QString& name)
     return {};
 }
 
+QXmlStreamAttributes findElementAttrsUnderParent(const QString& path,
+                                                 const QString& parentName,
+                                                 const QString& name)
+{
+    QFile file(path);
+    expect(file.open(QIODevice::ReadOnly | QIODevice::Text), "xml file must open");
+    QXmlStreamReader reader(&file);
+    bool inParent = false;
+    int depth = 0;
+    while (!reader.atEnd()) {
+        reader.readNext();
+        if (reader.isStartElement()) {
+            const QString currentName = reader.name().toString();
+            if (!inParent && currentName == parentName) {
+                inParent = true;
+                depth = 1;
+                continue;
+            }
+            if (inParent) {
+                if (currentName == name) {
+                    return reader.attributes();
+                }
+                ++depth;
+            }
+        } else if (reader.isEndElement() && inParent) {
+            --depth;
+            if (depth == 0) {
+                break;
+            }
+        }
+    }
+    expect(false,
+           qPrintable(QStringLiteral("missing xml element %1 under %2")
+                          .arg(name, parentName)));
+    return {};
+}
+
 QStringList directChildElementNames(const QString& path, const QString& parentName)
 {
     QFile file(path);
@@ -638,6 +675,67 @@ void testDetailWriterWritesSectionLineFieldSkeleton()
            "section Arc1 ZValue mismatch");
 }
 
+void testDetailWriterWritesLineContainerFieldSkeleton()
+{
+    QTemporaryDir temp;
+    expect(temp.isValid(), "temporary dir must be valid");
+    const QString outputDir = QDir(temp.path()).filePath("drawings");
+
+    tsrebar::DetailWriteOptions options;
+    tsrebar::DetailDrawingViewOptions view;
+    view.viewId = "line-containers-view-001";
+    view.drawingName = "todo040-line-containers";
+    view.modelFileName = "todo040-model.step";
+    view.drawingUnit = "mm";
+    view.drawingScale = "1:100";
+    view.generalScale = "100";
+    view.continueLines.push_back({1.0, 2.0, 3.0, 4.0, "continue-z"});
+    view.hiddenLines.push_back({5.0, 6.0, 7.0, 8.0, "hidden-z"});
+    view.centralLines.push_back({9.0, 10.0, 11.0, 12.0, "central-z"});
+    view.hatchLines.push_back({13.0, 14.0, 15.0, 16.0, "hatch-z"});
+    options.views.push_back(view);
+
+    const tsrebar::DetailWriter writer;
+    const auto result = writer.writePackage(outputDir, steelDataWithMixedGroup(), options);
+
+    expect(result.ok, "line container field skeleton Detail writer must succeed");
+    expect(result.l2 == "not_run", "line container skeleton must not claim AutoCAD L2");
+
+    const QString detailStl = QDir(outputDir).filePath("Detail01.stl");
+    expectDirectChildren(detailStl,
+                         "continue-line",
+                         {"lines", "circles", "Arcs", "Ellipses", "EllipseArcs", "Splines"});
+    expectDirectChildren(detailStl,
+                         "hidden-line",
+                         {"lines", "circles", "Arcs", "Ellipses", "EllipseArcs", "Splines"});
+    expectDirectChildren(detailStl, "central-line", {"lines"});
+    expectDirectChildren(detailStl, "hatch-line", {"lines"});
+
+    const auto continueLine = findElementAttrsUnderParent(detailStl, "continue-line", "Line1");
+    expect(continueLine.value("start_x") == "1", "continue-line Line1 start_x mismatch");
+    expect(continueLine.value("start_y") == "2", "continue-line Line1 start_y mismatch");
+    expect(continueLine.value("end_x") == "3", "continue-line Line1 end_x mismatch");
+    expect(continueLine.value("end_y") == "4", "continue-line Line1 end_y mismatch");
+    expect(continueLine.value("ZValue") == "continue-z", "continue-line Line1 ZValue mismatch");
+
+    const auto hiddenLine = findElementAttrsUnderParent(detailStl, "hidden-line", "Line1");
+    expect(hiddenLine.value("start_x") == "5", "hidden-line Line1 start_x mismatch");
+    expect(hiddenLine.value("start_y") == "6", "hidden-line Line1 start_y mismatch");
+    expect(hiddenLine.value("end_x") == "7", "hidden-line Line1 end_x mismatch");
+    expect(hiddenLine.value("end_y") == "8", "hidden-line Line1 end_y mismatch");
+    expect(hiddenLine.value("ZValue") == "hidden-z", "hidden-line Line1 ZValue mismatch");
+
+    const auto centralLine = findElementAttrsUnderParent(detailStl, "central-line", "Line1");
+    expect(centralLine.value("start_x") == "9", "central-line Line1 start_x mismatch");
+    expect(centralLine.value("end_y") == "12", "central-line Line1 end_y mismatch");
+    expect(centralLine.value("ZValue") == "central-z", "central-line Line1 ZValue mismatch");
+
+    const auto hatchLine = findElementAttrsUnderParent(detailStl, "hatch-line", "Line1");
+    expect(hatchLine.value("start_x") == "13", "hatch-line Line1 start_x mismatch");
+    expect(hatchLine.value("end_y") == "16", "hatch-line Line1 end_y mismatch");
+    expect(hatchLine.value("ZValue") == "hatch-z", "hatch-line Line1 ZValue mismatch");
+}
+
 void testDetailWriterFailurePreservesExistingPackage()
 {
     QTemporaryDir temp;
@@ -840,6 +938,7 @@ int main()
     testDetailWriterWritesPointStbGeoFieldSkeleton();
     testDetailWriterWritesPointStbFaceEdgeFieldSkeleton();
     testDetailWriterWritesSectionLineFieldSkeleton();
+    testDetailWriterWritesLineContainerFieldSkeleton();
     testDetailWriterFailurePreservesExistingPackage();
     testDetailWriterRejectsBrokenRebarReferencesBeforeWriting();
     testDetailWriterInstallFailureRestoresExistingPackage();

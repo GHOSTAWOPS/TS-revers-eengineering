@@ -683,6 +683,92 @@ QJsonObject sectionLineProbe(const QString& detailStlPath)
     return result;
 }
 
+QJsonObject lineContainersProbe(const QString& detailStlPath)
+{
+    QJsonObject result;
+    result.insert(QStringLiteral("file"), QFileInfo(detailStlPath).absoluteFilePath());
+    result.insert(QStringLiteral("scope"),
+                  QStringLiteral("continue-line / hidden-line / central-line / hatch-line LineN field skeleton only"));
+
+    const QStringList parents{
+        QStringLiteral("continue-line"),
+        QStringLiteral("hidden-line"),
+        QStringLiteral("central-line"),
+        QStringLiteral("hatch-line"),
+    };
+    const QStringList required{
+        QStringLiteral("start_x"),
+        QStringLiteral("start_y"),
+        QStringLiteral("end_x"),
+        QStringLiteral("end_y"),
+        QStringLiteral("ZValue"),
+    };
+
+    QJsonArray containers;
+    bool allPassed = true;
+    for (const QString& parent : parents) {
+        int lineCount = 0;
+        bool firstLinePassed = false;
+        QJsonArray lines;
+        QFile file(detailStlPath);
+        if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+            result.insert(QStringLiteral("passed"), false);
+            result.insert(QStringLiteral("diagnostic"), QStringLiteral("detail file open failed"));
+            return result;
+        }
+
+        QXmlStreamReader reader(&file);
+        bool inParent = false;
+        int depth = 0;
+        while (!reader.atEnd()) {
+            reader.readNext();
+            if (reader.isStartElement()) {
+                const QString name = reader.name().toString();
+                if (!inParent && name == parent) {
+                    inParent = true;
+                    depth = 1;
+                    continue;
+                }
+                if (!inParent) {
+                    continue;
+                }
+                ++depth;
+                if (numberedElementName(name, QStringLiteral("Line"))) {
+                    ++lineCount;
+                    const QXmlStreamAttributes attrs = reader.attributes();
+                    const QStringList missing = missingAttributes(attrs, required);
+                    QJsonObject item;
+                    item.insert(QStringLiteral("name"), name);
+                    item.insert(QStringLiteral("attributes"), attributesToJson(attrs));
+                    item.insert(QStringLiteral("missingAttributes"), toJsonArray(missing));
+                    firstLinePassed = firstLinePassed || missing.isEmpty();
+                    lines.append(item);
+                }
+            } else if (reader.isEndElement() && inParent) {
+                --depth;
+                if (depth == 0) {
+                    break;
+                }
+            }
+        }
+
+        const bool passed = lineCount >= 1 && firstLinePassed;
+        QJsonObject container;
+        container.insert(QStringLiteral("parent"), parent);
+        container.insert(QStringLiteral("lineCount"), lineCount);
+        container.insert(QStringLiteral("lineFieldsPassed"), firstLinePassed);
+        container.insert(QStringLiteral("lines"), lines);
+        container.insert(QStringLiteral("passed"), passed);
+        containers.append(container);
+        allPassed = allPassed && passed;
+    }
+
+    result.insert(QStringLiteral("containers"), containers);
+    result.insert(QStringLiteral("containerCount"), parents.size());
+    result.insert(QStringLiteral("passed"), allPassed);
+    return result;
+}
+
 QJsonObject executableProbe(const QString& executable)
 {
     QJsonObject result;
@@ -823,7 +909,7 @@ int main(int argc, char* argv[])
         QStringLiteral("DW-L2-TODO036-001"));
     const QCommandLineOption fixtureOption(
         QStringLiteral("fixture"),
-        QStringLiteral("Fixture to generate: complex-skeleton, point-face-edge, or section-line."),
+        QStringLiteral("Fixture to generate: complex-skeleton, point-face-edge, section-line, or line-containers."),
         QStringLiteral("name"),
         QStringLiteral("complex-skeleton"));
     const QCommandLineOption pluginDirOption(
@@ -859,30 +945,38 @@ int main(int argc, char* argv[])
     const QString fixture = parser.value(fixtureOption);
     if (fixture != QStringLiteral("complex-skeleton") &&
         fixture != QStringLiteral("point-face-edge") &&
-        fixture != QStringLiteral("section-line")) {
-        QTextStream(stderr) << "fixture must be complex-skeleton, point-face-edge, or section-line\n";
+        fixture != QStringLiteral("section-line") &&
+        fixture != QStringLiteral("line-containers")) {
+        QTextStream(stderr) << "fixture must be complex-skeleton, point-face-edge, section-line, or line-containers\n";
         return EXIT_FAILURE;
     }
 
     const bool pointFaceEdgeFixture = fixture == QStringLiteral("point-face-edge");
     const bool sectionLineFixture = fixture == QStringLiteral("section-line");
+    const bool lineContainersFixture = fixture == QStringLiteral("line-containers");
     options.drawingName = pointFaceEdgeFixture
         ? QStringLiteral("todo037-point-face-edge")
         : (sectionLineFixture
                ? QStringLiteral("todo038-section-line")
-               : QStringLiteral("todo036-complex-skeleton-l2"));
+               : (lineContainersFixture
+                      ? QStringLiteral("todo040-line-containers")
+                      : QStringLiteral("todo036-complex-skeleton-l2")));
     options.modelFileName = pointFaceEdgeFixture
         ? QStringLiteral("todo037-model.step")
         : (sectionLineFixture
                ? QStringLiteral("todo038-model.step")
-               : QStringLiteral("todo036-model.step"));
+               : (lineContainersFixture
+                      ? QStringLiteral("todo040-model.step")
+                      : QStringLiteral("todo036-model.step")));
     options.drawingUnit = QStringLiteral("m");
     options.drawingScale = QStringLiteral("1");
     for (int index = 1; index <= viewCount; ++index) {
         tsrebar::DetailDrawingViewOptions view;
         const QString prefix = pointFaceEdgeFixture
             ? QStringLiteral("todo037")
-            : (sectionLineFixture ? QStringLiteral("todo038") : QStringLiteral("todo036"));
+            : (sectionLineFixture
+                   ? QStringLiteral("todo038")
+                   : (lineContainersFixture ? QStringLiteral("todo040") : QStringLiteral("todo036")));
         view.viewId = QStringLiteral("%1-view-%2").arg(prefix).arg(index, 3, 10, QLatin1Char('0'));
         view.drawingName = QStringLiteral("%1-view-%2").arg(prefix).arg(index);
         view.modelFileName = QStringLiteral("%1-model-%2.step").arg(prefix).arg(index);
@@ -904,6 +998,12 @@ int main(int argc, char* argv[])
                 0.451026811805728,
                 2.69056584178407,
                 QStringLiteral("12.239266:9.333333:12.239266")});
+        }
+        if (lineContainersFixture) {
+            view.continueLines.push_back({1.0, 2.0, 3.0, 4.0, QStringLiteral("continue-z")});
+            view.hiddenLines.push_back({5.0, 6.0, 7.0, 8.0, QStringLiteral("hidden-z")});
+            view.centralLines.push_back({9.0, 10.0, 11.0, 12.0, QStringLiteral("central-z")});
+            view.hatchLines.push_back({13.0, 14.0, 15.0, 16.0, QStringLiteral("hatch-z")});
         }
         options.views.push_back(view);
     }
@@ -942,6 +1042,10 @@ int main(int argc, char* argv[])
                                  QStringLiteral("E-DEV-057"),
                                  QStringLiteral("E-DEV-059"),
                                  QStringLiteral("E-DEV-060")}
+                    : lineContainersFixture
+                    ? QJsonArray{QStringLiteral("E-DETAIL-003"),
+                                 QStringLiteral("E-DEV-056"),
+                                 QStringLiteral("E-DEV-061")}
                     : QJsonArray{QStringLiteral("E-DEV-055"),
                                  QStringLiteral("E-DETAIL-003"),
                                  QStringLiteral("E-DEV-057"),
@@ -958,6 +1062,9 @@ int main(int argc, char* argv[])
     }
     if (sectionLineFixture) {
         root.insert(QStringLiteral("sectionLine"), sectionLineProbe(firstDrawing));
+    }
+    if (lineContainersFixture) {
+        root.insert(QStringLiteral("lineContainers"), lineContainersProbe(firstDrawing));
     }
 
     QJsonArray files;
@@ -979,6 +1086,11 @@ int main(int argc, char* argv[])
         return root.value(QStringLiteral("sectionLine")).toObject().value(QStringLiteral("passed")).toBool()
             ? EXIT_SUCCESS
             : 5;
+    }
+    if (lineContainersFixture) {
+        return root.value(QStringLiteral("lineContainers")).toObject().value(QStringLiteral("passed")).toBool()
+            ? EXIT_SUCCESS
+            : 6;
     }
     return complexSkeleton.value(QStringLiteral("passed")).toBool() ? EXIT_SUCCESS : 3;
 }

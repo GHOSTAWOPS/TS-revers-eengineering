@@ -261,6 +261,13 @@ M2-Drawing-005 状态：
 - 检查范围固定为 `complex containers + General-Info only; pointStb L2 is deferred`。
 - 旧 FDrawing 插件文件存在并记录 hash，但 AutoCAD L2 仍是 `not_run`。
 
+M2-Drawing-009 状态：
+
+- `E-DEV-062` 已让正式 app `DetailWriter` 输出 `continue-line / hidden-line / central-line / hatch-line` 下的显式 `LineN` 字段骨架。
+- `LineN` 覆盖 `start_x / start_y / end_x / end_y / ZValue`。
+- `detail_l2_fixture_probe --fixture line-containers` 已生成独立三图纸包并确认 `lineContainers.passed=true`。
+- 当前只证明线容器字段骨架可输出和离线检查，不证明真实连续线 / 隐藏线 / 中心线 / 填充线算法，不证明 AutoCAD L2 或旧插件接受度。
+
 ## pointStb / FaceEdge 补充字段
 
 | Detail 字段 | 新模型字段 | 状态 | 说明 |
