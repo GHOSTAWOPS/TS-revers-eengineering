@@ -3491,3 +3491,222 @@ golden。
 ```text
 TODO-057 / 接头 DB6C0 owning 结构与 Dialog #428 确定链补证 P0
 ```
+
+## TODO-057 接头 DB6C0 owning 结构与 Dialog #428 确定链补证
+
+证据编号：
+
+```text
+E-IDA-039
+```
+
+IDA 会话：
+
+```text
+database = visualts_i64_todo051
+input = C:\Users\ghost\Desktop\reverse_engineering\【03】图石软件\VisualTS.exe.i64
+module = VisualTS.exe
+hexrays_ready = true
+```
+
+### type id -> debug 类名
+
+静态 debug name 已补齐：
+
+```text
+sub_1405E0EA0:
+  dword_140993E74 -> "steelbar"
+  source path     -> e:\tushi3d\dam\class\steelbar.cpp
+
+sub_1405F1820:
+  dword_140993EC8 -> "steelbargroup"
+  source path      -> e:\tushi3d\dam\class\steelbargroup.cpp
+
+sub_1405DA0E0:
+  dword_140993E1C -> "seg_steelbargroup"
+  source path      -> e:\tushi3d\dam\class\seg_steelbargroup.cpp
+```
+
+工程含义：
+
+```text
+barjoint*   操作 steelbar。
+groupjoint* 操作 steelbargroup，并沿 groupObj+80 子链逐 child 重建。
+segjointnew 操作 seg_steelbargroup，并先进入 Dialog #428。
+```
+
+### Dialog #428 打开链
+
+```text
+sub_1405D94C0:
+  ctx = sub_1406ED3C0(...)
+  first selected item
+  obj = *((QWORD*)item + 13)
+  if sub_1405DA020(obj):      // seg_steelbargroup
+    dialog = operator new(0x148)
+    sub_14045D580(dialog, obj, 0)
+    vtable+728(dialog, 428, 0)
+    ShowWindow(dialog, 5)
+```
+
+### Dialog #428 构造 / DDX / radio / init
+
+```text
+sub_14045D580:
+  CDialog::CDialog(dialog, 0x1AC, parent)  // 428
+  dialog+320 = segObj
+  dialog+304 = 0
+  dialog+308 = dword_140994AB8
+  dialog+312 = dword_140994AB8
+  vtable = JoingSegDlg::vftable
+
+sub_14045D650:
+  DDX_Radio(..., 1380, dialog+304)
+  DDX_Text (..., 1426, dialog+308)
+  DDX_Text (..., 1283, dialog+312)
+  DDV_MinMaxFloat(..., 0.01, 15000.0)
+
+sub_14045DA00 / sub_14045DA10 / sub_14045DA20:
+  dialog+304 = 0 / 1 / 2
+
+sub_14045DFF0:
+  调整窗口和按钮位置
+  隐藏 1261/1262/1263/1264、1330/1331/1332/1333、
+       1402/1403/1404/1405、1481/1479/1480
+  最后 CDialog::OnInitDialog(this)
+```
+
+### Dialog #428 OnOK 链
+
+```text
+sub_14045D720:
+  ACISExceptionCheck("API")
+  sub_1405CB160(
+    dialog+320,  // segObj
+    dialog+304,  // mode
+    dialog+308,  // firstOffset / phase candidate
+    dialog+312)  // period
+  CDialog::OnOK(this)
+  view refresh chain
+```
+
+### segjoint 创建链
+
+```text
+sub_1405CB160(segObj, a2, a3, a4):
+  node = *(segObj+80)
+  for i = 0; node; ++i:
+    phase = a3
+    if i is odd:
+      phase = 0
+    sub_1405B7350(node, a2, phase, a4)
+    node = *(node+96)
+
+sub_1405B7350(node, a2, a3, a4):
+  a3 / a4 先 /1000.0 转米
+  if a3 < 0.02:
+    a3 = a4
+  edge = *(node+72)
+  edgeLen = EDGE::length(edge, 1)
+  bounded = get_bounded_curve(edge, 1)
+  closed edge:
+    从 a3 开始每隔 a4 取点，end_indexed_polygon(this)
+  open edge:
+    先做端点方向判断，再按 mode 取一端起排或中分起排
+    每次 bounded_curve vfunc(+64) 取点，end_indexed_polygon(this)
+```
+
+与 DB6C0 的共同常量：
+
+```text
+0.02
+1000.0
+0.5
+1.0
+```
+
+工程含义：
+
+```text
+Dialog #428 OK 后不是直接进 DB6C0。
+它沿 seg_steelbargroup.obj+80 子链逐节点分发，
+并走与 DB6C0 接近的起始偏移 / 周期 / bounded curve 取点语义。
+```
+
+### child+112 与 generated node+112 的边界
+
+```text
+child+112:
+  -> sub_1405E1CC0 写回
+  -> 按 child+108 period 做归一化
+  -> sub_1405DC6E0(child) = child+112 % child+108
+  -> 当前最稳妥业务名：
+       phase / position / 起始偏移，int mm
+
+generated node+112:
+  -> TODO-056 已确认 sub_1405DC6C0 会累加它
+  -> 业务名仍未闭合
+```
+
+### Apply / message map stop point
+
+对以下函数做 xref 复核：
+
+```text
+sub_14045D720
+sub_14045D650
+sub_14045DFF0
+sub_14045DA00
+sub_14045DA10
+sub_14045DA20
+```
+
+结果：
+
+```text
+xrefs 只稳定命中 data / vtable / message-map-like 数据引用。
+当前没有独立代码 xref 把 standalone Apply handler 单独钉出来。
+```
+
+结论：
+
+```text
+当前能高置信声明：
+  sub_14045D720 = JoingSegDlg::OnOK
+
+当前不能高置信声明：
+  JoingSegDlg 已存在一个独立定位的 Apply handler
+  或 Apply 与 OK 的复用关系已静态闭合
+```
+
+### 本轮 stop point
+
+已闭合：
+
+```text
+dword_140993E74 / dword_140993EC8 / dword_140993E1C 的类名。
+barjoint / groupjoint / segjoint 的 owner 分层。
+Dialog #428 的打开链、构造字段、DDX、radio、OnInit、OnOK。
+sub_1405CB160 -> sub_1405B7350 的 per-node 确定链。
+child+112 的业务语义可收紧为 phase / position / 起始偏移。
+```
+
+仍未闭合：
+
+```text
+groupjoint child 的精确业务类名。
+generated node+112 的业务名。
+Dialog #428 standalone Apply handler。
+旧 UI caption / 右键菜单项绑定。
+旧图石非空运行样例。
+AutoCAD L2 接受度。
+真实接头线算法。
+真实 Others 几何算法。
+golden。
+```
+
+后续建议：
+
+```text
+TODO-058 / JoingSegDlg message map 与 child/node+112 字段收口 P1
+```

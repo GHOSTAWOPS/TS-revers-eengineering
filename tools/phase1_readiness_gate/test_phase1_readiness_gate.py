@@ -211,6 +211,30 @@ class Phase1ReadinessGateTests(unittest.TestCase):
             self.assertIn("75_M2-Drawing-008DetailWriterSectionLineAutoCADL2运行确认准备P0实现记录.md",
                           report_checks[0].message)
 
+    def test_route_guardrail_accepts_todo057_done_report(self):
+        tmp, root = self.make_guardrail_root()
+        with tmp:
+            (root / "todo.csv").write_text(
+                '"id","priority","phase","task","status","goal_setpoint","acceptance","boundary","evidence","dependencies","risk","notes"\n'
+                '"TODO-057","P2","Evidence","接头 DB6C0 owning 结构与 Dialog #428 确定链补证 P0","done","","","","","","",""\n'
+                '"TODO-058","P2","Evidence","next task","next","","","","","","",""\n',
+                encoding="utf-8",
+            )
+            (root / "93_M2-Drawing-026接头DB6C0owning结构与Dialog428确定链补证P0实现记录.md").write_text(
+                "# stub\n",
+                encoding="utf-8",
+            )
+            reports_dir = root / "docs" / "phase1" / "app_build_reports"
+            reports_dir.mkdir(parents=True, exist_ok=True)
+            (reports_dir / "m2_drawing_026_run_001.md").write_text("# stub\n", encoding="utf-8")
+
+            checks = gate.collect_route_guardrail_checks(root)
+            report_checks = [check for check in checks if check.item == "done_node_reports"]
+
+            self.assertEqual(1, len(report_checks))
+            self.assertTrue(report_checks[0].ok)
+            self.assertIn("checked_done_nodes=1", report_checks[0].message)
+
     def test_route_guardrail_requires_todo040_done_report(self):
         tmp, root = self.make_guardrail_root()
         with tmp:

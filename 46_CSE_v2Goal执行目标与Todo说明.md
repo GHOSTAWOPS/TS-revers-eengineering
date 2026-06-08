@@ -306,20 +306,21 @@ TODO-041 验证 = lineContainers.passed=true, containerCount=4, acad.exe/accorec
 TODO-042 验证 = pointFaceEdge.passed=true, pointGroupCount=2, pointGeoCount=2, faceEdgeCount=2, acad.exe/accoreconsole.exe not_found, AutoCAD registry root keys exist but no version child groups, autocadL2=not_run, CTest 17/17 pass, readiness 84/84 pass, OCCT leak scan pass, xhigh allow_commit
 TODO-043 验证 = othersSteeljoint.passed=true, Others empty container, steeljoint-line/joints present, acad.exe/accoreconsole.exe not_found, AutoCAD registry root keys exist but no version child groups, autocadL2=not_run, CTest 17/17 pass, readiness 84/84 pass, OCCT leak scan pass, xhigh needs_fix important fixed, agent closed
 TODO-044 验证 = othersSteeljoint.passed=true, Others empty container, steeljoint-line/joints present, acad.exe/accoreconsole.exe not_found, AutoCAD registry root keys exist but no version child groups, autocadL2=not_run, CTest 18/18 pass, readiness 84/84 pass, OCCT leak scan pass, xhigh needs_fix important fixed, agent closed
+TODO-057 验证 = owner types traced to steelbar / steelbargroup / seg_steelbargroup, Dialog #428 OK chain traced to sub_14045D720 -> sub_1405CB160 -> sub_1405B7350, child+112 narrowed to phase/position/start offset, phase1 gate unittest 18 tests pass, CTest 18/18 pass, readiness 84/84 pass, OCCT leak scan pass, xhigh completed important_fixed minor_refined
 
-latest completed tag = evidence-056/joint-rebuild-geometry-core-static-trace
-planned tag = evidence-057/joint-db6c0-owning-dialog-static-trace
+latest completed tag = evidence-057/joint-db6c0-owning-dialog-static-trace
+planned tag = evidence-058/joint-dialog-message-map-node112-stop-point
 ```
 
 当前下一步：
 
 ```text
-TODO-057 / 接头 DB6C0 owning 结构与 Dialog #428 确定链补证 P0
-  -> TODO-056 已完成接头重建几何核心 DB6C0 静态深追。
+TODO-058 / JoingSegDlg message map 与 child/node+112 字段收口 P1
+  -> TODO-057 已完成接头 DB6C0 owning 结构与 Dialog #428 确定链补证。
   -> TODO-050 继续 blocked，等待用户现场旧图石非空运行样例。
   -> 下一轮只做 IDA MCP / 静态文档补证：
-     继续追 DB6C0 owning 结构名、node+112 业务名、
-     Dialog #428 OK/apply、segjoint 创建链和剩余 helper xref。
+     继续追 JoingSegDlg standalone Apply/message map、
+     generated node+112 业务名、child+112 与 generated node+112 的最终边界。
   -> 不自动启动旧图石，不安装 HASP，不实现真实接头线 / Others 几何算法。
 ```
 
@@ -792,8 +793,14 @@ TODO-056 / Evidence = done
   -> 本节点只补静态几何重建主流程；
      不声明 owning 结构名、Dialog #428 确定链、旧运行样例、真实算法、AutoCAD L2 或 golden。
 
-TODO-057 / Evidence = next
-  -> 继续静态补证 DB6C0 owning 结构与 Dialog #428 确定链。
+TODO-057 / Evidence = done
+  -> 已补 `E-IDA-039 / E-DEV-079`，确认 steelbar / steelbargroup / seg_steelbargroup
+     owner 类型层、Dialog #428 OK 链和 child+112 的 phase/position 语义。
+  -> 本节点只补 owner / dialog 静态证据；
+     不声明 generated node+112、standalone Apply、旧运行样例、真实算法、AutoCAD L2 或 golden。
+
+TODO-058 / Evidence = next
+  -> 继续静态补证 JoingSegDlg message map / Apply 与 generated node+112 语义。
   -> 不自动启动旧图石，不安装 HASP，不实现真实接头线 / Others 几何算法。
 ```
 
@@ -1129,8 +1136,8 @@ TODO-056 验证 = DB6C0 static rebuild core traced, child+88/+108/+112/+116 and 
 当前下一步：
 
 ```text
-TODO-057 / 接头 DB6C0 owning 结构与 Dialog #428 确定链补证 P0
-  -> TODO-056 已完成接头重建几何核心 DB6C0 静态深追
+TODO-058 / JoingSegDlg message map 与 child/node+112 字段收口 P1
+  -> TODO-057 已完成 owner 类型层和 Dialog #428 OK 链补证
   -> TODO-050 继续 blocked，等待用户现场旧图石非空运行样例
   -> 不自动启动旧图石，不安装 HASP
   -> 只做 IDA MCP / 静态文档补证
@@ -1140,10 +1147,11 @@ TODO-057 / 接头 DB6C0 owning 结构与 Dialog #428 确定链补证 P0
 原因：
 
 ```text
-TODO-056 已把 DB6C0 的清旧链、period/phase/reverse、反向遍历、曲线取点和输出调用追到静态主流程级别。
-当前真正缺的是 DB6C0 owning 结构名、Dialog #428 确定链和旧图石非空运行样例。
+TODO-057 已把 steelbar / steelbargroup / seg_steelbargroup 的 owner 分层、
+Dialog #428 OK 链和 child+112 语义补到可开发 stop point。
+当前真正缺的是 generated node+112、standalone Apply/message map 和旧图石非空运行样例。
 非空运行样例继续依赖用户现场 USB 狗 + HASP + 旧图石手工导出。
-所以 agent 下一轮先做可独立推进的 TODO-057 owning 结构与 Dialog 确定链补证。
+所以 agent 下一轮先做可独立推进的 TODO-058 静态收口。
 golden 采集 TODO-026 暂按用户要求保持 pending。
 ```
 
@@ -1209,19 +1217,19 @@ golden 采集 TODO-026 暂按用户要求保持 pending。
 
 ## CSE v2 Control Contract
 
-- **Primary Setpoint**：下一轮只完成 `TODO-057 / 接头 DB6C0 owning 结构与 Dialog #428 确定链补证 P0`，在不自动启动旧图石的前提下继续用 IDA MCP 缩小 DB6C0 owning 结构名、`node+112` 业务名、Dialog #428 OK/apply 和 segjoint 创建链缺口。
-- **Acceptance**：形成 `E-IDA-039 / E-DEV-079` 或等价证据；至少覆盖 DB6C0 owning 结构、Dialog #428 确定链、segjoint 创建链或明确 stop point；默认 CTest、readiness gate、OCCT 泄漏检查通过；docs-only 节点记录 `xhighReview = not_required_docs_only`；更新实现记录、build report、追溯矩阵、缺口文档、46 和 todo。
+- **Primary Setpoint**：下一轮只完成 `TODO-058 / JoingSegDlg message map 与 child/node+112 字段收口 P1`，在不自动启动旧图石的前提下继续用 IDA MCP 缩小 generated node+112 业务名、Dialog #428 standalone Apply/message map 和 child/node+112 的最终边界缺口。
+- **Acceptance**：形成 `E-IDA-040 / E-DEV-080` 或等价证据；至少覆盖 generated node+112、Dialog #428 Apply/message map、child/node+112 边界或明确 stop point；默认 CTest、readiness gate、OCCT 泄漏检查通过；若涉及门禁脚本或测试仍需 xhigh 只读 review；更新实现记录、build report、追溯矩阵、缺口文档、46 和 todo。
 - **Guardrail Metrics**：不能实现真实接头线 / Others 几何算法；不能在没有运行证据时声明 AutoCAD L2 通过；不能把英文内部命令名直接写成中文 UI caption；不能把 Dialog #427/#428 字段当成按钮绑定；不能改钢筋创建业务；不能迁入父目录 rebar 业务；不能进入 golden 全量采集。
-- **Sampling Plan**：先读 `todo.csv / 03 / 11 / 34 / 92 / 99`，确认 `TODO-056` 已完成 DB6C0 静态重建主流程追踪且 `TODO-050` 仍 blocked，再用 IDA MCP 分析 owning 结构、Dialog #428 和 segjoint 创建链；agent 不自动启动旧图石；最后运行默认 CTest、readiness gate 和 OCCT 泄漏扫描，证明本轮没有破坏工程基线。
+- **Sampling Plan**：先读 `todo.csv / 03 / 11 / 34 / 93 / 99`，确认 `TODO-057` 已完成 owner 类型层和 Dialog #428 OK 链补证且 `TODO-050` 仍 blocked，再用 IDA MCP 分析 message map / Apply 与 generated node+112；agent 不自动启动旧图石；最后运行默认 CTest、readiness gate 和 OCCT 泄漏扫描，证明本轮没有破坏工程基线。
 - **Known Delays**：非空旧运行样例仍依赖用户现场手工操作；静态资源可能仍无法反推出中文 caption，需要旧界面截图配合闭合。
-- **Recovery Target**：如果 owning 结构或 Dialog #428 确定链无法继续推进，把阻塞 helper、缺失 xref、未命名字段或 session 状态写入 `99` 和 build report，不继续猜 UI caption、不堆算法实现。
+- **Recovery Target**：如果 generated node+112 或 Dialog #428 Apply/message map 无法继续推进，把阻塞 helper、缺失 xref、未命名字段或 session 状态写入 `99` 和 build report，不继续猜 UI caption、不堆算法实现。
 - **Rollback Trigger**：无证据实现接头线 / Others / 工程图算法；把字段骨架或 IDA 命令表当成旧插件接受证明；无运行证据声明 L2 通过；让 `domain/rebar` 泄漏 OCCT/AIS；测试或 gate 失败仍继续堆功能。
 - **Constraints**：不使用 ACIS / HOOPS / Codejock 等商业库；新系统不引入 USB 狗 / 网络许可依赖；旧逻辑不确定时优先查 IDA MCP 或旧图石运行确认；xhigh 只读，修改由主流程 agent 完成；不自动再次启动旧图石。
 - **Boundary**：下一轮只允许 IDA / 静态证据、文档、追溯、缺口、46/todo 必要更新；禁止实现真实 OCCT HLR/section/hidden-line/steeljoint-line/Others 算法、禁止修改 UI 新功能、钢筋创建业务、无证据 AutoCAD L2 结论和 golden。
-- **Coupling Notes**：`drawing/export` 是 Detail 包输出边界；TODO-057 只补旧图石接头重建的 owning / dialog 静态证据，不关闭旧插件容忍度、AutoCAD L2、隐藏线 / 填充线算法或完整工程图缺口。
-- **Approximation Validity**：TODO-057 的产物是 owning 结构 / Dialog 确定链静态证据或 stop point，不是旧图石运行样例；即使命名了部分字段或调用链，也不代表真实接头线 / Others 几何算法已经闭合。
-- **Actuator Budget**：下一轮只推进 `TODO-057`。完成后停止复盘，不自动进入真实算法实现、隐藏线、填充线、点筋、FaceEdge 或 golden。
-- **Risks**：IDA 可能无法直接命名全部 owning 结构；Dialog #428 的按钮链可能跨 message map / MFC thunk；部分语义仍需要旧图石运行截图和 Detail 非空样例配合闭合。
+- **Coupling Notes**：`drawing/export` 是 Detail 包输出边界；TODO-058 只补 JoingSegDlg message map / Apply 与 child/node+112 静态证据，不关闭旧插件容忍度、AutoCAD L2、隐藏线 / 填充线算法或完整工程图缺口。
+- **Approximation Validity**：TODO-058 的产物是 message map / 字段边界静态证据或 stop point，不是旧图石运行样例；即使再命名一层字段或调用链，也不代表真实接头线 / Others 几何算法已经闭合。
+- **Actuator Budget**：下一轮只推进 `TODO-058`。完成后停止复盘，不自动进入真实算法实现、隐藏线、填充线、点筋、FaceEdge 或 golden。
+- **Risks**：IDA 可能仍无法直接给出 generated node+112 调试名；Dialog #428 的按钮链可能跨 message map / MFC thunk；部分语义仍需要旧图石运行截图和 Detail 非空样例配合闭合。
 ## Todo CSV 使用方式
 
 `todo.csv` 是后续执行看板。建议每次 goal 模式只拿 `status=next` 或最高优先级 `pending` 的任务推进。
@@ -1246,14 +1254,14 @@ golden 采集 TODO-026 暂按用户要求保持 pending。
 下一步优先执行：
 
 ```text
-TODO-057 / 接头 DB6C0 owning 结构与 Dialog #428 确定链补证 P0
-  -> TODO-056 已完成接头重建几何核心 DB6C0 静态深追
+TODO-058 / JoingSegDlg message map 与 child/node+112 字段收口 P1
+  -> TODO-057 已完成接头 DB6C0 owning 结构与 Dialog #428 确定链补证
   -> TODO-050 继续 blocked，等待用户现场旧图石运行样例
   -> 不自动启动旧图石
-  -> 用 IDA MCP 继续深追 owning 结构、Dialog #428 OK/apply 和 segjoint 创建链
+  -> 用 IDA MCP 继续深追 generated node+112、Dialog #428 Apply/message map
   -> 只补静态证据和剩余 GAP；不实现真实接头线 / Others 几何算法，
      不声明 AutoCAD L2 通过，不进入 golden
 ```
 
-原因很简单：TODO-056 已经把 DB6C0 的清旧链、period/phase/reverse、反向遍历、曲线取点和输出调用追清楚；真实非空运行样例仍依赖用户现场 USB 狗 + HASP + 旧图石手工导出。agent 下一步先做可独立推进的 owning 结构与 Dialog 确定链补证，继续缩小后续算法复刻前的证据缺口。
+原因很简单：TODO-057 已经把 owner 类型层、Dialog #428 OK 链和 child+112 语义补到可开发 stop point；真实非空运行样例仍依赖用户现场 USB 狗 + HASP + 旧图石手工导出。agent 下一步先做可独立推进的 message map / node+112 静态收口，继续缩小后续算法复刻前的证据缺口。
 TODO-026 golden 采集暂按用户要求保持 pending。

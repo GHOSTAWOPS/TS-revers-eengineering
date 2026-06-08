@@ -199,6 +199,7 @@ def done_node_report_requirements(root: Path, rows: list[dict[str, str]]) -> tup
         "TODO-054": ("90_M2-Drawing-023接头Handler业务对象筛选链静态分类P0实现记录.md", "docs/phase1/app_build_reports/m2_drawing_023_run_001.md"),
         "TODO-055": ("91_M2-Drawing-024接头Handler动作函数字段语义深追P0实现记录.md", "docs/phase1/app_build_reports/m2_drawing_024_run_001.md"),
         "TODO-056": ("92_M2-Drawing-025接头重建几何核心DB6C0静态深追P0实现记录.md", "docs/phase1/app_build_reports/m2_drawing_025_run_001.md"),
+        "TODO-057": ("93_M2-Drawing-026接头DB6C0owning结构与Dialog428确定链补证P0实现记录.md", "docs/phase1/app_build_reports/m2_drawing_026_run_001.md"),
     }
     missing: list[str] = []
     checked: list[str] = []
