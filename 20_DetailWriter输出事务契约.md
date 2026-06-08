@@ -244,17 +244,17 @@ E-IDA-018
 E-IDA-019
   -> StbTable / StbRow / MaterialTable 写值链
 
-E-IDA-020
-  -> psexcel / 0x8D1C / sub_140605B20 内部命令绑定
+E-IDA-043
+  -> 35057 / 0x88F1 / psexcel / sub_140605B20 下料表内部命令绑定
 
-E-IDA-021
-  -> 工程图 / 输出 Ribbon 分组加入 0x8D1C
+E-IDA-042
+  -> 工程图 / 输出 Ribbon 分组包含 {36124, 35057}
 ```
 
 说明：
 
-- `E-IDA-020` 只能证明旧程序内部命令名、命令 ID 和 handler 的绑定。
-- `E-IDA-021` 进一步证明 `0x8D1C` 位于 `工程图 / 输出` Ribbon 分组。
+- `E-IDA-043` 只能证明旧程序内部命令名、命令 ID 和 handler 的绑定已纠偏为 `35057 / 0x88F1 -> psexcel -> sub_140605B20`。
+- `E-IDA-042` 进一步证明 `工程图 / 输出` Ribbon 分组包含 `{36124, 35057}`，但不单独说明哪一个就是最终中文 caption。
 - 按钮 caption `下料表`、Dialog #427 和运行输出文件仍需运行确认。
 
 校验规则：

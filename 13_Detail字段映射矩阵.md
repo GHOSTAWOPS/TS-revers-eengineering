@@ -149,8 +149,8 @@ M1-App-018 状态：
 IDA 补证：
 
 - `sub_140605B20` 检查模型状态后调用 `sub_140602F90`。
-- `E-IDA-020` 已确认内部命令绑定 `psexcel -> 0x8D1C -> sub_140605B20`。
-- `E-IDA-021` 已确认 `0x8D1C` 被挂到 `工程图 / 输出` Ribbon 分组。
+- `E-IDA-043` 已把下料表内部命令纠偏为 `35057 / 0x88F1 -> psexcel -> sub_140605B20`。
+- `E-IDA-042` 已确认 `工程图 / 输出` Ribbon 分组包含 `{36124, 35057}`。
 - `sub_140602F90` 查找 `StbTables / StbTable`，格式化 `StbRow%d`，并通过 `sub_140525880` 写 `count / rsdID / diameter / stbLevel / length / stbNumSum / lenSum`。
 - 本轮确认字段写出，不等于字段值公式已经闭合。
 - 按钮 caption `下料表`、Dialog #427 和运行输出仍需旧图石确认。

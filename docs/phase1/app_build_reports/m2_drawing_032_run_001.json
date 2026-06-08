@@ -1,0 +1,25 @@
+{
+  "todoId": "TODO-063",
+  "phase": "M2-Drawing-032",
+  "evidenceId": "E-DEV-085",
+  "idaEvidenceId": "E-IDA-043",
+  "decision": "generate-package-command-map-correction-and-dialog274-downgrade",
+  "oldRuntimeAutomaticallyLaunched": false,
+  "haspInstalledAutomatically": false,
+  "systemDirectoryModifiedAutomatically": false,
+  "appBusinessCodeModified": false,
+  "algorithmImplemented": false,
+  "autocadL2": "not_run",
+  "xhighReview": "not_required_docs_only",
+  "verification": {
+    "todoCsvParse": "pass; TODO-063=done; next=TODO-064",
+    "gitDiffCheck": "pass",
+    "readinessGateStrict": "pass; M1-Formal-Ready; 84/84 pass",
+    "ctest": "pass; 18/18 pass",
+    "relationshipTrace": "pass; REQ-DRAW-003/004 include E-IDA-043/E-DEV-085 and corrected command mapping"
+  },
+  "next": {
+    "todoId": "TODO-064",
+    "task": "生成工程图与下料表中文caption资源绑定及真正生成工程图弹窗候选补证 P1"
+  }
+}

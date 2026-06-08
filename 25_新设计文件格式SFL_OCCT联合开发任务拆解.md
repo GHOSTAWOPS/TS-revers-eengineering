@@ -271,8 +271,8 @@ validator 错误码、失败输出格式和 negative fixture 清单见：
 - `seg_steelbargroup` restore/read 函数：`E-IDA-017`。
 - `StbGroup%d -> sub_14063E910` 详细字段写出：`E-IDA-018`。
 - `StbTable / MaterialTable -> sub_140602F90` 下料字段写值链：`E-IDA-019`。
-- `psexcel -> 0x8D1C -> sub_140605B20` 下料表内部命令绑定：`E-IDA-020`。
-- `工程图 / 输出` Ribbon 分组加入 `0x8D1C`：`E-IDA-021`。
+- `35057 / 0x88F1 -> psexcel -> sub_140605B20` 下料表内部命令绑定：`E-IDA-043`。
+- `工程图 / 输出` Ribbon 分组包含 `{36124, 35057}`：`E-IDA-042`。
 
 仍需继续用 IDA 或旧图石运行闭合：
 
@@ -280,7 +280,7 @@ validator 错误码、失败输出格式和 negative fixture 清单见：
 - `steelbargroup` 大字段业务名。
 - `groupId / rsdId / stbNum / segID` 的生成和映射规则。
 - `StbTable / MaterialTable` 字段值公式。
-- 按钮 caption `下料表` / Dialog #427 到 `psexcel / 0x8D1C` 的对应关系。
+- 按钮 caption `下料表` / Dialog #427 到 `35057 / 0x88F1 / psexcel` 的对应关系。
 - 旧图石运行输出目录、文件名和覆盖行为。
 
 这些不阻塞 `legacyObject.raw` 保存。

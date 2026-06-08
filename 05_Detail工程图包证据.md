@@ -145,8 +145,8 @@ DrawingRoot
 IDA 补证：
 
 - `sub_140605B20 -> sub_140602F90` 命中 `StbTables / StbTable / StbRow%d` 导出链。
-- `E-IDA-020` 已确认内部命令绑定 `psexcel -> 0x8D1C -> sub_140605B20`。
-- `E-IDA-021` 已确认 `0x8D1C` 被挂到 `工程图 / 输出` Ribbon 分组。
+- `E-IDA-020 / E-IDA-043` 已纠偏：`35057 / 0x88F1 -> psexcel -> sub_140605B20` 才是下料表 / Excel 导出链。
+- `E-IDA-042 / E-IDA-043` 已确认 `36124 / 0x8D1C -> psallc -> sub_140600AA0` 是 Detail 包主写出链；`0x8CD2` 实际属于 `ysteelout`，不再把它记成 `psallc`。
 - 按钮 caption、Dialog #427 和运行输出仍需确认。
 - `sub_1405259D0` 用于按名字查找 XML / COM 子节点。
 - `sub_140525880` 用于按名字匹配子字段并写入值。

@@ -1,0 +1,25 @@
+{
+  "todoId": "TODO-062",
+  "phase": "M2-Drawing-031",
+  "evidenceId": "E-DEV-084",
+  "idaEvidenceId": "E-IDA-042",
+  "decision": "generate-package-ribbon-static-stop-point",
+  "oldRuntimeAutomaticallyLaunched": false,
+  "haspInstalledAutomatically": false,
+  "systemDirectoryModifiedAutomatically": false,
+  "appBusinessCodeModified": false,
+  "algorithmImplemented": false,
+  "autocadL2": "not_run",
+  "xhighReview": "not_required_docs_only",
+  "verification": {
+    "todoCsvParse": "pass; TODO-062=done; next=TODO-063",
+    "gitDiffCheck": "pass",
+    "readinessGateStrict": "pass; M1-Formal-Ready; 84/84 pass",
+    "ctest": "pass; 18/18 pass",
+    "relationshipTrace": "pass; REQ-DRAW-003 includes E-IDA-042/E-DEV-084 and status M2Drawing031GeneratePackageStaticStopPointReady"
+  },
+  "next": {
+    "todoId": "TODO-063",
+    "task": "生成工程图 35057 到内部导出 dispatch / Dialog #274 静态补证 P1"
+  }
+}

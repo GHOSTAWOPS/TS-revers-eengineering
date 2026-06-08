@@ -69,7 +69,20 @@ status = next
 后续继续 goal 模式时：
 
 ```text
-先做 TODO-062，
-不再继续追 TODO-061，
-除非业务侧重新要求把接头链路提回主线。
+不再自动回到接头链路。
+
+TODO-050
+  -> 继续 blocked
+  -> 只保留现场运行采样模板和已有静态证据
+
+TODO-061
+  -> 继续 pending
+  -> 只保留 runtime capture gate、截图/Excel intake 规则和恢复入口
+
+当前 next
+  -> 以 todo.csv 为准
+  -> 当前已进入非接头主线的 TODO-063
+
+除非业务侧重新要求把接头链路提回主线，
+否则不再继续追 TODO-050 / TODO-061。
 ```

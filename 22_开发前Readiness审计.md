@@ -267,8 +267,8 @@
 
 - `E-IDA-018` 已补强 `StbGroup / Std / StbGeo` 写出字段链。
 - `E-IDA-019` 已补强 `StbTable / StbRow / MaterialTable` 写值字段链。
-- `E-IDA-020` 已补强下料表内部命令绑定 `psexcel / 0x8D1C / sub_140605B20`。
-- `E-IDA-021` 已补强 `工程图 / 输出` Ribbon 分组到 `0x8D1C` 的 UI 区域绑定。
+- `E-IDA-043` 已把下料表内部命令纠偏为 `35057 / 0x88F1 / psexcel / sub_140605B20`。
+- `E-IDA-042` 已补强 `工程图 / 输出 -> {36124, 35057}` 的 UI 区域绑定。
 - 仍需旧图石运行或继续 IDA 闭合按钮 caption `下料表` / Dialog #427 对应、字段值公式、输出文件和 AutoCAD 导入结果。
 
 没有 L2：

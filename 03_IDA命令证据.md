@@ -980,36 +980,28 @@ psexcel
 0x140768FF8 -> "psexcel"
 ```
 
-命令 ID 表：
+本轮按真实方向重新读取命令表：
 
 ```text
-0x14095A1C8 -> 0x140768FF8 "psexcel"
-0x14095A1D0 -> 0x8D1C
+[commandId, string]
 ```
 
-同表相邻项：
+当前高置信命令映射：
 
 ```text
-0x14095A1D8 -> 0x140769000 "psallc"
-0x14095A1E0 -> 0x8CD2
-0x14095A1E8 -> 0x140769008 "ysteelout"
-0x14095A1F0 -> 0x8CDB
+35057 / 0x88F1 -> psexcel
+36124 / 0x8D1C -> psallc
+36050 / 0x8CD2 -> ysteelout
+36059 / 0x8CDB -> yscreenout
+36324          -> spoucutt_localcut
+36325          -> spoucutt_localexit
 ```
 
-handler 表：
+handler 表仍确认：
 
 ```text
-0x14095B698 -> 0x140768FF8 "psexcel"
-0x14095B6A0 -> sub_140605B20
-0x14095B6A8 -> 0
-```
-
-同表相邻项：
-
-```text
-0x14095B6B0 -> 0x140769000 "psallc"
-0x14095B6B8 -> sub_140600AA0
-0x14095B6C0 -> 0
+psexcel -> sub_140605B20
+psallc  -> sub_140600AA0
 ```
 
 handler 链：
@@ -1023,7 +1015,7 @@ psexcel
 
 已确认含义：
 
-- `psexcel` 在内部命令 ID 表中绑定 `0x8D1C`。
+- `psexcel` 在内部命令表中应绑定 `35057 / 0x88F1`，不是 `0x8D1C`。
 - `psexcel` 在内部 handler 表中绑定 `sub_140605B20`。
 - `sub_140605B20` 做权限 / 模型状态检查后，调用 `sub_140602AE0` 查找模板，再调用 `sub_140602F90`。
 - `sub_140602F90` 已由 `E-IDA-019` 确认写出 `StbTable / MaterialTable` 字段。
@@ -1031,21 +1023,21 @@ psexcel
 
 本轮不能过度推断：
 
-- 尚不能证明顶部 Ribbon 文本 `下料表` 一定直接绑定 `psexcel / 0x8D1C`。
+- 尚不能证明顶部 Ribbon 文本 `下料表` 一定直接绑定 `35057 / 0x88F1 / psexcel`。
 - 尚不能证明 Dialog #427 一定由 `psexcel` 打开。
 - 尚不能证明运行时点击 `下料表` 的输出目录、文件名和覆盖行为。
 
 结论：
 
 ```text
-内部命令绑定已确认：
+内部下料表 / Excel 命令绑定已纠偏为：
 
-psexcel / 0x8D1C / sub_140605B20
+35057 / 0x88F1 -> psexcel -> sub_140605B20
 
-但 UI 顶部按钮、Dialog #427 和运行输出仍需旧图石运行确认。
+但 UI 顶部 caption、Dialog #427 和运行输出仍需旧图石运行确认。
 ```
 
-### 下料表 Ribbon UI 绑定补证
+### 工程图 / 输出 Ribbon UI 绑定补证
 
 证据 ID：
 
@@ -1065,8 +1057,15 @@ sub_1406F37B0
 - 反编译中出现 `CXTPRibbonBar`、`CXTPRibbonTab`、`CXTPRibbonGroup`、`CXTPControls::Add`。
 - 它创建 `工程图` 页签。
 - 它在该页签下创建 `输出` 分组。
-- 它向 `输出` 分组加入命令 ID `36124`，也就是 `0x8D1C`。
-- 同一函数还把 `36124 / 0x8D1C` 加入 QuickAccess 控件。
+- 它向 `输出` 分组加入两个 command id：
+
+```text
+36124
+35057
+```
+
+- 其中 `36124` 还会被加入 QuickAccess 控件。
+- `35057` 当前没有在同一处 QuickAccess immediate 列表命中。
 
 相关字符串：
 
@@ -1081,32 +1080,193 @@ sub_1406F37B0
 
 ```text
 E-IDA-020:
-  psexcel -> 0x8D1C -> sub_140605B20
+  35057 / 0x88F1 -> psexcel -> sub_140605B20
 
 E-IDA-021:
-  工程图 / 输出 Ribbon 分组 -> 0x8D1C
+  工程图 / 输出 Ribbon 分组 -> {36124, 35057}
 ```
 
 已确认含义：
 
-- `0x8D1C` 已不是孤立内部命令 ID。
-- 它确实被旧程序 Ribbon 构造函数挂到 `工程图 / 输出` 区域。
-- 结合 `E-IDA-020`，`工程图 / 输出` 下的该按钮高度可信地指向 `psexcel / sub_140605B20` 下料链。
+- `工程图 / 输出` 下不是单一命令，而是至少两个旧命令入口。
+- 结合命令表纠偏后，`35057` 才是当前高置信下料表 / Excel 候选入口。
+- `36124` 不能再直接写成下料表按钮。
 
 本轮不能过度推断：
 
-- 还不能单靠本证据证明按钮最终显示标题一定是 `下料表`，需要确认命令 caption / resource 绑定。
-- 还不能证明 Dialog #427 一定由 `psexcel` 打开。
-- 还不能证明运行时输出目录、文件名、覆盖策略或 Excel / Detail 包写出行为。
+- 还不能单靠本证据证明按钮最终显示标题一定是 `下料表`，需要继续确认命令 caption / resource 绑定。
+- 还不能证明 Dialog #427 一定由 `35057 / psexcel` 打开。
+- 还不能证明运行时输出目录、文件名、覆盖策略。
 
 结论：
 
 ```text
-下料表 UI 入口已经从“内部命令候选”推进到：
+工程图 / 输出 Ribbon 分组
+  -> {36124, 35057}
 
-工程图 / 输出 Ribbon 分组 -> 0x8D1C -> psexcel -> sub_140605B20
+其中：
+  35057 当前与 psexcel / 下料表链对应
+  36124 保留给生成工程图侧继续追证
+```
 
-但 Dialog #427 和运行输出仍需旧图石运行确认。
+### 生成工程图命令入口 / Ribbon 绑定静态补证
+
+证据 ID：
+
+```text
+E-IDA-042
+```
+
+本轮复核时重开后的 IDA MCP 会话：
+
+```text
+session = visualts_todo062_generate_drawing
+database = VisualTS.exe.i64
+Hex-Rays = ready
+```
+
+关键函数：
+
+```text
+sub_1406F37B0
+sub_140600AA0
+```
+
+`sub_1406F37B0` 当前判断：
+
+- 该函数就是旧 `VisualTS` 的 Codejock Ribbon 构造函数。
+- 它创建 `工程图` 页签和 `输出` 分组。
+- 它在这个分组里直接加入两个 command id：
+
+```text
+36124
+35057
+```
+
+- 其中 `36124` 还会被加入 QuickAccess。
+
+相关反编译片段可收口为：
+
+```text
+v75 = CXTPRibbonBar::AddTab(v8, byte_140796BBC);            -> 工程图
+v82 = CXTPRibbonTab::AddGroup(v75, dword_1407969D4);        -> 输出
+CXTPRibbonGroup::Add(v82, 1, 36124, ...)
+CXTPRibbonGroup::Add(v82, 1, 35057, ...)
+```
+
+结合命令表真实方向，本轮应纠偏为：
+
+```text
+36124 / 0x8D1C -> psallc
+35057 / 0x88F1 -> psexcel
+36050 / 0x8CD2 -> ysteelout
+36059 / 0x8CDB -> yscreenout
+```
+
+`sub_140600AA0` 当前判断：
+
+- 该函数内部先过 `sub_1404DEA40(5)` 许可门。
+- 它创建 `StbTables` 和 `HViewPorts / ViewPort / PartDetailDrawing / StbDetailDrawing`。
+- 它会调用：
+
+```text
+sub_140609690   -> StbTable / MaterialTable
+sub_140609A50   -> 一类对象视图生成
+sub_14060B010   -> 一类对象视图生成
+sub_14060A230   -> 一类对象视图生成
+sub_14060DC00   -> 一类对象视图生成
+sub_14061F970   -> PartDetailDrawing 复杂线容器
+sub_14061F830   -> StbGroups / StbGroup / Std / StbGeo
+sub_140635A80   -> 保存 DetailNN.stl
+```
+
+当前高置信静态收口：
+
+```text
+顶层 Ribbon 层：
+  工程图 / 输出 -> {36124, 35057}
+
+生成工程图 / Detail 包主写出链：
+  36124 / 0x8D1C -> psallc -> sub_140600AA0
+    -> Detail.xml / DetailNN.stl
+
+下料表 / Excel 链：
+  35057 / 0x88F1 -> psexcel -> sub_140605B20
+    -> sub_140602F90 -> StbTable / MaterialTable
+
+额外纠偏：
+  0x8CD2 -> ysteelout
+  不是 psallc
+```
+
+本轮不能过度推断：
+
+- 还不能只凭静态 immediate 直接写死 `36124` 的中文 caption 一定就是 `生成工程图`。
+- 还不能确认 `35057` 和 `36124` 的中文 caption / resource 最终归属。
+- 还不能证明运行时点击 `生成工程图` 的输出目录、覆盖策略和旧插件导入结果。
+
+结论：
+
+```text
+TODO-062 / TODO-063 合并后的当前 static stop point：
+
+工程图 / 输出
+  -> 36124 / 0x8D1C -> psallc -> sub_140600AA0
+  -> 35057 / 0x88F1 -> psexcel -> sub_140605B20
+
+其中：
+  36124 当前更像生成工程图 / Detail 包入口
+  35057 当前更像下料表 / Excel 入口
+```
+
+### 生成工程图 / 下料表命令映射纠偏与 Dialog #274 降级
+
+证据 ID：
+
+```text
+E-IDA-043
+```
+
+关键函数：
+
+```text
+sub_1406AD840
+sub_1406AC4A0
+sub_1406AD9D0
+```
+
+当前判断：
+
+- `sub_1406AD840` 会调用 `CPropertyPage::CPropertyPage(..., 0x112, ...)`。
+- `0x112` 就是 `Dialog #274`。
+- 该函数直接把 vftable 设到：
+
+```text
+Set2Dpage
+```
+
+- 它的 callers 位于一个属性页集合里，该集合同时挂了：
+
+```text
+Set2Dpage
+Set3Dpage
+proofwater
+OptionDisplay
+OptionFactory
+CsetYJK
+```
+
+已确认含义：
+
+- `Dialog #274` 当前只能保守记为 `Set2Dpage` 属性页。
+- 它不再能直接写成“生成工程图设置窗口”。
+
+当前剩余缺口：
+
+```text
+1. 36124 / 35057 的中文 caption / resource 最终归属
+2. 真正“生成工程图”弹窗候选及打开链
+3. 运行时输出目录、覆盖策略和旧插件导入结果
 ```
 
 ### 下料表 Detail / XML writer 聚合链补证
@@ -1174,11 +1334,16 @@ sub_1406382D0:
   stbLevel = sub_140637200(this) -> CString(this + 32)
 ```
 
-和 `E-IDA-019 / E-IDA-020 / E-IDA-021` 的边界：
+和 `E-IDA-019 / E-IDA-042 / E-IDA-043` 的边界：
 
 ```text
-E-IDA-019/020/021 确认 psexcel / 0x8D1C / sub_140605B20 / sub_140602F90
-这条 Excel / 下料命令链。
+E-IDA-019 确认 sub_140602F90 是旧 Excel / 下料表字段写值链。
+
+E-IDA-042 / E-IDA-043 后续又把命令映射纠偏为：
+  35057 / 0x88F1 -> psexcel -> sub_140605B20 -> sub_140602F90
+同时确认：
+  36124 / 0x8D1C -> psallc -> sub_140600AA0
+是 Detail.xml + DetailNN.stl 主写出链。
 
 E-IDA-025 确认 Detail / XML writer 侧的 StbTable / MaterialTable 聚合写出链。
 两者字段重叠，但不能把函数来源混成同一条业务链。

@@ -4,6 +4,21 @@
 
 后续 goal 模式的主线不是“重新设计一个钢筋软件”，而是继续把正式 `app` 往旧图石 1:1 复刻方向推进：Qt6 / OCCT 只替代界面、显示、选择和几何能力，钢筋业务逻辑按 VisualTS / IDA / SFL / Detail 证据复刻。
 
+## 当前执行口径（2026-06-08）
+
+```text
+接头链路现阶段先记录、暂缓。
+
+这不是说接头以后不做，
+而是领导已经明确：现阶段先不用考虑接头。
+
+所以当前 goal 主线：
+  -> 不再把 TODO-050 / TODO-061 或其他接头运行确认节点设为 next
+  -> 只保留已有证据、缺口、采样模板和恢复入口
+  -> 当前 next 继续按 todo.csv 执行非接头主线
+  -> 现在的主线是 TODO-064
+```
+
 ## 可直接粘贴到 Goal 模式的目标
 
 ### 长期 Goal（可直接复制，适合长期执行）
@@ -65,6 +80,7 @@ Detail / 新设计文件格式输出层
 12. 每次完成一个清晰节点都要 commit、打 tag、push，形成可回退时间线。
 13. 涉及代码、测试、构建脚本的节点，在 commit 前必须经过 xhigh 只读 review；修改只能由主流程 agent 完成。
 14. 旧图石如果依赖 USB 狗或其他许可前置，那只属于旧系统运行取证条件；新系统复刻目标不继承 USB 狗 / 网络许可依赖，仍要保持开源、无狗。
+15. 接头链路现阶段只保留证据和恢复入口，不作为当前 next；除非用户明确恢复优先级，否则不要自动回到 TODO-050 / TODO-061 或其他接头运行确认节点。
 ```
 
 CSE v2 Control Contract：
@@ -563,57 +579,54 @@ todo.csv 状态和 46 目标不一致。
 commit / tag / push 状态
 ```
 
-### 短期 Goal（用户现场运行后再复制）
+### 短期 Goal（推荐本轮复制）
 
-目标：只完成 `TODO-050 / 旧图石非空接头线 Others 运行样例采集 P0` 这个短期阶段，不自动进入后续长期开发。
+目标：只完成 `TODO-064 / 生成工程图与下料表中文caption资源绑定及真正生成工程图弹窗候选补证 P1` 这个短期阶段，不自动进入后续长期开发。
 
 当前状态：
 
 ```text
-TODO-050 已进入 blocked_by_user_runtime。
+接头链路现阶段先记录、暂缓：
+  TODO-050 = blocked
+  TODO-061 = pending
+  不再作为当前 next。
 
-原因：
-  用户当前尚未插入 USB 狗，
-  HASP 也尚未安装，
-  agent 不能自动安装驱动、拷贝系统目录或启动旧图石。
-
-所以这一段只在用户现场旧图石可运行、
-并能手工导出 DetailNN 后再复制执行。
+非接头主线已推进到：
+  TODO-062 = done
+  TODO-063 = done
+  TODO-064 = next
 ```
 
-本轮要在 `TODO-049` 已确认旧图石可在 USB 狗 + 本地 HASP 安装条件下进入主界面并打开 `SFL` 的基础上，回到真正的旧运行样例采集：
+本轮只做：
 
 ```text
-VisualTS.NonEmptyJointOthersSample / TODO-050
-  -> 从 E-IDA-028 / E-IDA-029 / E-RUN-004 / GAP-DRAW-002 出发
-  -> 不自动再次启动旧图石
-  -> 由用户手工打开旧图石和目标 SFL
-  -> 做一次最小接头线 / Others 相关操作
-  -> 记录截图、操作步骤、输出的 DetailNN / 相关文件 hash
-  -> 若仍未触发目标节点，记录精确 stop point
-  -> 不实现真实接头线 / Others 几何算法
-  -> 不用 OCCT 或字段骨架直接推断旧业务规则
+VisualTS.GeneratePackageCaptionTrace / TODO-064
+  -> 从 E-IDA-042 / E-IDA-043 / GAP-IDA-005 / GAP-IDA-006 出发
+  -> 只读 IDA MCP，继续追 36124 / 35057 的中文 caption / resource 最终归属
+  -> 只读 IDA MCP，继续缩小真正生成工程图弹窗候选
+  -> 同步更新 03 / 05 / 11 / 17 / 46 / 99 / todo / 实现记录 / build report
+  -> 跑默认 CTest / readiness gate / OCCT 泄漏检查
+  -> 不启动旧图石，不安装 HASP，不改 app 业务代码
+  -> 不实现真实工程图算法，不进入 golden
 ```
 
 目标语义：
 
 ```text
-TODO-049 已确认：
-  - 旧图石启动需要 USB 狗
-  - 插狗后可进入主界面
-  - 插狗后可打开 SFL
-  - 不需要内网 / VPN
-  - 现场仍需要本地 HASP 安装条件
+TODO-063 已纠偏出当前高置信真值：
+  36124 / 0x8D1C -> psallc -> sub_140600AA0
+  35057 / 0x88F1 -> psexcel -> sub_140605B20
+  0x8CD2 -> ysteelout
+  Dialog #274 -> Set2Dpage
 
 当前仍未闭合：
-  - 非空 steeljoint-line / joints / Others / symbolcutIOS 运行样例
-  - 旧 UI 真实触发路径
-  - owning enum / 结构名
-  - 旧插件对复杂字段的真实接受度
+  - 36124 / 35057 的中文 caption / resource 最终归属
+  - 真正生成工程图弹窗候选
+  - 旧图石真实输出目录 / 运行确认 / AutoCAD L2
 
-下一步不是继续围着启动条件打转，
-而是开始采真正的旧运行样例。
-本轮只做 TODO-050，不同时做真实工程图算法、golden 采集、UI 新功能或 AutoCAD L2 通过声明。
+本轮只做 TODO-064，
+不回接头运行链，
+不同时做真实工程图算法、golden 采集、UI 新功能或 AutoCAD L2 通过声明。
 ```
 
 当前已完成前置：
@@ -830,9 +843,21 @@ TODO-061 / Evidence = pending
   -> 当前 gate 已收紧到 hash / basename / 文件头 / Excel 路径口径，但按最新业务指令不再作为当前 next。
   -> 不自动安装 HASP，不自动启动旧图石，不实现真实接头线 / Others 几何算法。
 
-TODO-062 / Evidence = next
-  -> 转到非接头主线：生成工程图命令入口 / Ribbon 绑定静态补证 P0。
-  -> 优先用 IDA MCP / 静态资源闭合 command id、Ribbon 分组、handler stop point。
+TODO-062 / Evidence = done
+  -> 已补 `E-IDA-042 / E-DEV-084`，把“生成工程图”入口收口到可开发 static stop point。
+  -> 已确认 `工程图 / 输出 -> {36124, 35057}`；但 TODO-062 初版里 36124/35057 与 psallc/psexcel 的对应关系写反了，后续已由 TODO-063 纠偏。
+
+TODO-063 / Evidence = done
+  -> 已补 `E-IDA-043 / E-DEV-085`，完成命令映射纠偏：
+     `36124 / 0x8D1C -> psallc -> sub_140600AA0`
+     `35057 / 0x88F1 -> psexcel -> sub_140605B20`
+     `0x8CD2 -> ysteelout`
+  -> `Dialog #274` 已降级为 `Set2Dpage` 属性页，不再直接写成生成工程图设置窗口。
+  -> 当前剩余缺口变成 caption / resource 和真正生成工程图弹窗候选。
+
+TODO-064 / Evidence = next
+  -> 继续非接头主线：生成工程图与下料表中文 caption 资源绑定及真正生成工程图弹窗候选补证 P1。
+  -> 优先用 IDA MCP 收窄 `36124 / 35057` 的中文 caption / resource 最终归属，以及真正的生成工程图弹窗候选。
   -> 不要求旧图石现场运行，不进入 golden，不改 app 业务代码。
 ```
 
@@ -1168,32 +1193,31 @@ TODO-056 验证 = DB6C0 static rebuild core traced, child+88/+108/+112/+116 and 
 当前下一步：
 
 ```text
-TODO-061 / generated node+112 旧图石真实运行截图与 Excel 导出回填 P0
-  -> TODO-060 已完成候选工件排查和最小清单闭环
-  -> 当前已明确 `1.xls` / `screenshot.png` / `visualts_prompt_capture.png`
-     都不是 pane3 或 Excel E/F 的有效运行证据
+TODO-064 / 生成工程图与下料表中文caption资源绑定及真正生成工程图弹窗候选补证 P1
+  -> TODO-062 已把顶层入口收口到 `工程图 / 输出 -> {36124, 35057}`
+  -> TODO-063 已纠偏为：
+     36124 / 0x8D1C -> psallc -> sub_140600AA0
+     35057 / 0x88F1 -> psexcel -> sub_140605B20
+     Dialog #274 -> Set2Dpage
   -> 不自动安装 HASP，不自动启动旧图石
-  -> 下一步只接收真实旧图石截图、真实 Excel 导出、路径和 hash
-  -> 不实现真实接头线 / Others 几何算法，不声明 AutoCAD L2 通过，不进入 golden
+  -> 下一步只继续追中文 caption / resource 和真正生成工程图弹窗候选
+  -> 不实现真实工程图算法，不声明 AutoCAD L2 通过，不进入 golden
 ```
 
 原因：
 
 ```text
-TODO-059 已经把 generated node+112 的静态展示链追到：
-  焊头(个)
-  单下料长(mm)
-  焊接 / 绑扎 / 套筒连接
+TODO-062 已经把“生成工程图”从
+  顶层入口未明
+推进到
+  顶层 Ribbon 入口和内部 writer 主链都已各自收口。
 
-TODO-060 又把当前工作区里的伪候选工件排除了：
-  1.xls                -> 空白工作簿
-  screenshot.png       -> JDK 提示
-  visualts_prompt_capture.png -> 启动阻塞提示
+当前真正剩下的是这两段：
+  36124 / 35057 的中文 caption / resource 最终归属
+  真正“生成工程图”弹窗候选和打开链
 
-当前真正剩下的不是继续猜静态字段名，
-而是拿旧图石真实运行截图和导出文件，
-确认这些静态推断在运行时确实这样呈现。
-golden 采集 TODO-026 暂按用户要求保持 pending。
+这比回到接头运行样例更贴近当前非接头主线。
+golden 采集 TODO-026 仍按用户要求保持 pending。
 ```
 
 ### 执行规则
@@ -1258,19 +1282,19 @@ golden 采集 TODO-026 暂按用户要求保持 pending。
 
 ## CSE v2 Control Contract
 
-- **Primary Setpoint**：下一轮只完成 `TODO-061 / generated node+112 旧图石真实运行截图与 Excel 导出回填 P0`，在 `TODO-060` 已完成候选工件排查的基础上，只收真实 pane3 截图、真实 Excel 导出、路径和 hash，不再重复分析伪候选工件。
-- **Acceptance**：形成 `E-RUN-005`；至少覆盖 1 个有接头对象的状态栏 pane3 截图，1 份下料表 Excel 中 `焊头(个)` / `单下料长(mm)` 的文件或截图，操作步骤、输出路径、hash 或明确只拿到部分样例；默认 CTest、readiness gate、OCCT 泄漏检查通过；文档、追溯矩阵、缺口、46 和 todo 同步更新。
-- **Guardrail Metrics**：不能实现真实接头线 / Others 几何算法；不能在没有运行证据时声明 AutoCAD L2 通过；不能把静态推断直接写成已运行确认；不能改钢筋创建业务；不能迁入父目录 rebar 业务；不能进入 golden 全量采集。
-- **Sampling Plan**：先读 `todo.csv / 11 / 34 / 46 / 95 / 96 / 99`，确认 `TODO-060` 已排除当前伪候选工件，再只接收真实运行截图和真实导出文件；若用户现场条件仍不满足，则记录缺的就是运行样例本身，而不是继续扩写静态推断；最后运行默认 CTest、readiness gate 和 OCCT 泄漏扫描，证明本轮没有破坏工程基线。
-- **Known Delays**：运行确认强依赖用户现场 USB 狗 + HASP 条件；即使能打开旧图石，也可能还要人工找到具体接头对象和下料表导出路径；用户也可能只回填部分截图。
-- **Recovery Target**：如果现场条件仍不满足或只拿到部分样例，把缺失项、已拿到的截图/文件、剩余未确认字段和后续人工动作写入 `99` 与 build report，不继续猜运行结果，不堆算法实现。
-- **Rollback Trigger**：无证据实现接头线 / Others / 工程图算法；把静态展示链当成运行确认；无运行证据声明 L2 通过；让 `domain/rebar` 泄漏 OCCT/AIS；测试或 gate 失败仍继续堆功能。
+- **Primary Setpoint**：下一轮只完成 `TODO-064 / 生成工程图与下料表中文caption资源绑定及真正生成工程图弹窗候选补证 P1`，在 `TODO-062 / TODO-063` 已把顶层命令组和内部命令映射纠偏的基础上，只继续闭合 `36124 / 35057` 的中文 caption / resource 最终归属，以及真正生成工程图弹窗候选。
+- **Acceptance**：形成新的 IDA 证据和实现记录；至少把 `36124 / 35057` 其中一个的 caption / resource 最终归属继续推进到更窄的 static stop point，并把真正生成工程图弹窗候选缩小到更可开发的范围；默认 CTest、readiness gate、OCCT 泄漏检查通过；文档、追溯矩阵、缺口、46 和 todo 同步更新。
+- **Guardrail Metrics**：不能把 `36124` 或 `35057` 的中文 caption 在无证据时写死；不能把 `Dialog #274` 再升回生成工程图设置窗口；不能实现真实工程图算法；不能在没有运行证据时声明 AutoCAD L2 通过；不能改钢筋创建业务；不能迁入父目录 rebar 业务；不能进入 golden。
+- **Sampling Plan**：先读 `todo.csv / 03 / 05 / 11 / 17 / 46 / 99 / 100 / 101`，确认 `TODO-062 / TODO-063` 已收口的静态边界；然后只读 IDA 继续追 `36124`、`35057`、caption/resource、message map / resource / command table 关系；最后运行默认 CTest、readiness gate 和 OCCT 泄漏检查，证明本轮没有破坏工程基线。
+- **Known Delays**：旧 `VisualTS` 的 caption / resource 和弹窗绑定可能分散在资源、消息映射和间接表里；静态 immediate 未必一次就能闭合完整链路。
+- **Recovery Target**：如果这轮仍不能完全闭合，就把剩余未确认段精确写回 `99` 与 build report，保持 static stop point 比本轮更窄，而不是退回到“按钮谁是谁都不确定”。
+- **Rollback Trigger**：无证据把 `36124` 或 `35057` 的 caption 写死；无证据把 `Dialog #274` 再写成生成工程图设置；实现真实工程图算法；让 `domain/rebar` 泄漏 OCCT/AIS；测试或 gate 失败仍继续堆功能。
 - **Constraints**：不使用 ACIS / HOOPS / Codejock 等商业库；新系统不引入 USB 狗 / 网络许可依赖；旧逻辑不确定时优先查 IDA MCP 或旧图石运行确认；xhigh 只读，修改由主流程 agent 完成；不自动安装 HASP，不自动再次启动旧图石。
-- **Boundary**：下一轮只允许运行样例回填、文档、追溯、缺口、46/todo 必要更新；禁止实现真实 OCCT HLR/section/hidden-line/steeljoint-line/Others 算法、禁止修改 UI 新功能、钢筋创建业务、无证据 AutoCAD L2 结论和 golden。
-- **Coupling Notes**：`drawing/export` 是 Detail 包输出边界；TODO-061 只验证 `generated node+112` 的运行期展示 / 导出表现，不关闭旧插件容忍度、AutoCAD L2、隐藏线 / 填充线算法或完整工程图缺口。
-- **Approximation Validity**：TODO-061 的目标是真实运行样例回填，不是完整接头线算法、完整工程图或 golden；即使采到状态栏和 Excel 样例，也不代表真实接头线 / Others 几何算法已经闭合。
-- **Actuator Budget**：下一轮只推进 `TODO-061`。完成后停止复盘，不自动进入真实算法实现、隐藏线、填充线、点筋、FaceEdge 或 golden。
-- **Risks**：用户现场条件可能暂时仍不满足；即使能运行，也可能只能拿到部分截图或导出文件，导致最终调试名和完整字段映射仍需继续保留 GAP。
+- **Boundary**：下一轮只允许补 `03 / 11 / 17 / 46 / 99 / todo.csv`、对应实现记录和 build report；禁止实现真实 OCCT HLR/section/hidden-line/steeljoint-line/Others 算法、禁止修改 UI 新功能、钢筋创建业务、无证据 AutoCAD L2 结论和 golden。
+- **Coupling Notes**：`drawing/export` 是 Detail 包输出边界；TODO-064 只验证“生成工程图 / 下料表”两个旧 command 的 UI 命名与弹窗候选，不关闭旧插件容忍度、AutoCAD L2、隐藏线 / 填充线算法或完整工程图缺口。
+- **Approximation Validity**：TODO-064 的目标是静态闭合 caption/resource 和弹窗候选，不是完整工程图算法、真实运行确认或 golden；即使静态链更完整，也不代表旧图石运行输出和新系统结果已经 1:1。
+- **Actuator Budget**：下一轮只推进 `TODO-064`。完成后停止复盘，不自动进入真实算法实现、隐藏线、填充线、点筋、FaceEdge 或 golden。
+- **Risks**：caption 可能来自资源、外部 UI 数据或运行期构造；真正生成工程图弹窗也可能不是单一 Dialog；最终仍可能需要旧图石运行确认来关掉最后一层 gap。
 ## Todo CSV 使用方式
 
 `todo.csv` 是后续执行看板。建议每次 goal 模式只拿 `status=next` 或最高优先级 `pending` 的任务推进。
@@ -1295,16 +1319,19 @@ golden 采集 TODO-026 暂按用户要求保持 pending。
 下一步优先执行：
 
 ```text
-TODO-061 / generated node+112 旧图石真实运行截图与 Excel 导出回填 P0
-  -> TODO-060 已完成候选工件排查和最小清单闭环
-  -> 现有 `1.xls` / `screenshot.png` / `visualts_prompt_capture.png`
-     都已排除为无效运行证据
+TODO-064 / 生成工程图与下料表中文caption资源绑定及真正生成工程图弹窗候选补证 P1
+  -> TODO-062 已完成顶层入口 static stop point：
+     工程图 / 输出 -> {36124, 35057}
+  -> TODO-063 已纠偏为：
+     36124 / 0x8D1C -> psallc -> sub_140600AA0
+     35057 / 0x88F1 -> psexcel -> sub_140605B20
+     Dialog #274 -> Set2Dpage
+  -> 下一步只继续追中文 caption / resource 和真正生成工程图弹窗候选
   -> 不自动安装 HASP
   -> 不自动启动旧图石
-  -> 优先收真实截图、真实导出文件、路径和 hash
-  -> 不实现真实接头线 / Others 几何算法，
-     不声明 AutoCAD L2 通过，不进入 golden
+  -> 不实现真实工程图算法
+  -> 不声明 AutoCAD L2 通过，不进入 golden
 ```
 
-原因很简单：TODO-059 已经把 `generated node+112` 的静态展示链收口到 `焊头(个)`、`单下料长(mm)` 和 `焊接 / 绑扎 / 套筒连接`。TODO-060 又已经把当前目录里的伪候选工件排除掉了。下一步最值钱的是拿旧图石真实运行截图和真实导出文件验证这些静态推断，而不是继续空转猜字段名。
+原因很简单：TODO-063 已经把“按钮和内部链路认反了”的问题纠正了。现在最值钱的不是回头做接头运行样例，而是把剩下那层 UI 真名和真正弹窗候选补窄。
 TODO-026 golden 采集暂按用户要求保持 pending。

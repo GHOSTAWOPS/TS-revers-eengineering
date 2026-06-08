@@ -689,14 +689,14 @@ project.tsrebar
     {
       "id": "E-IDA-020",
       "type": "IDA",
-      "summary": "下料表内部命令绑定 psexcel -> 0x8D1C -> sub_140605B20，Ribbon UI 和运行输出仍需补强",
+      "summary": "sub_140605B20 -> sub_140602F90 构成旧下料表字段写值链；具体 command id / caption 归属已由后续 E-IDA-043 继续纠偏",
       "sourceDoc": "03_IDA命令证据.md",
       "confidence": "C2"
     },
     {
       "id": "E-IDA-021",
       "type": "IDA",
-      "summary": "Ribbon 构造函数确认 工程图 / 输出 分组加入 0x8D1C；结合 E-IDA-020 可追到 psexcel / sub_140605B20，caption、Dialog 和运行输出仍需确认",
+      "summary": "Ribbon 构造函数确认 工程图 / 输出 分组存在旧 command 入口；具体 `{36124, 35057}` 和命令映射已由后续 E-IDA-042 / E-IDA-043 收紧，caption、Dialog 和运行输出仍需确认",
       "sourceDoc": "03_IDA命令证据.md",
       "confidence": "C2"
     },
