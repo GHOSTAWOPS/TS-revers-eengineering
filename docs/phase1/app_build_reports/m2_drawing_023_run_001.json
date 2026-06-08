@@ -1,0 +1,108 @@
+{
+  "todoId": "TODO-054",
+  "phase": "M2-Drawing-023",
+  "evidenceId": "E-DEV-076",
+  "decision": "joint-handler-object-filter-static-classification",
+  "algorithmImplemented": false,
+  "autocadL2": "not_run",
+  "oldRuntimeAutomaticallyLaunched": false,
+  "haspInstalledAutomatically": false,
+  "systemDirectoryModifiedAutomatically": false,
+  "appBusinessCodeModified": false,
+  "xhighReview": "not_required_docs_only",
+  "idaSupplement": {
+    "evidenceId": "E-IDA-036",
+    "database": "visualts_i64_todo051",
+    "module": "VisualTS.exe",
+    "hexraysReady": true,
+    "handlers": {
+      "barjointnew": "sub_1405DFAA0",
+      "barjointclear": "sub_1405DF710",
+      "barjointmove": "sub_1405DFEF0",
+      "barjointrev": "sub_1405E02D0",
+      "groupjointnew": "sub_1405F0060",
+      "groupjointclear": "sub_1405EFCC0",
+      "groupjointrev": "sub_1405F0850",
+      "groupjointmove": "sub_1405F0430",
+      "featjointnew": "sub_1405EF140",
+      "featjointclear": "sub_1405EEDA0",
+      "segjointnew": "sub_1405D94C0",
+      "segjointclear": "sub_1405D9450",
+      "goujianjointnew": "sub_1405EF8D0",
+      "goujianjointclear": "sub_1405EF510"
+    },
+    "objectFilters": {
+      "barjoint": {
+        "source": "selectionItem+13",
+        "predicate": "sub_1405E0E70",
+        "typeId": "dword_140993E74"
+      },
+      "groupjoint": {
+        "source": "selectionItem+13",
+        "predicate": "sub_1405F17C0",
+        "typeId": "dword_140993EC8"
+      },
+      "segjoint": {
+        "source": "selectionItem+13",
+        "predicate": "sub_1405DA020",
+        "typeId": "dword_140993E1C"
+      },
+      "featjoint": {
+        "source": "selectionItem+13",
+        "predicate": "sub_14045A7F0",
+        "typeId": "dword_1409931D0"
+      },
+      "goujianjoint": {
+        "source": "selectionItem",
+        "predicate": "sub_1405C6F90(item)==4",
+        "itemTypeField": "item+80",
+        "childChainHead": "item+120",
+        "childObjectField": "node+104",
+        "childNextField": "node+128"
+      }
+    },
+    "barjointFields": {
+      "objectPlus88": "geometry/display chain head",
+      "objectPlus96": "odd/even start offset selector",
+      "objectPlus108": "period or JointRuler value written by sub_1405E1D50",
+      "objectPlus112": "normalized joint position written by sub_1405E1CC0",
+      "objectPlus116": "reverse flag written by sub_1405E1D20"
+    },
+    "stopPoints": [
+      "groupjoint action functions need field-level tracing",
+      "feat/goujian end_indexed_polygon business naming not closed",
+      "goujian item+120/node+104 owning structure not named",
+      "UI caption/context menu binding not closed",
+      "runtime non-empty steeljoint-line/Others sample not collected",
+      "AutoCAD L2 not run"
+    ]
+  },
+  "sampleCollection": {
+    "nonEmptySteeljointLineCollected": false,
+    "nonEmptyOthersSymbolcutIOSCollected": false,
+    "requiresUserManualRuntime": true
+  },
+  "verification": {
+    "todoCsvParse": "pass; next=TODO-055; TODO-054=done",
+    "gitDiffCheck": "pass",
+    "readinessGateStrict": "pass; M1-Formal-Ready; 84/84",
+    "boundaryScan": {
+      "domainRebar": "pass",
+      "drawing": "pass",
+      "project": "pass"
+    },
+    "ctest": "pass; 18/18"
+  },
+  "next": {
+    "todoId": "TODO-055",
+    "task": "接头 handler 动作函数字段语义深追 P0"
+  },
+  "idaMcpHealth": {
+    "status": "ok",
+    "module": "VisualTS.exe",
+    "database": "visualts_i64_todo051",
+    "autoAnalysisReady": true,
+    "hexraysReady": true,
+    "stringsCacheSize": 16320
+  }
+}

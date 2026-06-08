@@ -2681,3 +2681,300 @@ LoadMenuW 的 0xAD / 0xF8 菜单资源路径已确认。
 ```text
 TODO-054 / 接头 handler 业务对象筛选链静态分类 P0
 ```
+
+
+## TODO-054 接头 handler 业务对象筛选链静态分类
+
+Evidence ID：
+
+- `E-IDA-036`
+
+本轮使用 IDA MCP 会话：
+
+```text
+database = visualts_i64_todo051
+input = C:\Users\ghost\Desktop\reverse_engineering\【03】图石软件\VisualTS.exe.i64
+module = VisualTS.exe
+hexrays_ready = true
+strings_cache_size = 16320
+```
+
+本轮目标是在 `TODO-053` 已把 UI / context menu / dispatch 静态路径追到 stop point 后，
+继续确认接头 handler 内部到底筛选什么对象、读什么参数、失败口径是什么。
+
+### handler 表
+
+```text
+barjointnew       -> sub_1405DFAA0
+barjointclear     -> sub_1405DF710
+barjointmove      -> sub_1405DFEF0
+barjointrev       -> sub_1405E02D0
+
+groupjointnew     -> sub_1405F0060
+groupjointclear   -> sub_1405EFCC0
+groupjointrev     -> sub_1405F0850
+groupjointmove    -> sub_1405F0430
+
+featjointnew      -> sub_1405EF140
+featjointclear    -> sub_1405EEDA0
+
+segjointnew       -> sub_1405D94C0
+segjointclear     -> sub_1405D9450
+
+goujianjointnew   -> sub_1405EF8D0
+goujianjointclear -> sub_1405EF510
+```
+
+### 共同入口和失败口径
+
+多数 handler 共同路径：
+
+```text
+sub_1406ED3C0(...) -> 当前 selection/context
+*(ctx + 8)          -> ENTITY_LIST
+ENTITY_LIST::init / next / count / operator[]
+sub_1405C6820(item) -> selection item 有效性过滤
+sub_14054C720()     -> 上下文可用性检查，部分批量 handler 使用
+sub_14054C760(...)  -> view / ACIS 操作上下文
+sub_1406B8140(...)  -> view/update/mark 准备
+ACISExceptionCheck("API")
+update_from_bb()
+view vtable +456(view, obj, 1)
+```
+
+失败 / 空选择口径：
+
+```text
+ctx null -> return 0
+ctx + 8 ENTITY_LIST null -> return 0
+过滤后对象数 < 1 -> return 0
+view/context null -> return 0
+单选命令 count != 1 -> return 0
+对象类型 predicate 失败 -> return 0 或跳过
+```
+
+### 类型过滤函数
+
+四类业务对象 predicate 都是：
+
+```text
+obj && obj->vfunc(+24)(obj, 2) == type_id
+```
+
+已确认：
+
+```text
+sub_1405E0E70(obj) -> obj type == dword_140993E74
+sub_1405F17C0(obj) -> obj type == dword_140993EC8
+sub_1405DA020(obj) -> obj type == dword_140993E1C
+sub_14045A7F0(obj) -> obj type == dword_1409931D0
+sub_1405C6F90(item) -> *(uint32_t *)(item + 80)
+```
+
+### barjoint*
+
+对象来源：
+
+```text
+selection item -> *((QWORD*)item + 13)
+```
+
+类型过滤：
+
+```text
+sub_1405E0E70(obj)
+```
+
+关键字段：
+
+```text
+obj + 88  -> 几何 / 显示链头，sub_1405DB6C0 / sub_1405DBE20 遍历。
+obj + 96  -> 奇偶控制初始接头位置偏移。
+obj + 108 -> sub_1405E1D50 写入，接头周期 / JointRuler 相关字段。
+obj + 112 -> sub_1405E1CC0 写入，归一化后的接头位置。
+obj + 116 -> sub_1405E1D20 写入，reverse flag。
+```
+
+动作分类：
+
+```text
+barjointnew:
+  dword_140994AB8 >= 1
+  JointRuler/1000 < sub_1405DC870(obj,0,0) 时写 obj+108 / +112 / +116，并 sub_1405DB6C0。
+
+barjointclear:
+  对每个筛选对象 sub_1405E1D20(obj,0) + sub_1405DBE20(obj)。
+
+barjointmove:
+  要求 selection count == 1 且 sub_1405DC6C0(obj) >= 1。
+  初值 sub_1405DC6E0(obj)/1000.0，经 sub_14058B8D0 输入后按 obj+108 周期归一化。
+  写 obj+112，再 sub_1405DB6C0。
+
+barjointrev:
+  要求 selection count == 1 且 sub_1405DC6C0(obj) >= 1。
+  读取 obj+116 取反，写回后 sub_1405DB6C0。
+```
+
+### groupjoint*
+
+对象来源：
+
+```text
+selection item -> *((QWORD*)item + 13)
+```
+
+类型过滤：
+
+```text
+sub_1405F17C0(obj)
+```
+
+动作分类：
+
+```text
+groupjointnew   -> sub_1405E9640(obj) + view+456
+groupjointclear -> sub_1405E7960(obj) + view+456
+groupjointrev   -> sub_1405ED6C0(obj) + view+456
+groupjointmove  -> 首个对象从 *(obj+80) 取 sub_1405DC6E0 初值，经 sub_14058B8D0 输入后
+                   对所有对象调用 sub_1405EBA30(obj, distance) + view+456
+```
+
+继续追踪重点：
+
+```text
+obj + 80
+sub_1405E9640
+sub_1405E7960
+sub_1405ED6C0
+sub_1405EBA30
+```
+
+### segjoint*
+
+对象来源：
+
+```text
+selection item -> *((QWORD*)item + 13)
+```
+
+类型过滤：
+
+```text
+sub_1405DA020(obj)
+```
+
+动作分类：
+
+```text
+segjointnew:
+  只取 selection 第一个对象。
+  operator new(0x148) -> sub_14045D580(dialog,obj,0)
+  vtable +728(dialog, 428, 0)
+  CWnd::ShowWindow(dialog, 5)
+
+segjointclear:
+  只取 selection 第一个对象。
+  sub_1405CEB60(obj)
+```
+
+`segjointnew` 当前可确认是 Dialog #428 `创建段组接头` 参数入口，不是立即生成接头线。
+
+### featjoint*
+
+对象来源：
+
+```text
+selection item -> *((QWORD*)item + 13)
+```
+
+类型过滤：
+
+```text
+sub_14045A7F0(obj)
+```
+
+动作分类：
+
+```text
+featjointnew   -> direct_render_mesh_manager::end_indexed_polygon(obj) + view+456
+featjointclear -> sub_140446AE0(obj) + view+456
+```
+
+边界：
+
+```text
+Hex-Rays 当前把对象显示为 direct_render_mesh_manager*。
+这只能说明动作调用链，不能把 owning 业务结构名写死。
+```
+
+### goujianjoint*
+
+对象来源特殊：
+
+```text
+直接使用 selection item。
+不取 *((QWORD*)item + 13)。
+```
+
+筛选：
+
+```text
+sub_1405C6820(item)
+sub_1405C6F90(item) == 4
+sub_1405C6F90(item) = *(uint32_t *)(item + 80)
+```
+
+内部链：
+
+```text
+for (node = *(QWORD *)(item + 120); node; node = *(QWORD *)(node + 128)) {
+    obj = *(QWORD *)(node + 104);
+}
+```
+
+动作分类：
+
+```text
+goujianjointnew:
+  对 node+104 对象调用 direct_render_mesh_manager::end_indexed_polygon(obj) + view+456。
+
+goujianjointclear:
+  对 node+104 对象调用 sub_140446AE0(obj) + view+456。
+```
+
+架构影响：
+
+```text
+后续新系统选择适配层需要支持“选中构件 item -> 展开内部对象链 -> 批量作用子对象”的语义。
+不能把 goujianjoint 简化为普通钢筋对象直接选择。
+```
+
+### 本轮 stop point
+
+已闭合：
+
+```text
+五组 handler 的对象来源和类型过滤。
+barjoint 的主要写回字段 offset 108 / 112 / 116。
+groupjointmove 的 obj+80 子对象线索。
+segjointnew 到 Dialog #428 的参数入口。
+goujianjoint 的 selection item + 内部链表特殊路径。
+```
+
+仍未闭合：
+
+```text
+groupjoint 动作函数的字段语义。
+feat/goujian 路径中 end_indexed_polygon / sub_140446AE0 的准确业务命名。
+goujian item+120 / node+104 / node+128 的 owning 结构名。
+旧 UI caption / 右键菜单项绑定。
+旧图石非空 steeljoint-line / Others 运行样例。
+AutoCAD L2 接受度。
+真实接头线 / Others 几何算法。
+```
+
+后续建议：
+
+```text
+TODO-055 / 接头 handler 动作函数字段语义深追 P0
+```
