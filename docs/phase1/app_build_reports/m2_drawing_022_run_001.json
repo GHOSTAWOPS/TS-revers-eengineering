@@ -1,0 +1,111 @@
+{
+  "todoId": "TODO-053",
+  "phase": "M2-Drawing-022",
+  "evidenceId": "E-DEV-075",
+  "decision": "context-menu-command-dispatch-static-stop-point",
+  "algorithmImplemented": false,
+  "autocadL2": "not_run",
+  "oldRuntimeAutomaticallyLaunched": false,
+  "driverInstalledAutomatically": false,
+  "systemDirectoryModifiedAutomatically": false,
+  "xhighReview": "not_required_docs_only",
+  "idaSupplement": {
+    "evidenceId": "E-IDA-035",
+    "database": "visualts_i64_todo051",
+    "hexraysReady": true,
+    "dynamicPopupConstructors": [
+      "sub_1405C2EF0",
+      "sub_1406BA690"
+    ],
+    "loadMenuFunctions": [
+      {
+        "function": "sub_1406B1A00",
+        "menuResourceId": "0xAD",
+        "knownJointIdsPresent": false
+      },
+      {
+        "function": "sub_1407072E0",
+        "menuResourceId": "0xF8",
+        "knownJointIdsPresent": false
+      }
+    ],
+    "jointCommandIds": {
+      "barjointnew": 36046,
+      "barjointclear": 36047,
+      "barjointmove": 36048,
+      "barjointrev": 36049,
+      "groupjointnew": 36061,
+      "groupjointclear": 36062,
+      "groupjointrev": 36063,
+      "groupjointmove": 36064,
+      "goujianjointnew": 36057,
+      "goujianjointclear": 36058,
+      "segjointnew": 36241,
+      "segjointclear": 36242,
+      "featjointnew": 36055,
+      "featjointclear": 36056
+    },
+    "knownJointImmediateMatchesGlobalCode": false,
+    "neighborCommandId36060Matches": [
+      "0x1406f4aa8",
+      "0x1406f5f6b"
+    ],
+    "neighborCommandId36060ClassifiedAsJoint": false,
+    "menuResourceScan": {
+      "visualTsExe": "C:\\Users\\ghost\\Desktop\\reverse_engineering\\【03】图石软件\\VisualTS.exe",
+      "menuResourceCount": 15,
+      "menuResourceIds": [
+        "0x7e",
+        "0x7f",
+        "0x95",
+        "0x96",
+        "0x97",
+        "0xa6",
+        "0xa8",
+        "0xa9",
+        "0xad",
+        "0xae",
+        "0xbc",
+        "0xbd",
+        "0xf8",
+        "0x1ae",
+        "0x3f7"
+      ],
+      "menu0xADKnownJointIdsPresent": false,
+      "menu0xF8KnownJointIdsPresent": false,
+      "allMenuKnownJointHitCount": 0
+    },
+    "handlerTableDirectXrefsClosed": false,
+    "pdataXrefsTreatedAsDispatchEvidence": false,
+    "uiChineseCaptionClosed": false,
+    "contextMenuBindingClosed": false
+  },
+  "sampleCollection": {
+    "nonEmptySteeljointLineCollected": false,
+    "nonEmptyOthersSymbolcutIOSCollected": false,
+    "requiresUserManualRuntime": true
+  },
+  "verification": {
+    "todoCsvParse": "pass; next=TODO-054; TODO-053=done",
+    "gitDiffCheck": "pass",
+    "readinessGateStrict": "pass; M1-Formal-Ready; 84/84",
+    "boundaryScan": {
+      "domainRebar": "pass",
+      "drawing": "pass",
+      "project": "pass"
+    },
+    "ctest": "pass; 18/18"
+  },
+  "next": {
+    "todoId": "TODO-054",
+    "task": "接头 handler 业务对象筛选链静态分类 P0"
+  },
+  "idaMcpHealth": {
+    "status": "ok",
+    "module": "VisualTS.exe",
+    "database": "visualts_i64_todo051",
+    "autoAnalysisReady": true,
+    "hexraysReady": true,
+    "stringsCacheSize": 16320
+  }
+}

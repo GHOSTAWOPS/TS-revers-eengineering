@@ -2471,3 +2471,213 @@ Dialog 字段证明旧程序存在接头参数界面。
 - 不能声明真实接头线 / Others 几何算法已实现。
 - 不能声明 AutoCAD L2 已通过。
 ```
+
+
+## TODO-053 接头 context menu / command dispatch 静态深追
+
+Evidence ID：
+
+- `E-IDA-035`
+
+本轮使用 IDA MCP 会话：
+
+```text
+database = visualts_i64_todo051
+input = C:\Users\ghost\Desktop\reverse_engineering\【03】图石软件\VisualTS.exe.i64
+hexrays_ready = true
+```
+
+本轮目标是在 `TODO-052` 已确认接头命令 ID 未直接挂入
+`sub_1406F37B0` Ribbon 构造路径后，继续静态查右键 / 对象上下文菜单 /
+command dispatch / menu resource 路径。
+
+### 已知接头 command id immediate 搜索
+
+继续检查以下 ID：
+
+```text
+0x8CCE / 36046 -> barjointnew
+0x8CCF / 36047 -> barjointclear
+0x8CD0 / 36048 -> barjointmove
+0x8CD1 / 36049 -> barjointrev
+
+0x8CDD / 36061 -> groupjointnew
+0x8CDE / 36062 -> groupjointclear
+0x8CDF / 36063 -> groupjointrev
+0x8CE0 / 36064 -> groupjointmove
+
+0x8CD9 / 36057 -> goujianjointnew
+0x8CDA / 36058 -> goujianjointclear
+
+0x8D91 / 36241 -> segjointnew
+0x8D92 / 36242 -> segjointclear
+
+0x8CD7 / 36055 -> featjointnew
+0x8CD8 / 36056 -> featjointclear
+```
+
+结果：
+
+```text
+no immediate matches
+```
+
+邻近 ID `0x8CDC / 36060` 有命中：
+
+```text
+0x1406f4aa8 -> sub_1406F37B0
+0x1406f5f6b -> sub_1406F4EC0
+```
+
+但 `0x8CDC` 当前不在已确认接头 command id 表中，只能作为邻近 / 可疑命令值记录，
+不能归类为接头 UI 入口证据。
+
+### popup / context menu 调用面
+
+菜单 API xref：
+
+```text
+CreatePopupMenu -> sub_1405C2EF0, sub_1406BA690
+AppendMenuA     -> sub_1405C2EF0, sub_1406BA690
+TrackPopupMenu  -> sub_1405C2EF0, sub_1406B1A00, sub_1406BA690, sub_1407072E0
+LoadMenuW       -> sub_1406B1A00, sub_1407072E0
+```
+
+这证明旧图石有动态 popup / context menu 机制。
+
+### sub_1406BA690
+
+`sub_1406BA690` 当前确认：
+
+```text
+ClientToScreen
+CreatePopupMenu
+AppendMenuA
+CMenu::TrackPopupMenu
+按 FACE / EDGE / VERTEX 等选择状态构造动态菜单
+会递归调用 sub_1405C2EF0
+```
+
+当前 decompile 可见大量菜单 ID，包括：
+
+```text
+0x8927, 0xE120,
+0x8CAC, 0x8AAD, 0x8AAF,
+0x8D38, 0x8928, 0x8CE1, 0x8CA4, 0x8DD9,
+0x8D40, 0x8D41, 0x8D42, 0x8D43, 0x8E2F, 0x8E30,
+0x8CED, 0x8D48, 0x8D49, 0x8DDC, 0x8DDE, 0x8DDB,
+0x8E27, 0x8E26, 0x8D22, 0x8D23, 36132, 0x8E32,
+36164, 0x8DD4, 0x8D36, 0x8DDD, 0x8DFE, 0x8DDA,
+0x8DD3, 0x8DDF, 36343, 36150, 0x8D46, 36140
+```
+
+但当前未看到已知接头 command id。
+
+保守结论：
+
+```text
+sub_1406BA690 证明旧 VisualTS 有几何选择相关动态 context menu，
+但它不能闭合接头命令 UI 入口。
+```
+
+### sub_1405C2EF0
+
+`sub_1405C2EF0` 当前确认：
+
+```text
+函数大小约 8651 bytes
+switch 约 155 cases
+cyclomatic complexity = 171
+使用 CreatePopupMenu / AppendMenuA / CMenu::TrackPopupMenu
+由 sub_1406BA690 调用
+```
+
+它是另一个关键动态菜单构造函数。
+
+但全局 immediate 搜索仍显示：
+
+```text
+已知接头 command id 没有普通 immediate 命中。
+```
+
+因此当前不能声明 `sub_1405C2EF0` 已闭合接头菜单入口。
+
+### LoadMenuW 菜单资源
+
+两个 LoadMenuW 路径：
+
+```text
+sub_1406B1A00 -> LoadMenuW(resource 0xAD)
+sub_1407072E0 -> LoadMenuW(resource 0xF8)
+```
+
+只读解析 `VisualTS.exe` 的 MENU 资源：
+
+```text
+menu_resource_count = 15
+menu_resource_names =
+  0x7e, 0x7f, 0x95, 0x96, 0x97,
+  0xa6, 0xa8, 0xa9, 0xad, 0xae,
+  0xbc, 0xbd, 0xf8, 0x1ae, 0x3f7
+```
+
+资源 `0xAD`：
+
+```text
+known joint ids = none
+```
+
+资源 `0xF8`：
+
+```text
+known joint ids = none
+```
+
+全量 MENU 资源：
+
+```text
+all_menu_joint_hits_count = 0
+```
+
+### handler 表 / .pdata 纠偏
+
+本轮继续确认：
+
+```text
+0x14095ae.. = 真实 .data handler 表
+0x140a0.... = .pdata unwind metadata
+```
+
+`.pdata` 不是业务调度表，不能作为 UI dispatch 证据。
+
+### TODO-053 stop point
+
+当前最稳妥结论：
+
+```text
+接头内部 command id / handler 表已确认。
+旧图石动态 context menu 机制已确认。
+sub_1406BA690 / sub_1405C2EF0 是关键 popup/menu 构造路径。
+LoadMenuW 的 0xAD / 0xF8 菜单资源路径已确认。
+全量 MENU 资源没有已知接头 command id。
+已知接头 command id 没有普通 immediate 命中。
+旧 UI caption / 右键菜单项 / command dispatch 绑定仍未闭合。
+```
+
+本轮不能过度推断：
+
+```text
+- 不能声明旧 UI caption 已闭合。
+- 不能声明旧 UI 没有接头入口。
+- 不能把 .pdata xref 当 command dispatch 证据。
+- 不能把邻近 ID 0x8CDC 当接头证据。
+- 不能声明非空 steeljoint-line / Others 运行样例已采到。
+- 不能声明真实接头线 / Others 几何算法已实现。
+- 不能声明 AutoCAD L2 已通过。
+```
+
+后续建议：
+
+```text
+TODO-054 / 接头 handler 业务对象筛选链静态分类 P0
+```
