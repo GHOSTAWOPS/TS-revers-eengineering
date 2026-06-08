@@ -1,0 +1,74 @@
+{
+  "todoId": "TODO-051",
+  "phase": "M2-Drawing-020",
+  "evidenceId": "E-DEV-073",
+  "decision": "static-producer-chain-traced",
+  "algorithmImplemented": false,
+  "autocadL2": "not_run",
+  "oldRuntimeAutomaticallyLaunched": false,
+  "driverInstalledAutomatically": false,
+  "systemDirectoryModifiedAutomatically": false,
+  "idaSupplement": {
+    "evidenceId": "E-IDA-033",
+    "database": "visualts_i64_todo051",
+    "hexraysReady": true,
+    "writer": "sub_14061F970",
+    "writerHelper": "sub_14053A3F0",
+    "producer": "sub_14060A810",
+    "producerCaller": "sub_14060C940",
+    "viewportConstructor": "sub_14060E740",
+    "producerChain": [
+      "sub_14060C940",
+      "sub_14060A810",
+      "HVIEWPORT+840/+848",
+      "sub_14061F970",
+      "sub_14053A3F0",
+      "Others/symbolcutIOS"
+    ],
+    "producerOffsets": {
+      "listSentinel": "+840",
+      "countOrNonEmptyMarker": "+848",
+      "nodeCode": "+16",
+      "nodeCenter": "+24"
+    },
+    "distanceThreshold": 0.001,
+    "sourceFileString": "e:\\tushi3d\\dam\\yxj\\yxt.cpp",
+    "chineseCaptionDirectHit": false
+  },
+  "sampleCollection": {
+    "nonEmptySteeljointLineCollected": false,
+    "nonEmptyOthersSymbolcutIOSCollected": false,
+    "requiresUserManualRuntime": true
+  },
+  "verification": {
+    "todoCsvParse": "pass",
+    "nextTodo": "TODO-052",
+    "blockedTodos": [
+      "TODO-050"
+    ],
+    "gitDiffCheck": "pass_with_line_ending_warnings_only",
+    "readinessGateStrict": {
+      "decision": "M1-Formal-Ready",
+      "passCount": 84,
+      "checkCount": 84,
+      "errorCount": 0,
+      "warningCount": 0
+    },
+    "boundaryScan": {
+      "domainRebar": "pass",
+      "drawing": "pass",
+      "project": "pass"
+    },
+    "ctest": {
+      "passed": 18,
+      "failed": 0,
+      "total": 18,
+      "totalTimeSeconds": 161.94
+    }
+  },
+  "next": {
+    "todoId": "TODO-052",
+    "task": "接头 UI caption / Ribbon 绑定静态资源补证 P0"
+  },
+  "xhighReview": "not_required_docs_only"
+}

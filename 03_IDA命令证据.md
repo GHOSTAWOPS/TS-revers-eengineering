@@ -2095,11 +2095,192 @@ no direct string hit
 - 不能据此实现真实接头线 / Others 几何算法。
 ```
 
+## TODO-051 Others / symbolcutIOS producer 与接头 UI 触发静态补证
+
+Evidence ID：
+
+- `E-IDA-033`
+
+本轮使用 IDA MCP 会话：
+
+```text
+database = visualts_i64_todo051
+input = C:\Users\ghost\Desktop\reverse_engineering\【03】图石软件\VisualTS.exe.i64
+hexrays_ready = true
+```
+
+本轮目标不是实现接头线算法，也不是启动旧图石采样，
+而是在 `TODO-050` 受用户现场运行条件阻塞时，
+继续静态缩小 `Others / symbolcutIOS` producer 缺口。
+
+### writer 仍是 sub_14061F970
+
+`sub_14061F970` 当前确认：
+
+```text
+callers:
+  sub_140600AA0
+  sub_140621470
+  sub_140625760
+
+callee:
+  sub_14053A3F0
+```
+
+已有证据确认 `sub_14053A3F0` 写：
+
+```text
+SymbolCutIOS%ld
+center_x
+center_y
+center_z
+code
+```
+
+本轮继续确认 `sub_14061F970` 消费的是 `HVIEWPORT` 风格上下文中的：
+
+```text
+HVIEWPORT +840 = symbolcutIOS candidate list
+HVIEWPORT +848 = count / non-empty marker
+```
+
+### HVIEWPORT 构造函数
+
+`sub_14060E740` 当前确认：
+
+```text
+*a1 = HVIEWPORT::vftable
+ENTITY_LIST init:
+  +776
+  +792
+  +800
+  +808
+  +816
+  +824
+
++840:
+  sub_14060E470 初始化 ring/list sentinel
+
++848:
+  构造期清零
+```
+
+### 直接 producer = sub_14060A810
+
+`sub_14060A810` 当前确认：
+
+```text
+node = sub_14060E470(a1)
+*(node + 16) = *a4
+SPAposition(node + 24, a4 + 8)
+```
+
+字段解释：
+
+```text
+node + 16 = code
+node + 24 = center SPAposition
+```
+
+这和 writer 侧 `sub_14053A3F0(center, code, counter)` 对齐。
+
+### 上游 caller = sub_14060C940
+
+`sub_14060A810` 的唯一 caller 是：
+
+```text
+sub_14060C940
+```
+
+关键链路：
+
+```text
+api_entity_entity_distance(...)
+if distance <= 0.001:
+  api_get_edges(...)
+  api_get_vertices(...)
+  api_mk_ed_line(...)
+  ENTITY_LIST::add(HVIEWPORT +824, edge)
+  code   = *(source + 72)
+  center = SPAposition(...)
+  sub_14060A810(HVIEWPORT +840, sentinel, tail, &var)
+  ++*(HVIEWPORT +848)
+```
+
+反编译地址线索：
+
+```text
+api_entity_entity_distance at 0x14060d5e3
+api_mk_ed_line at 0x14060d78a
+sub_14060A810 call at 0x14060d7ea
++848 increment at 0x14060d80f
+```
+
+`sub_14060C940` 还带源文件字符串：
+
+```text
+e:\tushi3d\dam\yxj\yxt.cpp
+```
+
+保守结论：
+
+```text
+Others / symbolcutIOS 的 producer 链已从 writer 继续追到 HVIEWPORT +840/+848 的直接生产者。
+它很可能属于旧图石工程图 / 视图 / 切口符号相关链路。
+但当前还不能给完整旧业务功能命名，也不能替代旧图石运行样例。
+```
+
+### 接头 UI 触发 stop point
+
+本轮继续复核接头内部命令表：
+
+```text
+0x140959328 -> 0x140768480 -> "barjointnew"
+0x14095ae70 -> 0x140768480 -> "barjointnew"
+
+0x1409593e8 -> 0x140768548 -> "groupjointrev"
+0x14095af90 -> 0x140768548 -> "groupjointrev"
+
+0x14095ae78 -> sub_1405DFAA0
+0x14095af98 -> sub_1405F0850
+0x14095afa0 -> sub_14054AF20
+```
+
+但中文 UI caption 仍未闭合。
+
+继续搜索以下普通字符串仍无直接命中：
+
+```text
+接头
+搭接
+焊接
+新建接头
+移动接头
+清除接头
+钢筋接头
+```
+
+因此当前只能写：
+
+```text
+内部命令和 handler 表有静态证据。
+旧 Ribbon / Codejock 中文 caption 或按钮路径仍需静态资源补证或旧图石运行截图确认。
+```
+
+本轮不能过度推断：
+
+```text
+- 不能声明旧 UI 触发路径已经闭合。
+- 不能声明非空 steeljoint-line / Others 运行样例已采到。
+- 不能声明真实接头线 / Others 几何算法已实现。
+- 不能声明 AutoCAD L2 已通过。
+```
+
 ## 待继续分析
 
 - `sub_1404DE110` 和 `sub_1404DE720` 已完成第二轮 IDA MCP 补证，公共生成链已追到 `sub_1404D10C0 -> sub_140451730 -> sub_1405D5670 -> sub_1405BD0C0 / sub_1405C7260 / sub_1405E49D0`。
 - `sub_1405D5670` 已确认 split / spline / trim / min-distance / 写回主规则，但第 4 个 double 参数来源、字段业务名和对象名仍需继续闭合。
-- `TODO-046 / E-IDA-029` 已把 `JointRuler / JointDistbet / JointWeldLength` 的旧参数链、`JointWeldLength / 2000.0` 半长公式、`pattern` raw byte `'L'`、`Others / symbolcutIOS` gate 和额外弧线 / `DrawTaoTong` 关系继续补证；`TODO-050 / E-IDA-032` 又把接头内部命令分成 `barjoint* / groupjoint* / goujianjoint* / featjoint*` 三类采样入口；但 owning enum / 结构名、旧 UI caption、旧运行非空样例和旧插件接受度仍需继续闭合。
+- `TODO-046 / E-IDA-029` 已把 `JointRuler / JointDistbet / JointWeldLength` 的旧参数链、`JointWeldLength / 2000.0` 半长公式、`pattern` raw byte `'L'`、`Others / symbolcutIOS` gate 和额外弧线 / `DrawTaoTong` 关系继续补证；`TODO-050 / E-IDA-032` 又把接头内部命令分成 `barjoint* / groupjoint* / goujianjoint* / featjoint*` 三类采样入口；`TODO-051 / E-IDA-033` 已把 `Others / symbolcutIOS` producer 追到 `sub_14060C940 -> sub_14060A810 -> HVIEWPORT +840/+848 -> sub_14061F970`；但 owning enum / 结构名、旧 UI caption、旧运行非空样例和旧插件接受度仍需继续闭合。
 - `TODO-048 / E-IDA-030` 已把旧图石启动期阻塞链闭合到 `sub_1406BBFC0 -> sub_1406BC3B0 -> sub_14070C760`，并确认 `41 -> 许可已过期`、其他非 0 -> `请检查网线是否接好`、`ChaspBase` 许可对象和 `HASP / SuperDog / NetHASP` 许可栈侧证据；`TODO-049 / E-IDA-031` 又补充了 fallback 是宽兜底许可初始化失败文案，不是纯网络专用报错；但当前本机究竟卡在“许可过期 / 网络不可达 / 许可服务未就绪 / 许可文件链异常”的哪一种真实环境原因，仍需用户手工确认。
 - `rebarz` / `rebarpost` 业务含义未闭合。
 - 顶部 Ribbon 按钮和英文命令并非一一对应，需要结合运行界面确认。
