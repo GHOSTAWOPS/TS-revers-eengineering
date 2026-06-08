@@ -32,7 +32,7 @@ SFL hash：
 
 选择对象：
   - 对象编号：
-  - 是否确认有接头：
+  - 是否确认有接头：建议填 `是/否`
 
 状态栏截图：
   - 文件名：
@@ -40,9 +40,9 @@ SFL hash：
 
 下料表导出：
   - 文件名：
-  - 文件格式：
-  - 是否能看到 焊头(个)：
-  - 是否能看到 单下料长(mm)：
+  - 导出原始路径：如果是 Excel 导出则必填；如果只有字段截图可留空
+  - 是否能看到 焊头(个)：建议填 `是/否`
+  - 是否能看到 单下料长(mm)：建议填 `是/否`
 
 操作步骤：
   1.
@@ -73,5 +73,31 @@ SFL hash：
 hashes.txt
 ```
 
-后续直接把这个目录里的文件作为 `TODO-061` 输入即可。
+`hashes.txt` 里每行应是：
 
+```text
+文件名<TAB>SHA256
+```
+
+`文件名` 必须是当前目录下的纯文件名，不要写绝对路径或子目录。
+
+再执行：
+
+```powershell
+py -3 ..\..\..\..\tools\runtime_capture_gate\check_todo_061_capture.py
+```
+
+如果想把结果落成 JSON：
+
+```powershell
+py -3 ..\..\..\..\tools\runtime_capture_gate\check_todo_061_capture.py `
+  --json-out .\capture_gate_report.json
+```
+
+通过条件：
+
+```text
+decision = pass
+```
+
+后续直接把这个目录里的文件作为 `TODO-061` 输入即可。

@@ -826,6 +826,8 @@ TODO-060 / Evidence = done
 
 TODO-061 / Evidence = next
   -> 继续做 generated node+112 的旧图石真实运行截图与 Excel 导出回填。
+  -> 已补 `E-DEV-083`：runtime capture gate、README、capture_notes 模板和 xhigh 只读 review 修正。
+  -> 当前 gate 已收紧到 hash / basename / 文件头 / Excel 路径口径，但真实运行样例仍未采到。
   -> 不自动安装 HASP，不自动启动旧图石，不实现真实接头线 / Others 几何算法。
 ```
 
