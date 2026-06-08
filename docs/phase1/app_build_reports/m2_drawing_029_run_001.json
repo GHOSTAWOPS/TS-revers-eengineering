@@ -1,0 +1,62 @@
+{
+  "todoId": "TODO-060",
+  "phase": "M2-Drawing-029",
+  "evidenceId": "E-DEV-082",
+  "decision": "generated-node112-runtime-checklist-blocked-facts-triage",
+  "algorithmImplemented": false,
+  "autocadL2": "not_run",
+  "oldRuntimeAutomaticallyLaunched": false,
+  "haspInstalledAutomatically": false,
+  "systemDirectoryModifiedAutomatically": false,
+  "appBusinessCodeModified": false,
+  "xhighReview": "not_required_docs_only",
+  "artifactTriage": {
+    "xlsxCandidate": {
+      "path": "C:/Users/ghost/Desktop/reverse_engineering/【03】图石软件/1.xls",
+      "sha256": "DBCF9E3226EF111DD0FFE712EC247A0568B28191FAD0ECB55D5759C83E958049",
+      "sheet": "Sheet1",
+      "usedRows": 1,
+      "usedCols": 1,
+      "validAsScheduleEvidence": false,
+      "reason": "blank workbook"
+    },
+    "pngCandidates": [
+      {
+        "path": "C:/Users/ghost/Desktop/reverse_engineering/【03】图石软件/screenshot.png",
+        "sha256": "1FFF0DB032A81DA95D73DDEC2C6ED5D431D4B81AD7DE4F1F9EC4FF9E4699480C",
+        "validAsRuntimeEvidence": false,
+        "reason": "JDK prompt only"
+      },
+      {
+        "path": "C:/Users/ghost/Desktop/reverse_engineering/【03】图石软件/visualts_prompt_capture.png",
+        "sha256": "56C44CEF1FB7211131A0239264AD4BE931C7BB487E9676D59488C3A346B3E101",
+        "validAsRuntimeEvidence": false,
+        "reason": "VisualTS startup-block prompt only"
+      }
+    ]
+  },
+  "manualChecklist": {
+    "statusBarPane3ScreenshotRequired": true,
+    "excelExportRequired": true,
+    "recordObjectIdRequired": true,
+    "recordOutputPathRequired": true,
+    "recordHashRequired": true
+  },
+  "verification": {
+    "todoCsvParse": "pass; next=TODO-061; TODO-060=done",
+    "gitDiffCheck": "pass; warnings only from CRLF/LF normalization in local worktree",
+    "readinessGateStrict": "pass; M1-Formal-Ready; 84/84 pass",
+    "boundaryScan": {
+      "domainRebar": "pass",
+      "drawing": "pass",
+      "project": "pass"
+    },
+    "ctest": "pass; 18/18 pass",
+    "phase1GateUnitTests": "pass; 22 tests",
+    "relationshipTrace": "pass; REQ-DRAW-003/REQ-DRAW-004 include E-DEV-082"
+  },
+  "next": {
+    "todoId": "TODO-061",
+    "task": "generated node+112 旧图石真实运行截图与 Excel 导出回填 P0"
+  }
+}

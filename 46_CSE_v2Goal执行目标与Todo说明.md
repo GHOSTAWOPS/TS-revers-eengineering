@@ -818,8 +818,14 @@ TODO-059 / Evidence = done
      “接头 / 焊头计数展示链字段”口径；
      不写死最终旧调试名，不声明真实运行截图、AutoCAD L2 或 golden。
 
-TODO-060 / Evidence = next
-  -> 继续做 generated node+112 的旧图石运行确认与 Excel/状态栏对照。
+TODO-060 / Evidence = done
+  -> 已补 `E-DEV-082`，完成现有候选工件排查、无效证据排除和最小手工清单闭环。
+  -> 已确认 `1.xls` 是空白工作簿，`screenshot.png` 是 JDK 提示，
+     `visualts_prompt_capture.png` 是旧启动阻塞提示，三者都不能当作运行证据。
+  -> 本节点不声明真实 pane3 截图、真实 Excel 导出、AutoCAD L2 或 golden。
+
+TODO-061 / Evidence = next
+  -> 继续做 generated node+112 的旧图石真实运行截图与 Excel 导出回填。
   -> 不自动安装 HASP，不自动启动旧图石，不实现真实接头线 / Others 几何算法。
 ```
 
@@ -1155,12 +1161,12 @@ TODO-056 验证 = DB6C0 static rebuild core traced, child+88/+108/+112/+116 and 
 当前下一步：
 
 ```text
-TODO-060 / generated node+112 旧图石运行确认与 Excel/状态栏对照 P0
-  -> TODO-059 已完成静态展示链收口
-  -> TODO-050 继续 blocked，但 TODO-060 聚焦的是
-     运行截图 / Excel 导出对静态推断的最小确认
+TODO-061 / generated node+112 旧图石真实运行截图与 Excel 导出回填 P0
+  -> TODO-060 已完成候选工件排查和最小清单闭环
+  -> 当前已明确 `1.xls` / `screenshot.png` / `visualts_prompt_capture.png`
+     都不是 pane3 或 Excel E/F 的有效运行证据
   -> 不自动安装 HASP，不自动启动旧图石
-  -> 只整理运行确认清单、截图/导出落点和阻塞事实
+  -> 下一步只接收真实旧图石截图、真实 Excel 导出、路径和 hash
   -> 不实现真实接头线 / Others 几何算法，不声明 AutoCAD L2 通过，不进入 golden
 ```
 
@@ -1171,6 +1177,11 @@ TODO-059 已经把 generated node+112 的静态展示链追到：
   焊头(个)
   单下料长(mm)
   焊接 / 绑扎 / 套筒连接
+
+TODO-060 又把当前工作区里的伪候选工件排除了：
+  1.xls                -> 空白工作簿
+  screenshot.png       -> JDK 提示
+  visualts_prompt_capture.png -> 启动阻塞提示
 
 当前真正剩下的不是继续猜静态字段名，
 而是拿旧图石真实运行截图和导出文件，
@@ -1240,18 +1251,18 @@ golden 采集 TODO-026 暂按用户要求保持 pending。
 
 ## CSE v2 Control Contract
 
-- **Primary Setpoint**：下一轮只完成 `TODO-060 / generated node+112 旧图石运行确认与 Excel/状态栏对照 P0`，在不自动安装 HASP、不开旧图石的前提下先把最小运行确认清单、截图落点、导出文件落点和阻塞事实收紧；若用户现场条件已满足，再执行最小人工采样闭环。
-- **Acceptance**：形成 `E-RUN-005 / E-DEV-082` 或等价证据；至少覆盖 1 个有接头对象的状态栏 pane3 截图，1 份下料表 Excel 中 `焊头(个)` / `单下料长(mm)` 的文件或截图，操作步骤、输出路径、hash 或明确阻塞原因；默认 CTest、readiness gate、OCCT 泄漏检查通过；文档、追溯矩阵、缺口、46 和 todo 同步更新。
+- **Primary Setpoint**：下一轮只完成 `TODO-061 / generated node+112 旧图石真实运行截图与 Excel 导出回填 P0`，在 `TODO-060` 已完成候选工件排查的基础上，只收真实 pane3 截图、真实 Excel 导出、路径和 hash，不再重复分析伪候选工件。
+- **Acceptance**：形成 `E-RUN-005`；至少覆盖 1 个有接头对象的状态栏 pane3 截图，1 份下料表 Excel 中 `焊头(个)` / `单下料长(mm)` 的文件或截图，操作步骤、输出路径、hash 或明确只拿到部分样例；默认 CTest、readiness gate、OCCT 泄漏检查通过；文档、追溯矩阵、缺口、46 和 todo 同步更新。
 - **Guardrail Metrics**：不能实现真实接头线 / Others 几何算法；不能在没有运行证据时声明 AutoCAD L2 通过；不能把静态推断直接写成已运行确认；不能改钢筋创建业务；不能迁入父目录 rebar 业务；不能进入 golden 全量采集。
-- **Sampling Plan**：先读 `todo.csv / 03 / 11 / 34 / 95 / 99`，确认 `TODO-059` 已完成静态展示链收口，再整理最小运行确认清单；若用户现场条件仍不满足，则只记录 blocked 事实和下一步人工动作；最后运行默认 CTest、readiness gate 和 OCCT 泄漏扫描，证明本轮没有破坏工程基线。
-- **Known Delays**：运行确认强依赖用户现场 USB 狗 + HASP 条件；即使能打开旧图石，也可能还要人工找到具体接头对象和下料表导出路径。
-- **Recovery Target**：如果现场条件仍不满足，把阻塞点、所需截图、所需导出文件、未确认字段和后续人工动作写入 `99` 与 build report，不继续猜运行结果，不堆算法实现。
+- **Sampling Plan**：先读 `todo.csv / 11 / 34 / 46 / 95 / 96 / 99`，确认 `TODO-060` 已排除当前伪候选工件，再只接收真实运行截图和真实导出文件；若用户现场条件仍不满足，则记录缺的就是运行样例本身，而不是继续扩写静态推断；最后运行默认 CTest、readiness gate 和 OCCT 泄漏扫描，证明本轮没有破坏工程基线。
+- **Known Delays**：运行确认强依赖用户现场 USB 狗 + HASP 条件；即使能打开旧图石，也可能还要人工找到具体接头对象和下料表导出路径；用户也可能只回填部分截图。
+- **Recovery Target**：如果现场条件仍不满足或只拿到部分样例，把缺失项、已拿到的截图/文件、剩余未确认字段和后续人工动作写入 `99` 与 build report，不继续猜运行结果，不堆算法实现。
 - **Rollback Trigger**：无证据实现接头线 / Others / 工程图算法；把静态展示链当成运行确认；无运行证据声明 L2 通过；让 `domain/rebar` 泄漏 OCCT/AIS；测试或 gate 失败仍继续堆功能。
 - **Constraints**：不使用 ACIS / HOOPS / Codejock 等商业库；新系统不引入 USB 狗 / 网络许可依赖；旧逻辑不确定时优先查 IDA MCP 或旧图石运行确认；xhigh 只读，修改由主流程 agent 完成；不自动安装 HASP，不自动再次启动旧图石。
-- **Boundary**：下一轮只允许运行确认清单、文档、追溯、缺口、46/todo 必要更新；禁止实现真实 OCCT HLR/section/hidden-line/steeljoint-line/Others 算法、禁止修改 UI 新功能、钢筋创建业务、无证据 AutoCAD L2 结论和 golden。
-- **Coupling Notes**：`drawing/export` 是 Detail 包输出边界；TODO-060 只验证 `generated node+112` 的运行期展示 / 导出表现，不关闭旧插件容忍度、AutoCAD L2、隐藏线 / 填充线算法或完整工程图缺口。
-- **Approximation Validity**：TODO-060 的目标是最小运行确认，不是完整接头线算法、完整工程图或 golden；即使采到状态栏和 Excel 样例，也不代表真实接头线 / Others 几何算法已经闭合。
-- **Actuator Budget**：下一轮只推进 `TODO-060`。完成后停止复盘，不自动进入真实算法实现、隐藏线、填充线、点筋、FaceEdge 或 golden。
+- **Boundary**：下一轮只允许运行样例回填、文档、追溯、缺口、46/todo 必要更新；禁止实现真实 OCCT HLR/section/hidden-line/steeljoint-line/Others 算法、禁止修改 UI 新功能、钢筋创建业务、无证据 AutoCAD L2 结论和 golden。
+- **Coupling Notes**：`drawing/export` 是 Detail 包输出边界；TODO-061 只验证 `generated node+112` 的运行期展示 / 导出表现，不关闭旧插件容忍度、AutoCAD L2、隐藏线 / 填充线算法或完整工程图缺口。
+- **Approximation Validity**：TODO-061 的目标是真实运行样例回填，不是完整接头线算法、完整工程图或 golden；即使采到状态栏和 Excel 样例，也不代表真实接头线 / Others 几何算法已经闭合。
+- **Actuator Budget**：下一轮只推进 `TODO-061`。完成后停止复盘，不自动进入真实算法实现、隐藏线、填充线、点筋、FaceEdge 或 golden。
 - **Risks**：用户现场条件可能暂时仍不满足；即使能运行，也可能只能拿到部分截图或导出文件，导致最终调试名和完整字段映射仍需继续保留 GAP。
 ## Todo CSV 使用方式
 
@@ -1277,15 +1288,16 @@ golden 采集 TODO-026 暂按用户要求保持 pending。
 下一步优先执行：
 
 ```text
-TODO-060 / generated node+112 旧图石运行确认与 Excel/状态栏对照 P0
-  -> TODO-059 已完成静态展示链收口
-  -> TODO-050 继续 blocked，但 TODO-060 只做最小运行确认
+TODO-061 / generated node+112 旧图石真实运行截图与 Excel 导出回填 P0
+  -> TODO-060 已完成候选工件排查和最小清单闭环
+  -> 现有 `1.xls` / `screenshot.png` / `visualts_prompt_capture.png`
+     都已排除为无效运行证据
   -> 不自动安装 HASP
   -> 不自动启动旧图石
-  -> 优先整理截图、导出文件、hash 和阻塞事实
+  -> 优先收真实截图、真实导出文件、路径和 hash
   -> 不实现真实接头线 / Others 几何算法，
      不声明 AutoCAD L2 通过，不进入 golden
 ```
 
-原因很简单：TODO-059 已经把 `generated node+112` 的静态展示链收口到 `焊头(个)`、`单下料长(mm)` 和 `焊接 / 绑扎 / 套筒连接`。下一步最值钱的是拿旧图石运行截图和导出文件验证这些静态推断，而不是继续空转猜字段名。
+原因很简单：TODO-059 已经把 `generated node+112` 的静态展示链收口到 `焊头(个)`、`单下料长(mm)` 和 `焊接 / 绑扎 / 套筒连接`。TODO-060 又已经把当前目录里的伪候选工件排除掉了。下一步最值钱的是拿旧图石真实运行截图和真实导出文件验证这些静态推断，而不是继续空转猜字段名。
 TODO-026 golden 采集暂按用户要求保持 pending。
