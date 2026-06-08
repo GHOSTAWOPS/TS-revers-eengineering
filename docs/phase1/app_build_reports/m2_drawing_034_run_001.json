@@ -1,0 +1,25 @@
+{
+  "todoId": "TODO-065",
+  "phase": "M2-Drawing-034",
+  "evidenceId": "E-DEV-087",
+  "decision": "generate-package-and-schedule-runtime-capture-prep",
+  "oldRuntimeAutomaticallyLaunched": false,
+  "haspInstalledAutomatically": false,
+  "systemDirectoryModifiedAutomatically": false,
+  "appBusinessCodeModified": false,
+  "algorithmImplemented": false,
+  "autocadL2": "not_run",
+  "xhighReview": "not_required_docs_only",
+  "verification": {
+    "todoCsvParse": "pass; TODO-065=done; next=TODO-066",
+    "gitDiffCheck": "pass; CRLF normalization warnings only",
+    "readinessGateStrict": "pass; M1-Formal-Ready; 84/84 pass",
+    "ctest": "pass; 18/18 pass",
+    "domainRebarOCCLeak": "pass; no matches in app/src/domain/rebar; domain_rebar_boundary also passed in CTest",
+    "relationshipTrace": "pass; REQ-DRAW-003/004 include E-DEV-087 and next switched to TODO-066"
+  },
+  "next": {
+    "todoId": "TODO-066",
+    "task": "生成工程图与下料表旧图石真实运行工件回填 P0"
+  }
+}

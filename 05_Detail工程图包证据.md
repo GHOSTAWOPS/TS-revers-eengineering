@@ -150,6 +150,7 @@ IDA 补证：
 - `E-IDA-044 / E-DEV-086` 已把顶部中文 caption / resource 静态闭合：`36124 -> 生成工程图`，`35057 -> 下料表`；`36050 -> 输出钢筋` 作为同类 `描述\ncaption` 资源模式旁证。
 - `Dialog #427` 当前只能保守记为 `OptionFactory` 属性页线索，不再把它当成下料表弹窗真值。
 - `sub_140600AA0` 里的直接 `DoModal` 当前只收窄到 `output_uncut_steel / Dialog 0x57C / UnCutSteel.TXT` 后置报告链，不再写成前置生成工程图设置窗。
+- `E-DEV-087` 已在 `docs/phase1/runtime_capture/todo_065_generate_package_and_schedule/` 落地运行确认模板：要求记录 `Detail.xml / DetailNN.stl` 输出目录 listing / `SHA256` / 最后修改时间 / rerun 覆盖行为，以及下料表结果文件或字段截图、额外运行时弹窗截图；`UnCutSteel.TXT` 只作为可选旁证，不能单独证明 `生成工程图` 成功。
 - 运行输出目录、覆盖策略和旧插件导入结果仍需确认。
 - `sub_1405259D0` 用于按名字查找 XML / COM 子节点。
 - `sub_140525880` 用于按名字匹配子字段并写入值。
