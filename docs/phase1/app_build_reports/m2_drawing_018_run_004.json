@@ -1,0 +1,39 @@
+{
+  "todoId": "TODO-049",
+  "phase": "M2-Drawing-018",
+  "evidenceId": "E-RUN-004",
+  "decision": "startup-prereq-closed-sample-collection-next",
+  "userActionRequired": true,
+  "algorithmImplemented": false,
+  "autocadL2": "not_run",
+  "oldRuntimeAutomaticallyLaunched": false,
+  "legacyStartup": {
+    "usbDongleRequired": true,
+    "mainWindowReachableWithDongle": true,
+    "sflOpenWithDongle": true,
+    "intranetRequired": false,
+    "localHaspInstallRequired": true,
+    "source": "user_manual_statement_2026-06-08"
+  },
+  "workspaceHaspSetup": {
+    "path": ".\\HASPUserSetup",
+    "files": [
+      "HASPUserSetup.exe",
+      "hasplm.ini",
+      "haspvlib_23520.dll",
+      "驱动安装步骤.doc"
+    ],
+    "targetPath": "C:\\Program Files (x86)\\Common Files\\Aladdin Shared\\HASP\\",
+    "targetPathExists": false,
+    "dllNameDiscrepancy": {
+      "userStatement": "haspvlib_23250.dll",
+      "workspaceActual": "haspvlib_23520.dll"
+    }
+  },
+  "newSystemBoundary": {
+    "usbDongleDependencyAllowed": false,
+    "haspDependencyAllowed": false,
+    "openSourceTarget": true
+  },
+  "xhighReview": "not_required_docs_only"
+}

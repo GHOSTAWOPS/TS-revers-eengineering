@@ -564,18 +564,18 @@ commit / tag / push 状态
 
 ### 短期 Goal（推荐下一轮复制）
 
-目标：只完成 `TODO-049 / 旧图石启动前置条件用户手工确认 P0` 这个短期阶段，不自动进入后续长期开发。
+目标：只完成 `TODO-050 / 旧图石非空接头线 Others 运行样例采集 P0` 这个短期阶段，不自动进入后续长期开发。
 
-本轮要在 `TODO-048` 已静态闭合启动阻塞主链的基础上，由用户手工确认外部前置条件并决定是否继续旧图石运行样例采集：
+本轮要在 `TODO-049` 已确认旧图石可在 USB 狗 + 本地 HASP 安装条件下进入主界面并打开 `SFL` 的基础上，回到真正的旧运行样例采集：
 
 ```text
-VisualTS.StartupManualCheck / TODO-049
-  -> 从 E-IDA-030 / E-DEV-070 / GAP-DRAW-002 / GAP-DEV-010 出发
+VisualTS.NonEmptyJointOthersSample / TODO-050
+  -> 从 E-IDA-028 / E-IDA-029 / E-RUN-004 / GAP-DRAW-002 出发
   -> 不自动再次启动旧图石
-  -> 由用户按手工清单确认许可 / 服务 / 网络 / license file 环境
-  -> 用户自己手工重试旧图石启动
-  -> 若仍失败，记录完整弹框文本和环境状态
-  -> 若成功进入主界面，再回到非空样例采集
+  -> 由用户手工打开旧图石和目标 SFL
+  -> 做一次最小接头线 / Others 相关操作
+  -> 记录截图、操作步骤、输出的 DetailNN / 相关文件 hash
+  -> 若仍未触发目标节点，记录精确 stop point
   -> 不实现真实接头线 / Others 几何算法
   -> 不用 OCCT 或字段骨架直接推断旧业务规则
 ```
@@ -583,22 +583,22 @@ VisualTS.StartupManualCheck / TODO-049
 目标语义：
 
 ```text
-TODO-048 已静态确认：
-  - 启动主链 = sub_1406BBFC0 -> sub_1406BC3B0 -> sub_14070C760(...)
-  - 41 -> 许可已过期
-  - 其他非 0 -> 请检查网线是否接好
-  - 当前阻塞与 Sentinel / HASP / SuperDog / NetHASP 许可栈强相关
-  - 本机预检：基础网络在线，`SafeNet Sentinel / Sentinel LDK` 数据目录存在，
-    但 `hasplms / aksfridge` 未安装，`127.0.0.1:1947/475/6001` 未监听，
-    相关环境变量未命中，常见 `SafeNet` 安装目录未发现
+TODO-049 已确认：
+  - 旧图石启动需要 USB 狗
+  - 插狗后可进入主界面
+  - 插狗后可打开 SFL
+  - 不需要内网 / VPN
+  - 现场仍需要本地 HASP 安装条件
 
 当前仍未闭合：
-  - 本机真实失败码 / 许可模式 / 服务状态
-  - 用户手工处理前置条件后，旧图石能否稳定进入主界面
-  - 旧运行非空样例、旧 UI 触发路径、owning enum / 结构名和旧插件接受度
+  - 非空 steeljoint-line / joints / Others / symbolcutIOS 运行样例
+  - 旧 UI 真实触发路径
+  - owning enum / 结构名
+  - 旧插件对复杂字段的真实接受度
 
-下一步不是继续猜算法，而是先做人手环境确认。
-本轮只做 TODO-049，不同时做真实工程图算法、golden 采集、UI 新功能或 AutoCAD L2 通过声明。
+下一步不是继续围着启动条件打转，
+而是开始采真正的旧运行样例。
+本轮只做 TODO-050，不同时做真实工程图算法、golden 采集、UI 新功能或 AutoCAD L2 通过声明。
 ```
 
 当前已完成前置：
@@ -703,7 +703,7 @@ TODO-048 / Evidence = done
      本节点只补静态证据和手工清单，不声明旧图石已能正常启动、
      真实接头线算法、Others 几何算法、AutoCAD L2、旧插件接受或 golden。
 
-TODO-049 / Evidence = in_progress
+TODO-049 / Evidence = done
   -> 已补 `E-DEV-071`，完成 agent 侧本机预检：
      网络基础在线、`SafeNet Sentinel / Sentinel LDK` 数据目录存在，
      但本地典型许可服务、监听端口和环境变量仍未出现。
@@ -713,9 +713,17 @@ TODO-049 / Evidence = in_progress
      不能只按“网络断了”理解。
   -> 已补 `E-RUN-003`，用户已明确旧图石启动需要 USB 狗；
      同时明确新系统复刻不能继承 USB 狗依赖，目标仍是开源、无狗。
-     当前节点已从“判断是不是 USB 狗模式”收窄为
-     “插狗后能否进入主界面 / 打开 SFL；若仍失败，是否还叠加网络许可 /
-     内网或 VPN / license file 条件”，因此仍不能写成 done。
+  -> 已补 `E-RUN-004`，用户确认插狗后可进入主界面、可打开 `SFL`，
+     且不需要内网；现场还需要本地 HASP 安装条件。
+     工作区 `HASPUserSetup` 已核查到 `HASPUserSetup.exe`、`hasplm.ini`、
+     `haspvlib_23520.dll` 和安装说明文档；当前机器目标 HASP 目录尚不存在。
+     当前节点已闭环，下一步转回非空运行样例采集。
+
+TODO-050 / Evidence = next
+  -> 在 TODO-049 已闭环启动前置条件的基础上，
+     采至少 1 个非空 steeljoint-line / Others 运行样例。
+  -> 只补运行证据、截图、输出文件 hash 和节点内容，
+     不实现真实接头线 / Others 几何算法。
 ```
 
 工作目录：
@@ -1044,19 +1052,20 @@ TODO-048 验证 = startup chain closed, error41=许可已过期, otherNonZeroFal
 当前下一步：
 
 ```text
-TODO-049 / 旧图石启动前置条件用户手工确认 P0
-  -> 按 TODO-048 已形成的手工清单检查许可 / 服务 / 网络 / license file 环境
-  -> agent 侧本机预检已完成，不再重复自动环境扫描
-  -> 用户自己手工重试旧图石启动
-  -> 只补手工确认结果和剩余 GAP；不自动启动旧图石，不实现真实接头线 / Others 几何算法，不声明 AutoCAD L2 通过，不进入 golden
+TODO-050 / 旧图石非空接头线 Others 运行样例采集 P0
+  -> TODO-049 已确认旧图石在 USB 狗 + 本地 HASP 安装条件下可进主界面并打开 SFL
+  -> 不自动启动旧图石
+  -> 由用户手工执行最小旧图石操作并回填截图 / 输出文件 / hash
+  -> 只补运行证据和剩余 GAP；不实现真实接头线 / Others 几何算法，不声明 AutoCAD L2 通过，不进入 golden
 ```
 
 原因：
 
 ```text
-TODO-047 已证明当前旧图石运行样例采集卡在启动期阻塞框，继续自动重试运行没有意义。
-但旧插件是否接受新包、旧 UI 触发路径和非空运行样例仍未确认。
-下一步建议做 TODO-049，先按已闭合的启动阻塞链逐项确认外部前置条件，再决定是否回到旧图石非空样例采集；不能凭字段骨架或 OCCT 能力直接实现算法。
+TODO-049 已经把启动前置条件闭合。
+继续围绕 USB 狗 / 网络 / fallback 文案打转不会再带来高价值证据。
+当前真正缺的是旧图石非空运行样例、旧 UI 触发路径和目标节点内容。
+所以下一步应切到 TODO-050，而不是停在 TODO-049。
 golden 采集 TODO-026 暂按用户要求保持 pending。
 ```
 
@@ -1122,19 +1131,19 @@ golden 采集 TODO-026 暂按用户要求保持 pending。
 
 ## CSE v2 Control Contract
 
-- **Primary Setpoint**：下一轮只完成 `TODO-049 / 旧图石启动前置条件用户手工确认 P0`，按 TODO-048 已闭合的静态阻塞链逐项确认外部前置条件，并得到“仍阻塞”或“可进主界面”的人工结果。
-- **Acceptance**：形成用户手工确认结果；若仍阻塞则记录完整弹框文本和环境状态，若已进入主界面则记录成功证据并把下一步切回非空样例采集；`E-DEV-071` 的本机预检、`E-IDA-031` 的 fallback 语义补证和 `E-RUN-003` 的“旧图石启动需要 USB 狗 / 新系统不继承 USB 狗依赖”都只能作为准备证据或边界约束，不能替代“插狗后能否进入主界面 / 打开 SFL”的现场结果；默认 CTest、readiness gate、OCCT 泄漏检查通过；按需执行 xhigh 只读 review；更新实现记录、build report、追溯矩阵、缺口文档、46 和 todo。
+- **Primary Setpoint**：下一轮只完成 `TODO-050 / 旧图石非空接头线 Others 运行样例采集 P0`，在旧图石已可启动并打开 SFL 的前提下采到至少一个可用旧运行样例。
+- **Acceptance**：形成用户手工运行结果；至少记录一次最小操作、截图、输出文件 hash 和目标节点内容；若仍未触发目标节点则记录精确 stop point；`E-RUN-004` 已经关闭启动前置条件，不再把 USB 狗 / 本地 HASP 安装问题当成本轮主目标；默认 CTest、readiness gate、OCCT 泄漏检查通过；按需执行 xhigh 只读 review；更新实现记录、build report、追溯矩阵、缺口文档、46 和 todo。
 - **Guardrail Metrics**：不能实现真实接头线 / Others 几何算法；不能在没有运行证据时声明 AutoCAD L2 通过；不能把单次阻塞截图写成旧业务算法证据；不能改钢筋创建业务；不能迁入父目录 rebar 业务；不能进入 golden 全量采集。
-- **Sampling Plan**：先读 `todo.csv / 03 / 34 / 84 / 85 / 99`，确认 `E-DEV-071` 已记录本机预检、`E-RUN-003` 已记录 USB 狗前置和新系统无狗边界，再由用户按清单插好 USB 狗并手工重试旧图石；若仍失败，再回填网络 / VPN / license file 条件；agent 不自动启动旧图石；最后运行默认 CTest、readiness gate 和 OCCT 泄漏扫描，证明本轮没有破坏工程基线。
-- **Known Delays**：启动阻塞当前依赖用户手工环境确认；agent 不能代替用户完成 USB 狗、服务、网络许可和 license file 现场状态确认。
+- **Sampling Plan**：先读 `todo.csv / 03 / 34 / 81 / 82 / 85 / 99`，确认 `E-RUN-004` 已关闭启动前置条件，再由用户手工打开旧图石和目标 SFL、执行一次最小接头线 / Others 相关操作并回填截图 / 输出；agent 不自动启动旧图石；最后运行默认 CTest、readiness gate 和 OCCT 泄漏扫描，证明本轮没有破坏工程基线。
+- **Known Delays**：非空旧运行样例依赖用户现场手工操作、旧 UI 路径和输出文件留存；agent 不能代替用户完成旧图石操作过程。
 - **Recovery Target**：如果手工确认后仍不可推进，把阻塞原因写入 `99` 和 build report，不继续猜算法、不堆后续工程图实现。
 - **Rollback Trigger**：无证据实现接头线 / Others / 工程图算法；把字段骨架或单次截图当成旧插件接受证明；无运行证据声明 L2 通过；让 `domain/rebar` 泄漏 OCCT/AIS；测试或 gate 失败仍继续堆功能。
 - **Constraints**：不使用 ACIS / HOOPS / Codejock 等商业库；新系统不引入 USB 狗 / 网络许可依赖；旧逻辑不确定时优先查 IDA MCP 或旧图石运行确认；xhigh 只读，修改由主流程 agent 完成；不自动再次启动旧图石。
-- **Boundary**：下一轮只允许手工确认记录、文档、追溯、缺口、46/todo 必要更新；禁止实现真实 OCCT HLR/section/hidden-line/steeljoint-line/Others 算法、禁止修改 UI 新功能、钢筋创建业务、无证据 AutoCAD L2 结论和 golden。
-- **Coupling Notes**：`drawing/export` 是 Detail 包输出边界；TODO-049 只收集外部前置条件确认结果，不关闭旧插件容忍度、AutoCAD L2、隐藏线 / 填充线算法或完整工程图缺口。
-- **Approximation Validity**：TODO-049 的产物是用户手工环境确认结果，不是算法实现；只有旧图石能稳定进入主界面后，后续节点才能继续采接头样例。
-- **Actuator Budget**：下一轮只推进 `TODO-049`。完成后停止复盘，不自动进入真实算法实现、隐藏线、填充线、点筋、FaceEdge 或 golden。
-- **Risks**：当前节点依赖用户现场环境；即使静态链已闭合，也可能因为许可模式、服务状态或网络条件不同而继续阻塞，必须在报告中明确能力边界。
+- **Boundary**：下一轮只允许运行记录、文档、追溯、缺口、46/todo 必要更新；禁止实现真实 OCCT HLR/section/hidden-line/steeljoint-line/Others 算法、禁止修改 UI 新功能、钢筋创建业务、无证据 AutoCAD L2 结论和 golden。
+- **Coupling Notes**：`drawing/export` 是 Detail 包输出边界；TODO-050 只收集旧图石非空运行样例，不关闭旧插件容忍度、AutoCAD L2、隐藏线 / 填充线算法或完整工程图缺口。
+- **Approximation Validity**：TODO-050 的产物是旧图石运行证据，不是算法实现；即使采到样例，也不代表真实接头线 / Others 几何算法已经闭合。
+- **Actuator Budget**：下一轮只推进 `TODO-050`。完成后停止复盘，不自动进入真实算法实现、隐藏线、填充线、点筋、FaceEdge 或 golden。
+- **Risks**：当前节点依赖用户现场操作；即使旧图石能启动，也可能因为命令路径、模型条件或输出条件不同而暂时采不到非空样例，必须把 stop point 写清楚。
 ## Todo CSV 使用方式
 
 `todo.csv` 是后续执行看板。建议每次 goal 模式只拿 `status=next` 或最高优先级 `pending` 的任务推进。
@@ -1159,13 +1168,12 @@ golden 采集 TODO-026 暂按用户要求保持 pending。
 下一步优先执行：
 
 ```text
-TODO-049 / 旧图石启动前置条件用户手工确认 P0
-  -> 按 TODO-048 已形成的手工清单检查许可 / 服务 / 网络 / license file 环境
-  -> agent 侧本机预检已由 E-DEV-071 记录完成
-  -> 用户已明确旧图石启动需要 USB 狗，且新系统不继承 USB 狗依赖
-  -> 下一步只等用户插狗后手工重试旧图石启动
-  -> 只补手工确认结果和剩余 GAP；不自动启动旧图石，不实现真实接头线 / Others 几何算法，不声明 AutoCAD L2 通过，不进入 golden
+TODO-050 / 旧图石非空接头线 Others 运行样例采集 P0
+  -> TODO-049 已确认旧图石在 USB 狗 + 本地 HASP 安装条件下可进主界面并打开 SFL
+  -> 不自动启动旧图石
+  -> 由用户手工执行最小旧图石操作并回填截图 / 输出文件 / hash
+  -> 只补运行证据和剩余 GAP；不实现真实接头线 / Others 几何算法，不声明 AutoCAD L2 通过，不进入 golden
 ```
 
-原因很简单：TODO-048 已把启动阻塞链和手工前置条件静态闭合，E-DEV-071 又补完了 agent 侧本机预检，E-RUN-003 也已经确认“旧图石启动需要 USB 狗，但新系统不能继承这个依赖”。下一步不该继续让 agent 自动碰旧图石，而是该由用户插狗后做一次现场启动确认，再决定是否回到非空样例采集。
+原因很简单：TODO-049 已经闭合，旧图石启动前置条件不再是当前主问题。下一步该收集真正有开发价值的旧运行样例，而不是继续停留在启动条件阶段。
 TODO-026 golden 采集暂按用户要求保持 pending。
