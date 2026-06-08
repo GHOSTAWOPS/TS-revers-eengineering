@@ -189,6 +189,16 @@ def done_node_report_requirements(root: Path, rows: list[dict[str, str]]) -> tup
         "TODO-043": ("79_M2-Drawing-012DetailWriterOthersSteeljoint字段骨架P0实现记录.md", "docs/phase1/app_build_reports/m2_drawing_012_run_001.md"),
         "TODO-044": ("80_M2-Drawing-013DetailWriterOthersSteeljointAutoCADL2运行确认准备P0实现记录.md", "docs/phase1/app_build_reports/m2_drawing_013_run_001.md"),
         "TODO-045": ("81_M2-Drawing-014真实接头线Others几何算法证据补齐P0实现记录.md", "docs/phase1/app_build_reports/m2_drawing_014_run_001.md"),
+        "TODO-046": ("82_M2-Drawing-015真实接头线Others旧图石运行确认与参数绑定追踪P0实现记录.md", "docs/phase1/app_build_reports/m2_drawing_015_run_001.md"),
+        "TODO-047": ("83_M2-Drawing-016真实接头线Others旧图石运行样例采集P0实现记录.md", "docs/phase1/app_build_reports/m2_drawing_016_run_001.md"),
+        "TODO-048": ("84_M2-Drawing-017旧图石启动阻塞提示链补证P0实现记录.md", "docs/phase1/app_build_reports/m2_drawing_017_run_001.md"),
+        "TODO-049": ("85_M2-Drawing-018旧图石启动前置条件用户手工确认P0准备记录.md", "docs/phase1/app_build_reports/m2_drawing_018_run_001.md"),
+        "TODO-051": ("87_M2-Drawing-020OthersSymbolcutIOSProducer与接头UI触发静态补证P0实现记录.md", "docs/phase1/app_build_reports/m2_drawing_020_run_001.md"),
+        "TODO-052": ("88_M2-Drawing-021接头UIRibbon绑定静态资源补证P0实现记录.md", "docs/phase1/app_build_reports/m2_drawing_021_run_001.md"),
+        "TODO-053": ("89_M2-Drawing-022接头ContextMenuCommandDispatch静态深追P0实现记录.md", "docs/phase1/app_build_reports/m2_drawing_022_run_001.md"),
+        "TODO-054": ("90_M2-Drawing-023接头Handler业务对象筛选链静态分类P0实现记录.md", "docs/phase1/app_build_reports/m2_drawing_023_run_001.md"),
+        "TODO-055": ("91_M2-Drawing-024接头Handler动作函数字段语义深追P0实现记录.md", "docs/phase1/app_build_reports/m2_drawing_024_run_001.md"),
+        "TODO-056": ("92_M2-Drawing-025接头重建几何核心DB6C0静态深追P0实现记录.md", "docs/phase1/app_build_reports/m2_drawing_025_run_001.md"),
     }
     missing: list[str] = []
     checked: list[str] = []

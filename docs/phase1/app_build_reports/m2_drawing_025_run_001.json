@@ -1,0 +1,90 @@
+{
+  "todoId": "TODO-056",
+  "phase": "M2-Drawing-025",
+  "evidenceId": "E-DEV-078",
+  "idaEvidenceId": "E-IDA-038",
+  "decision": "joint-rebuild-db6c0-static-trace",
+  "algorithmImplemented": false,
+  "autocadL2": "not_run",
+  "oldRuntimeAutomaticallyLaunched": false,
+  "haspInstalledAutomatically": false,
+  "systemDirectoryModifiedAutomatically": false,
+  "appBusinessCodeModified": false,
+  "xhighReview": "completed; critical_fixed; important_fixed",
+  "idaSupplement": {
+    "database": "visualts_i64_todo051",
+    "module": "VisualTS.exe",
+    "hexraysReady": true,
+    "functionsCovered": [
+      "sub_1405DB6C0",
+      "sub_1405DBE20",
+      "sub_1405DC6E0",
+      "sub_1405DC840",
+      "sub_1405E06F0",
+      "sub_1405E05A0",
+      "sub_1405E1E70",
+      "sub_1405D36D0",
+      "sub_14054C2C0",
+      "sub_14054C820",
+      "sub_1405BBEF0",
+      "sub_1405DC870",
+      "sub_1405DC6C0"
+    ],
+    "childFields": {
+      "childPlus88": "generated joint geometry/display chain head",
+      "childPlus108": "JointRuler/period integer mm",
+      "childPlus112": "normalized phase/position integer mm modulo period",
+      "childPlus116": "reverse flag"
+    },
+    "nodeFields": {
+      "nodePlus72": "EDGE pointer",
+      "nodePlus80": "owner/head for predecessor lookup",
+      "nodePlus88": "next generated-chain node",
+      "nodePlus104": "multi-edge connection point participant",
+      "nodePlus112": "summed by sub_1405DC6C0, business name open"
+    },
+    "db6c0MainFlow": [
+      "clear old child+88 chain via sub_1405DBE20",
+      "periodM = child+108 / 1000.0",
+      "phaseM = sub_1405DC6E0(child) / 1000.0",
+      "phaseM less than 0.02 falls back to periodM",
+      "child+116 starts traversal from tail via sub_1405DC840",
+      "iterate EDGE in node+72 with node+88 or predecessor traversal",
+      "accumulate EDGE::length(edge, 1)",
+      "get bounded curve and evaluate point via bounded_curve vfunc(+64)",
+      "call direct_render_mesh_manager::end_indexed_polygon with rcx=node, rdx=SPAposition*, r8d=int_mm_index"
+    ],
+    "callers": {
+      "sub_1405DFAA0": "barjointnew-like batch new entry writes +108/+112/+116 then rebuild",
+      "sub_1405DFEF0": "barjointmove-like single-object move writes +112 then rebuild",
+      "sub_1405E02D0": "barjointrev-like single-object reverse toggles +116 then rebuild",
+      "sub_1405E9640": "groupjointnew writes period/phase/reverse for each child then rebuild",
+      "sub_1405EBA30": "groupjointmove writes phase/reverse for each child then rebuild",
+      "sub_1405ED6C0": "groupjointrev toggles reverse for each child then rebuild"
+    },
+    "stopPoints": [
+      "owning structure names and node+112 business name remain open",
+      "JoingSegDlg Dialog #428 OK/apply handler remains open",
+      "old UI caption/context menu binding remains open",
+      "runtime non-empty steeljoint-line/Others sample not collected",
+      "AutoCAD L2 not run",
+      "real steeljoint-line and Others geometry algorithms not implemented"
+    ]
+  },
+  "verification": {
+    "todoCsvParse": "pass; next=TODO-057; TODO-056=done",
+    "gitDiffCheck": "pass; CRLF/LF warnings only, no content errors",
+    "readinessGateStrict": "pass; M1-Formal-Ready; 84/84 pass",
+    "boundaryScan": {
+      "domainRebar": "pass",
+      "drawing": "pass",
+      "project": "pass"
+    },
+    "ctest": "pass; 18/18 pass",
+    "relationshipTrace": "pass; REQ-DRAW-003/REQ-PROJ-001/REQ-TECH-002 include E-IDA-038/E-DEV-078 and status M2Drawing025JointRebuildCoreTraced"
+  },
+  "next": {
+    "todoId": "TODO-057",
+    "task": "接头 DB6C0 owning 结构与 Dialog #428 确定链补证 P0"
+  }
+}

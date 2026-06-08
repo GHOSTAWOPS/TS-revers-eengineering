@@ -3293,3 +3293,201 @@ golden。
 ```text
 TODO-056 / 接头重建几何核心 sub_1405DB6C0 静态深追 P0
 ```
+
+## TODO-056 接头重建几何核心 sub_1405DB6C0 静态深追
+
+证据编号：
+
+```text
+E-IDA-038
+```
+
+IDA 会话：
+
+```text
+database = visualts_i64_todo051
+input = C:\Users\ghost\Desktop\reverse_engineering\【03】图石软件\VisualTS.exe.i64
+module = VisualTS.exe
+hexrays_ready = true
+```
+
+本轮覆盖函数：
+
+```text
+sub_1405DB6C0  -> 接头生成链几何重建核心
+sub_1405DBE20  -> 清 child+88 旧生成链
+sub_1405DC6E0  -> 读取 child+112 % child+108
+sub_1405DC840  -> 沿 child+88 / node+88 链找尾节点
+sub_1405E06F0  -> 统计 child+88 / node+88 链节点数
+sub_1405E05A0  -> 取末端参考点
+sub_1405E1E70  -> 取起端参考点
+sub_1405D36D0  -> 多段链连接点 / 位置分类 helper
+sub_14054C2C0  -> 两条 EDGE 的连接点 / 最近点 helper
+sub_14054C820  -> 两条 EDGE 的保守端点连接 helper
+sub_1405BBEF0  -> 沿 owner/head 的 node+88 链找当前节点前驱
+sub_1405DC870  -> 旧链总长度估算 helper
+sub_1405DC6C0  -> 累加生成链节点 +112
+```
+
+### sub_1405DB6C0 主流程
+
+```text
+sub_1405DBE20(child)             // 先清旧生成链
+node = *(child+88)
+period = *(int *)(child+108)     // mm
+phase = sub_1405DC6E0(child)     // child+112 % child+108, mm
+periodM = period / 1000.0
+phaseM = phase / 1000.0
+if phaseM < 0.02:
+  phaseM = periodM
+
+if child+116 reverse:
+  node = sub_1405DC840(child)    // 找尾节点
+
+while node:
+  edge = *(node+72)
+  directionFlag = calc via single/multi chain reference points
+  edgeLen = EDGE::length(edge, 1)
+
+  if phaseM <= accumulated + edgeLen:
+    bounded_curve = get_bounded_curve(edge, 1)
+    scale = linear ? 1.0 : (paramEnd - paramStart) / edgeLen
+    curveParam = start + distance*scale OR end - distance*scale
+    point = bounded_curve.vfunc(+64)(curveParam)
+    index = int(phaseM * 1000 + 0.5)
+    end_indexed_polygon(node, point, index)
+    phaseM = periodM for subsequent points
+
+  node = reverse ? sub_1405BBEF0(node) : *(node+88)
+```
+
+关键常量：
+
+```text
+0x1408bbab8 = 1000.0
+0x14075a798 = 0.02
+0x1408bba30 = 0.5
+0x1408bba40 = 1.0
+```
+
+### end_indexed_polygon 调用点
+
+Hex-Rays 对 `direct_render_mesh_manager::end_indexed_polygon` 的原型不完整。
+
+以 `sub_1405DB6C0` 调用点寄存器为准：
+
+```text
+0x1405dbb1b  mov r8d, ebx       -> int mm index
+0x1405dbb1e  mov rcx, rsi       -> generated-chain node
+0x1405dbb21  mov rdx, rax       -> SPAposition*
+0x1405dbb24  call direct_render_mesh_manager::end_indexed_polygon
+```
+
+结论：
+
+```text
+rcx = generated-chain node
+rdx = SPAposition*
+r8d = int mm index
+```
+
+不能声明完整类原型已恢复，只能声明该调用点语义已确认。
+
+### helper 语义
+
+```text
+sub_1405DBE20(child):
+  遍历 child+88 / node+88，逐个 sub_1405B9640(node)，用于重建前清旧链。
+
+sub_1405DC6E0(child):
+  period = *(int *)(child+108)
+  phase = *(uint *)(child+112)
+  return period ? phase % period : phase
+
+sub_1405DC840(child):
+  从 child+88 沿 node+88 找尾节点。
+
+sub_1405BBEF0(node):
+  从 *(node+80)+88 的链头开始找当前 node 的前驱。
+
+sub_1405E06F0(child):
+  统计 child+88 / node+88 节点数，DB6C0 用它区分单段链和多段链。
+
+sub_1405E05A0(child):
+  无链返回 0,0,0；单节点返回 *(child+80)+192；多节点用末端 node+104 调 sub_1405D36D0。
+
+sub_1405E1E70(child):
+  无链返回 0,0,0；单节点返回 *(child+80)+168；多节点用首节点 node+104 调 sub_1405D36D0。
+
+sub_1405D36D0:
+  返回 0/1/2/3 或 -1 的位置分类。
+  分类 1/2 调 sub_14054C820。
+  分类 3 且有当前 node 时，按 a4 选择前驱或后继 EDGE，再调 sub_14054C2C0。
+
+sub_14054C2C0:
+  先判断四种端点 same_point。
+  a4 为真时可调用 api_entity_entity_distance 得到最近点。
+  a4 为假时在四个端点距离里选最近端点。
+
+sub_14054C820:
+  保守地在两条 EDGE 的端点之间选连接点。
+```
+
+### DB6C0 code callers
+
+```text
+sub_1405DFAA0  -> barjointnew 类批量新建入口，写 +108/+112/+116 后 rebuild
+sub_1405DFEF0  -> barjointmove 类单对象移动入口，写 +112 后 rebuild
+sub_1405E02D0  -> barjointrev 类单对象反向入口，切换 +116 后 rebuild
+sub_1405E9640  -> groupjointnew，逐 child 写 period/phase/reverse 后 rebuild
+sub_1405EBA30  -> groupjointmove，逐 child 写 phase/reverse 后 rebuild
+sub_1405ED6C0  -> groupjointrev，逐 child 切换 reverse 后 rebuild
+```
+
+### 字段语义更新
+
+```text
+child+88  = generated chain head
+child+108 = period / JointRuler, int mm
+child+112 = phase / position, int mm modulo period
+child+116 = reverse flag
+
+node+72   = EDGE*
+node+80   = owner/head for predecessor lookup
+node+88   = next generated-chain node
+node+104  = multi-edge connection point participant
+node+112  = summed by sub_1405DC6C0; business name still open
+```
+
+### 本轮 stop point
+
+已闭合：
+
+```text
+DB6C0 的清旧链、period/phase/reverse 字段驱动。
+正向 / 反向遍历方式。
+单段 / 多段链连接点 helper。
+EDGE::length + get_bounded_curve + bounded_curve vfunc(+64) 取点。
+linear edge scale = 1.0，非线性 edge 用参数区间 / 长度换算。
+end_indexed_polygon 调用点的 rcx/rdx/r8d 语义。
+barjoint/groupjoint new/move/rev caller 集合。
+```
+
+仍未闭合：
+
+```text
+DB6C0 owning 结构名和 node+112 业务名。
+JoingSegDlg Dialog #428 确定按钮后的 segjoint 创建链。
+旧 UI caption / 右键菜单项绑定。
+旧图石非空 steeljoint-line / Others 运行样例。
+AutoCAD L2 接受度。
+真实接头线算法。
+真实 Others 几何算法。
+golden。
+```
+
+后续建议：
+
+```text
+TODO-057 / 接头 DB6C0 owning 结构与 Dialog #428 确定链补证 P0
+```
