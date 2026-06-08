@@ -2285,3 +2285,189 @@ Others / symbolcutIOS 的 producer 链已从 writer 继续追到 HVIEWPORT +840/
 - `rebarz` / `rebarpost` 业务含义未闭合。
 - 顶部 Ribbon 按钮和英文命令并非一一对应，需要结合运行界面确认。
 - `生成工程图` 顶部按钮的命令表入口仍需继续追。
+
+
+## TODO-052 接头 UI caption / Ribbon 绑定静态资源补证
+
+Evidence ID：
+
+- `E-IDA-034`
+
+本轮使用 IDA MCP 会话：
+
+```text
+database = visualts_i64_todo051
+input = C:\Users\ghost\Desktop\reverse_engineering\【03】图石软件\VisualTS.exe.i64
+hexrays_ready = true
+```
+
+本轮目标不是实现接头线算法，也不是启动旧图石采样，
+而是在 `TODO-051` 已闭合 `Others / symbolcutIOS` producer 静态链后，
+继续静态缩小接头 UI caption / Ribbon 绑定缺口。
+
+### 接头 command id 表
+
+当前确认的接头内部命令：
+
+```text
+0x8CCE / 36046 -> barjointnew
+0x8CCF / 36047 -> barjointclear
+0x8CD0 / 36048 -> barjointmove
+0x8CD1 / 36049 -> barjointrev
+
+0x8CDD / 36061 -> groupjointnew
+0x8CDE / 36062 -> groupjointclear
+0x8CDF / 36063 -> groupjointrev
+0x8CE0 / 36064 -> groupjointmove
+
+0x8CD9 / 36057 -> goujianjointnew
+0x8CDA / 36058 -> goujianjointclear
+
+0x8D91 / 36241 -> segjointnew
+0x8D92 / 36242 -> segjointclear
+
+0x8CD7 / 36055 -> featjointnew
+0x8CD8 / 36056 -> featjointclear
+```
+
+### 接头 handler 表
+
+当前确认：
+
+```text
+barjointnew       -> sub_1405DFAA0, aux 0
+barjointclear     -> sub_1405DF710, aux 0
+barjointmove      -> sub_1405DFEF0, aux 0
+barjointrev       -> sub_1405E02D0, aux 0
+
+groupjointnew     -> sub_1405F0060, aux sub_14054AF20
+groupjointclear   -> sub_1405EFCC0, aux sub_14054AF20
+groupjointrev     -> sub_1405F0850, aux sub_14054AF20
+groupjointmove    -> sub_1405F0430, aux sub_14054AF20
+
+featjointnew      -> sub_1405EF140, aux sub_14054AE20
+featjointclear    -> sub_1405EEDA0, aux sub_14054AE20
+
+segjointnew       -> sub_1405D94C0, aux sub_14054B410
+segjointclear     -> sub_1405D9450, aux sub_14054B410
+
+goujianjointnew   -> sub_1405EF8D0, aux sub_14045A020
+goujianjointclear -> sub_1405EF510, aux sub_14045A020
+```
+
+关键 xref：
+
+```text
+0x140768480 "barjointnew" -> 0x140959328, 0x14095ae70
+0x1407684c0 "groupjointnew" -> 0x140959368, 0x14095aed0
+0x140768508 "segjointnew" -> 0x1409593a8, 0x14095af30
+0x140768528 "featjointnew" -> 0x1409593c8, 0x14095af00
+0x140768548 "groupjointrev" -> 0x1409593e8, 0x14095af90
+```
+
+### Ribbon 构造函数 stop point
+
+`sub_1406F37B0` 当前确认构造 Codejock Ribbon：
+
+```text
+CXTPRibbonBar
+CXTPRibbonTab
+CXTPRibbonGroup
+CXTPControls::Add
+```
+
+对照命令 ID 能命中：
+
+```text
+36124 / 0x8D1C -> found in sub_1406F37B0
+35100 / bdiv   -> found in sub_1406F37B0
+35103 / gcom   -> found in sub_1406F37B0
+```
+
+接头命令 ID 做 immediate 搜索：
+
+```text
+36046,36047,36048,36049,
+36061,36062,36063,36064,
+36057,36058,
+36241,36242,
+36055,36056
+
+=> no immediate matches
+```
+
+保守结论：
+
+```text
+接头命令 ID 未像 0x8D1C / 35100 / 35103 一样，
+以普通 immediate 形式直接出现在 sub_1406F37B0 的 Ribbon 构造路径里。
+
+这不证明旧 UI 没有接头入口。
+它只说明已检查的顶部 Ribbon 构造函数不能闭合接头中文 caption / Ribbon 绑定。
+```
+
+### 字符串和资源证据
+
+普通字符串仍未命中：
+
+```text
+接头
+搭接
+焊接
+新建接头
+移动接头
+清除接头
+钢筋接头
+```
+
+静态资源能确认接头参数 dialog：
+
+```text
+Dialog #427 title = 下料
+  定尺长度(米)
+  焊接长度(厘米)
+  接头相间距离(米)
+
+Dialog #428 title = 创建段组接头
+  居中
+  首端始
+  尾端始
+  起始位置
+  起点距离
+  定尺长度
+```
+
+资源证据边界：
+
+```text
+Dialog 字段证明旧程序存在接头参数界面。
+但它不能证明顶部 Ribbon caption，也不能证明哪个按钮触发 barjointnew / groupjointnew。
+```
+
+### TODO-052 stop point
+
+当前最稳妥结论：
+
+```text
+接头内部命令和 handler 已确认。
+静态 Ribbon 构造函数未直接闭合接头按钮路径。
+中文 caption 未从普通字符串直接命中。
+接头参数 dialog 存在，但不能替代 UI trigger 证据。
+```
+
+后续需要：
+
+```text
+继续查右键 / 对象上下文菜单、command dispatch、message map、Codejock command bar 加载路径；
+或者由用户在旧图石可运行时截图确认按钮 / 右键菜单 / 弹窗标题。
+```
+
+本轮不能过度推断：
+
+```text
+- 不能声明旧 UI caption 已闭合。
+- 不能声明旧 UI 没有接头入口。
+- 不能声明非空 steeljoint-line / Others 运行样例已采到。
+- 不能声明真实接头线 / Others 几何算法已实现。
+- 不能声明 AutoCAD L2 已通过。
+```

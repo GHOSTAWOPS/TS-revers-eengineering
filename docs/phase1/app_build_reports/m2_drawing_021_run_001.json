@@ -1,0 +1,106 @@
+{
+  "todoId": "TODO-052",
+  "phase": "M2-Drawing-021",
+  "evidenceId": "E-DEV-074",
+  "decision": "static-ui-ribbon-resource-stop-point",
+  "algorithmImplemented": false,
+  "autocadL2": "not_run",
+  "oldRuntimeAutomaticallyLaunched": false,
+  "driverInstalledAutomatically": false,
+  "systemDirectoryModifiedAutomatically": false,
+  "idaSupplement": {
+    "evidenceId": "E-IDA-034",
+    "database": "visualts_i64_todo051",
+    "hexraysReady": true,
+    "ribbonConstructor": "sub_1406F37B0",
+    "ribbonConstructorUses": [
+      "CXTPRibbonBar",
+      "CXTPRibbonTab",
+      "CXTPRibbonGroup",
+      "CXTPControls::Add"
+    ],
+    "knownRibbonImmediatePositiveControls": [
+      36124,
+      35100,
+      35103
+    ],
+    "jointCommandIds": {
+      "barjointnew": 36046,
+      "barjointclear": 36047,
+      "barjointmove": 36048,
+      "barjointrev": 36049,
+      "groupjointnew": 36061,
+      "groupjointclear": 36062,
+      "groupjointrev": 36063,
+      "groupjointmove": 36064,
+      "goujianjointnew": 36057,
+      "goujianjointclear": 36058,
+      "segjointnew": 36241,
+      "segjointclear": 36242,
+      "featjointnew": 36055,
+      "featjointclear": 36056
+    },
+    "jointImmediateMatchesInRibbonConstructor": false,
+    "jointImmediateMatchesGlobalCode": false,
+    "chineseCaptionDirectHit": false,
+    "dialogResources": [
+      {
+        "dialogId": 427,
+        "title": "下料",
+        "fields": [
+          "定尺长度(米)",
+          "焊接长度(厘米)",
+          "接头相间距离(米)"
+        ]
+      },
+      {
+        "dialogId": 428,
+        "title": "创建段组接头",
+        "fields": [
+          "居中",
+          "首端始",
+          "尾端始",
+          "起始位置",
+          "起点距离",
+          "定尺长度"
+        ]
+      }
+    ]
+  },
+  "sampleCollection": {
+    "nonEmptySteeljointLineCollected": false,
+    "nonEmptyOthersSymbolcutIOSCollected": false,
+    "requiresUserManualRuntime": true
+  },
+  "verification": {
+    "todoCsvParse": "pass",
+    "nextTodo": "TODO-053",
+    "blockedTodos": [
+      "TODO-050"
+    ],
+    "gitDiffCheck": "pass_with_line_ending_warning_only",
+    "readinessGateStrict": {
+      "decision": "M1-Formal-Ready",
+      "passCount": 84,
+      "checkCount": 84,
+      "errorCount": 0,
+      "warningCount": 0
+    },
+    "boundaryScan": {
+      "domainRebar": "pass",
+      "drawing": "pass",
+      "project": "pass"
+    },
+    "ctest": {
+      "passed": 18,
+      "failed": 0,
+      "total": 18,
+      "totalTimeSeconds": 176.82
+    }
+  },
+  "next": {
+    "todoId": "TODO-053",
+    "task": "接头 context menu / command dispatch 静态深追 P0"
+  },
+  "xhighReview": "not_required_docs_only"
+}

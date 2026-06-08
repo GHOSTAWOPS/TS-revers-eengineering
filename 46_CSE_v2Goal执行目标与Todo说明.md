@@ -750,10 +750,20 @@ TODO-051 / Evidence = done
      不声明旧 UI caption、非空运行样例、真实接头线算法、
      Others 几何算法、AutoCAD L2 或 golden。
 
-TODO-052 / Evidence = next
-  -> 继续静态补证接头 UI caption / Ribbon 绑定。
-  -> 尝试追中文 caption、Codejock / Ribbon 资源、command id 到 handler 的绑定；
-     如果静态仍不能闭合，就形成用户旧图石运行截图最小清单。
+TODO-052 / Evidence = done
+  -> 已补 `E-IDA-034 / E-DEV-074`，
+     确认接头内部 command id / handler 表更完整，
+     `sub_1406F37B0` Ribbon 构造函数未直接命中接头命令 ID。
+  -> Dialog #427/#428 只证明接头参数字段存在；
+     不能证明旧 UI caption 或 Ribbon / 右键触发路径。
+  -> 本节点只补静态 UI/Ribbon stop point；
+     不声明旧运行样例、真实算法、AutoCAD L2 或 golden。
+
+TODO-053 / Evidence = next
+  -> 继续静态深追接头 context menu / command dispatch。
+  -> 尝试追 message map、ON_COMMAND、popup/context menu、
+     Codejock command bar 加载路径；如果静态仍不能闭合，
+     就保留用户旧图石运行截图最小清单。
   -> 不自动启动旧图石，不安装 HASP，不实现真实接头线 / Others 几何算法。
 ```
 
@@ -1079,13 +1089,14 @@ TODO-046 验证 = JointWeldLength half-length formula closed, pattern raw byte =
 TODO-047 验证 = VisualTS startup stop point recorded, mainWindowTitle=提示, visible text prefix=请检查网线是否..., SFL not opened, runtime non-empty sample not collected, autocadL2=not_run, CTest 18/18 pass, readiness 84/84 pass, OCCT leak scan pass, xhigh not_required_docs_only
 TODO-048 验证 = startup chain closed, error41=许可已过期, otherNonZeroFallback=请检查网线是否接好, manualPrereqChecklistReady=true, autocadL2=not_run, CTest 18/18 pass, readiness 84/84 pass, OCCT leak scan pass, xhigh not_required_docs_only
 TODO-051 验证 = symbolcutIOS producer chain traced, HVIEWPORT+840/+848 producer confirmed, uiChineseCaptionClosed=false, nonEmptyRuntimeSampleCollected=false, autocadL2=not_run, CTest 18/18 pass, readiness 84/84 pass, OCCT leak scan pass, xhigh not_required_docs_only
+TODO-052 验证 = static UI/Ribbon stop point, joint command handler table traced, direct Ribbon immediate hit=false, dialog resources confirmed, uiChineseCaptionClosed=false, nonEmptyRuntimeSampleCollected=false, autocadL2=not_run, CTest 18/18 pass, readiness 84/84 pass, OCCT leak scan pass, xhigh not_required_docs_only
 ```
 
 当前下一步：
 
 ```text
-TODO-052 / 接头 UI caption / Ribbon 绑定静态资源补证 P0
-  -> TODO-051 已确认 symbolcutIOS producer 链
+TODO-053 / 接头 context menu / command dispatch 静态深追 P0
+  -> TODO-052 已完成接头 UI/Ribbon 直接绑定静态 stop point
   -> TODO-050 继续 blocked，等待用户现场旧图石非空运行样例
   -> 不自动启动旧图石，不安装 HASP
   -> 只做 IDA / 静态资源 / 文档补证
@@ -1098,7 +1109,7 @@ TODO-052 / 接头 UI caption / Ribbon 绑定静态资源补证 P0
 TODO-051 已把 symbolcutIOS producer 链静态收敛。
 当前真正缺的是旧 UI 中文 caption / Ribbon 绑定和旧图石非空运行样例。
 非空运行样例继续依赖用户现场 USB 狗 + HASP + 旧图石手工导出。
-所以 agent 下一轮先做可独立推进的 TODO-052 静态 UI/Ribbon 补证。
+所以 agent 下一轮先做可独立推进的 TODO-053 静态 dispatch 深追。
 golden 采集 TODO-026 暂按用户要求保持 pending。
 ```
 
@@ -1164,19 +1175,19 @@ golden 采集 TODO-026 暂按用户要求保持 pending。
 
 ## CSE v2 Control Contract
 
-- **Primary Setpoint**：下一轮只完成 `TODO-052 / 接头 UI caption / Ribbon 绑定静态资源补证 P0`，在不自动启动旧图石的前提下继续用 IDA MCP / 静态资源缩小接头 UI 触发路径缺口。
-- **Acceptance**：形成 `E-IDA-034 / E-DEV-074` 或等价证据；至少尝试追中文 caption、Codejock / Ribbon 资源、command id 到 handler 的绑定；若静态无法闭合，则记录明确 stop point 和用户旧图石运行截图最小清单；默认 CTest、readiness gate、OCCT 泄漏检查通过；按需执行 xhigh 只读 review；更新实现记录、build report、追溯矩阵、缺口文档、46 和 todo。
-- **Guardrail Metrics**：不能实现真实接头线 / Others 几何算法；不能在没有运行证据时声明 AutoCAD L2 通过；不能把英文内部命令名直接写成中文 UI caption；不能改钢筋创建业务；不能迁入父目录 rebar 业务；不能进入 golden 全量采集。
-- **Sampling Plan**：先读 `todo.csv / 03 / 11 / 34 / 86 / 87 / 99`，确认 `TODO-051` 已完成 producer 静态补证且 `TODO-050` 仍 blocked，再用 IDA MCP / 静态资源查询接头中文 caption、Ribbon / Codejock 绑定、command id 和 handler xref；agent 不自动启动旧图石；最后运行默认 CTest、readiness gate 和 OCCT 泄漏扫描，证明本轮没有破坏工程基线。
+- **Primary Setpoint**：下一轮只完成 `TODO-053 / 接头 context menu / command dispatch 静态深追 P0`，在不自动启动旧图石的前提下继续用 IDA MCP / 静态资源缩小接头命令从内部 handler 到 UI 触发路径的缺口。
+- **Acceptance**：形成 `E-IDA-035 / E-DEV-075` 或等价证据；至少尝试追 command dispatch、message map、ON_COMMAND、popup/context menu、Codejock command bar / menu 加载路径；若静态无法闭合，则记录明确 stop point 和用户旧图石运行截图最小清单；默认 CTest、readiness gate、OCCT 泄漏检查通过；按需执行 xhigh 只读 review；更新实现记录、build report、追溯矩阵、缺口文档、46 和 todo。
+- **Guardrail Metrics**：不能实现真实接头线 / Others 几何算法；不能在没有运行证据时声明 AutoCAD L2 通过；不能把英文内部命令名直接写成中文 UI caption；不能把 Dialog #427/#428 字段当成按钮绑定；不能改钢筋创建业务；不能迁入父目录 rebar 业务；不能进入 golden 全量采集。
+- **Sampling Plan**：先读 `todo.csv / 03 / 11 / 34 / 86 / 87 / 88 / 99`，确认 `TODO-052` 已完成 Ribbon 直接绑定 stop point 且 `TODO-050` 仍 blocked，再用 IDA MCP / 静态资源查询 command dispatch、context menu、message map、Codejock command bar 加载路径；agent 不自动启动旧图石；最后运行默认 CTest、readiness gate 和 OCCT 泄漏扫描，证明本轮没有破坏工程基线。
 - **Known Delays**：非空旧运行样例仍依赖用户现场手工操作；静态资源可能仍无法反推出中文 caption，需要旧界面截图配合闭合。
-- **Recovery Target**：如果静态资源无法继续推进，把阻塞位置、缺失 xref 或 session 状态写入 `99` 和 build report，不继续猜 UI caption、不堆后续工程图实现。
+- **Recovery Target**：如果 command dispatch / context menu 静态路径无法继续推进，把阻塞位置、缺失 xref 或 session 状态写入 `99` 和 build report，不继续猜 UI caption、不堆后续工程图实现。
 - **Rollback Trigger**：无证据实现接头线 / Others / 工程图算法；把字段骨架或 IDA 命令表当成旧插件接受证明；无运行证据声明 L2 通过；让 `domain/rebar` 泄漏 OCCT/AIS；测试或 gate 失败仍继续堆功能。
 - **Constraints**：不使用 ACIS / HOOPS / Codejock 等商业库；新系统不引入 USB 狗 / 网络许可依赖；旧逻辑不确定时优先查 IDA MCP 或旧图石运行确认；xhigh 只读，修改由主流程 agent 完成；不自动再次启动旧图石。
 - **Boundary**：下一轮只允许 IDA / 静态资源证据、运行截图模板、文档、追溯、缺口、46/todo 必要更新；禁止实现真实 OCCT HLR/section/hidden-line/steeljoint-line/Others 算法、禁止修改 UI 新功能、钢筋创建业务、无证据 AutoCAD L2 结论和 golden。
-- **Coupling Notes**：`drawing/export` 是 Detail 包输出边界；TODO-052 只补旧图石 UI/Ribbon 静态证据，不关闭旧插件容忍度、AutoCAD L2、隐藏线 / 填充线算法或完整工程图缺口。
-- **Approximation Validity**：TODO-052 的产物是静态 UI/Ribbon 证据或 stop point，不是旧图石运行样例；即使命中 command id，也不代表真实接头线 / Others 几何算法已经闭合。
-- **Actuator Budget**：下一轮只推进 `TODO-052`。完成后停止复盘，不自动进入真实算法实现、隐藏线、填充线、点筋、FaceEdge 或 golden。
-- **Risks**：IDA 可能无法直接反推出中文 UI caption；接头命令表和 Codejock Ribbon 绑定可能需要旧界面运行截图配合闭合。
+- **Coupling Notes**：`drawing/export` 是 Detail 包输出边界；TODO-053 只补旧图石 command dispatch / context menu 静态证据，不关闭旧插件容忍度、AutoCAD L2、隐藏线 / 填充线算法或完整工程图缺口。
+- **Approximation Validity**：TODO-053 的产物是静态触发路径证据或 stop point，不是旧图石运行样例；即使命中 command dispatch，也不代表真实接头线 / Others 几何算法已经闭合。
+- **Actuator Budget**：下一轮只推进 `TODO-053`。完成后停止复盘，不自动进入真实算法实现、隐藏线、填充线、点筋、FaceEdge 或 golden。
+- **Risks**：IDA 可能无法直接反推出中文 UI caption；接头命令表和 Codejock / context menu 绑定可能需要旧界面运行截图配合闭合。
 ## Todo CSV 使用方式
 
 `todo.csv` 是后续执行看板。建议每次 goal 模式只拿 `status=next` 或最高优先级 `pending` 的任务推进。
@@ -1201,15 +1212,15 @@ golden 采集 TODO-026 暂按用户要求保持 pending。
 下一步优先执行：
 
 ```text
-TODO-052 / 接头 UI caption / Ribbon 绑定静态资源补证 P0
-  -> TODO-051 已完成 symbolcutIOS producer 静态补证
+TODO-053 / 接头 context menu / command dispatch 静态深追 P0
+  -> TODO-052 已完成接头 UI/Ribbon 直接绑定静态 stop point
   -> TODO-050 继续 blocked，等待用户现场旧图石运行样例
   -> 不自动启动旧图石
-  -> 用 IDA MCP / 静态资源继续查中文 caption、Ribbon / Codejock 绑定、
-     command id 到 handler 的关系
+  -> 用 IDA MCP / 静态资源继续查 command dispatch、message map、
+     右键 / 对象上下文菜单、Codejock command bar 加载路径
   -> 只补静态证据和剩余 GAP；不实现真实接头线 / Others 几何算法，
      不声明 AutoCAD L2 通过，不进入 golden
 ```
 
-原因很简单：TODO-051 已经把 `Others / symbolcutIOS` producer 链追深；当前还缺旧 UI 中文按钮 / Ribbon 绑定和真实非空运行样例。运行样例仍依赖用户现场 USB 狗 + HASP + 旧图石手工导出，所以 agent 下一步先做可独立推进的静态 UI/Ribbon 补证。
+原因很简单：TODO-052 已经把接头 UI/Ribbon 直接绑定追到静态 stop point；当前还缺右键 / 对象上下文菜单 / command dispatch 触发路径和真实非空运行样例。运行样例仍依赖用户现场 USB 狗 + HASP + 旧图石手工导出，所以 agent 下一步先做可独立推进的静态 dispatch 深追。
 TODO-026 golden 采集暂按用户要求保持 pending。
