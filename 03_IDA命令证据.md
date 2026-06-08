@@ -3710,3 +3710,245 @@ golden。
 ```text
 TODO-058 / JoingSegDlg message map 与 child/node+112 字段收口 P1
 ```
+
+## TODO-058 JoingSegDlg message map 与 child/node+112 字段收口
+
+证据编号：
+
+```text
+E-IDA-040
+```
+
+IDA 会话：
+
+```text
+database = visualts_i64_todo051
+input = C:\Users\ghost\Desktop\reverse_engineering\【03】图石软件\VisualTS.exe.i64
+module = VisualTS.exe
+hexrays_ready = true
+```
+
+### JoingSegDlg message map 静态表
+
+静态链：
+
+```text
+sub_14045D6F0 -> sub_14045D700 -> &off_14075B110
+
+off_14075B110:
+  +0x00 -> 0x140709724 = CDialog::GetThisMessageMap
+  +0x08 -> 0x14075B090 = JoingSegDlg message entries
+```
+
+`0x14075B090` 的 entries 可按 32 字节一项稳定解码为：
+
+```text
+entry0:
+  message = 0x0111 (WM_COMMAND)
+  id      = 0x0564 = 1380
+  lastId  = 0x0564 = 1380
+  sig     = 0x3A
+  handler = sub_14045DA00 -> dialog+304 = 0
+
+entry1:
+  message = 0x0111 (WM_COMMAND)
+  id      = 0x0568 = 1384
+  lastId  = 0x0568 = 1384
+  sig     = 0x3A
+  handler = sub_14045DA10 -> dialog+304 = 1
+
+entry2:
+  message = 0x0111 (WM_COMMAND)
+  id      = 0x0565 = 1381
+  lastId  = 0x0565 = 1381
+  sig     = 0x3A
+  handler = sub_14045DA20 -> dialog+304 = 2
+
+terminator:
+  all zero
+```
+
+工程含义：
+
+```text
+JoingSegDlg 自己的静态 message map 当前只闭合出 3 个 radio 模式切换命令。
+它们与 sub_14045D650 的 DDX_Radio(control 1380) 以及
+sub_14045DA00 / DA10 / DA20 的 mode=0/1/2 写回完全对齐。
+```
+
+### Apply / OK / Cancel 的静态边界
+
+本轮复核点：
+
+```text
+sub_14045D700   -> 返回 message map
+sub_14045D720   -> OnOK
+sub_14045DFF0   -> OnInitDialog
+sub_14045DA00   -> radio 0
+sub_14045DA10   -> radio 1
+sub_14045DA20   -> radio 2
+```
+
+高置信结论：
+
+```text
+1. message map 里没有单独的 WM_COMMAND entry 命中：
+   IDOK(1)
+   IDCANCEL(2)
+   Apply-like 自定义按钮 id
+
+2. sub_14045DFF0 只明确操作：
+   GetDlgItem(1) / GetDlgItem(2)   // 默认 OK / Cancel 位置调整
+   以及一批参数相关控件的 ShowWindow(0)
+
+3. sub_14045D720 已明确是 JoingSegDlg::OnOK。
+```
+
+当前最稳妥的 stop point：
+
+```text
+可以高置信说：
+  Dialog #428 走默认 OK / Cancel 框架，
+  JoingSegDlg 自己额外声明了 3 个 radio handler，
+  但静态上没有独立 Apply handler 证据。
+
+还不能高置信说：
+  旧界面绝对不存在 Apply 按钮
+  或某个运行期构造按钮一定复用/分离于 OnOK
+```
+
+### Dialog #428 的资源 / 控件 xref 边界
+
+当前已能稳定闭合的 dialog 资源级线索：
+
+```text
+sub_14045D580:
+  CDialog::CDialog(dialog, 0x1AC, parent)   // 0x1AC = 428
+
+sub_14045D650:
+  DDX_Radio(..., 1380, dialog+304)
+  DDX_Text (..., 1426, dialog+308)
+  DDX_Text (..., 1283, dialog+312)
+  DDV_MinMaxFloat(..., 0.01, 15000.0)
+
+sub_14045DFF0:
+  GetDlgItem(1) / GetDlgItem(2)
+  ShowWindow(0):
+    1261/1262/1263/1264
+    1330/1331/1332/1333
+    1402/1403/1404/1405
+    1481/1479/1480
+```
+
+工程含义：
+
+```text
+Dialog #428 的参数区、radio 控件和一批可隐藏扩展控件已经有稳定控件 id 证据，
+但这些资源级 xref 仍不能直接推出旧中文 caption、
+右键菜单文案或运行期按钮文字。
+```
+
+### child+112 与 generated node+112 的最终静态边界
+
+`child+112` 继续保持前一轮结论：
+
+```text
+child+112:
+  -> 写回路径：sub_1405E1CC0
+  -> 读取路径：sub_1405DC6E0(child) = child+112 % child+108
+  -> 当前最稳妥业务边界：
+       phase / position / 起始偏移，int mm，按 period 归一化
+```
+
+本轮把 `generated node+112` 再收紧一层：
+
+```text
+sub_1405DC6C0(a1):
+  generated = *(a1+88)
+  sum += generatedNode+112
+
+caller coverage:
+  sub_1405DBC20  -> 用 sum(generated node+112) 决定字符串拼接路径
+  sub_1405DFEF0  -> 先要求 sum(generated node+112) >= 1，之后做 phase 写回再 DB6C0
+  sub_1405E02D0  -> 先要求 sum(generated node+112) >= 1，之后 clear/rebuild
+  sub_1405EAEC0  -> 对 group/seg 子链继续累加 sub_1405DC6C0(child)
+  sub_1406F72A0  -> 状态栏/展示路径里读取 sub_1405DC6C0
+```
+
+所以当前能高置信声明：
+
+```text
+generated node+112:
+  -> 位于 child+88 生成链节点上
+  -> 是一个 int mm 贡献字段
+  -> 会被 sub_1405DC6C0 汇总
+  -> 汇总值会进入字符串格式化、状态显示和 rebuild 前置判断
+```
+
+当前仍不能高置信声明：
+
+```text
+generated node+112 的旧业务调试名
+generated node+112 在旧 UI 上的最终中文展示名称
+```
+
+因此本轮最终口径是：
+
+```text
+child+112
+  = dialog/业务写回的 phase / position / 起始偏移
+
+generated node+112
+  = 生成链节点上的 int mm 贡献字段，供聚合/显示/判断使用
+  = 业务调试名仍未闭合
+```
+
+### 最小运行确认清单
+
+如果后续用户现场可以运行旧图石，最小补证清单收敛为：
+
+```text
+1. 打开 segjointnew / Dialog #428，
+   截全窗口，必须包含标题栏和底部按钮区。
+
+2. 确认底部按钮：
+   只有 OK/Cancel，还是还有 Apply / 应用 / 预览类按钮。
+
+3. 切换 3 个 radio 模式，
+   记录是否存在“不点确定也立即生效”的行为。
+
+4. 输入两个数值框后确定，
+   重新打开同一对象，记录参数是否回显，
+   并截图状态栏/尺寸串是否变化。
+```
+
+### 本轮 stop point
+
+已闭合：
+
+```text
+JoingSegDlg 自身静态 message map。
+3 个 radio handler 的 id / handler / mode 写回关系。
+Dialog #428 资源控件 id 的静态边界。
+child+112 与 generated node+112 的分层边界。
+standalone Apply 未在 JoingSegDlg 自身静态表中出现。
+```
+
+仍未闭合：
+
+```text
+generated node+112 的最终业务调试名。
+旧中文 caption / 右键菜单项绑定。
+运行期是否存在静态表外的 Apply 形态按钮。
+旧图石非空运行样例。
+AutoCAD L2 通过。
+真实接头线算法。
+真实 Others 几何算法。
+golden。
+```
+
+下一步登记为：
+
+```text
+TODO-059 / generated node+112 展示/状态栏字符串链静态深追 P1
+```

@@ -186,7 +186,7 @@ class Phase1ReadinessGateTests(unittest.TestCase):
 
             self.assertEqual(1, len(report_checks))
             self.assertFalse(report_checks[0].ok)
-            self.assertEqual("warning", report_checks[0].severity)
+            self.assertEqual("error", report_checks[0].severity)
             self.assertIn("GAP-ROUTE-004", report_checks[0].gap)
             self.assertIn("TODO-027", report_checks[0].message)
 
@@ -205,7 +205,7 @@ class Phase1ReadinessGateTests(unittest.TestCase):
 
             self.assertEqual(1, len(report_checks))
             self.assertFalse(report_checks[0].ok)
-            self.assertEqual("warning", report_checks[0].severity)
+            self.assertEqual("error", report_checks[0].severity)
             self.assertIn("GAP-ROUTE-004", report_checks[0].gap)
             self.assertIn("TODO-039", report_checks[0].message)
             self.assertIn("75_M2-Drawing-008DetailWriterSectionLineAutoCADL2运行确认准备P0实现记录.md",
@@ -227,6 +227,7 @@ class Phase1ReadinessGateTests(unittest.TestCase):
             reports_dir = root / "docs" / "phase1" / "app_build_reports"
             reports_dir.mkdir(parents=True, exist_ok=True)
             (reports_dir / "m2_drawing_026_run_001.md").write_text("# stub\n", encoding="utf-8")
+            (reports_dir / "m2_drawing_026_run_001.json").write_text("{}\n", encoding="utf-8")
 
             checks = gate.collect_route_guardrail_checks(root)
             report_checks = [check for check in checks if check.item == "done_node_reports"]
@@ -234,6 +235,121 @@ class Phase1ReadinessGateTests(unittest.TestCase):
             self.assertEqual(1, len(report_checks))
             self.assertTrue(report_checks[0].ok)
             self.assertIn("checked_done_nodes=1", report_checks[0].message)
+
+    def test_route_guardrail_accepts_todo058_done_report(self):
+        tmp, root = self.make_guardrail_root()
+        with tmp:
+            (root / "todo.csv").write_text(
+                '"id","priority","phase","task","status","goal_setpoint","acceptance","boundary","evidence","dependencies","risk","notes"\n'
+                '"TODO-058","P2","Evidence","JoingSegDlg message map 与 child/node+112 字段收口 P1","done","","","","","","",""\n'
+                '"TODO-059","P2","Evidence","next task","next","","","","","","",""\n',
+                encoding="utf-8",
+            )
+            (root / "94_M2-Drawing-027JoingSegDlgMessageMap与ChildNode112字段收口P1实现记录.md").write_text(
+                "# stub\n",
+                encoding="utf-8",
+            )
+            reports_dir = root / "docs" / "phase1" / "app_build_reports"
+            reports_dir.mkdir(parents=True, exist_ok=True)
+            (reports_dir / "m2_drawing_027_run_001.md").write_text("# stub\n", encoding="utf-8")
+            (reports_dir / "m2_drawing_027_run_001.json").write_text("{}\n", encoding="utf-8")
+
+            checks = gate.collect_route_guardrail_checks(root)
+            report_checks = [check for check in checks if check.item == "done_node_reports"]
+
+            self.assertEqual(1, len(report_checks))
+            self.assertTrue(report_checks[0].ok)
+            self.assertIn("checked_done_nodes=1", report_checks[0].message)
+
+    def test_route_guardrail_requires_todo058_done_report_json(self):
+        tmp, root = self.make_guardrail_root()
+        with tmp:
+            (root / "todo.csv").write_text(
+                '"id","priority","phase","task","status","goal_setpoint","acceptance","boundary","evidence","dependencies","risk","notes"\n'
+                '"TODO-058","P2","Evidence","JoingSegDlg message map 与 child/node+112 字段收口 P1","done","","","","","","",""\n'
+                '"TODO-059","P2","Evidence","next task","next","","","","","","",""\n',
+                encoding="utf-8",
+            )
+            (root / "94_M2-Drawing-027JoingSegDlgMessageMap与ChildNode112字段收口P1实现记录.md").write_text(
+                "# stub\n",
+                encoding="utf-8",
+            )
+            reports_dir = root / "docs" / "phase1" / "app_build_reports"
+            reports_dir.mkdir(parents=True, exist_ok=True)
+            (reports_dir / "m2_drawing_027_run_001.md").write_text("# stub\n", encoding="utf-8")
+
+            checks = gate.collect_route_guardrail_checks(root)
+            report_checks = [check for check in checks if check.item == "done_node_reports"]
+
+            self.assertEqual(1, len(report_checks))
+            self.assertFalse(report_checks[0].ok)
+            self.assertEqual("error", report_checks[0].severity)
+            self.assertIn("TODO-058:docs/phase1/app_build_reports/m2_drawing_027_run_001.json", report_checks[0].message)
+
+    def test_route_guardrail_rejects_todo058_pending_report_placeholders(self):
+        tmp, root = self.make_guardrail_root()
+        with tmp:
+            (root / "todo.csv").write_text(
+                '"id","priority","phase","task","status","goal_setpoint","acceptance","boundary","evidence","dependencies","risk","notes"\n'
+                '"TODO-058","P2","Evidence","JoingSegDlg message map 与 child/node+112 字段收口 P1","done","","","","","","",""\n'
+                '"TODO-059","P2","Evidence","next task","next","","","","","","",""\n',
+                encoding="utf-8",
+            )
+            (root / "94_M2-Drawing-027JoingSegDlgMessageMap与ChildNode112字段收口P1实现记录.md").write_text(
+                "# stub\n",
+                encoding="utf-8",
+            )
+            reports_dir = root / "docs" / "phase1" / "app_build_reports"
+            reports_dir.mkdir(parents=True, exist_ok=True)
+            (reports_dir / "m2_drawing_027_run_001.md").write_text(
+                "xhighReview = pending_before_commit\n",
+                encoding="utf-8",
+            )
+            (reports_dir / "m2_drawing_027_run_001.json").write_text(
+                '{\n  "verification": {\n    "ctest": "pending_update_after_verification"\n  }\n}\n',
+                encoding="utf-8",
+            )
+
+            checks = gate.collect_route_guardrail_checks(root)
+            report_checks = [check for check in checks if check.item == "done_node_reports"]
+
+            self.assertEqual(1, len(report_checks))
+            self.assertFalse(report_checks[0].ok)
+            self.assertEqual("error", report_checks[0].severity)
+            self.assertIn("pending_before_commit", report_checks[0].message)
+            self.assertIn("pending_update_after_verification", report_checks[0].message)
+
+    def test_route_guardrail_rejects_todo058_waiting_rereview_state(self):
+        tmp, root = self.make_guardrail_root()
+        with tmp:
+            (root / "todo.csv").write_text(
+                '"id","priority","phase","task","status","goal_setpoint","acceptance","boundary","evidence","dependencies","risk","notes"\n'
+                '"TODO-058","P2","Evidence","JoingSegDlg message map 与 child/node+112 字段收口 P1","done","","","","","","",""\n'
+                '"TODO-059","P2","Evidence","next task","next","","","","","","",""\n',
+                encoding="utf-8",
+            )
+            (root / "94_M2-Drawing-027JoingSegDlgMessageMap与ChildNode112字段收口P1实现记录.md").write_text(
+                "# stub\n",
+                encoding="utf-8",
+            )
+            reports_dir = root / "docs" / "phase1" / "app_build_reports"
+            reports_dir.mkdir(parents=True, exist_ok=True)
+            (reports_dir / "m2_drawing_027_run_001.md").write_text(
+                "xhighReview = completed_round1_findings_fixed_waiting_rereview\n",
+                encoding="utf-8",
+            )
+            (reports_dir / "m2_drawing_027_run_001.json").write_text(
+                '{\n  "xhighReview": "completed_round1_findings_fixed_waiting_rereview"\n}\n',
+                encoding="utf-8",
+            )
+
+            checks = gate.collect_route_guardrail_checks(root)
+            report_checks = [check for check in checks if check.item == "done_node_reports"]
+
+            self.assertEqual(1, len(report_checks))
+            self.assertFalse(report_checks[0].ok)
+            self.assertEqual("error", report_checks[0].severity)
+            self.assertIn("waiting_rereview", report_checks[0].message)
 
     def test_route_guardrail_requires_todo040_done_report(self):
         tmp, root = self.make_guardrail_root()
@@ -250,7 +366,7 @@ class Phase1ReadinessGateTests(unittest.TestCase):
 
             self.assertEqual(1, len(report_checks))
             self.assertFalse(report_checks[0].ok)
-            self.assertEqual("warning", report_checks[0].severity)
+            self.assertEqual("error", report_checks[0].severity)
             self.assertIn("GAP-ROUTE-004", report_checks[0].gap)
             self.assertIn("TODO-040", report_checks[0].message)
             self.assertIn("76_M2-Drawing-009DetailWriter线容器字段骨架P0实现记录.md",
@@ -271,7 +387,7 @@ class Phase1ReadinessGateTests(unittest.TestCase):
 
             self.assertEqual(1, len(report_checks))
             self.assertFalse(report_checks[0].ok)
-            self.assertEqual("warning", report_checks[0].severity)
+            self.assertEqual("error", report_checks[0].severity)
             self.assertIn("GAP-ROUTE-004", report_checks[0].gap)
             self.assertIn("TODO-041", report_checks[0].message)
             self.assertIn("77_M2-Drawing-010DetailWriter线容器AutoCADL2运行确认准备P0实现记录.md",
@@ -292,7 +408,7 @@ class Phase1ReadinessGateTests(unittest.TestCase):
 
             self.assertEqual(1, len(report_checks))
             self.assertFalse(report_checks[0].ok)
-            self.assertEqual("warning", report_checks[0].severity)
+            self.assertEqual("error", report_checks[0].severity)
             self.assertIn("GAP-ROUTE-004", report_checks[0].gap)
             self.assertIn("TODO-042", report_checks[0].message)
             self.assertIn("78_M2-Drawing-011DetailWriter点筋FaceEdgeAutoCADL2运行确认准备P0实现记录.md",
@@ -313,7 +429,7 @@ class Phase1ReadinessGateTests(unittest.TestCase):
 
             self.assertEqual(1, len(report_checks))
             self.assertFalse(report_checks[0].ok)
-            self.assertEqual("warning", report_checks[0].severity)
+            self.assertEqual("error", report_checks[0].severity)
             self.assertIn("GAP-ROUTE-004", report_checks[0].gap)
             self.assertIn("TODO-043", report_checks[0].message)
             self.assertIn("79_M2-Drawing-012DetailWriterOthersSteeljoint字段骨架P0实现记录.md",
@@ -334,7 +450,7 @@ class Phase1ReadinessGateTests(unittest.TestCase):
 
             self.assertEqual(1, len(report_checks))
             self.assertFalse(report_checks[0].ok)
-            self.assertEqual("warning", report_checks[0].severity)
+            self.assertEqual("error", report_checks[0].severity)
             self.assertIn("GAP-ROUTE-004", report_checks[0].gap)
             self.assertIn("TODO-044", report_checks[0].message)
             self.assertIn("80_M2-Drawing-013DetailWriterOthersSteeljointAutoCADL2运行确认准备P0实现记录.md",
@@ -355,7 +471,7 @@ class Phase1ReadinessGateTests(unittest.TestCase):
 
             self.assertEqual(1, len(report_checks))
             self.assertFalse(report_checks[0].ok)
-            self.assertEqual("warning", report_checks[0].severity)
+            self.assertEqual("error", report_checks[0].severity)
             self.assertIn("GAP-ROUTE-004", report_checks[0].gap)
             self.assertIn("TODO-045", report_checks[0].message)
             self.assertIn("81_M2-Drawing-014真实接头线Others几何算法证据补齐P0实现记录.md",

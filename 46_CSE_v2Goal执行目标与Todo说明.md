@@ -799,8 +799,19 @@ TODO-057 / Evidence = done
   -> 本节点只补 owner / dialog 静态证据；
      不声明 generated node+112、standalone Apply、旧运行样例、真实算法、AutoCAD L2 或 golden。
 
-TODO-058 / Evidence = next
-  -> 继续静态补证 JoingSegDlg message map / Apply 与 generated node+112 语义。
+TODO-058 / Evidence = done
+  -> 已补 `E-IDA-040 / E-DEV-080`，确认 JoingSegDlg 静态 message map
+     只含 3 个 radio handler，静态上未命中独立 Apply，
+     且 generated node+112 已收紧为生成链上的 int mm 贡献字段。
+  -> 本轮又把 done-node gate 补严到：
+     run report 同名 json 必须存在，
+     且 `pending_before_commit / pending_update_after_verification /
+     waiting_rereview` 这类未最终闭环状态不能带着 `done` 落库。
+  -> 本节点只补 message map / 字段边界静态证据；
+     不声明旧中文 caption、运行期静态表外 Apply、旧运行样例、真实算法、AutoCAD L2 或 golden。
+
+TODO-059 / Evidence = next
+  -> 继续静态深追 generated node+112 的展示 / 状态栏 / 字符串链语义。
   -> 不自动启动旧图石，不安装 HASP，不实现真实接头线 / Others 几何算法。
 ```
 
@@ -1136,8 +1147,8 @@ TODO-056 验证 = DB6C0 static rebuild core traced, child+88/+108/+112/+116 and 
 当前下一步：
 
 ```text
-TODO-058 / JoingSegDlg message map 与 child/node+112 字段收口 P1
-  -> TODO-057 已完成 owner 类型层和 Dialog #428 OK 链补证
+TODO-059 / generated node+112 展示/状态栏字符串链静态深追 P1
+  -> TODO-058 已完成 JoingSegDlg message map / Apply stop point 静态收口
   -> TODO-050 继续 blocked，等待用户现场旧图石非空运行样例
   -> 不自动启动旧图石，不安装 HASP
   -> 只做 IDA MCP / 静态文档补证
@@ -1147,11 +1158,11 @@ TODO-058 / JoingSegDlg message map 与 child/node+112 字段收口 P1
 原因：
 
 ```text
-TODO-057 已把 steelbar / steelbargroup / seg_steelbargroup 的 owner 分层、
-Dialog #428 OK 链和 child+112 语义补到可开发 stop point。
-当前真正缺的是 generated node+112、standalone Apply/message map 和旧图石非空运行样例。
+TODO-058 已把 JoingSegDlg 自身静态 message map、
+standalone Apply 的静态 stop point和 child/node+112 边界补到可开发级别。
+当前真正缺的是 generated node+112 更接近旧 UI 的展示语义，以及旧图石非空运行样例。
 非空运行样例继续依赖用户现场 USB 狗 + HASP + 旧图石手工导出。
-所以 agent 下一轮先做可独立推进的 TODO-058 静态收口。
+所以 agent 下一轮先做可独立推进的 TODO-059 字符串 / 状态栏静态深追。
 golden 采集 TODO-026 暂按用户要求保持 pending。
 ```
 
@@ -1217,19 +1228,19 @@ golden 采集 TODO-026 暂按用户要求保持 pending。
 
 ## CSE v2 Control Contract
 
-- **Primary Setpoint**：下一轮只完成 `TODO-058 / JoingSegDlg message map 与 child/node+112 字段收口 P1`，在不自动启动旧图石的前提下继续用 IDA MCP 缩小 generated node+112 业务名、Dialog #428 standalone Apply/message map 和 child/node+112 的最终边界缺口。
-- **Acceptance**：形成 `E-IDA-040 / E-DEV-080` 或等价证据；至少覆盖 generated node+112、Dialog #428 Apply/message map、child/node+112 边界或明确 stop point；默认 CTest、readiness gate、OCCT 泄漏检查通过；若涉及门禁脚本或测试仍需 xhigh 只读 review；更新实现记录、build report、追溯矩阵、缺口文档、46 和 todo。
+- **Primary Setpoint**：下一轮只完成 `TODO-059 / generated node+112 展示/状态栏字符串链静态深追 P1`，在不自动启动旧图石的前提下继续用 IDA MCP 沿 `sub_1405DC6C0` callers 缩小 generated node+112 的展示语义缺口。
+- **Acceptance**：形成 `E-IDA-041 / E-DEV-081` 或等价证据；至少覆盖 `sub_1405DBC20 / sub_1405EAEC0 / sub_1405DFEF0 / sub_1405E02D0 / sub_1406F72A0` 与相关格式化字符串、状态显示或明确 stop point；默认 CTest、readiness gate、OCCT 泄漏检查通过；若涉及门禁脚本或测试仍需 xhigh 只读 review；更新实现记录、build report、追溯矩阵、缺口文档、46 和 todo。
 - **Guardrail Metrics**：不能实现真实接头线 / Others 几何算法；不能在没有运行证据时声明 AutoCAD L2 通过；不能把英文内部命令名直接写成中文 UI caption；不能把 Dialog #427/#428 字段当成按钮绑定；不能改钢筋创建业务；不能迁入父目录 rebar 业务；不能进入 golden 全量采集。
-- **Sampling Plan**：先读 `todo.csv / 03 / 11 / 34 / 93 / 99`，确认 `TODO-057` 已完成 owner 类型层和 Dialog #428 OK 链补证且 `TODO-050` 仍 blocked，再用 IDA MCP 分析 message map / Apply 与 generated node+112；agent 不自动启动旧图石；最后运行默认 CTest、readiness gate 和 OCCT 泄漏扫描，证明本轮没有破坏工程基线。
+- **Sampling Plan**：先读 `todo.csv / 03 / 11 / 34 / 94 / 99`，确认 `TODO-058` 已完成 message map / Apply stop point 且 `TODO-050` 仍 blocked，再用 IDA MCP 分析 generated node+112 的 caller / 字符串 / 状态栏链；agent 不自动启动旧图石；最后运行默认 CTest、readiness gate 和 OCCT 泄漏扫描，证明本轮没有破坏工程基线。
 - **Known Delays**：非空旧运行样例仍依赖用户现场手工操作；静态资源可能仍无法反推出中文 caption，需要旧界面截图配合闭合。
-- **Recovery Target**：如果 generated node+112 或 Dialog #428 Apply/message map 无法继续推进，把阻塞 helper、缺失 xref、未命名字段或 session 状态写入 `99` 和 build report，不继续猜 UI caption、不堆算法实现。
+- **Recovery Target**：如果 generated node+112 的展示链无法继续推进，把阻塞 helper、缺失 xref、未命名字段、字符串模板或 session 状态写入 `99` 和 build report，不继续猜 UI caption、不堆算法实现。
 - **Rollback Trigger**：无证据实现接头线 / Others / 工程图算法；把字段骨架或 IDA 命令表当成旧插件接受证明；无运行证据声明 L2 通过；让 `domain/rebar` 泄漏 OCCT/AIS；测试或 gate 失败仍继续堆功能。
 - **Constraints**：不使用 ACIS / HOOPS / Codejock 等商业库；新系统不引入 USB 狗 / 网络许可依赖；旧逻辑不确定时优先查 IDA MCP 或旧图石运行确认；xhigh 只读，修改由主流程 agent 完成；不自动再次启动旧图石。
 - **Boundary**：下一轮只允许 IDA / 静态证据、文档、追溯、缺口、46/todo 必要更新；禁止实现真实 OCCT HLR/section/hidden-line/steeljoint-line/Others 算法、禁止修改 UI 新功能、钢筋创建业务、无证据 AutoCAD L2 结论和 golden。
-- **Coupling Notes**：`drawing/export` 是 Detail 包输出边界；TODO-058 只补 JoingSegDlg message map / Apply 与 child/node+112 静态证据，不关闭旧插件容忍度、AutoCAD L2、隐藏线 / 填充线算法或完整工程图缺口。
-- **Approximation Validity**：TODO-058 的产物是 message map / 字段边界静态证据或 stop point，不是旧图石运行样例；即使再命名一层字段或调用链，也不代表真实接头线 / Others 几何算法已经闭合。
-- **Actuator Budget**：下一轮只推进 `TODO-058`。完成后停止复盘，不自动进入真实算法实现、隐藏线、填充线、点筋、FaceEdge 或 golden。
-- **Risks**：IDA 可能仍无法直接给出 generated node+112 调试名；Dialog #428 的按钮链可能跨 message map / MFC thunk；部分语义仍需要旧图石运行截图和 Detail 非空样例配合闭合。
+- **Coupling Notes**：`drawing/export` 是 Detail 包输出边界；TODO-059 只补 generated node+112 的 caller / 字符串 / 状态栏静态证据，不关闭旧插件容忍度、AutoCAD L2、隐藏线 / 填充线算法或完整工程图缺口。
+- **Approximation Validity**：TODO-059 的产物是字符串 / 状态栏 / 展示链静态证据或 stop point，不是旧图石运行样例；即使再命名一层字段或调用链，也不代表真实接头线 / Others 几何算法已经闭合。
+- **Actuator Budget**：下一轮只推进 `TODO-059`。完成后停止复盘，不自动进入真实算法实现、隐藏线、填充线、点筋、FaceEdge 或 golden。
+- **Risks**：IDA 可能仍无法直接给出 generated node+112 调试名；展示字符串可能只有格式模板没有中文业务名；部分语义仍需要旧图石运行截图和 Detail 非空样例配合闭合。
 ## Todo CSV 使用方式
 
 `todo.csv` 是后续执行看板。建议每次 goal 模式只拿 `status=next` 或最高优先级 `pending` 的任务推进。
@@ -1254,14 +1265,14 @@ golden 采集 TODO-026 暂按用户要求保持 pending。
 下一步优先执行：
 
 ```text
-TODO-058 / JoingSegDlg message map 与 child/node+112 字段收口 P1
-  -> TODO-057 已完成接头 DB6C0 owning 结构与 Dialog #428 确定链补证
+TODO-059 / generated node+112 展示/状态栏字符串链静态深追 P1
+  -> TODO-058 已完成 JoingSegDlg message map 与 Apply stop point 静态收口
   -> TODO-050 继续 blocked，等待用户现场旧图石运行样例
   -> 不自动启动旧图石
-  -> 用 IDA MCP 继续深追 generated node+112、Dialog #428 Apply/message map
+  -> 用 IDA MCP 继续深追 sub_1405DC6C0 callers、字符串模板和状态栏链
   -> 只补静态证据和剩余 GAP；不实现真实接头线 / Others 几何算法，
      不声明 AutoCAD L2 通过，不进入 golden
 ```
 
-原因很简单：TODO-057 已经把 owner 类型层、Dialog #428 OK 链和 child+112 语义补到可开发 stop point；真实非空运行样例仍依赖用户现场 USB 狗 + HASP + 旧图石手工导出。agent 下一步先做可独立推进的 message map / node+112 静态收口，继续缩小后续算法复刻前的证据缺口。
+原因很简单：TODO-058 已经把 `JoingSegDlg` 自身静态 message map、Apply stop point 和 child/node+112 边界补到可开发 stop point；真实非空运行样例仍依赖用户现场 USB 狗 + HASP + 旧图石手工导出。agent 下一步先做可独立推进的字符串 / 状态栏静态深追，继续缩小 generated node+112 的展示语义缺口。
 TODO-026 golden 采集暂按用户要求保持 pending。

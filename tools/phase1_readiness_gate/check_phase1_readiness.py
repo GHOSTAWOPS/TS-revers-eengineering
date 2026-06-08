@@ -19,6 +19,15 @@ from typing import Any
 
 
 CN_TZ = timezone(timedelta(hours=8))
+PENDING_REPORT_MARKERS = (
+    "pending_before_commit",
+    "pending_update_after_verification",
+    "waiting_rereview",
+)
+JSONLESS_DONE_NODE_REPORT_TODOS = {
+    # Historical app report created before JSON sibling became mandatory.
+    "TODO-021",
+}
 
 
 @dataclass(frozen=True)
@@ -152,7 +161,7 @@ def read_todo_rows(root: Path) -> list[dict[str, str]] | None:
         return None
 
 
-def done_node_report_requirements(root: Path, rows: list[dict[str, str]]) -> tuple[list[str], list[str]]:
+def done_node_report_requirements(root: Path, rows: list[dict[str, str]]) -> tuple[list[str], list[str], list[str]]:
     known_reports = {
         "TODO-010": ("47_M1-App-010LegacyGeometryAdapterP3B实现记录.md", "docs/phase1/app_build_reports/m1_app_010_run_001.md"),
         "TODO-011": ("48_M1-App-011LegacyGeometryAdapterP3C实现记录.md", "docs/phase1/app_build_reports/m1_app_011_run_001.md"),
@@ -200,9 +209,11 @@ def done_node_report_requirements(root: Path, rows: list[dict[str, str]]) -> tup
         "TODO-055": ("91_M2-Drawing-024接头Handler动作函数字段语义深追P0实现记录.md", "docs/phase1/app_build_reports/m2_drawing_024_run_001.md"),
         "TODO-056": ("92_M2-Drawing-025接头重建几何核心DB6C0静态深追P0实现记录.md", "docs/phase1/app_build_reports/m2_drawing_025_run_001.md"),
         "TODO-057": ("93_M2-Drawing-026接头DB6C0owning结构与Dialog428确定链补证P0实现记录.md", "docs/phase1/app_build_reports/m2_drawing_026_run_001.md"),
+        "TODO-058": ("94_M2-Drawing-027JoingSegDlgMessageMap与ChildNode112字段收口P1实现记录.md", "docs/phase1/app_build_reports/m2_drawing_027_run_001.md"),
     }
     missing: list[str] = []
     checked: list[str] = []
+    issues: list[str] = []
     for row in rows:
         if row.get("status") != "done":
             continue
@@ -210,10 +221,27 @@ def done_node_report_requirements(root: Path, rows: list[dict[str, str]]) -> tup
         if todo_id not in known_reports:
             continue
         checked.append(todo_id)
-        for required_path in known_reports[todo_id]:
-            if not (root / required_path).exists():
+        implementation_record, report_md = known_reports[todo_id]
+        required_paths = [implementation_record, report_md]
+        if (
+            report_md.startswith("docs/phase1/app_build_reports/")
+            and todo_id not in JSONLESS_DONE_NODE_REPORT_TODOS
+        ):
+            required_paths.append(str(Path(report_md).with_suffix(".json")).replace("\\", "/"))
+        for required_path in required_paths:
+            path = root / required_path
+            if not path.exists():
                 missing.append(f"{todo_id}:{required_path}")
-    return missing, checked
+                continue
+            if required_path.endswith(".json") and read_json(path) is None:
+                issues.append(f"{todo_id}:{required_path}:invalid_json")
+                continue
+            if required_path.startswith("docs/phase1/app_build_reports/"):
+                text = read_text_lossy(path)
+                marker = next((candidate for candidate in PENDING_REPORT_MARKERS if candidate in text), "")
+                if marker:
+                    issues.append(f"{todo_id}:{required_path}:{marker}")
+    return missing, checked, issues
 
 
 def collect_route_guardrail_checks(root: Path) -> list[GateCheck]:
@@ -338,19 +366,19 @@ def collect_route_guardrail_checks(root: Path) -> list[GateCheck]:
         )
     )
 
-    missing_reports, checked_done_ids = done_node_report_requirements(root, rows)
+    missing_reports, checked_done_ids, report_issues = done_node_report_requirements(root, rows)
     checks.append(
         GateCheck(
             "RouteGuardrail",
             "done_node_reports",
-            "warning",
-            not missing_reports,
+            "error",
+            not missing_reports and not report_issues,
             "todo.csv;docs/phase1/app_build_reports",
             ["E-DEV-050"],
             ["GAP-ROUTE-004"],
             f"checked_done_nodes={len(checked_done_ids)}"
-            if not missing_reports
-            else "missing done node report: " + ", ".join(missing_reports[:8]),
+            if not missing_reports and not report_issues
+            else "done node report issue: " + ", ".join((missing_reports + report_issues)[:8]),
         )
     )
 
