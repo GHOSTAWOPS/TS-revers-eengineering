@@ -1951,11 +1951,155 @@ NETHASP_00112233445566zz  -> sub_140237E8A
 - 不能据此替代用户现场手工启动结果。
 ```
 
+## TODO-050 旧图石非空接头线 / Others 运行样例采集准备补证
+
+Evidence ID：
+
+- `E-IDA-032`
+
+本轮重新打开 IDA MCP：
+
+```text
+database = visualts_i64_todo050
+input = C:\Users\ghost\Desktop\reverse_engineering\【03】图石软件\VisualTS.exe.i64
+hexrays_ready = true
+strings_cache_size = 16320
+```
+
+本轮目标不是继续实现接头线算法，
+而是在旧图石运行样例暂时依赖用户现场操作的情况下，
+先补强旧内部命令和触发线索。
+
+### 接头内部命令清单
+
+字符串缓存确认以下旧内部命令：
+
+```text
+barjointnew
+barjointclear
+barjointmove
+barjointrev
+groupjointnew
+groupjointclear
+goujianjointnew
+goujianjointclear
+featjointnew
+featjointclear
+groupjointrev
+groupjointmove
+```
+
+`barjointnew` 字符串 xref 落到两组表：
+
+```text
+0x140959328
+0x14095ae70
+```
+
+`groupjointrev` 字符串 xref 同样落到两组表：
+
+```text
+0x1409593e8
+0x14095af90
+```
+
+当前未从这些表项继续追到中文 Ribbon caption。
+
+### 三类接头入口不要混用
+
+`sub_1405DFAA0(barjointnew)`：
+
+```text
+从当前选择集取对象
+  -> sub_1405C6820
+  -> sub_1405E0E70 筛旧钢筋对象
+  -> ACIS transaction
+  -> 旧 VisualTS steeljoint / steelbar 业务函数
+```
+
+工程含义：
+
+```text
+barjointnew 更适合采“单根 / 单段钢筋对象接头”样例。
+```
+
+`sub_1405F0060(groupjointnew)`：
+
+```text
+从当前选择集取对象
+  -> sub_1405C6820
+  -> sub_1405F17C0 筛旧钢筋组对象
+  -> ACIS transaction
+  -> sub_1405E9640 等旧组接头业务函数
+```
+
+工程含义：
+
+```text
+groupjointnew 更适合采“钢筋组接头”样例。
+```
+
+`sub_1405EF140(goujianjointnew / featjointnew 系列)`：
+
+```text
+从当前选择集取对象
+  -> sub_1405C6820
+  -> sub_14045A7F0 筛对象
+  -> ACIS transaction
+```
+
+工程含义：
+
+```text
+goujianjointnew / featjointnew 可能面向构件 / 特征对象接头。
+当前不应和 barjointnew / groupjointnew 混成一个采样动作。
+```
+
+### 中文 UI caption 未直接命中
+
+本轮搜索：
+
+```text
+接头
+搭接
+焊接
+相间
+定尺
+下料
+钢筋接头
+接头反向
+移动接头
+清除接头
+新建接头
+```
+
+结果：
+
+```text
+no direct string hit
+```
+
+保守结论：
+
+```text
+接头相关中文 UI caption 可能来自资源表、Codejock/Ribbon 资源、
+外部 UI 数据或非普通字符串缓存。
+后续旧界面运行确认仍必须记录真实菜单路径、按钮文字和状态栏提示。
+```
+
+本轮不能过度推断：
+
+```text
+- 不能据此声明旧 UI 触发路径已经闭合。
+- 不能据此声明已采到非空 steeljoint-line / Others 运行样例。
+- 不能据此实现真实接头线 / Others 几何算法。
+```
+
 ## 待继续分析
 
 - `sub_1404DE110` 和 `sub_1404DE720` 已完成第二轮 IDA MCP 补证，公共生成链已追到 `sub_1404D10C0 -> sub_140451730 -> sub_1405D5670 -> sub_1405BD0C0 / sub_1405C7260 / sub_1405E49D0`。
 - `sub_1405D5670` 已确认 split / spline / trim / min-distance / 写回主规则，但第 4 个 double 参数来源、字段业务名和对象名仍需继续闭合。
-- `TODO-046 / E-IDA-029` 已把 `JointRuler / JointDistbet / JointWeldLength` 的旧参数链、`JointWeldLength / 2000.0` 半长公式、`pattern` raw byte `'L'`、`Others / symbolcutIOS` gate 和额外弧线 / `DrawTaoTong` 关系继续补证；但 owning enum / 结构名、旧 UI 触发、旧运行非空样例和旧插件接受度仍需继续闭合。
+- `TODO-046 / E-IDA-029` 已把 `JointRuler / JointDistbet / JointWeldLength` 的旧参数链、`JointWeldLength / 2000.0` 半长公式、`pattern` raw byte `'L'`、`Others / symbolcutIOS` gate 和额外弧线 / `DrawTaoTong` 关系继续补证；`TODO-050 / E-IDA-032` 又把接头内部命令分成 `barjoint* / groupjoint* / goujianjoint* / featjoint*` 三类采样入口；但 owning enum / 结构名、旧 UI caption、旧运行非空样例和旧插件接受度仍需继续闭合。
 - `TODO-048 / E-IDA-030` 已把旧图石启动期阻塞链闭合到 `sub_1406BBFC0 -> sub_1406BC3B0 -> sub_14070C760`，并确认 `41 -> 许可已过期`、其他非 0 -> `请检查网线是否接好`、`ChaspBase` 许可对象和 `HASP / SuperDog / NetHASP` 许可栈侧证据；`TODO-049 / E-IDA-031` 又补充了 fallback 是宽兜底许可初始化失败文案，不是纯网络专用报错；但当前本机究竟卡在“许可过期 / 网络不可达 / 许可服务未就绪 / 许可文件链异常”的哪一种真实环境原因，仍需用户手工确认。
 - `rebarz` / `rebarpost` 业务含义未闭合。
 - 顶部 Ribbon 按钮和英文命令并非一一对应，需要结合运行界面确认。

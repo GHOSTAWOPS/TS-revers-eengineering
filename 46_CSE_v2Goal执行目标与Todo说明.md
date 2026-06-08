@@ -562,9 +562,23 @@ todo.csv 状态和 46 目标不一致。
 commit / tag / push 状态
 ```
 
-### 短期 Goal（推荐下一轮复制）
+### 短期 Goal（用户现场运行后再复制）
 
 目标：只完成 `TODO-050 / 旧图石非空接头线 Others 运行样例采集 P0` 这个短期阶段，不自动进入后续长期开发。
+
+当前状态：
+
+```text
+TODO-050 已进入 blocked_by_user_runtime。
+
+原因：
+  用户当前尚未插入 USB 狗，
+  HASP 也尚未安装，
+  agent 不能自动安装驱动、拷贝系统目录或启动旧图石。
+
+所以这一段只在用户现场旧图石可运行、
+并能手工导出 DetailNN 后再复制执行。
+```
 
 本轮要在 `TODO-049` 已确认旧图石可在 USB 狗 + 本地 HASP 安装条件下进入主界面并打开 `SFL` 的基础上，回到真正的旧运行样例采集：
 
@@ -719,11 +733,19 @@ TODO-049 / Evidence = done
      `haspvlib_23520.dll` 和安装说明文档；当前机器目标 HASP 目录尚不存在。
      当前节点已闭环，下一步转回非空运行样例采集。
 
-TODO-050 / Evidence = next
-  -> 在 TODO-049 已闭环启动前置条件的基础上，
-     采至少 1 个非空 steeljoint-line / Others 运行样例。
-  -> 只补运行证据、截图、输出文件 hash 和节点内容，
-     不实现真实接头线 / Others 几何算法。
+TODO-050 / Evidence = blocked
+  -> 已补 `E-IDA-032 / E-DEV-072`，
+     确认当前不能由 agent 单独采到旧图石非空运行样例。
+  -> 用户现场需要先完成 USB 狗 + HASP 条件，
+     再手工打开旧图石、目标 SFL、接头命令并导出 DetailNN。
+  -> 本轮已形成 barjoint / groupjoint / goujianjoint / featjoint
+     三类采样入口和回填模板。
+
+TODO-051 / Evidence = next
+  -> 在等待用户现场样例期间，
+     继续用 IDA MCP 静态补 `Others / symbolcutIOS` producer、
+     接头命令表注册链和可能的 UI 触发线索。
+  -> 不自动启动旧图石，不实现真实接头线 / Others 几何算法。
 ```
 
 工作目录：
@@ -1131,19 +1153,19 @@ golden 采集 TODO-026 暂按用户要求保持 pending。
 
 ## CSE v2 Control Contract
 
-- **Primary Setpoint**：下一轮只完成 `TODO-050 / 旧图石非空接头线 Others 运行样例采集 P0`，在旧图石已可启动并打开 SFL 的前提下采到至少一个可用旧运行样例。
-- **Acceptance**：形成用户手工运行结果；至少记录一次最小操作、截图、输出文件 hash 和目标节点内容；若仍未触发目标节点则记录精确 stop point；`E-RUN-004` 已经关闭启动前置条件，不再把 USB 狗 / 本地 HASP 安装问题当成本轮主目标；默认 CTest、readiness gate、OCCT 泄漏检查通过；按需执行 xhigh 只读 review；更新实现记录、build report、追溯矩阵、缺口文档、46 和 todo。
-- **Guardrail Metrics**：不能实现真实接头线 / Others 几何算法；不能在没有运行证据时声明 AutoCAD L2 通过；不能把单次阻塞截图写成旧业务算法证据；不能改钢筋创建业务；不能迁入父目录 rebar 业务；不能进入 golden 全量采集。
-- **Sampling Plan**：先读 `todo.csv / 03 / 34 / 81 / 82 / 85 / 99`，确认 `E-RUN-004` 已关闭启动前置条件，再由用户手工打开旧图石和目标 SFL、执行一次最小接头线 / Others 相关操作并回填截图 / 输出；agent 不自动启动旧图石；最后运行默认 CTest、readiness gate 和 OCCT 泄漏扫描，证明本轮没有破坏工程基线。
-- **Known Delays**：非空旧运行样例依赖用户现场手工操作、旧 UI 路径和输出文件留存；agent 不能代替用户完成旧图石操作过程。
-- **Recovery Target**：如果手工确认后仍不可推进，把阻塞原因写入 `99` 和 build report，不继续猜算法、不堆后续工程图实现。
-- **Rollback Trigger**：无证据实现接头线 / Others / 工程图算法；把字段骨架或单次截图当成旧插件接受证明；无运行证据声明 L2 通过；让 `domain/rebar` 泄漏 OCCT/AIS；测试或 gate 失败仍继续堆功能。
+- **Primary Setpoint**：下一轮只完成 `TODO-051 / Others symbolcutIOS producer 与接头 UI 触发静态补证 P0`，在不自动启动旧图石的前提下继续用 IDA MCP 缩小 `TODO-050` 手工采样试错范围。
+- **Acceptance**：形成 `E-IDA-033 / E-DEV-073` 或等价证据；至少追一层 `*(v8 + 840 / 848)` producer、接头命令表注册链或 UI command id 绑定；若 IDA 无法继续闭合，则记录明确 stop point；默认 CTest、readiness gate、OCCT 泄漏检查通过；按需执行 xhigh 只读 review；更新实现记录、build report、追溯矩阵、缺口文档、46 和 todo。
+- **Guardrail Metrics**：不能实现真实接头线 / Others 几何算法；不能在没有运行证据时声明 AutoCAD L2 通过；不能把 IDA handler 推断成旧 UI caption；不能改钢筋创建业务；不能迁入父目录 rebar 业务；不能进入 golden 全量采集。
+- **Sampling Plan**：先读 `todo.csv / 03 / 11 / 34 / 81 / 82 / 86 / 99`，确认 `TODO-050` 已因用户现场运行条件 blocked，再用 IDA MCP 查询 `symbolcutIOS` producer、`v8 + 840 / 848` xref、接头命令表注册和可能的 Ribbon command id；agent 不自动启动旧图石；最后运行默认 CTest、readiness gate 和 OCCT 泄漏扫描，证明本轮没有破坏工程基线。
+- **Known Delays**：非空旧运行样例仍依赖用户现场手工操作；IDA 可能只能继续缩小 producer / xref，不能替代运行截图和输出文件。
+- **Recovery Target**：如果 IDA 无法继续推进，把阻塞函数、缺失 xref 或 session 状态写入 `99` 和 build report，不继续猜算法、不堆后续工程图实现。
+- **Rollback Trigger**：无证据实现接头线 / Others / 工程图算法；把字段骨架或 IDA 命令表当成旧插件接受证明；无运行证据声明 L2 通过；让 `domain/rebar` 泄漏 OCCT/AIS；测试或 gate 失败仍继续堆功能。
 - **Constraints**：不使用 ACIS / HOOPS / Codejock 等商业库；新系统不引入 USB 狗 / 网络许可依赖；旧逻辑不确定时优先查 IDA MCP 或旧图石运行确认；xhigh 只读，修改由主流程 agent 完成；不自动再次启动旧图石。
-- **Boundary**：下一轮只允许运行记录、文档、追溯、缺口、46/todo 必要更新；禁止实现真实 OCCT HLR/section/hidden-line/steeljoint-line/Others 算法、禁止修改 UI 新功能、钢筋创建业务、无证据 AutoCAD L2 结论和 golden。
-- **Coupling Notes**：`drawing/export` 是 Detail 包输出边界；TODO-050 只收集旧图石非空运行样例，不关闭旧插件容忍度、AutoCAD L2、隐藏线 / 填充线算法或完整工程图缺口。
-- **Approximation Validity**：TODO-050 的产物是旧图石运行证据，不是算法实现；即使采到样例，也不代表真实接头线 / Others 几何算法已经闭合。
-- **Actuator Budget**：下一轮只推进 `TODO-050`。完成后停止复盘，不自动进入真实算法实现、隐藏线、填充线、点筋、FaceEdge 或 golden。
-- **Risks**：当前节点依赖用户现场操作；即使旧图石能启动，也可能因为命令路径、模型条件或输出条件不同而暂时采不到非空样例，必须把 stop point 写清楚。
+- **Boundary**：下一轮只允许 IDA 证据、运行记录模板、文档、追溯、缺口、46/todo 必要更新；禁止实现真实 OCCT HLR/section/hidden-line/steeljoint-line/Others 算法、禁止修改 UI 新功能、钢筋创建业务、无证据 AutoCAD L2 结论和 golden。
+- **Coupling Notes**：`drawing/export` 是 Detail 包输出边界；TODO-051 只补旧图石静态证据，不关闭旧插件容忍度、AutoCAD L2、隐藏线 / 填充线算法或完整工程图缺口。
+- **Approximation Validity**：TODO-051 的产物是静态证据，不是旧图石运行样例；即使找到 producer，也不代表真实接头线 / Others 几何算法已经闭合。
+- **Actuator Budget**：下一轮只推进 `TODO-051`。完成后停止复盘，不自动进入真实算法实现、隐藏线、填充线、点筋、FaceEdge 或 golden。
+- **Risks**：IDA 可能无法直接反推出中文 UI caption；接头命令表和 Codejock Ribbon 绑定可能需要旧界面运行截图配合闭合。
 ## Todo CSV 使用方式
 
 `todo.csv` 是后续执行看板。建议每次 goal 模式只拿 `status=next` 或最高优先级 `pending` 的任务推进。
@@ -1168,12 +1190,14 @@ golden 采集 TODO-026 暂按用户要求保持 pending。
 下一步优先执行：
 
 ```text
-TODO-050 / 旧图石非空接头线 Others 运行样例采集 P0
-  -> TODO-049 已确认旧图石在 USB 狗 + 本地 HASP 安装条件下可进主界面并打开 SFL
+TODO-051 / Others symbolcutIOS producer 与接头 UI 触发静态补证 P0
+  -> TODO-050 当前 blocked，等待用户现场旧图石运行样例
   -> 不自动启动旧图石
-  -> 由用户手工执行最小旧图石操作并回填截图 / 输出文件 / hash
-  -> 只补运行证据和剩余 GAP；不实现真实接头线 / Others 几何算法，不声明 AutoCAD L2 通过，不进入 golden
+  -> 用 IDA MCP 继续查 symbolcutIOS producer、v8+840/848、
+     接头命令表注册链和可能的 UI command id
+  -> 只补静态证据和剩余 GAP；不实现真实接头线 / Others 几何算法，
+     不声明 AutoCAD L2 通过，不进入 golden
 ```
 
-原因很简单：TODO-049 已经闭合，旧图石启动前置条件不再是当前主问题。下一步该收集真正有开发价值的旧运行样例，而不是继续停留在启动条件阶段。
+原因很简单：TODO-050 的真实运行样例需要用户现场 USB 狗 + HASP + 旧图石手工导出。当前这些条件未满足，所以 agent 不应空等或假装采样成功；先继续做能独立推进的 IDA 静态补证。
 TODO-026 golden 采集暂按用户要求保持 pending。

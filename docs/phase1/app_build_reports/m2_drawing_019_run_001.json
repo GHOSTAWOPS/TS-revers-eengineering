@@ -1,0 +1,46 @@
+{
+  "todoId": "TODO-050",
+  "phase": "M2-Drawing-019",
+  "evidenceId": "E-DEV-072",
+  "decision": "blocked-by-user-runtime-static-prep-complete",
+  "algorithmImplemented": false,
+  "autocadL2": "not_run",
+  "oldRuntimeAutomaticallyLaunched": false,
+  "driverInstalledAutomatically": false,
+  "systemDirectoryModifiedAutomatically": false,
+  "runtimeBlocker": {
+    "usbDongleCurrentlyInserted": false,
+    "haspInstalled": false,
+    "requiresUserManualRuntime": true
+  },
+  "idaSupplement": {
+    "evidenceId": "E-IDA-032",
+    "database": "visualts_i64_todo050",
+    "hexraysReady": true,
+    "commandsConfirmed": [
+      "barjointnew",
+      "barjointclear",
+      "barjointmove",
+      "barjointrev",
+      "groupjointnew",
+      "groupjointclear",
+      "goujianjointnew",
+      "goujianjointclear",
+      "featjointnew",
+      "featjointclear",
+      "groupjointrev",
+      "groupjointmove"
+    ],
+    "chineseCaptionDirectHit": false
+  },
+  "sampleCollection": {
+    "nonEmptySteeljointLineCollected": false,
+    "nonEmptyOthersSymbolcutIOSCollected": false,
+    "manualSamplingTemplateReady": true
+  },
+  "next": {
+    "todoId": "TODO-051",
+    "task": "Others / symbolcutIOS producer 与接头 UI 触发静态补证 P0"
+  },
+  "xhighReview": "not_required_docs_only"
+}
