@@ -3952,3 +3952,265 @@ golden。
 ```text
 TODO-059 / generated node+112 展示/状态栏字符串链静态深追 P1
 ```
+
+## TODO-059 追溯补充
+
+`E-IDA-041 / E-DEV-081` 追加关联：
+
+```text
+REQ-DRAW-003
+REQ-PROJ-001
+REQ-TECH-002
+GAP-DRAW-002
+GAP-DEV-010
+```
+
+本轮继续沿 `sub_1405DC6C0` 的 caller / 字符串 / 状态栏链静态深追
+`generated node+112` 的展示语义。
+
+## IDA MCP 会话
+
+```text
+database = visualts_i64_todo051
+module = VisualTS.exe
+hexrays_ready = true
+strings_cache_size = 16320
+```
+
+本轮补看的函数：
+
+```text
+sub_1405DBC20
+sub_1406F72A0
+sub_1405EAEC0
+sub_1405DFEF0
+sub_1405E02D0
+sub_140601D80
+sub_1405DBE50
+sub_1405DC6A0
+sub_1405EAF40
+sub_1405E0660
+sub_1405DC6C0
+sub_1405DC870
+sub_1404554B0
+sub_1406B4670
+```
+
+### `sub_1405DC6C0` 的核心语义
+
+当前已经可以把 `sub_1405DC6C0(a1)` 收紧为：
+
+```text
+result = 0
+for each generatedNode in a1+88 chain:
+  result += generatedNode+112
+return result
+```
+
+也就是说：
+
+```text
+generated node+112
+  -> 不是 child+112 的同一字段
+  -> 它位于 child+88 生成链节点上
+  -> sub_1405DC6C0 汇总的是整条生成链的 node+112 总和
+```
+
+### `sub_1405DBC20`：单下料长表达式格式化
+
+当前高置信伪代码：
+
+```text
+baseMm = round(sub_1405DC870(a1, 0, 0) * 1000.0)
+
+if sub_1405DC6C0(a1) < 1:
+  format "%d"
+else:
+  for each generatedNode in a1+88 chain:
+    for each pieceNode in generatedNode+128 chain:
+      pieceMm = *(int *)(pieceNode + 76)
+      append "%d+" / "%s%d+" / "%s%d"
+```
+
+当前最稳妥工程口径：
+
+```text
+sub_1405DBC20
+  -> 不是简单打印 generated node+112
+  -> 它用 sum(generated node+112) 决定是否进入分段拼接模式
+  -> 最终输出更像“单下料长(mm)”的分解表达式
+     例如 5000+5000+3200 这种串
+```
+
+### `sub_140601D80`：Excel 下料表写出链
+
+本轮把 `sub_140601D80` 收紧到旧 Excel 输出路径：
+
+```text
+title = 钢筋下料表
+
+A2 = 编号
+B2 = 直径(mm)
+C2 = 单净长(mm)
+D2 = 焊长(mm)
+E2 = 焊头(个)
+F2 = 单下料长(mm)
+G2 = 根数(根)
+H2 = 总根数(根)
+```
+
+关键字段落点：
+
+```text
+E 列 = sub_1405DC6C0(obj)
+F 列 = sub_1405DBC20(obj, buffer)
+```
+
+所以本轮可以把展示语义继续收紧为：
+
+```text
+sub_1405DC6C0(sum generated node+112)
+  -> 在旧 Excel 下料表里直接落到“焊头(个)”
+
+sub_1405DBC20(...)
+  -> 在旧 Excel 下料表里直接落到“单下料长(mm)”
+```
+
+### `sub_1406F72A0`：状态栏展示链
+
+本轮把状态栏路径也追实了：
+
+```text
+pane1:
+  编号: %d号钢筋
+  编号: %d%c号钢筋
+  编号: %d号钢筋 首尾封闭
+
+pane2:
+  %s级钢  直径:%s 毫米
+  special type 158 -> 型号%d-%g
+
+pane3:
+  special type 158 -> 至中心线距离:  %d毫米
+  if sub_1405DC6C0(a2) > 0:
+    override with one of:
+      焊接
+      绑扎
+      套筒连接
+
+pane4:
+  钢筋长度:%g 米
+  钢筋长度:%g~%g 米
+```
+
+当前最重要的静态收口是：
+
+```text
+当 sum(generated node+112) > 0 时，
+旧状态栏第 3 格会切换到连接方式文本：
+  焊接 / 绑扎 / 套筒连接
+```
+
+连接方式选择分支来自：
+
+```text
+*(sub_1405E0660(a2) + 64)
+```
+
+但这个字段的最终业务名 / enum 命名本轮仍未完全闭合。
+
+### 向上聚合 helper
+
+`sub_1405EAEC0 / sub_1404554B0` 也已补实：
+
+```text
+sub_1405EAEC0(a1)
+  -> sum sub_1405DC6C0(child) over a1+80 chain
+
+sub_1404554B0(a1)
+  -> sum sub_1405EAEC0(v1) over a1+192 chain
+```
+
+工程含义：
+
+```text
+旧系统不只在单对象上看这个计数，
+还会把它沿 group / seg / owner 继续聚合。
+```
+
+### 本轮最终收口
+
+到 `TODO-059` 为止，当前最稳妥口径是：
+
+```text
+generated node+112
+  -> child+88 生成链节点上的整数计数字段
+  -> 被 sub_1405DC6C0 汇总
+  -> 汇总值在旧 Excel 下料表中写入“焊头(个)”
+  -> 汇总值 > 0 时会让旧状态栏第 3 格显示
+     焊接 / 绑扎 / 套筒连接
+  -> 同时它还是单下料长分段表达式和 rebuild 前置判断的 gate
+```
+
+大白话就是：
+
+```text
+现在已经不能只把它说成“一个 +112 字段”了。
+
+更接近事实的说法是：
+它是一条生成链上的接头 / 焊头计数字段，
+旧系统会把它汇总后拿去：
+  1. 写 Excel 的“焊头(个)”
+  2. 决定“单下料长(mm)”是否走分段拼接串
+  3. 在状态栏显示 焊接 / 绑扎 / 套筒连接
+```
+
+### 本轮仍不写死的部分
+
+当前仍不能高置信写死为：
+
+```text
+generated node+112 的最终旧调试符号名
+*(sub_1405E0660(a2) + 64) 的最终业务字段名和完整 enum 名称
+旧运行时每种连接方式与该字段具体取值的一一映射
+旧图石真实界面截图级闭环
+```
+
+所以本轮最终口径仍然是：
+
+```text
+可以把 generated node+112 收紧到
+“接头 / 焊头计数展示链字段”
+
+但还不把它最终调试名写死。
+```
+
+### 本轮 stop point
+
+已闭合：
+
+```text
+sub_1405DC6C0 = sum(generated node+112)
+Excel 下料表 E 列 = 焊头(个)
+Excel 下料表 F 列 = 单下料长(mm) 分解表达式
+状态栏 pane3 在 sum > 0 时显示 焊接 / 绑扎 / 套筒连接
+group / seg / owner 向上聚合 helper
+```
+
+仍未闭合：
+
+```text
+generated node+112 的最终业务调试名
+连接方式来源字段 *(sub_1405E0660(a2)+64) 的最终命名
+旧图石真实运行截图和导出样例
+AutoCAD L2
+真实接头线算法
+真实 Others 几何算法
+golden
+```
+
+下一步登记为：
+
+```text
+TODO-060 / generated node+112 旧图石运行确认与 Excel/状态栏对照 P0
+```

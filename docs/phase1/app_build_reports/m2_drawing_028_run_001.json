@@ -1,0 +1,69 @@
+{
+  "todoId": "TODO-059",
+  "phase": "M2-Drawing-028",
+  "evidenceId": "E-DEV-081",
+  "idaEvidenceId": "E-IDA-041",
+  "decision": "generated-node112-display-statusbar-excel-static-trace",
+  "algorithmImplemented": false,
+  "autocadL2": "not_run",
+  "oldRuntimeAutomaticallyLaunched": false,
+  "haspInstalledAutomatically": false,
+  "systemDirectoryModifiedAutomatically": false,
+  "appBusinessCodeModified": false,
+  "xhighReview": "not_required_docs_only",
+  "idaSupplement": {
+    "database": "visualts_i64_todo051",
+    "module": "VisualTS.exe",
+    "hexraysReady": true,
+    "functionsCovered": [
+      "sub_1405DBC20",
+      "sub_1406F72A0",
+      "sub_1405EAEC0",
+      "sub_1405DFEF0",
+      "sub_1405E02D0",
+      "sub_140601D80",
+      "sub_1405DBE50",
+      "sub_1405DC6A0",
+      "sub_1405EAF40",
+      "sub_1405E0660",
+      "sub_1405DC6C0",
+      "sub_1405DC870",
+      "sub_1404554B0",
+      "sub_1406B4670"
+    ],
+    "displayClosure": {
+      "sumFunction": "sub_1405DC6C0 = sum(generated node+112) over child+88 generated chain",
+      "excelColumnE": "焊头(个) = sub_1405DC6C0(obj)",
+      "excelColumnF": "单下料长(mm) = sub_1405DBC20(obj, buffer)",
+      "statusBarPane3": "if sum>0 then 焊接 / 绑扎 / 套筒连接"
+    },
+    "meaningBoundary": {
+      "generatedNodePlus112": "joint/head-count display-chain field",
+      "finalDebugNameClosed": false
+    },
+    "stopPoints": [
+      "generated node+112 final business debug name remains open",
+      "connection-mode source field final naming remains open",
+      "runtime screenshots and exported Excel sample not collected",
+      "AutoCAD L2 not run",
+      "real steeljoint-line and Others geometry algorithms not implemented"
+    ]
+  },
+  "verification": {
+    "todoCsvParse": "pass; next=TODO-060; TODO-059=done",
+    "gitDiffCheck": "pass; warnings only from CRLF/LF normalization in local worktree",
+    "readinessGateStrict": "pass; M1-Formal-Ready; 84/84 pass",
+    "boundaryScan": {
+      "domainRebar": "pass",
+      "drawing": "pass",
+      "project": "pass"
+    },
+    "ctest": "pass; 18/18 pass",
+    "phase1GateUnitTests": "pass; 22 tests",
+    "relationshipTrace": "pass; REQ-DRAW-003/REQ-PROJ-001/REQ-TECH-002 include E-IDA-041/E-DEV-081 and status M2Drawing028GeneratedNodeDisplayChainTraced"
+  },
+  "next": {
+    "todoId": "TODO-060",
+    "task": "generated node+112 旧图石运行确认与 Excel/状态栏对照 P0"
+  }
+}
