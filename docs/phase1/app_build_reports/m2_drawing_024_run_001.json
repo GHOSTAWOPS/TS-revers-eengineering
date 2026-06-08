@@ -1,0 +1,78 @@
+{
+  "todoId": "TODO-055",
+  "phase": "M2-Drawing-024",
+  "evidenceId": "E-DEV-077",
+  "idaEvidenceId": "E-IDA-037",
+  "decision": "joint-handler-action-field-semantics-static-trace",
+  "algorithmImplemented": false,
+  "autocadL2": "not_run",
+  "oldRuntimeAutomaticallyLaunched": false,
+  "haspInstalledAutomatically": false,
+  "systemDirectoryModifiedAutomatically": false,
+  "appBusinessCodeModified": false,
+  "xhighReview": "not_required_docs_only",
+  "idaSupplement": {
+    "database": "visualts_i64_todo051",
+    "module": "VisualTS.exe",
+    "hexraysReady": true,
+    "functionsCovered": [
+      "sub_1405E9640",
+      "sub_1405E7960",
+      "sub_1405ED6C0",
+      "sub_1405EBA30",
+      "sub_140446AE0",
+      "sub_1405CEB60",
+      "sub_14045D580"
+    ],
+    "groupjointFields": {
+      "objectPlus80": "child joint object chain head",
+      "childPlus72": "next child in groupjoint chain",
+      "childPlus88": "generated joint geometry/display chain head",
+      "childPlus96": "odd/even JointDistbet selector",
+      "childPlus108": "JointRuler/period integer mm",
+      "childPlus112": "normalized joint phase/position",
+      "childPlus116": "reverse flag",
+      "childPlus128": "generated lower-level ACIS/HOOPS entity chain"
+    },
+    "writeHelpers": {
+      "sub_1405E1D50": "ENTITY::backup then write child+108",
+      "sub_1405E1CC0": "normalize by child+108, ENTITY::backup, then write child+112",
+      "sub_1405E1D20": "ENTITY::backup then write child+116",
+      "sub_1405DC6E0": "read child+112 modulo child+108 when period is nonzero"
+    },
+    "actionSemantics": {
+      "sub_1405E9640": "clear first; for each child set period, odd/even phase, reverse=false, rebuild geometry",
+      "sub_1405E7960": "for each child reverse=false and delete generated chain via sub_1405DBE20",
+      "sub_1405ED6C0": "toggle child+116 and rebuild via sub_1405DB6C0",
+      "sub_1405EBA30": "write moved phase from input meters converted to integer mm, apply JointDistbet, reverse=false, rebuild",
+      "sub_140446AE0": "iterate obj+192 via +88 and invoke sub_1405E7960 on each child structure",
+      "sub_1405CEB60": "iterate segObj+80 via +96 and delete generated entity chains via sub_1405B9640",
+      "sub_14045D580": "Dialog #428 / JoingSegDlg init; segObj at dialog+320; defaults at +304/+308/+312"
+    },
+    "stopPoints": [
+      "sub_1405DB6C0 full geometry reconstruction algorithm remains open",
+      "JoingSegDlg Dialog #428 OK/apply handler remains open",
+      "feat/goujian obj+192 owning structure name remains open",
+      "goujian item+120/node+104/node+128 owning structure name remains open",
+      "old UI caption/context menu binding remains open",
+      "runtime non-empty steeljoint-line/Others sample not collected",
+      "AutoCAD L2 not run"
+    ]
+  },
+  "verification": {
+    "todoCsvParse": "pass; next=TODO-056; TODO-055=done",
+    "gitDiffCheck": "pass after EOF blank-line cleanup",
+    "readinessGateStrict": "pass; M1-Formal-Ready; 84/84 pass",
+    "boundaryScan": {
+      "domainRebar": "pass",
+      "drawing": "pass",
+      "project": "pass"
+    },
+    "ctest": "pass; 18/18 pass",
+    "relationshipTrace": "pass; REQ-DRAW-003/REQ-PROJ-001/REQ-TECH-002 include E-IDA-037/E-DEV-077 and status M2Drawing024JointActionFieldsTraced"
+  },
+  "next": {
+    "todoId": "TODO-056",
+    "task": "接头重建几何核心 sub_1405DB6C0 静态深追 P0"
+  }
+}

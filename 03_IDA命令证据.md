@@ -2978,3 +2978,318 @@ AutoCAD L2 接受度。
 ```text
 TODO-055 / 接头 handler 动作函数字段语义深追 P0
 ```
+
+## TODO-055 接头 handler 动作函数字段语义深追
+
+Evidence ID：
+
+- `E-IDA-037`
+
+本轮使用 IDA MCP 会话：
+
+```text
+database = visualts_i64_todo051
+input = C:\Users\ghost\Desktop\reverse_engineering\【03】图石软件\VisualTS.exe.i64
+module = VisualTS.exe
+hexrays_ready = true
+strings_cache_size = 16320
+```
+
+本轮目标是在 `TODO-054` 已确认接头 handler 对象筛选链之后，继续追动作函数的字段访问、写回规则和剩余 stop point。
+
+### 覆盖函数
+
+```text
+sub_1405E9640  -> groupjointnew 动作函数
+sub_1405E7960  -> groupjointclear / feat-goujian 间接 clear 共用函数
+sub_1405ED6C0  -> groupjointrev 动作函数
+sub_1405EBA30  -> groupjointmove 动作函数
+sub_140446AE0  -> featjointclear / goujianjointclear 的子对象 clear adapter
+sub_1405CEB60  -> segjointclear 动作函数
+sub_14045D580  -> segjointnew Dialog #428 初始化函数
+```
+
+### groupjoint 字段语义
+
+```text
+groupObj + 80 -> 子接头对象链头。
+
+child + 72  -> 同组下一个子接头对象。
+child + 88  -> 已生成接头几何 / 显示链头，clear / rebuild 会删除。
+child + 96  -> 奇偶错位选择字段，影响 JointDistbet 修正。
+child + 108 -> JointRuler / 接头周期，旧代码按 int mm 存储。
+child + 112 -> 当前接头相位 / 位置，写入前按周期归一化。
+child + 116 -> reverse flag。
+child + 128 -> 低层 ACIS/HOOPS 生成实体链，删除时会 HA_Delete_Entity_Geometry / api_del_entity。
+```
+
+### 写回 helper
+
+`sub_1405E1D50(child, value)`：
+
+```text
+ENTITY::backup(child)
+*(int *)(child + 108) = value
+```
+
+`sub_1405E1CC0(child, value)`：
+
+```text
+period = *(int *)(child + 108)
+phase = value
+
+if abs(value) >= 1:
+  if period > 1:
+    while phase < 1:
+      phase += period
+    while phase > period:
+      phase -= period
+else:
+  phase = period
+
+ENTITY::backup(child)
+*(int *)(child + 112) = phase
+```
+
+`sub_1405E1D20(child, flag)`：
+
+```text
+ENTITY::backup(child)
+*(byte *)(child + 116) = flag
+```
+
+`sub_1405DC6E0(child)`：
+
+```text
+period = *(int *)(child + 108)
+phase = *(uint32 *)(child + 112)
+if period:
+  return phase % period
+return phase
+```
+
+工程含义：
+
+```text
+旧图石每次写 +108 / +112 / +116 前都会调用 ENTITY::backup。
+后续复刻不能把这些动作简化为普通字段赋值；至少要保留 dirty / undo / transaction 语义位置。
+```
+
+### sub_1405E9640 / groupjointnew
+
+```text
+if dword_140994AB8 < 1:
+  return 0
+
+if dword_140994AB8 < dword_14095D628:
+  dword_14095D628 = dword_140994AB8 / 2
+
+periodM = dword_140994AB8 / 1000.0
+sub_1405E7960(groupObj)
+
+for child = *(groupObj+80); child; child = *(child+72):
+  if periodM < sub_1405DC870(child, 0, 0):
+    sub_1405E1D50(child, dword_140994AB8)
+    phase = dword_140994AB8
+    if *(int *)(child+96) % 2 < 1:
+      phase = dword_140994AB8 - dword_14095D628
+    sub_1405E1CC0(child, phase)
+    sub_1405E1D20(child, 0)
+    sub_1405DB6C0(child)
+return 1
+```
+
+### sub_1405E7960 / groupjointclear
+
+```text
+for child = *(groupObj+80); child; child = *(child+72):
+  sub_1405E1D20(child, 0)
+  sub_1405DBE20(child)
+return 1
+```
+
+`sub_1405DBE20(child)`：
+
+```text
+for geom = *(child+88); geom; geom = *(geom+88):
+  sub_1405B9640(geom)
+```
+
+### sub_1405ED6C0 / groupjointrev
+
+```text
+for child = *(groupObj+80); child; child = *(child+72):
+  sub_1405E1D20(child, *(byte *)(child+116) == 0)
+  sub_1405DB6C0(child)
+return 1
+```
+
+### sub_1405EBA30 / groupjointmove
+
+```text
+child = *(groupObj+80)
+if !child:
+  return 0
+
+while child:
+  period = *(int *)(child+108)
+  if period >= 1 and period/1000.0 < sub_1405DC870(child, 0, 0):
+    phase = inputDistanceM * 1000.0 + 0.5
+    if *(int *)(child+96) % 2 < 1:
+      phase -= dword_14095D628
+    sub_1405E1CC0(child, (int)phase)
+    sub_1405E1D20(child, 0)
+    sub_1405DB6C0(child)
+  child = *(child+72)
+return 1
+```
+
+`groupjointmove / sub_1405F0430` 入口补证：
+
+```text
+首个 groupjoint 对象：
+  initialDistance = sub_1405DC6E0(*(groupObj+80)) / 1000.0
+  sub_14058B8D0(..., &initialDistance)
+
+随后对所有 groupjoint 对象：
+  sub_1405EBA30(groupObj, initialDistance)
+```
+
+### sub_1405DB6C0 / 几何重建入口
+
+关键字段驱动：
+
+```text
+sub_1405DBE20(child)
+period = *(int *)(child+108)
+periodM = period / 1000.0
+phaseM = sub_1405DC6E0(child) / 1000.0
+if phaseM < 0.02:
+  phaseM = periodM
+if *(byte *)(child+116):
+  从反向端开始遍历
+遍历 child+88 几何链 / EDGE
+按 EDGE::length / get_bounded_curve / bounded_curve vfunc(+64) 取点
+调用 direct_render_mesh_manager::end_indexed_polygon(...)
+```
+
+工程含义：
+
+```text
+sub_1405DB6C0 是按字段重建接头几何的核心入口。
+本轮只确认字段驱动、清旧链、遍历和输出调用点；完整几何算法留给 TODO-056。
+```
+
+### sub_1405B9640 / 底层几何链删除
+
+```text
+for node = *(obj+128); node; node = *(node+88):
+  HA_Delete_Entity_Geometry(node)
+  api_del_entity(*(node+64))
+  backup(node); *(node+64) = 0
+  backup(node); *(node+80) = 0
+  backup(node); *(node+88) = 0
+  api_del_entity(node)
+
+backup(obj); *(obj+128) = 0
+backup(obj); *(obj+112) = 0
+```
+
+工程含义：
+
+```text
+旧 clear / rebuild 包含 ACIS/HOOPS entity 删除和字段清零，不是简单 UI 隐藏。
+```
+
+### sub_140446AE0 / feat-goujian clear adapter
+
+```text
+for subObj = *(obj+192); subObj; subObj = *(subObj+88):
+  sub_1405E7960(subObj)
+return lastResult
+```
+
+handler 差异：
+
+```text
+featjointclear:
+  selection item +13 -> feat object -> sub_140446AE0(featObj) -> view+456
+
+goujianjointclear:
+  selection item +80 == 4
+  item+120 child node chain
+  node+104 -> action object -> sub_140446AE0(actionObj) -> view+456
+```
+
+补充：
+
+```text
+featjointnew / sub_1405EF140 过滤 feat object 后直接调用 direct_render_mesh_manager::end_indexed_polygon(featObj) + view+456。
+它不经过 sub_140446AE0。
+```
+
+### sub_1405CEB60 / segjointclear
+
+```text
+for item = *(segObj+80); item; item = *(item+96):
+  sub_1405B9640(item)
+return lastResult
+```
+
+工程含义：
+
+```text
+segjointclear 清理 segObj+80 下的段组接头子链。
+该子链 next 字段是 +96，不是 groupjoint 子对象的 +72。
+```
+
+### sub_14045D580 / segjointnew Dialog #428 初始化
+
+```text
+CDialog::CDialog(dialog, 0x1AC, parent)  // 0x1AC = 428
+*(dialog+320) = segObj
+vtable = JoingSegDlg::vftable
+*(int *)(dialog+308) = dword_140994AB8
+*(int *)(dialog+304) = 0
+*(int *)(dialog+312) = dword_140994AB8
+```
+
+工程含义：
+
+```text
+segjointnew 当前可确认是创建 JoingSegDlg / Dialog #428 参数窗口。
+Dialog 保存 segObj 到 +320，并把 JointRuler 默认值写入 +308 / +312。
+本轮不追 Dialog 确定按钮后的真实生成逻辑。
+```
+
+### 本轮 stop point
+
+已闭合：
+
+```text
+TODO-055 指定 7 个函数的字段访问和写回规则。
+groupjoint 子链头 / next / phase / period / reverse 字段。
+feat/goujian clear 的 obj+192 子链 adapter。
+segjoint clear 的 obj+80 / +96 子链。
+segjointnew Dialog #428 初始化字段。
+写回 helper 会调用 ENTITY::backup。
+```
+
+仍未闭合：
+
+```text
+sub_1405DB6C0 内部完整几何算法。
+JoingSegDlg Dialog #428 确定按钮后的 segjoint 创建链。
+feat/goujian obj+192 子链 owning 结构名。
+goujian item+120 / node+104 / node+128 owning 结构名。
+旧 UI caption / 右键菜单项绑定。
+旧图石非空 steeljoint-line / Others 运行样例。
+AutoCAD L2 接受度。
+golden。
+```
+
+后续建议：
+
+```text
+TODO-056 / 接头重建几何核心 sub_1405DB6C0 静态深追 P0
+```

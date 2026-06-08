@@ -307,20 +307,20 @@ TODO-042 验证 = pointFaceEdge.passed=true, pointGroupCount=2, pointGeoCount=2,
 TODO-043 验证 = othersSteeljoint.passed=true, Others empty container, steeljoint-line/joints present, acad.exe/accoreconsole.exe not_found, AutoCAD registry root keys exist but no version child groups, autocadL2=not_run, CTest 17/17 pass, readiness 84/84 pass, OCCT leak scan pass, xhigh needs_fix important fixed, agent closed
 TODO-044 验证 = othersSteeljoint.passed=true, Others empty container, steeljoint-line/joints present, acad.exe/accoreconsole.exe not_found, AutoCAD registry root keys exist but no version child groups, autocadL2=not_run, CTest 18/18 pass, readiness 84/84 pass, OCCT leak scan pass, xhigh needs_fix important fixed, agent closed
 
-latest completed tag = evidence-054/joint-handler-object-filter-static-classification
-planned tag = evidence-055/joint-handler-action-field-static-trace
+latest completed tag = evidence-055/joint-handler-action-field-static-trace
+planned tag = evidence-056/joint-rebuild-geometry-core-static-trace
 ```
 
 当前下一步：
 
 ```text
-TODO-055 / 接头 handler 动作函数字段语义深追 P0
-  -> TODO-054 已完成接头 handler 业务对象筛选链静态分类。
+TODO-056 / 接头重建几何核心 sub_1405DB6C0 静态深追 P0
+  -> TODO-055 已完成接头 handler 动作函数字段语义深追。
   -> TODO-050 继续 blocked，等待用户现场旧图石非空运行样例。
   -> 下一轮只做 IDA MCP / 静态文档补证：
-     继续追 sub_1405E9640 / sub_1405E7960 / sub_1405ED6C0 /
-     sub_1405EBA30 / sub_140446AE0 / sub_1405CEB60 / sub_14045D580
-     的字段语义、写回规则和 remaining owning structure stop point。
+     继续追 sub_1405DB6C0 / sub_1405DC840 / sub_1405E06F0 /
+     sub_1405E05A0 / sub_1405E1E70 / sub_1405D36D0 /
+     sub_14054C2C0 / sub_1405BBEF0 的几何重建语义和 stop point。
   -> 不自动启动旧图石，不安装 HASP，不实现真实接头线 / Others 几何算法。
 ```
 
@@ -775,8 +775,18 @@ TODO-054 / Evidence = done
   -> 本节点只补 handler 对象筛选静态分类；
      不声明旧运行样例、真实算法、AutoCAD L2 或 golden。
 
-TODO-055 / Evidence = next
-  -> 继续静态深追接头 handler 动作函数的字段语义和旧业务写回规则。
+TODO-055 / Evidence = done
+  -> 已补 `E-IDA-037 / E-DEV-077`，确认 groupjoint 子链头 obj+80，
+     子接头对象 child+72/+88/+96/+108/+112/+116/+128 字段语义。
+  -> 已确认 `sub_1405E1D50 / sub_1405E1CC0 / sub_1405E1D20`
+     都会先 `ENTITY::backup` 再写回字段。
+  -> 已确认 feat/goujian clear adapter 走 obj+192 子链，
+     segjoint clear/new dialog 字段入口已分类。
+  -> 本节点只补动作函数字段语义；
+     不声明 sub_1405DB6C0 完整几何算法、旧运行样例、真实算法、AutoCAD L2 或 golden。
+
+TODO-056 / Evidence = next
+  -> 继续静态深追接头重建几何核心 sub_1405DB6C0。
   -> 不自动启动旧图石，不安装 HASP，不实现真实接头线 / Others 几何算法。
 ```
 
@@ -1105,13 +1115,14 @@ TODO-051 验证 = symbolcutIOS producer chain traced, HVIEWPORT+840/+848 produce
 TODO-052 验证 = static UI/Ribbon stop point, joint command handler table traced, direct Ribbon immediate hit=false, dialog resources confirmed, uiChineseCaptionClosed=false, nonEmptyRuntimeSampleCollected=false, autocadL2=not_run, CTest 18/18 pass, readiness 84/84 pass, OCCT leak scan pass, xhigh not_required_docs_only
 TODO-053 验证 = dynamic context menu mechanism traced, popup constructors=sub_1405C2EF0/sub_1406BA690, LoadMenuW resources=0xAD/0xF8, all MENU known joint hits=0, known joint immediate matches=false, uiChineseCaptionClosed=false, contextMenuBindingClosed=false, nonEmptyRuntimeSampleCollected=false, autocadL2=not_run, xhigh not_required_docs_only
 TODO-054 验证 = joint handler object filters classified, bar/group/seg/feat source=selection item +13 with type predicates, goujian source=selection item +80==4 plus item+120 child chain node+104, uiChineseCaptionClosed=false, nonEmptyRuntimeSampleCollected=false, autocadL2=not_run, xhigh not_required_docs_only
+TODO-055 验证 = joint handler action field semantics traced, groupjoint obj+80 child chain and child+72/+88/+96/+108/+112/+116/+128 fields classified, backup write helpers closed, feat/goujian obj+192 clear adapter traced, segjoint clear/dialog init classified, full sub_1405DB6C0 geometry algorithm still open, autocadL2=not_run, xhigh not_required_docs_only
 ```
 
 当前下一步：
 
 ```text
-TODO-055 / 接头 handler 动作函数字段语义深追 P0
-  -> TODO-054 已完成接头 handler 业务对象筛选链静态分类
+TODO-056 / 接头重建几何核心 sub_1405DB6C0 静态深追 P0
+  -> TODO-055 已完成接头 handler 动作函数字段语义深追
   -> TODO-050 继续 blocked，等待用户现场旧图石非空运行样例
   -> 不自动启动旧图石，不安装 HASP
   -> 只做 IDA MCP / 静态文档补证
@@ -1121,10 +1132,10 @@ TODO-055 / 接头 handler 动作函数字段语义深追 P0
 原因：
 
 ```text
-TODO-054 已把接头 handler 的对象来源、类型过滤、参数入口和失败口径追到静态分类级别。
-当前真正缺的是动作函数的字段语义、写回规则、owning 结构名和旧图石非空运行样例。
+TODO-055 已把接头 handler 的字段写回、backup、clear / move / reverse 和 segjoint dialog 入口追到静态字段语义级别。
+当前真正缺的是 sub_1405DB6C0 的曲线取点 / 反向遍历 / end_indexed_polygon 几何重建细节、owning 结构名和旧图石非空运行样例。
 非空运行样例继续依赖用户现场 USB 狗 + HASP + 旧图石手工导出。
-所以 agent 下一轮先做可独立推进的 TODO-055 动作函数字段语义深追。
+所以 agent 下一轮先做可独立推进的 TODO-056 接头重建几何核心静态深追。
 golden 采集 TODO-026 暂按用户要求保持 pending。
 ```
 
@@ -1190,19 +1201,19 @@ golden 采集 TODO-026 暂按用户要求保持 pending。
 
 ## CSE v2 Control Contract
 
-- **Primary Setpoint**：下一轮只完成 `TODO-055 / 接头 handler 动作函数字段语义深追 P0`，在不自动启动旧图石的前提下继续用 IDA MCP 缩小接头动作函数的字段语义、写回规则和 owning 结构缺口。
-- **Acceptance**：形成 `E-IDA-037 / E-DEV-077` 或等价证据；至少覆盖 `sub_1405E9640 / sub_1405E7960 / sub_1405ED6C0 / sub_1405EBA30 / sub_140446AE0 / sub_1405CEB60 / sub_14045D580` 的字段访问、写回行为、失败口径或明确 stop point；默认 CTest、readiness gate、OCCT 泄漏检查通过；docs-only 节点记录 `xhighReview = not_required_docs_only`；更新实现记录、build report、追溯矩阵、缺口文档、46 和 todo。
+- **Primary Setpoint**：下一轮只完成 `TODO-056 / 接头重建几何核心 sub_1405DB6C0 静态深追 P0`，在不自动启动旧图石的前提下继续用 IDA MCP 缩小接头重建几何核心的曲线取点、反向遍历、清旧链和 `end_indexed_polygon` 输出语义缺口。
+- **Acceptance**：形成 `E-IDA-038 / E-DEV-078` 或等价证据；至少覆盖 `sub_1405DB6C0 / sub_1405DC840 / sub_1405E06F0 / sub_1405E05A0 / sub_1405E1E70 / sub_1405D36D0 / sub_14054C2C0 / sub_1405BBEF0` 的调用关系、字段访问、几何输出语义或明确 stop point；默认 CTest、readiness gate、OCCT 泄漏检查通过；docs-only 节点记录 `xhighReview = not_required_docs_only`；更新实现记录、build report、追溯矩阵、缺口文档、46 和 todo。
 - **Guardrail Metrics**：不能实现真实接头线 / Others 几何算法；不能在没有运行证据时声明 AutoCAD L2 通过；不能把英文内部命令名直接写成中文 UI caption；不能把 Dialog #427/#428 字段当成按钮绑定；不能改钢筋创建业务；不能迁入父目录 rebar 业务；不能进入 golden 全量采集。
-- **Sampling Plan**：先读 `todo.csv / 03 / 11 / 34 / 90 / 99`，确认 `TODO-054` 已完成 handler 对象筛选静态分类且 `TODO-050` 仍 blocked，再用 IDA MCP 分析各动作函数的字段访问、写回和调用链；agent 不自动启动旧图石；最后运行默认 CTest、readiness gate 和 OCCT 泄漏扫描，证明本轮没有破坏工程基线。
+- **Sampling Plan**：先读 `todo.csv / 03 / 11 / 34 / 91 / 99`，确认 `TODO-055` 已完成动作函数字段语义深追且 `TODO-050` 仍 blocked，再用 IDA MCP 分析 `sub_1405DB6C0` 及相关 helper 的字段访问、曲线取点、反向遍历和输出调用链；agent 不自动启动旧图石；最后运行默认 CTest、readiness gate 和 OCCT 泄漏扫描，证明本轮没有破坏工程基线。
 - **Known Delays**：非空旧运行样例仍依赖用户现场手工操作；静态资源可能仍无法反推出中文 caption，需要旧界面截图配合闭合。
-- **Recovery Target**：如果动作函数字段语义无法继续推进，把阻塞函数、缺失 xref、未命名字段或 session 状态写入 `99` 和 build report，不继续猜 UI caption、不堆算法实现。
+- **Recovery Target**：如果 `sub_1405DB6C0` 几何重建语义无法继续推进，把阻塞 helper、缺失 xref、未命名字段或 session 状态写入 `99` 和 build report，不继续猜 UI caption、不堆算法实现。
 - **Rollback Trigger**：无证据实现接头线 / Others / 工程图算法；把字段骨架或 IDA 命令表当成旧插件接受证明；无运行证据声明 L2 通过；让 `domain/rebar` 泄漏 OCCT/AIS；测试或 gate 失败仍继续堆功能。
 - **Constraints**：不使用 ACIS / HOOPS / Codejock 等商业库；新系统不引入 USB 狗 / 网络许可依赖；旧逻辑不确定时优先查 IDA MCP 或旧图石运行确认；xhigh 只读，修改由主流程 agent 完成；不自动再次启动旧图石。
 - **Boundary**：下一轮只允许 IDA / 静态证据、文档、追溯、缺口、46/todo 必要更新；禁止实现真实 OCCT HLR/section/hidden-line/steeljoint-line/Others 算法、禁止修改 UI 新功能、钢筋创建业务、无证据 AutoCAD L2 结论和 golden。
-- **Coupling Notes**：`drawing/export` 是 Detail 包输出边界；TODO-055 只补旧图石接头 handler 动作函数静态证据，不关闭旧插件容忍度、AutoCAD L2、隐藏线 / 填充线算法或完整工程图缺口。
-- **Approximation Validity**：TODO-055 的产物是动作函数字段语义证据或 stop point，不是旧图石运行样例；即使命名了部分写回字段，也不代表真实接头线 / Others 几何算法已经闭合。
-- **Actuator Budget**：下一轮只推进 `TODO-055`。完成后停止复盘，不自动进入真实算法实现、隐藏线、填充线、点筋、FaceEdge 或 golden。
-- **Risks**：IDA 可能无法直接命名全部 owning 结构；动作函数可能继续调用复杂 ACIS / 显示链；部分字段语义仍需要旧图石运行截图和 Detail 非空样例配合闭合。
+- **Coupling Notes**：`drawing/export` 是 Detail 包输出边界；TODO-056 只补旧图石接头重建几何核心静态证据，不关闭旧插件容忍度、AutoCAD L2、隐藏线 / 填充线算法或完整工程图缺口。
+- **Approximation Validity**：TODO-056 的产物是 `sub_1405DB6C0` 静态几何重建证据或 stop point，不是旧图石运行样例；即使命名了部分曲线取点和输出调用，也不代表真实接头线 / Others 几何算法已经闭合。
+- **Actuator Budget**：下一轮只推进 `TODO-056`。完成后停止复盘，不自动进入真实算法实现、隐藏线、填充线、点筋、FaceEdge 或 golden。
+- **Risks**：IDA 可能无法直接命名全部 owning 结构；`sub_1405DB6C0` 混合 ACIS 曲线、HOOPS 显示和旧业务字段；部分几何语义仍需要旧图石运行截图和 Detail 非空样例配合闭合。
 ## Todo CSV 使用方式
 
 `todo.csv` 是后续执行看板。建议每次 goal 模式只拿 `status=next` 或最高优先级 `pending` 的任务推进。
@@ -1227,14 +1238,14 @@ golden 采集 TODO-026 暂按用户要求保持 pending。
 下一步优先执行：
 
 ```text
-TODO-055 / 接头 handler 动作函数字段语义深追 P0
-  -> TODO-054 已完成接头 handler 业务对象筛选链静态分类
+TODO-056 / 接头重建几何核心 sub_1405DB6C0 静态深追 P0
+  -> TODO-055 已完成接头 handler 动作函数字段语义深追
   -> TODO-050 继续 blocked，等待用户现场旧图石运行样例
   -> 不自动启动旧图石
-  -> 用 IDA MCP 继续深追接头动作函数的字段访问、写回规则和 owning 结构 stop point
+  -> 用 IDA MCP 继续深追 sub_1405DB6C0 的曲线取点、反向遍历、清旧链和输出调用
   -> 只补静态证据和剩余 GAP；不实现真实接头线 / Others 几何算法，
      不声明 AutoCAD L2 通过，不进入 golden
 ```
 
-原因很简单：TODO-054 已经把五组接头 handler 的对象来源和类型过滤追清楚；真实非空运行样例仍依赖用户现场 USB 狗 + HASP + 旧图石手工导出。agent 下一步先做可独立推进的动作函数字段语义深追，继续缩小后续算法复刻前的证据缺口。
+原因很简单：TODO-055 已经把接头动作函数的字段写回、backup、清除、移动、反向和 Dialog 入口追清楚；真实非空运行样例仍依赖用户现场 USB 狗 + HASP + 旧图石手工导出。agent 下一步先做可独立推进的 `sub_1405DB6C0` 几何重建核心静态深追，继续缩小后续算法复刻前的证据缺口。
 TODO-026 golden 采集暂按用户要求保持 pending。
