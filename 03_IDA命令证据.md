@@ -1269,6 +1269,161 @@ CsetYJK
 3. 运行时输出目录、覆盖策略和旧插件导入结果
 ```
 
+## TODO-064 中文 caption / resource 绑定与真正生成工程图弹窗候选补证
+
+证据 ID：
+
+```text
+E-IDA-044
+```
+
+本轮复用会话：
+
+```text
+database = visualts_todo062_generate_drawing
+input = C:\Users\ghost\Desktop\reverse_engineering\【03】图石软件\VisualTS.exe.i64
+hexrays_ready = true
+```
+
+### 1. `36124 / 35057` 的中文 caption 已可静态闭合
+
+本轮额外用 `VisualTS.exe` 做了 Win32 `LoadStringW` 资源探针。
+
+直接读到：
+
+```text
+ID=36124 -> 用定义的剖面剖切实体模型\n生成工程图
+ID=35057 -> 生成下料表Excel文件\n下料表
+ID=36050 -> 输出钢筋几何\n输出钢筋
+```
+
+当前高置信工程口径：
+
+```text
+旧资源字符串采用：
+  描述/help \n caption
+
+所以顶部命令 caption 当前可静态闭合为：
+  36124 -> 生成工程图
+  35057 -> 下料表
+
+36050 是同一模式的直接旁证：
+  输出钢筋几何 \n 输出钢筋
+```
+
+### 2. 真正生成工程图弹窗候选进一步收窄
+
+本轮继续复核：
+
+```text
+sub_140600AA0
+sub_140601600
+sub_1404FE300
+```
+
+当前高置信链：
+
+```text
+36124 / 0x8D1C
+  -> psallc
+  -> sub_140600AA0
+  -> sub_140601600(v64, &v83)
+  -> if (v83) {
+       sub_1404FE300(v81, 0)
+       CDialog::DoModal(v81)
+     }
+```
+
+进一步收窄：
+
+```text
+sub_140601600
+  -> GetTempPathA(...)
+  -> 拼出 UnCutSteel.TXT
+  -> 写未割钢筋 / 未切净类文本
+  -> 命中时把 *a2 = 1
+
+sub_1404FE300
+  -> CDialog::CDialog(..., 0x57C, ...)
+  -> vftable = output_uncut_steel
+```
+
+因此当前最稳妥结论是：
+
+```text
+sub_140600AA0 里能直接证明的 DoModal，
+不是前置“生成工程图设置窗”，
+而是：
+  output_uncut_steel
+  / Dialog 0x57C
+  / UnCutSteel.TXT
+
+它更像生成后的未割钢筋报告 / 提示窗候选。
+```
+
+### 3. `Dialog #427` 继续降级，不能再拿来证明“下料表弹窗”
+
+本轮复核：
+
+```text
+sub_1406AC240
+  -> CPropertyPage(..., 0x1AB, ...)
+  -> 0x1AB = 427
+  -> vftable = OptionFactory
+```
+
+同时：
+
+```text
+sub_1406AD120
+  -> sub_1406AC4A0(..., byte_1407898F8, ...)
+  -> CPropertySheet::DoModal(...)
+
+sub_1406AC4A0
+  -> COptionSheet
+  -> Add(Set2Dpage / Set3Dpage / proofwater / OptionDisplay /
+         OptionFactory / CsetYJK ...)
+```
+
+所以当前只能保守写成：
+
+```text
+Dialog #427
+  -> OptionFactory 属性页
+  -> 属于系统设置属性页家族
+
+它不再能作为
+  35057 / 下料表
+的直接弹窗真值。
+```
+
+### TODO-064 收口后的静态 stop point
+
+```text
+caption / resource：
+  36124 -> 生成工程图
+  35057 -> 下料表
+
+真正生成工程图弹窗候选：
+  当前只收窄到
+    output_uncut_steel / Dialog 0x57C / UnCutSteel.TXT
+  这条后置报告链
+
+不能再写成：
+  Dialog #274 = 生成工程图设置窗
+  Dialog #427 = 下料表弹窗
+```
+
+### 本轮仍不证明
+
+```text
+旧图石点击 生成工程图 时的真实输出目录
+Detail.xml + DetailNN.stl 的真实覆盖策略
+旧图石点击 下料表 时是否还会出现额外运行时弹窗
+旧插件 AutoCAD L2 已通过
+golden 已闭合
+```
+
 ### 下料表 Detail / XML writer 聚合链补证
 
 证据 ID：

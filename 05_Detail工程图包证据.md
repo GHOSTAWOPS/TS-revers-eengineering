@@ -147,7 +147,10 @@ IDA 补证：
 - `sub_140605B20 -> sub_140602F90` 命中 `StbTables / StbTable / StbRow%d` 导出链。
 - `E-IDA-020 / E-IDA-043` 已纠偏：`35057 / 0x88F1 -> psexcel -> sub_140605B20` 才是下料表 / Excel 导出链。
 - `E-IDA-042 / E-IDA-043` 已确认 `36124 / 0x8D1C -> psallc -> sub_140600AA0` 是 Detail 包主写出链；`0x8CD2` 实际属于 `ysteelout`，不再把它记成 `psallc`。
-- 按钮 caption、Dialog #427 和运行输出仍需确认。
+- `E-IDA-044 / E-DEV-086` 已把顶部中文 caption / resource 静态闭合：`36124 -> 生成工程图`，`35057 -> 下料表`；`36050 -> 输出钢筋` 作为同类 `描述\ncaption` 资源模式旁证。
+- `Dialog #427` 当前只能保守记为 `OptionFactory` 属性页线索，不再把它当成下料表弹窗真值。
+- `sub_140600AA0` 里的直接 `DoModal` 当前只收窄到 `output_uncut_steel / Dialog 0x57C / UnCutSteel.TXT` 后置报告链，不再写成前置生成工程图设置窗。
+- 运行输出目录、覆盖策略和旧插件导入结果仍需确认。
 - `sub_1405259D0` 用于按名字查找 XML / COM 子节点。
 - `sub_140525880` 用于按名字匹配子字段并写入值。
 - IDA 已确认 `count / rsdID / diameter / stbLevel / length / stbNumSum / lenSum` 走写值 helper。

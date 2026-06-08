@@ -1,0 +1,26 @@
+{
+  "todoId": "TODO-064",
+  "phase": "M2-Drawing-033",
+  "evidenceId": "E-DEV-086",
+  "idaEvidenceId": "E-IDA-044",
+  "decision": "generate-package-caption-resource-closure-and-modal-candidate-narrowing",
+  "oldRuntimeAutomaticallyLaunched": false,
+  "haspInstalledAutomatically": false,
+  "systemDirectoryModifiedAutomatically": false,
+  "appBusinessCodeModified": false,
+  "algorithmImplemented": false,
+  "autocadL2": "not_run",
+  "xhighReview": "not_required_docs_only",
+  "verification": {
+    "todoCsvParse": "pass; TODO-064=done; next=TODO-065",
+    "gitDiffCheck": "pass; CRLF normalization warnings only",
+    "readinessGateStrict": "pass; M1-Formal-Ready; 84/84 pass",
+    "ctest": "pass; 18/18 pass",
+    "domainRebarOCCLeak": "pass; no matches in app/src/domain/rebar; domain_rebar_boundary also passed in CTest",
+    "relationshipTrace": "pass; REQ-DRAW-003/004 include E-IDA-044/E-DEV-086 and next switched to TODO-065"
+  },
+  "next": {
+    "todoId": "TODO-065",
+    "task": "生成工程图与下料表旧图石运行确认清单与工件门禁准备 P0"
+  }
+}
