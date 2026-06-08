@@ -64,6 +64,7 @@ Detail / 新设计文件格式输出层
 11. 不确定旧逻辑时优先用 IDA MCP 或旧图石运行确认，不能凭父目录代码拍脑袋定案。
 12. 每次完成一个清晰节点都要 commit、打 tag、push，形成可回退时间线。
 13. 涉及代码、测试、构建脚本的节点，在 commit 前必须经过 xhigh 只读 review；修改只能由主流程 agent 完成。
+14. 旧图石如果依赖 USB 狗或其他许可前置，那只属于旧系统运行取证条件；新系统复刻目标不继承 USB 狗 / 网络许可依赖，仍要保持开源、无狗。
 ```
 
 CSE v2 Control Contract：
@@ -710,8 +711,11 @@ TODO-049 / Evidence = in_progress
      或对象映射失败时直接走 fallback；
      `请检查网线是否接好` 是宽兜底许可初始化失败文案，
      不能只按“网络断了”理解。
-     当前节点仍必须等待用户现场手工确认 USB 狗 / 网络许可 / 内网或 VPN /
-     手工启动结果，不能写成 done。
+  -> 已补 `E-RUN-003`，用户已明确旧图石启动需要 USB 狗；
+     同时明确新系统复刻不能继承 USB 狗依赖，目标仍是开源、无狗。
+     当前节点已从“判断是不是 USB 狗模式”收窄为
+     “插狗后能否进入主界面 / 打开 SFL；若仍失败，是否还叠加网络许可 /
+     内网或 VPN / license file 条件”，因此仍不能写成 done。
 ```
 
 工作目录：
@@ -1119,14 +1123,13 @@ golden 采集 TODO-026 暂按用户要求保持 pending。
 ## CSE v2 Control Contract
 
 - **Primary Setpoint**：下一轮只完成 `TODO-049 / 旧图石启动前置条件用户手工确认 P0`，按 TODO-048 已闭合的静态阻塞链逐项确认外部前置条件，并得到“仍阻塞”或“可进主界面”的人工结果。
-- **Acceptance**：形成用户手工确认结果；若仍阻塞则记录完整弹框文本和环境状态，若已进入主界面则记录成功证据并把下一步切回非空样例采集；默认 CTest、readiness gate、OCCT 泄漏检查通过；按需执行 xhigh 只读 review；更新实现记录、build report、追溯矩阵、缺口文档、46 和 todo。
-- **Acceptance**：形成用户手工确认结果；若仍阻塞则记录完整弹框文本和环境状态，若已进入主界面则记录成功证据并把下一步切回非空样例采集；`E-DEV-071` 的本机预检和 `E-IDA-031` 的 fallback 语义补证都只能作为准备证据，不能替代现场结果；默认 CTest、readiness gate、OCCT 泄漏检查通过；按需执行 xhigh 只读 review；更新实现记录、build report、追溯矩阵、缺口文档、46 和 todo。
+- **Acceptance**：形成用户手工确认结果；若仍阻塞则记录完整弹框文本和环境状态，若已进入主界面则记录成功证据并把下一步切回非空样例采集；`E-DEV-071` 的本机预检、`E-IDA-031` 的 fallback 语义补证和 `E-RUN-003` 的“旧图石启动需要 USB 狗 / 新系统不继承 USB 狗依赖”都只能作为准备证据或边界约束，不能替代“插狗后能否进入主界面 / 打开 SFL”的现场结果；默认 CTest、readiness gate、OCCT 泄漏检查通过；按需执行 xhigh 只读 review；更新实现记录、build report、追溯矩阵、缺口文档、46 和 todo。
 - **Guardrail Metrics**：不能实现真实接头线 / Others 几何算法；不能在没有运行证据时声明 AutoCAD L2 通过；不能把单次阻塞截图写成旧业务算法证据；不能改钢筋创建业务；不能迁入父目录 rebar 业务；不能进入 golden 全量采集。
-- **Sampling Plan**：先读 `todo.csv / 03 / 34 / 84 / 85 / 99`，确认 `E-DEV-071` 已记录本机预检，再由用户按清单手工确认许可 / 服务 / 网络 / license file 环境并手工重试旧图石；agent 不自动启动旧图石；最后运行默认 CTest、readiness gate 和 OCCT 泄漏扫描，证明本轮没有破坏工程基线。
-- **Known Delays**：启动阻塞当前依赖用户手工环境确认；agent 不能代替用户完成加密狗、服务、网络许可和 license file 现场状态确认。
+- **Sampling Plan**：先读 `todo.csv / 03 / 34 / 84 / 85 / 99`，确认 `E-DEV-071` 已记录本机预检、`E-RUN-003` 已记录 USB 狗前置和新系统无狗边界，再由用户按清单插好 USB 狗并手工重试旧图石；若仍失败，再回填网络 / VPN / license file 条件；agent 不自动启动旧图石；最后运行默认 CTest、readiness gate 和 OCCT 泄漏扫描，证明本轮没有破坏工程基线。
+- **Known Delays**：启动阻塞当前依赖用户手工环境确认；agent 不能代替用户完成 USB 狗、服务、网络许可和 license file 现场状态确认。
 - **Recovery Target**：如果手工确认后仍不可推进，把阻塞原因写入 `99` 和 build report，不继续猜算法、不堆后续工程图实现。
 - **Rollback Trigger**：无证据实现接头线 / Others / 工程图算法；把字段骨架或单次截图当成旧插件接受证明；无运行证据声明 L2 通过；让 `domain/rebar` 泄漏 OCCT/AIS；测试或 gate 失败仍继续堆功能。
-- **Constraints**：不使用 ACIS / HOOPS / Codejock 等商业库；旧逻辑不确定时优先查 IDA MCP 或旧图石运行确认；xhigh 只读，修改由主流程 agent 完成；不自动再次启动旧图石。
+- **Constraints**：不使用 ACIS / HOOPS / Codejock 等商业库；新系统不引入 USB 狗 / 网络许可依赖；旧逻辑不确定时优先查 IDA MCP 或旧图石运行确认；xhigh 只读，修改由主流程 agent 完成；不自动再次启动旧图石。
 - **Boundary**：下一轮只允许手工确认记录、文档、追溯、缺口、46/todo 必要更新；禁止实现真实 OCCT HLR/section/hidden-line/steeljoint-line/Others 算法、禁止修改 UI 新功能、钢筋创建业务、无证据 AutoCAD L2 结论和 golden。
 - **Coupling Notes**：`drawing/export` 是 Detail 包输出边界；TODO-049 只收集外部前置条件确认结果，不关闭旧插件容忍度、AutoCAD L2、隐藏线 / 填充线算法或完整工程图缺口。
 - **Approximation Validity**：TODO-049 的产物是用户手工环境确认结果，不是算法实现；只有旧图石能稳定进入主界面后，后续节点才能继续采接头样例。
@@ -1159,9 +1162,10 @@ golden 采集 TODO-026 暂按用户要求保持 pending。
 TODO-049 / 旧图石启动前置条件用户手工确认 P0
   -> 按 TODO-048 已形成的手工清单检查许可 / 服务 / 网络 / license file 环境
   -> agent 侧本机预检已由 E-DEV-071 记录完成
-  -> 用户自己手工重试旧图石启动
+  -> 用户已明确旧图石启动需要 USB 狗，且新系统不继承 USB 狗依赖
+  -> 下一步只等用户插狗后手工重试旧图石启动
   -> 只补手工确认结果和剩余 GAP；不自动启动旧图石，不实现真实接头线 / Others 几何算法，不声明 AutoCAD L2 通过，不进入 golden
 ```
 
-原因很简单：TODO-048 已把启动阻塞链和手工前置条件静态闭合，E-DEV-071 又补完了 agent 侧本机预检；下一步不该继续让 agent 自动碰旧图石，而是该由用户按清单做一次现场环境确认，再决定是否回到非空样例采集。
+原因很简单：TODO-048 已把启动阻塞链和手工前置条件静态闭合，E-DEV-071 又补完了 agent 侧本机预检，E-RUN-003 也已经确认“旧图石启动需要 USB 狗，但新系统不能继承这个依赖”。下一步不该继续让 agent 自动碰旧图石，而是该由用户插狗后做一次现场启动确认，再决定是否回到非空样例采集。
 TODO-026 golden 采集暂按用户要求保持 pending。

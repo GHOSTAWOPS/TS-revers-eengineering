@@ -1,0 +1,20 @@
+{
+  "todoId": "TODO-049",
+  "phase": "M2-Drawing-018",
+  "evidenceId": "E-RUN-003",
+  "decision": "usb-dongle-prerequisite-user-confirmed-main-window-result-pending",
+  "userActionRequired": true,
+  "algorithmImplemented": false,
+  "autocadL2": "not_run",
+  "legacyStartupPrerequisite": {
+    "usbDongleRequiredConfirmed": true,
+    "mainWindowReachedAfterDongle": "pending",
+    "sflOpenAfterDongle": "pending",
+    "source": "user_manual_statement_2026-06-08"
+  },
+  "newSystemBoundary": {
+    "usbDongleDependencyAllowed": false,
+    "openSourceTarget": true
+  },
+  "oldRuntimeAutomaticallyLaunched": false
+}
