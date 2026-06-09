@@ -347,14 +347,14 @@ M2-RebarCreate-003 / TODO-073
   -> edge 参数区间、子段长度、子段 bbox 和子段采样
   -> edge split / projected split / endpoint trim / wire chain / offset / section / sweep preview
   -> domain SteelData / SteelBarGroup / SteelBar / SteelBarSegment P1
-  -> Rebar.Create.LineGroup P0 creator / command handler / UI AIS visible feedback
+  -> Rebar.Create.LineGroup P0 creator / command handler / UI AIS visible feedback / parameter dialog / selection preflight
 ```
 
 这代表：
 
 - 功能矩阵、命令契约、领域模型、Detail 映射、新工程格式、binding、依赖门禁、runtime gate 已具备进入 Qt6 + OCCT 开发的入口条件。
 - OCCT 能力已经开始被封装成旧 VisualTS 可用的几何语义，而不是直接暴露给钢筋业务层。
-- 线配筋首条主链已经能从 UI 选择 edge，打开 P0 参数窗口，进入 `RebarGroupCreator`，生成 domain `SteelBarGroup`，并通过 presentation 层显示到 AIS。
+- 线配筋首条主链已经能从 UI 选择 edge，先通过最小 edge 预检，再打开 P0 参数窗口，进入 `RebarGroupCreator`，生成 domain `SteelBarGroup`，并通过 presentation 层显示到 AIS。
 
 这不代表：
 

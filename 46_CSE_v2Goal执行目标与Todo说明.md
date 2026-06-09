@@ -20,7 +20,7 @@
      输出目录 / hash / 覆盖策略记录模板和拒收伪工件规则已落文档
   -> output_uncut_steel / Dialog 0x57C / UnCutSteel.TXT
      继续只算可选旁证，不算前置设置窗
-  -> TODO-066 已完成真实工件回填；TODO-067 已完成字段对照；TODO-068 已完成最明显旧包格式纠偏；TODO-069 已完成 StbRow 扩展属性骨架；TODO-070 已完成 lineStb StbGeo 字段条件化骨架；TODO-071 已完成线配筋入口契约冻结；TODO-072 已完成 LineGroup command handler P0；TODO-073 已完成 LineGroup UI/AIS 可见反馈 P0；TODO-074 已完成 LineGroup 参数窗口 P0；现在的主线是 TODO-075
+  -> TODO-066 已完成真实工件回填；TODO-067 已完成字段对照；TODO-068 已完成最明显旧包格式纠偏；TODO-069 已完成 StbRow 扩展属性骨架；TODO-070 已完成 lineStb StbGeo 字段条件化骨架；TODO-071 已完成线配筋入口契约冻结；TODO-072 已完成 LineGroup command handler P0；TODO-073 已完成 LineGroup UI/AIS 可见反馈 P0；TODO-074 已完成 LineGroup 参数窗口 P0；TODO-075 已完成选择预检与参数窗口顺序对齐 P0；现在的主线是 TODO-076
 ```
 
 ## 可直接粘贴到 Goal 模式的目标
@@ -336,13 +336,14 @@ planned tag = evidence-058/joint-dialog-message-map-node112-stop-point
 当前下一步：
 
 ```text
-TODO-075 / 线配筋选择预检与参数窗口顺序对齐 P0
+TODO-076 / 线配筋旧 UI 失败提示与状态栏口径证据 P0
   -> 接头链路现阶段先记录、暂缓。
   -> TODO-071 已完成 sgroupbarline 入口契约冻结。
   -> TODO-072 已完成 LineGroup command handler P0 事务接入。
   -> TODO-073 已完成 LineGroup UI/AIS 可见反馈 P0。
-  -> TODO-074 已完成 LineGroup 参数窗口 P0，但当前仍是先弹参数窗再由 handler 校验选择。
-  -> 下一轮只做选择预检与参数窗口顺序对齐。
+  -> TODO-074 已完成 LineGroup 参数窗口 P0。
+  -> TODO-075 已完成先选择预检、再打开参数窗口的最小顺序对齐。
+  -> 下一轮只补旧 UI 失败提示 / 状态栏口径 / 参数 Dialog 字段证据。
   -> 不自动启动旧图石，不安装 HASP，不用 OCCT 直接重写钢筋业务。
 ```
 
@@ -587,7 +588,7 @@ commit / tag / push 状态
 
 ### 短期 Goal（推荐本轮复制）
 
-目标：只完成 `TODO-075 / 线配筋选择预检与参数窗口顺序对齐 P0` 这个短期阶段，不自动进入后续长期开发。
+目标：只完成 `TODO-076 / 线配筋旧 UI 失败提示与状态栏口径证据 P0` 这个短期阶段，不自动进入后续长期开发。
 
 当前状态：
 
@@ -611,21 +612,21 @@ commit / tag / push 状态
   TODO-072 = done
   TODO-073 = done
   TODO-074 = done
-  TODO-075 = next
+  TODO-075 = done
+  TODO-076 = next
 ```
 
 本轮只做：
 
 ```text
-LineGroupPreflightBeforeDialogP0 / TODO-075
+LineGroupOldUiPromptEvidenceP0 / TODO-076
   -> 从 03 / 08 / 09 / 15 / 16 / 35 / 46 / 99 出发
   -> 在 TODO-071 已冻结 sgroupbarline 入口契约、TODO-072 已接通 command handler 事务、TODO-073 已接通 UI/AIS 可见反馈之后
   -> 在 TODO-074 已增加最小参数窗口 P0 后
-  -> 让 Rebar.Create.LineGroup 在打开参数窗口前先做最小选择预检
-  -> 无选择或非 edge 时不打开参数窗口，不污染 SteelData，不刷新 AIS
-  -> 有效 edge 时才打开参数窗口，并保留 TODO-074 的参数传递能力
-  -> 旧状态栏提示和失败提示不确定时继续写入 GAP-UI-REB-001，不写成旧逻辑已确认
-  -> 测试覆盖无选择 / 非 edge 不弹窗、有效 edge 才弹窗、取消/失败不污染 SteelData 和不刷新显示
+  -> 在 TODO-075 已完成先选择预检、再打开参数窗口后
+  -> 优先用 IDA MCP 或旧图石运行确认补旧 UI 失败提示 / 状态栏口径 / 参数 Dialog 字段证据
+  -> 能闭合则更新 02 / 08 / 11 / 35 / 99；不能闭合则形成更窄 gap 和运行确认清单
+  -> 不写成完整旧 UI 已闭合，不把 P0 文案当旧图石真值
   -> 同步更新 03 / 08 / 09 / 11 / 15 / 16 / 35 / 46 / 99 / todo / 实现记录 / build report
   -> 跑默认 CTest / readiness gate / OCCT 泄漏检查
   -> 代码节点 commit 前必须 xhigh 只读 review
@@ -1003,9 +1004,12 @@ TODO-073 / M2-RebarCreate-003 = done
 TODO-074 / M2-RebarCreate-004 = done
   -> 线配筋参数窗口 P0：旧 UI 字段占位、默认值和 handler 参数接入。
   -> IDA MCP 未确认旧参数 Dialog 字段，继续保留 GAP-UI-REB-001。
-TODO-075 / M2-RebarCreate-005 = next
+TODO-075 / M2-RebarCreate-005 = done
   -> 线配筋选择预检与参数窗口顺序对齐 P0。
   -> 只让有效 edge 选择进入参数窗口；无选择或非 edge 不打开参数窗口。
+TODO-076 / M2-RebarCreate-006 = next
+  -> 线配筋旧 UI 失败提示与状态栏口径证据 P0。
+  -> 优先查 IDA MCP 或旧图石运行确认，不进入完整线配筋算法。
   -> 不进入 Excel writer、隐藏线 / 填充线 / 点筋 / FaceEdge 算法，
      不自动启动旧图石，不进入 golden。
 ```
@@ -1343,18 +1347,19 @@ TODO-071 验证 = sgroupbarline 表项、sub_1404DE720 入口契约和 sub_1404D
 TODO-072 验证 = RebarLineGroupCommandHandler 已接入 CommandId::RebarLineCreate，测试覆盖 empty selection / wrong type / valid edge / geometry failure / normalizer failure，CTest 19/19 pass, readiness unit 32/32 pass, strict readiness 84/84 pass, domain/rebar + command OCCT leak scan pass, xhigh allow_commit，Franklin reviewer 已关闭
 TODO-073 验证 = Rebar.Create.LineGroup 成功后已通过 RebarAisPresentationAdapter / OccViewerWidget 显示新增 SteelBarGroup，line_group_display_smoke_123 覆盖失败路径不刷新、成功路径显示计数增加、连续两次成功创建显示不同新 group，CTest 20/20 pass, readiness unit 33/33 pass, strict readiness 84/84 pass, domain/rebar + command OCCT leak scan pass, xhigh needs_fix 且 Critical / Important 已修复，Socrates reviewer 已关闭
 TODO-074 验证 = LineGroupParameterDialog P0 已接入 Rebar.Create.LineGroup，参数传递覆盖默认值和用户修改值，取消/失败不污染 SteelData 且不刷新 AIS，IDA MCP 未确认旧 Dialog 字段字符串，CTest 21/21 pass, readiness unit 34/34 pass, strict readiness 84/84 pass, domain/rebar + command OCCT leak scan pass, xhigh allow_commit，Erdos reviewer 已关闭
+TODO-075 验证 = Rebar.Create.LineGroup 已先做当前选择预检再打开 LineGroupParameterDialog，无选择 / 非 edge 不打开参数窗口、不污染 SteelData 且不刷新 AIS，有效 edge 保留 TODO-074 参数传递能力，CTest 21/21 pass, readiness / leak / xhigh 结果见 113 和 m2_rebar_create_005_run_001
 ```
 
 当前下一步：
 
 ```text
-TODO-075 / 线配筋选择预检与参数窗口顺序对齐 P0
+TODO-076 / 线配筋旧 UI 失败提示与状态栏口径证据 P0
   -> TODO-071 已完成 sgroupbarline 入口契约冻结
   -> TODO-072 已完成 LineGroup command handler P0 事务接入
   -> TODO-073 已完成 LineGroup UI/AIS 可见反馈 P0
   -> TODO-074 已完成 LineGroup 参数窗口 P0
-  -> 让无选择或非 edge 时不打开参数窗口
-  -> 让有效 edge 时才打开参数窗口，并保留 TODO-074 参数传递能力
+  -> TODO-075 已完成选择预检与参数窗口顺序对齐 P0
+  -> 优先补旧 UI 失败提示 / 状态栏口径 / 参数 Dialog 字段证据
   -> 不自动安装 HASP，不自动启动旧图石
   -> 不用 OCCT 直接重写钢筋业务，不迁入父目录 rebar 业务
   -> 不声明完整线配筋、AutoCAD L2 通过或 golden
@@ -1444,18 +1449,18 @@ golden 采集 TODO-026 仍按用户要求保持 pending。
 
 ## CSE v2 Control Contract
 
-- **Primary Setpoint**：下一轮只完成 `TODO-075 / 线配筋选择预检与参数窗口顺序对齐 P0`，让 `Rebar.Create.LineGroup` 在打开参数窗口前先完成最小选择预检。
-- **Acceptance**：无选择或非 edge 时不打开参数窗口，不污染 `SteelData` 且不刷新 AIS；有效 edge 时才打开参数窗口，并保留 TODO-074 的默认参数和用户修改参数传递能力；业务层不直接依赖 OCCT/AIS；默认 CTest、readiness gate、OCCT 泄漏检查通过；xhigh 只读 review 完成；文档、追溯矩阵、缺口、46 和 todo 同步更新。
+- **Primary Setpoint**：下一轮只完成 `TODO-076 / 线配筋旧 UI 失败提示与状态栏口径证据 P0`，把 TODO-075 之后仍未确认的旧提示 / 状态栏 / 参数 Dialog 字段证据收窄。
+- **Acceptance**：用 IDA MCP 或旧图石运行确认尽量补齐线配筋失败提示、状态栏口径和参数 Dialog 字段；能确认的写入 02 / 08 / 11 / 35 / 99；不能确认的形成更窄 gap 和运行确认清单；默认 readiness gate、OCCT 泄漏检查通过；文档、追溯矩阵、缺口、46 和 todo 同步更新。
 - **Guardrail Metrics**：不能用 OCCT 能怎么做替代旧图石怎么做；不能迁入父目录 rebar 业务；不能让 `domain/rebar` 依赖 TopoDS/AIS/BRep/TopAbs；不能伪造 IDA 或旧运行证据；不能在一个节点里铺开面配筋、接头、Excel、Detail 字段继续扩张或 golden。
-- **Sampling Plan**：先读 `todo.csv / 02 / 03 / 08 / 09 / 15 / 16 / 35 / 46 / 99`，确认 `TODO-075` 只做 LineGroup 选择预检与参数窗口顺序 P0；旧状态栏提示和失败提示不确定时优先查 IDA Dialog 或旧图石运行确认，无法确认则写入 `GAP-UI-REB-001`；先补事务顺序测试，再改实现；最后运行默认 CTest、readiness gate、OCCT 泄漏检查和 xhigh 只读 review。
+- **Sampling Plan**：先读 `todo.csv / 02 / 03 / 08 / 09 / 15 / 16 / 35 / 46 / 99`，确认 `TODO-076` 只做旧 UI 失败提示 / 状态栏口径 / 参数 Dialog 字段证据；优先查 IDA MCP，必要时形成旧图石运行确认清单；不得把当前 P0 文案写成旧图石真值；最后运行 readiness gate、OCCT 泄漏检查，若涉及代码再跑默认 CTest 和 xhigh 只读 review。
 - **Known Delays**：旧 UI 参数窗口字段、状态栏流程和失败提示仍未运行确认；没有 golden 时只能先闭合命令 handler 事务边界，不声明完整 1:1。
 - **Recovery Target**：如果 handler 需要的选择对象业务名或参数无法确认，就把结论写成 gap，回到 IDA / 旧运行确认；不能把现有 `RebarGroupCreator` 或父目录代码当旧图石完整真相。
 - **Rollback Trigger**：domain/rebar 出现 OCCT/AIS include；父目录 rebar 业务被迁入；无 IDA/运行证据却写成旧逻辑已确认；测试或 gate 失败仍继续堆功能。
 - **Constraints**：不使用 ACIS / HOOPS / Codejock 等商业库；新系统不引入 USB 狗 / 网络许可依赖；旧逻辑不确定时优先查 IDA MCP 或旧图石运行确认；xhigh 只读，修改由主流程 agent 完成；不自动安装 HASP，不自动再次启动旧图石。
-- **Boundary**：下一轮优先允许改 MainWindow 线配筋命令编排、只读选择预检 helper、测试、证据文档和 run report；禁止改 RebarGroupCreator 算法，禁止继续扩张 DetailWriter 字段，禁止实现面配筋/接头/Excel/golden，禁止迁入父目录 rebar 业务。
+- **Boundary**：下一轮优先允许改 IDA/旧运行证据文档、02/08/11/35/46/99、run report 和 todo；只有证据明确要求时才改 UI 文案或状态栏口径。禁止改 RebarGroupCreator 算法，禁止继续扩张 DetailWriter 字段，禁止实现面配筋/接头/Excel/golden，禁止迁入父目录 rebar 业务。
 - **Coupling Notes**：`domain/rebar` 是业务对象边界；`LegacyGeometryAdapter` 是几何能力边界；线配筋创建若需要几何读取，只能通过 legacy 语义接口，不让业务层直接写 OCCT。
-- **Approximation Validity**：TODO-075 的目标是选择预检与参数窗口顺序 P0，不是完整旧参数窗口、完整旧状态栏提示、完整线配筋、面配筋、弧筋、统计、出图或 golden；旧提示不确定时只能作为 gap。
-- **Actuator Budget**：下一轮只推进 `TODO-075`。完成后停止复盘，不自动进入完整线配筋算法、面配筋、弧筋、接头、Excel、Detail 字段继续扩张或 golden。
+- **Approximation Validity**：TODO-076 的目标是证据收窄，不是完整旧参数窗口、完整线配筋、面配筋、弧筋、统计、出图或 golden；旧提示不确定时只能作为 gap。
+- **Actuator Budget**：下一轮只推进 `TODO-076`。完成后停止复盘，不自动进入完整线配筋算法、面配筋、弧筋、接头、Excel、Detail 字段继续扩张或 golden。
 - **Risks**：顺序对齐容易被误写成完整旧 UI 已确认；必须保留 `GAP-UI-REB-001`，不得伪装成旧图石确认结论。
 ## Todo CSV 使用方式
 
@@ -1481,12 +1486,13 @@ golden 采集 TODO-026 仍按用户要求保持 pending。
 下一步优先执行：
 
 ```text
-TODO-075 / 线配筋选择预检与参数窗口顺序对齐 P0
+TODO-076 / 线配筋旧 UI 失败提示与状态栏口径证据 P0
   -> TODO-071 已完成 sgroupbarline 入口契约冻结
   -> TODO-072 已完成 LineGroup command handler P0 事务接入
   -> TODO-073 已完成 LineGroup UI/AIS 可见反馈 P0
   -> TODO-074 已完成最小参数窗口和参数传递
-  -> 只做打开参数窗口前的选择预检，不改完整线配筋算法
+  -> TODO-075 已完成打开参数窗口前的选择预检
+  -> 下一轮只补旧 UI 失败提示 / 状态栏口径 / 参数 Dialog 字段证据
   -> 不自动安装 HASP
   -> 不自动启动旧图石
   -> 不用 OCCT 直接重写钢筋业务

@@ -1,0 +1,78 @@
+{
+  "todoId": "TODO-075",
+  "phase": "M2-RebarCreate-005",
+  "evidenceIds": ["E-DEV-097"],
+  "decision": "line-group-selection-preflight-before-dialog-p0",
+  "changedCode": [
+    "app/src/app/MainWindow.cpp",
+    "app/src/app/MainWindow.h",
+    "app/tests/integration/line_group_display_smoke_tests.cpp",
+    "tools/phase1_readiness_gate/check_phase1_readiness.py",
+    "tools/phase1_readiness_gate/test_phase1_readiness_gate.py"
+  ],
+  "implemented": {
+    "command": "Rebar.Create.LineGroup",
+    "legacyCommand": "sgroupbarline",
+    "preflight": "lineGroupSelectionPreflightForCommand",
+    "noSelection": "returns before parameter dialog, handler, SteelData mutation and AIS refresh",
+    "wrongType": "returns before parameter dialog, handler, SteelData mutation and AIS refresh",
+    "edgeSelection": "continues to LineGroupParameterDialog and preserves TODO-074 parameter transfer",
+    "scope": "LineGroup selection preflight and dialog ordering P0 only"
+  },
+  "idaMcp": {
+    "newSessionThisTodo": false,
+    "sourceEvidence": "E-IDA-045",
+    "result": "TODO-071 already confirmed sub_1404DE720 selection count and selection object gate precede creation chain; TODO-075 only aligns minimal UI ordering",
+    "oldStatusPromptsConfirmed": false,
+    "gap": "GAP-UI-REB-001"
+  },
+  "guards": {
+    "oldRuntimeAutomaticallyLaunched": false,
+    "haspInstalledAutomatically": false,
+    "systemDirectoryModifiedAutomatically": false,
+    "occtDirectRebarRewrite": false,
+    "parentRebarMigrated": false,
+    "rebarGroupCreatorAlgorithmChanged": false,
+    "golden": "not_started",
+    "autocadL2": "not_run"
+  },
+  "verification": {
+    "targetedBuild": "pass; cmake --build app/build --target line_group_display_smoke_tests; ninja: no work to do",
+    "targetedTest": "pass; line_group_display_smoke_123 1/1 pass; 78.00 sec",
+    "directBuildWithoutVcvars": "fail_environment; cl.exe could not find <type_traits>",
+    "fullBuildDebug": "pass; cmd /c call vcvars64.bat && cmake --build app/build --config Debug",
+    "ctest": "pass; 21/21 pass; 206.82 sec",
+    "readinessGateUnit": "pass; 35/35 pass",
+    "readinessGateStrict": "pass; M1-Formal-Ready; 84/84 pass",
+    "domainRebarCommandOCCLeak": "pass; no TopoDS_ / AIS_ / BRep / TopAbs_ / OpenCASCADE / opencascade matches",
+    "gitDiffCheck": "pass; no whitespace errors; CRLF/LF warnings only for 11_需求证据追溯矩阵.md and todo.csv",
+    "xhighReview": "allow_commit; Hubble; no Critical / Important / Minor; agent closed"
+  },
+  "xhighReview": {
+    "agent": "Hubble",
+    "verdict": "allow_commit",
+    "critical": [],
+    "important": [],
+    "minor": [],
+    "routeDrift": "none",
+    "finalReview": {
+      "agent": "Hubble",
+      "verdict": "allow_commit",
+      "critical": [],
+      "important": [],
+      "routeDrift": "none",
+      "requiredFixBeforeCommit": [],
+      "agentClosed": true
+    }
+  },
+  "residualGaps": {
+    "GAP-UI-REB-001": "old LineGroup dialog fields/defaults/units/gray state/status prompts still open",
+    "GAP-IDA-002": "old single-selected-entity-list / selection object business name still open",
+    "GAP-IDA-007": "full objA / objB / createdPayload / sub_1405D5670 arg semantics still open",
+    "GAP-REB-C-002": "full line rebar creation, undo/dirty/runtime golden still open"
+  },
+  "next": {
+    "todoId": "TODO-076",
+    "action": "LineGroup old UI failure prompt and status bar evidence P0"
+  }
+}

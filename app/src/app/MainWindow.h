@@ -30,6 +30,7 @@ private:
     void buildCommandTabs();
     void registerCommandHandlers();
     void executeCommand(tsrebar::CommandId id);
+    [[nodiscard]] bool lineGroupSelectionPreflightForCommand(QString* errorMessage = nullptr) const;
     [[nodiscard]] bool configureLineGroupParametersForCommand();
     [[nodiscard]] tsrebar::RebarLineGroupCommandParameters nextLineGroupParameters();
     [[nodiscard]] bool displayCreatedLineGroup(QString* errorMessage = nullptr);

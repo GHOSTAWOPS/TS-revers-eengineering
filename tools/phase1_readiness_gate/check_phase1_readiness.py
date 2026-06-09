@@ -223,6 +223,7 @@ def done_node_report_requirements(root: Path, rows: list[dict[str, str]]) -> tup
         "TODO-072": ("110_M2-RebarCreate-002线配筋命令HandlerP0实现记录.md", "docs/phase1/app_build_reports/m2_rebar_create_002_run_001.md"),
         "TODO-073": ("111_M2-RebarCreate-003线配筋UI到AIS显示P0实现记录.md", "docs/phase1/app_build_reports/m2_rebar_create_003_run_001.md"),
         "TODO-074": ("112_M2-RebarCreate-004线配筋参数窗口P0实现记录.md", "docs/phase1/app_build_reports/m2_rebar_create_004_run_001.md"),
+        "TODO-075": ("113_M2-RebarCreate-005线配筋选择预检与参数窗口顺序对齐P0实现记录.md", "docs/phase1/app_build_reports/m2_rebar_create_005_run_001.md"),
     }
     missing: list[str] = []
     checked: list[str] = []

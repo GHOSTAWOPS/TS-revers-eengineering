@@ -412,6 +412,11 @@ void MainWindow::buildCommandTabs()
 void MainWindow::executeCommand(tsrebar::CommandId id)
 {
     if (id == tsrebar::CommandId::RebarLineCreate) {
+        QString preflightError;
+        if (!lineGroupSelectionPreflightForCommand(&preflightError)) {
+            statusBar()->showMessage(preflightError, 5000);
+            return;
+        }
         if (!configureLineGroupParametersForCommand()) {
             statusBar()->showMessage(QStringLiteral("取消：线配筋参数"), 5000);
             return;
@@ -430,6 +435,25 @@ void MainWindow::executeCommand(tsrebar::CommandId id)
         }
     }
     statusBar()->showMessage(commandStatusText(result), 5000);
+}
+
+bool MainWindow::lineGroupSelectionPreflightForCommand(QString* errorMessage) const
+{
+    const std::optional<tsrebar::LegacySelectionRef> current =
+        m_viewer->currentSelectionRef();
+    if (!current.has_value()) {
+        if (errorMessage != nullptr) {
+            *errorMessage = QStringLiteral("失败：线配筋需要先选择边");
+        }
+        return false;
+    }
+    if (current->shapeKind != tsrebar::LegacyShapeKind::Edge) {
+        if (errorMessage != nullptr) {
+            *errorMessage = QStringLiteral("失败：线配筋当前只接受边选择");
+        }
+        return false;
+    }
+    return true;
 }
 
 bool MainWindow::configureLineGroupParametersForCommand()

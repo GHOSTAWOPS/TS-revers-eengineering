@@ -64,6 +64,22 @@ void acceptLineGroupDialog()
     });
 }
 
+void failIfLineGroupDialogOpens(bool& dialogOpened)
+{
+    QTimer::singleShot(0, [&dialogOpened]() {
+        QWidget* modal = QApplication::activeModalWidget();
+        if (modal == nullptr) {
+            return;
+        }
+        if (modal->objectName() != QStringLiteral("line_group_parameter_dialog")) {
+            return;
+        }
+        dialogOpened = true;
+        auto* buttons = requireChild<QDialogButtonBox>(*modal, "line_group_button_box");
+        buttons->button(QDialogButtonBox::Cancel)->click();
+    });
+}
+
 void rejectLineGroupDialog()
 {
     QTimer::singleShot(0, []() {
@@ -129,11 +145,35 @@ int main(int argc, char* argv[])
     expect(action != nullptr, "MainWindow must render RebarLineCreate action");
 
     const int beforeFailure = viewer->displayedRebarShapeCount();
-    acceptLineGroupDialog();
+    const std::size_t groupsBeforeNoSelection = window.steelDataForInspection().groups.size();
+    bool noSelectionDialogOpened = false;
+    failIfLineGroupDialogOpens(noSelectionDialogOpened);
     action->trigger();
     app.processEvents();
+    expect(!noSelectionDialogOpened,
+           "line group command must not open parameter dialog without selection");
     expect(viewer->displayedRebarShapeCount() == beforeFailure,
            "failed line group command must not refresh rebar AIS display");
+    expect(window.steelDataForInspection().groups.size() == groupsBeforeNoSelection,
+           "no-selection preflight must not mutate SteelData");
+
+    const auto faceRefs = viewer->selectionIndex().refs(tsrebar::LegacyShapeKind::Face);
+    expect(!faceRefs.isEmpty(), "test STEP must have face selection refs");
+    expect(viewer->selectByStableId(QString::fromStdString(faceRefs.front().stableId), &error),
+           error.toUtf8().constData());
+
+    const int beforeWrongType = viewer->displayedRebarShapeCount();
+    const std::size_t groupsBeforeWrongType = window.steelDataForInspection().groups.size();
+    bool wrongTypeDialogOpened = false;
+    failIfLineGroupDialogOpens(wrongTypeDialogOpened);
+    action->trigger();
+    app.processEvents();
+    expect(!wrongTypeDialogOpened,
+           "line group command must not open parameter dialog for non-edge selection");
+    expect(viewer->displayedRebarShapeCount() == beforeWrongType,
+           "wrong-type preflight must not refresh rebar AIS display");
+    expect(window.steelDataForInspection().groups.size() == groupsBeforeWrongType,
+           "wrong-type preflight must not mutate SteelData");
 
     const auto edgeRefs = viewer->selectionIndex().refs(tsrebar::LegacyShapeKind::Edge);
     expect(!edgeRefs.isEmpty(), "test STEP must have edge selection refs");
