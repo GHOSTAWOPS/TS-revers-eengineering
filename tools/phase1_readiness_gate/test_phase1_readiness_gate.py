@@ -1341,6 +1341,122 @@ class Phase1ReadinessGateTests(unittest.TestCase):
             self.assertFalse(report_checks[0].ok)
             self.assertIn("json_verification_defaultCTest_not_closed:fail", report_checks[0].message)
 
+    def test_route_guardrail_accepts_todo083_done_report(self):
+        tmp, root = self.make_guardrail_root()
+        with tmp:
+            (root / "todo.csv").write_text(
+                '"id","priority","phase","task","status","goal_setpoint","acceptance","boundary","evidence","dependencies","risk","notes"\n'
+                '"TODO-083","P0","M2-RebarCreate-013","LineGroup split spline trim trace","done","","","","","","",""\n',
+                encoding="utf-8",
+            )
+            reports_dir = root / "docs" / "phase1" / "app_build_reports"
+            reports_dir.mkdir(parents=True, exist_ok=True)
+            (root / "121_M2-RebarCreate-013线配筋公共创建SplitSplineTrim等价切片P0实现记录.md").write_text(
+                "# stub\n",
+                encoding="utf-8",
+            )
+            (reports_dir / "m2_rebar_create_013_run_001.md").write_text(
+                "# stub\n",
+                encoding="utf-8",
+            )
+            (reports_dir / "m2_rebar_create_013_run_001.json").write_text(
+                '{'
+                '"todoId":"TODO-083",'
+                '"decision":"done_split_spline_trim_trace_aligned",'
+                '"verification":{'
+                '"defaultCTest":"pass",'
+                '"readinessGateUnit":"pass",'
+                '"readinessGateStrict":"pass",'
+                '"domainRebarCommandOCCLeak":"pass",'
+                '"todoSingleNext":"pass",'
+                '"gitDiffCheck":"pass",'
+                '"xhighReview":"allow_commit"'
+                '},'
+                '"next":{"todoId":"TODO-084"}'
+                '}\n',
+                encoding="utf-8",
+            )
+
+            checks = gate.collect_route_guardrail_checks(root)
+            report_checks = [check for check in checks if check.item == "done_node_reports"]
+
+            self.assertEqual(1, len(report_checks))
+            self.assertTrue(report_checks[0].ok)
+            self.assertIn("checked_done_nodes=1", report_checks[0].message)
+
+    def test_route_guardrail_rejects_todo083_empty_json_report(self):
+        tmp, root = self.make_guardrail_root()
+        with tmp:
+            (root / "todo.csv").write_text(
+                '"id","priority","phase","task","status","goal_setpoint","acceptance","boundary","evidence","dependencies","risk","notes"\n'
+                '"TODO-083","P0","M2-RebarCreate-013","LineGroup split spline trim trace","done","","","","","","",""\n',
+                encoding="utf-8",
+            )
+            reports_dir = root / "docs" / "phase1" / "app_build_reports"
+            reports_dir.mkdir(parents=True, exist_ok=True)
+            (root / "121_M2-RebarCreate-013线配筋公共创建SplitSplineTrim等价切片P0实现记录.md").write_text(
+                "# stub\n",
+                encoding="utf-8",
+            )
+            (reports_dir / "m2_rebar_create_013_run_001.md").write_text(
+                "# stub\n",
+                encoding="utf-8",
+            )
+            (reports_dir / "m2_rebar_create_013_run_001.json").write_text(
+                "{}\n",
+                encoding="utf-8",
+            )
+
+            checks = gate.collect_route_guardrail_checks(root)
+            report_checks = [check for check in checks if check.item == "done_node_reports"]
+
+            self.assertEqual(1, len(report_checks))
+            self.assertFalse(report_checks[0].ok)
+            self.assertIn("json_todoId_mismatch", report_checks[0].message)
+
+    def test_route_guardrail_rejects_todo083_failed_verification_value(self):
+        tmp, root = self.make_guardrail_root()
+        with tmp:
+            (root / "todo.csv").write_text(
+                '"id","priority","phase","task","status","goal_setpoint","acceptance","boundary","evidence","dependencies","risk","notes"\n'
+                '"TODO-083","P0","M2-RebarCreate-013","LineGroup split spline trim trace","done","","","","","","",""\n',
+                encoding="utf-8",
+            )
+            reports_dir = root / "docs" / "phase1" / "app_build_reports"
+            reports_dir.mkdir(parents=True, exist_ok=True)
+            (root / "121_M2-RebarCreate-013线配筋公共创建SplitSplineTrim等价切片P0实现记录.md").write_text(
+                "# stub\n",
+                encoding="utf-8",
+            )
+            (reports_dir / "m2_rebar_create_013_run_001.md").write_text(
+                "# stub\n",
+                encoding="utf-8",
+            )
+            (reports_dir / "m2_rebar_create_013_run_001.json").write_text(
+                '{'
+                '"todoId":"TODO-083",'
+                '"decision":"done_split_spline_trim_trace_aligned",'
+                '"verification":{'
+                '"defaultCTest":"pass",'
+                '"readinessGateUnit":"pass",'
+                '"readinessGateStrict":"pass",'
+                '"domainRebarCommandOCCLeak":"pass",'
+                '"todoSingleNext":"fail",'
+                '"gitDiffCheck":"pass",'
+                '"xhighReview":"allow_commit"'
+                '},'
+                '"next":{"todoId":"TODO-084"}'
+                '}\n',
+                encoding="utf-8",
+            )
+
+            checks = gate.collect_route_guardrail_checks(root)
+            report_checks = [check for check in checks if check.item == "done_node_reports"]
+
+            self.assertEqual(1, len(report_checks))
+            self.assertFalse(report_checks[0].ok)
+            self.assertIn("json_verification_todoSingleNext_not_closed:fail", report_checks[0].message)
+
 
 if __name__ == "__main__":
     unittest.main()

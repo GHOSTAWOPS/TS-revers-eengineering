@@ -1,0 +1,74 @@
+{
+  "todoId": "TODO-083",
+  "phase": "M2-RebarCreate-013",
+  "evidenceIds": [
+    "E-IDA-022",
+    "E-IDA-048",
+    "E-DEV-104",
+    "E-DEV-105"
+  ],
+  "decision": "done_split_spline_trim_trace_aligned",
+  "summary": {
+    "legacySegmentCurveNormalizeTraceAdded": true,
+    "entityDistanceTraceRecorded": true,
+    "splitCurveTraceRecorded": true,
+    "curveSplineTraceRecorded": true,
+    "endpointTrimTraceRecorded": true,
+    "effectiveSplineSampleCountAlignedWithAdapter": true,
+    "groupMinimumDistanceTrimLoopDeferred": true,
+    "backupWriteEdgeDeferred": true,
+    "fullLineGroupAlgorithmImplemented": false
+  },
+  "guardrails": {
+    "oldRuntimeAutomaticallyLaunched": false,
+    "haspInstalledAutomatically": false,
+    "systemDirectoryModifiedAutomatically": false,
+    "uiTextChanged": false,
+    "fullLineGroupAlgorithmImplemented": false,
+    "faceRebarImplemented": false,
+    "arcRebarExpanded": false,
+    "jointImplemented": false,
+    "excelImplemented": false,
+    "detailChanged": false,
+    "golden": "not_started",
+    "occtDirectRebarRewrite": false,
+    "parentRebarMigrated": false,
+    "domainRebarOcctLeak": "pass"
+  },
+  "verification": {
+    "targetedSmokeAfterFix": "pass",
+    "targetedSmokeAfterFixTotal": "1/1 pass, 78.46 sec",
+    "defaultCTest": "pass",
+    "defaultCTestTotal": "21/21 pass, 204.69 sec",
+    "readinessGateUnit": "pass",
+    "readinessGateStrict": "pass",
+    "domainRebarCommandOCCLeak": "pass",
+    "todoSingleNext": "pass",
+    "gitDiffCheck": "pass",
+    "xhighReview": "needs_fix_then_fixed_by_main_flow"
+  },
+  "xhighReview": {
+    "reviewer": "xhigh_readonly_reviewer / Mencius",
+    "verdict": "needs_fix",
+    "critical": [
+      "MainWindow viewer reader recorded length*50 sample count but called buildSplineFromPoints with minimumSplineSamples",
+      "docs marked TODO-083 done before todo.csv/run report/json were present"
+    ],
+    "important": [
+      "implementation record used xhighReadonlyReview while gate contract expects xhighReview",
+      "original tests covered fake domain trace but not viewer reader sample-count semantics"
+    ],
+    "mainFlowFix": [
+      "MainWindow now passes effectiveSplineSampleCount to buildSplineFromPoints and backfills adapter effective count",
+      "line_group_display_smoke_123 now checks raw effectiveSampleCount against latest segment length * 50",
+      "todo.csv now marks TODO-083 done and TODO-084 next",
+      "run report / JSON / readiness mapping / docs were completed",
+      "implementation record wording changed to xhighReview"
+    ],
+    "agentClosed": true
+  },
+  "next": {
+    "todoId": "TODO-084",
+    "task": "线配筋公共创建 sub_1405D5670 group-min-distance / dirty-write gap 切片 P0"
+  }
+}

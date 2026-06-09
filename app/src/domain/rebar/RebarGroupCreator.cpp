@@ -26,6 +26,14 @@ std::string boolText(bool value)
     return value ? "true" : "false";
 }
 
+std::string stepState(bool attempted, bool applied)
+{
+    if (applied) {
+        return "applied";
+    }
+    return attempted ? "attempted-not-applied" : "not-attempted";
+}
+
 double distanceA4Digit(double distanceA)
 {
     return static_cast<int>(distanceA * 10000.0) / 10000.0;
@@ -62,7 +70,7 @@ LegacyRawBlock creationParameters(const RebarGroupCreationRequest& request,
                                   const char* legacyCommand,
                                   double normalizedDistanceB,
                                   char effectiveFlag,
-                                  bool normalizedCurve)
+                                  const LegacySegmentCurveNormalizeTrace& normalizeTrace)
 {
     LegacyRawBlock block;
     block.legacyType = legacyCommand;
@@ -84,6 +92,15 @@ LegacyRawBlock creationParameters(const RebarGroupCreationRequest& request,
         "sub_140451730.createdPayloadRef",
         "sub_140451730.linkedModelRef",
         "sub_140451730.linkedModelRef.confidence",
+        "sub_1405D5670.normalize.capabilityLevel",
+        "sub_1405D5670.api_entity_entity_distance",
+        "sub_1405D5670.api_split_curve",
+        "sub_1405D5670.api_curve_spline",
+        "sub_1405D5670.api_curve_spline.effectiveSampleCount",
+        "sub_140580950.startTrim",
+        "sub_140580950.endTrim",
+        "sub_14059B980.groupMinimumDistanceTrimLoop",
+        "sub_1405BD0C0.backupWriteEdge",
     };
     block.fields.push_back(rawField("minimumCreationDistance",
                                     numberText(kMinimumCreationDistance),
@@ -141,8 +158,43 @@ LegacyRawBlock creationParameters(const RebarGroupCreationRequest& request,
     block.fields.push_back(rawField("sub_140451730.linkedModelRef.confidence",
                                     request.publicCreateRoles.linkedModelRefConfidence,
                                     "E-IDA-048"));
+    block.fields.push_back(rawField("sub_1405D5670.normalize.capabilityLevel",
+                                    normalizeTrace.capabilityLevel,
+                                    "E-IDA-022"));
+    block.fields.push_back(rawField("sub_1405D5670.api_entity_entity_distance",
+                                    stepState(normalizeTrace.entityDistanceAttempted,
+                                              normalizeTrace.entityDistanceApplied),
+                                    "E-IDA-022"));
+    block.fields.push_back(rawField("sub_1405D5670.api_split_curve",
+                                    stepState(normalizeTrace.splitCurveAttempted,
+                                              normalizeTrace.splitCurveApplied),
+                                    "E-IDA-022"));
+    block.fields.push_back(rawField("sub_1405D5670.api_curve_spline",
+                                    stepState(normalizeTrace.curveSplineAttempted,
+                                              normalizeTrace.curveSplineApplied),
+                                    "E-IDA-022"));
+    block.fields.push_back(rawField(
+        "sub_1405D5670.api_curve_spline.effectiveSampleCount",
+        numberText(normalizeTrace.effectiveSplineSampleCount),
+        "E-IDA-022"));
+    block.fields.push_back(rawField("sub_140580950.startTrim",
+                                    stepState(normalizeTrace.startTrimAttempted,
+                                              normalizeTrace.startTrimApplied),
+                                    "E-IDA-022"));
+    block.fields.push_back(rawField("sub_140580950.endTrim",
+                                    stepState(normalizeTrace.endTrimAttempted,
+                                              normalizeTrace.endTrimApplied),
+                                    "E-IDA-022"));
+    block.fields.push_back(rawField(
+        "sub_14059B980.groupMinimumDistanceTrimLoop",
+        normalizeTrace.groupMinimumDistanceTrimLoopDeferred ? "deferred-p0" : "applied",
+        "E-IDA-022"));
+    block.fields.push_back(rawField(
+        "sub_1405BD0C0.backupWriteEdge",
+        normalizeTrace.backupWriteEdgeDeferred ? "deferred-domain-model" : "applied",
+        "E-IDA-022"));
     block.fields.push_back(rawField("segmentCurveNormalizerP0",
-                                    normalizedCurve ? "applied" : "not-applied",
+                                    normalizeTrace.capabilityLevel,
                                     "E-IDA-022"));
     if (std::string(legacyCommand) == "sgroupbarline") {
         block.fields.push_back(rawField("sgroupbarline.selectionCount", "1", "E-IDA-045"));
@@ -293,7 +345,8 @@ RebarGroupCreationResult createGroup(const RebarGroupCreationRequest& request,
                           ? QStringLiteral("RebarGroupCreator failed to normalize segment curve.")
                           : normalizedCurveResult.diagnostic);
     }
-    const LegacyRebarCurveSnapshot segmentCurve = normalizedCurveResult.value;
+    const LegacyRebarCurveSnapshot segmentCurve = normalizedCurveResult.value.curve;
+    const LegacySegmentCurveNormalizeTrace normalizeTrace = normalizedCurveResult.value.trace;
     if (segmentCurve.length < kMinimumSplitSegmentLength) {
         return reject(QStringLiteral(
             "RebarGroupCreator rejected normalized segment shorter than VisualTS 0.01 split length."));
@@ -317,10 +370,10 @@ RebarGroupCreationResult createGroup(const RebarGroupCreationRequest& request,
                                      "geometryRef.curveStableIds[0]",
                                      "E-IDA-022"});
     segment.legacyRaw = creationParameters(request, legacyCommand, normalizedDistanceB,
-                                           effectiveFlag, true);
+                                           effectiveFlag, normalizeTrace);
     segment.unresolvedLegacyFields.push_back(unresolvedField(
         "sub_1405D5670.fullEquivalence",
-        "TODO-081 closed arg4 source as distanceA_4digit, but full split / spline / trim parity remains open."));
+        "TODO-083 records split / spline / trim P0 trace, but full mutation / dirty parity remains open."));
     segment.evidence.push_back(evidenceRef("sub_1405D5670 split / spline / trim chain"));
 
     SteelBar bar;
@@ -340,7 +393,7 @@ RebarGroupCreationResult createGroup(const RebarGroupCreationRequest& request,
                                  "segmentIds[0]",
                                  "E-IDA-022"});
     bar.legacyRaw = creationParameters(request, legacyCommand, normalizedDistanceB,
-                                       effectiveFlag, true);
+                                       effectiveFlag, normalizeTrace);
     bar.unresolvedLegacyFields = segment.unresolvedLegacyFields;
     bar.evidence.push_back(evidenceRef("created from VisualTS line/arc group chain"));
 
@@ -367,7 +420,7 @@ RebarGroupCreationResult createGroup(const RebarGroupCreationRequest& request,
     group.referenceIds.push_back(segmentCurve.stableId);
     group.barIds.push_back(bar.barId);
     group.createdFromParameters = creationParameters(request, legacyCommand, normalizedDistanceB,
-                                                     effectiveFlag, true);
+                                                     effectiveFlag, normalizeTrace);
     group.legacyRaw = group.createdFromParameters;
     group.geometryRef.curveStableIds.push_back(segmentCurve.stableId);
     group.binding.state = BindingState::Resolved;
@@ -376,7 +429,7 @@ RebarGroupCreationResult createGroup(const RebarGroupCreationRequest& request,
                                    "E-IDA-022"});
     group.unresolvedLegacyFields.push_back(unresolvedField(
         "sub_1405D5670.fullEquivalence",
-        "TODO-081 closed arg4 source as distanceA_4digit, but full split / spline / trim parity remains open."));
+        "TODO-083 records split / spline / trim P0 trace, but full mutation / dirty parity remains open."));
     group.unresolvedLegacyFields.push_back(unresolvedField(
         "objA/objB.oldClassNames",
         "TODO-081 confirmed objA / objB can swap by entry path, but did not close their old class names or UI business names."));

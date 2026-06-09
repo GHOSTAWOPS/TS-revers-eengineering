@@ -64,6 +64,29 @@ DONE_NODE_JSON_CONTRACTS = {
             "xhighReview": ("allow_commit", "needs_fix_then_fixed_by_main_flow"),
         },
     },
+    "TODO-083": {
+        "todoId": "TODO-083",
+        "decision": "done_split_spline_trim_trace_aligned",
+        "nextTodoId": "TODO-084",
+        "requiredVerification": (
+            "defaultCTest",
+            "readinessGateUnit",
+            "readinessGateStrict",
+            "domainRebarCommandOCCLeak",
+            "todoSingleNext",
+            "gitDiffCheck",
+            "xhighReview",
+        ),
+        "requiredVerificationValues": {
+            "defaultCTest": ("pass",),
+            "readinessGateUnit": ("pass",),
+            "readinessGateStrict": ("pass",),
+            "domainRebarCommandOCCLeak": ("pass",),
+            "todoSingleNext": ("pass",),
+            "gitDiffCheck": ("pass",),
+            "xhighReview": ("allow_commit", "needs_fix_then_fixed_by_main_flow"),
+        },
+    },
 }
 
 
@@ -297,6 +320,7 @@ def done_node_report_requirements(root: Path, rows: list[dict[str, str]]) -> tup
         "TODO-080": ("118_M2-RebarCreate-010线配筋公共创建Core参数Gate与Diagnostic对齐P0实现记录.md", "docs/phase1/app_build_reports/m2_rebar_create_010_run_001.md"),
         "TODO-081": ("119_M2-RebarCreate-011线配筋公共创建CreatedPayload与ObjAB字段语义补证P0实现记录.md", "docs/phase1/app_build_reports/m2_rebar_create_011_run_001.md"),
         "TODO-082": ("120_M2-RebarCreate-012线配筋公共创建RolesDTO与RawEvidence对齐P0实现记录.md", "docs/phase1/app_build_reports/m2_rebar_create_012_run_001.md"),
+        "TODO-083": ("121_M2-RebarCreate-013线配筋公共创建SplitSplineTrim等价切片P0实现记录.md", "docs/phase1/app_build_reports/m2_rebar_create_013_run_001.md"),
     }
     missing: list[str] = []
     checked: list[str] = []

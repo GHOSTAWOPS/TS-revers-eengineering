@@ -20,7 +20,7 @@
      输出目录 / hash / 覆盖策略记录模板和拒收伪工件规则已落文档
   -> output_uncut_steel / Dialog 0x57C / UnCutSteel.TXT
      继续只算可选旁证，不算前置设置窗
-  -> TODO-066 已完成真实工件回填；TODO-067 已完成字段对照；TODO-068 已完成最明显旧包格式纠偏；TODO-069 已完成 StbRow 扩展属性骨架；TODO-070 已完成 lineStb StbGeo 字段条件化骨架；TODO-071 已完成线配筋入口契约冻结；TODO-072 已完成 LineGroup command handler P0；TODO-073 已完成 LineGroup UI/AIS 可见反馈 P0；TODO-074 已完成 LineGroup 参数窗口 P0；TODO-075 已完成选择预检与参数窗口顺序对齐 P0；TODO-076 已完成旧 UI 失败提示与状态栏口径静态 stop point；TODO-077 已完成旧图石运行确认采样清单与拒收规则；TODO-078 已审计为 blocked，因为当前只有模板、没有真实旧图石运行截图/hash/listing/填写后的 notes；TODO-079 已完成旧 UI / Dialog 静态资源补证；TODO-080 已完成公共创建 core gate 与 diagnostic P0 对齐；TODO-081 已完成 createdPayload / objA / objB 字段语义补证；TODO-082 已完成 roles DTO 与 raw evidence 对齐；现在的主线是 TODO-083
+  -> TODO-066 已完成真实工件回填；TODO-067 已完成字段对照；TODO-068 已完成最明显旧包格式纠偏；TODO-069 已完成 StbRow 扩展属性骨架；TODO-070 已完成 lineStb StbGeo 字段条件化骨架；TODO-071 已完成线配筋入口契约冻结；TODO-072 已完成 LineGroup command handler P0；TODO-073 已完成 LineGroup UI/AIS 可见反馈 P0；TODO-074 已完成 LineGroup 参数窗口 P0；TODO-075 已完成选择预检与参数窗口顺序对齐 P0；TODO-076 已完成旧 UI 失败提示与状态栏口径静态 stop point；TODO-077 已完成旧图石运行确认采样清单与拒收规则；TODO-078 已审计为 blocked，因为当前只有模板、没有真实旧图石运行截图/hash/listing/填写后的 notes；TODO-079 已完成旧 UI / Dialog 静态资源补证；TODO-080 已完成公共创建 core gate 与 diagnostic P0 对齐；TODO-081 已完成 createdPayload / objA / objB 字段语义补证；TODO-082 已完成 roles DTO 与 raw evidence 对齐；TODO-083 已完成 split / spline / trim trace P0；现在的主线是 TODO-084
 ```
 
 ## 可直接粘贴到 Goal 模式的目标
@@ -329,14 +329,14 @@ TODO-044 验证 = othersSteeljoint.passed=true, Others empty container, steeljoi
 TODO-057 验证 = owner types traced to steelbar / steelbargroup / seg_steelbargroup, Dialog #428 OK chain traced to sub_14045D720 -> sub_1405CB160 -> sub_1405B7350, child+112 narrowed to phase/position/start offset, phase1 gate unittest 18 tests pass, CTest 18/18 pass, readiness 84/84 pass, OCCT leak scan pass, xhigh completed important_fixed minor_refined
 TODO-069 验证 = StbRow smallTable / mirrorType / mirrorSEFlag 字段骨架已输出，CTest 18/18 pass, readiness unit 28/28 pass, strict readiness 84/84 pass, OCCT leak scan pass, xhigh needs_fix important fixed, one-shot reviewer process exited
 
-latest pushed baseline tag = m2-rebar-create-012-todo-082-linegroup-roles-raw-evidence
-current node tag to create after verification = m2-rebar-create-013-todo-083-linegroup-split-spline-trim-slice
+latest pushed baseline tag = m2-rebar-create-013-todo-083-linegroup-split-spline-trim-slice
+current node tag to create after verification = m2-rebar-create-014-todo-084-linegroup-group-min-dirty-gap-slice
 ```
 
 当前下一步：
 
 ```text
-TODO-083 / 线配筋公共创建 sub_1405D5670 split-spline-trim 等价切片 P0
+TODO-084 / 线配筋公共创建 sub_1405D5670 group-min-distance / dirty-write gap 切片 P0
   -> 接头链路现阶段先记录、暂缓。
   -> TODO-071 已完成 sgroupbarline 入口契约冻结。
   -> TODO-072 已完成 LineGroup command handler P0 事务接入。
@@ -350,7 +350,8 @@ TODO-083 / 线配筋公共创建 sub_1405D5670 split-spline-trim 等价切片 P0
   -> TODO-080 已完成旧 sub_1404D10C0 已确认公共创建 gate 与 diagnostic P0 对齐。
   -> TODO-081 已完成 sub_1404D10C0 -> sub_140451730 -> createdObject / payload 字段语义补证。
   -> TODO-082 已完成 roles DTO / raw evidence 对齐。
-  -> 下一轮只继续拆 sub_1405D5670 split / spline / trim 等价切片。
+  -> TODO-083 已完成 split / spline / trim trace P0。
+  -> 下一轮只继续拆 sub_1405D5670 group minimum distance trim loop、backup/write edge 和 dirty 写回 gap。
   -> 不自动启动旧图石，不安装 HASP，不用 OCCT 直接重写钢筋业务。
   -> 不替代 TODO-078 的真实运行确认。
 ```
@@ -596,7 +597,7 @@ commit / tag / push 状态
 
 ### 短期 Goal（下一轮推荐复制）
 
-目标：只完成 `TODO-083 / 线配筋公共创建 sub_1405D5670 split-spline-trim 等价切片 P0` 这个短期阶段，不自动进入后续长期开发。
+目标：只完成 `TODO-084 / 线配筋公共创建 sub_1405D5670 group-min-distance / dirty-write gap 切片 P0` 这个短期阶段，不自动进入后续长期开发。
 
 当前状态：
 
@@ -619,16 +620,17 @@ commit / tag / push 状态
   TODO-080 = done  公共创建 core gate 与 diagnostic P0 对齐
   TODO-081 = done  createdPayload / objA / objB 字段语义补证
   TODO-082 = done  roles DTO / raw evidence 对齐
-  TODO-083 = next
+  TODO-083 = done  split / spline / trim trace P0
+  TODO-084 = next
 ```
 
 本轮只做：
 
 ```text
-LineGroupSplitSplineTrimSliceP0 / TODO-083
+LineGroupGroupMinDistanceDirtyWriteGapP0 / TODO-084
   -> 从 todo.csv / 03 / 08 / 11 / 15 / 16 / 35 / 46 / 99 出发
-  -> 基于 E-IDA-022 / E-IDA-048 / E-DEV-104 已确认的 sub_1405D5670 公共链和 distanceA_4digit 边界
-  -> 把 split / spline / trim 链拆成正式 app 可测试的下一层等价切片
+  -> 基于 E-IDA-022 / E-IDA-048 / E-DEV-105 已确认的 sub_1405D5670 公共链和 split/spline/trim trace 边界
+  -> 把 group minimum distance trim loop、backup/write edge 和 dirty 写回拆成正式 app 可测试的下一层 gap 切片
   -> 测试必须证明仍通过 LegacyGeometryAdapter / LegacyRebarGeometryReader 语义，不让 domain/rebar 直接依赖 OCCT
   -> 不一次性实现完整线配筋算法
   -> 更新实现记录、run report、追溯矩阵、缺口文档、46 和 todo
@@ -670,27 +672,35 @@ TODO-082 已完成：
   已落到 LegacyPublicCreateRolesSnapshot 和 raw evidence。
   normalizer 已使用 distanceA_4digit。
 
-TODO-081 / TODO-082 仍不能证明：
+TODO-083 已完成：
+  LegacySegmentCurveNormalizeTrace / Result 已落地。
+  api_entity_entity_distance / api_split_curve / api_curve_spline / endpoint trim
+  已写入 createdFromParameters / legacyRaw。
+  line_group_display_smoke_123 已覆盖 viewer reader 的 effectiveSampleCount。
+  groupMinimumDistanceTrimLoop 和 backupWriteEdge 仍保持 deferred。
+
+TODO-081 / TODO-082 / TODO-083 仍不能证明：
   完整线配筋算法已完成。
   旧图石真实运行提示已闭合。
   Dialog #383 一定出现在真实线配筋流程。
   当前 Qt6 LineGroupParameterDialog 已 1:1 等于旧图石窗口。
   面配筋、弧筋、接头、Excel、Detail 或 golden 已完成。
 
-TODO-083 的价值是：
-  在 roles DTO 已经落地后，
-  继续把 sub_1405D5670 的 split / spline / trim 链拆成小的可验证切片。
-  这一步仍然不是完整线配筋算法，只是把旧公共创建链的核心几何行为继续往可编码边界推进。
+TODO-084 的价值是：
+  在 split / spline / trim trace 已经落地后，
+  继续把 sub_1405D5670 里仍 deferred 的 group min-distance loop 和 dirty/write edge
+  拆成小的可验证切片。
+  这一步仍然不是完整线配筋算法，只是把旧公共创建链的 mutation / dirty 缺口继续往可编码边界推进。
 ```
 
 本轮完成后必须停止并复盘：
 
 ```text
-完成了哪些 split / spline / trim 等价切片
+完成了哪些 group-min-distance / dirty-write gap 切片
 验证了哪些门禁和 xhigh review
 还缺哪些旧图石运行工件、旧类名和完整算法证据
 TODO-078 是否仍 blocked
-下一阶段建议继续 TODO-084 还是回填 TODO-078
+下一阶段建议继续 TODO-085 还是回填 TODO-078
 ```
 ### 按任务补读的参考文档
 
@@ -839,7 +849,7 @@ TODO-076 验证 = IDA MCP 已确认 sub_1404DE720 / sub_14054B410 无直接中�
 当前下一步：
 
 ```text
-TODO-083 / 线配筋公共创建 sub_1405D5670 split-spline-trim 等价切片 P0
+TODO-084 / 线配筋公共创建 sub_1405D5670 group-min-distance / dirty-write gap 切片 P0
   -> TODO-071 已完成 sgroupbarline 入口契约冻结
   -> TODO-072 已完成 LineGroup command handler P0 事务接入
   -> TODO-073 已完成 LineGroup UI/AIS 可见反馈 P0
@@ -852,7 +862,8 @@ TODO-083 / 线配筋公共创建 sub_1405D5670 split-spline-trim 等价切片 P0
   -> TODO-080 已完成公共创建 core gate 与 diagnostic P0 对齐
   -> TODO-081 已完成 createdPayload / distanceA_4digit / objA-objB 字段语义补证
   -> TODO-082 已完成 roles DTO / raw evidence 对齐
-  -> 下一轮只继续拆 sub_1405D5670 split / spline / trim 等价切片
+  -> TODO-083 已完成 split / spline / trim trace P0
+  -> 下一轮只继续拆 sub_1405D5670 group-min-distance / dirty-write gap
   -> 不自动安装 HASP，不自动启动旧图石
   -> 不用 OCCT 直接重写钢筋业务，不迁入父目录 rebar 业务
   -> 不替代 TODO-078 的真实运行确认
@@ -952,19 +963,19 @@ golden 采集 TODO-026 仍按用户要求保持 pending。
 
 ## CSE v2 Control Contract
 
-- **Primary Setpoint**：下一轮只完成 `TODO-083 / 线配筋公共创建 sub_1405D5670 split-spline-trim 等价切片 P0`，把 TODO-020 / TODO-081 / TODO-082 收窄出的公共创建链继续拆成正式 app 可测试的 split / spline / trim 行为边界。
-- **Acceptance**：新增或调整最小 split / spline / trim 等价切片；测试覆盖 `distanceA_4digit` 输入边界、legacy geometry reader / adapter 语义边界、失败 diagnostic 和未闭合 gap；更新实现记录、run report、03/08/11/15/16/35/46/99/todo；默认 CTest、readiness gate、OCCT 泄漏检查、git diff --check 和 xhigh 只读 review 必须通过。
+- **Primary Setpoint**：下一轮只完成 `TODO-084 / 线配筋公共创建 sub_1405D5670 group-min-distance / dirty-write gap 切片 P0`，把 TODO-020 / TODO-083 收窄出的公共创建链继续拆成正式 app 可测试的 group minimum distance trim loop、backup/write edge 和 dirty 写回 gap 边界。
+- **Acceptance**：新增或调整最小 group-min-distance / dirty-write gap 切片；测试覆盖 deferred gap、raw evidence、legacy geometry reader / adapter 语义边界、失败 diagnostic 和未闭合 gap；更新实现记录、run report、03/08/11/15/16/35/46/99/todo；默认 CTest、readiness gate、OCCT 泄漏检查、git diff --check 和 xhigh 只读 review 必须通过。
 - **Guardrail Metrics**：不能用 OCCT 能怎么做替代旧图石怎么做；不能迁入父目录 rebar 业务；不能让 `domain/rebar` 依赖 TopoDS/AIS/BRep/TopAbs；不能把 P0 diagnostic 写成完整旧运行行为；不能在一个节点里铺开面配筋、接头、Excel、Detail 字段继续扩张或 golden。
-- **Sampling Plan**：先读 `todo.csv / 03 / 08 / 11 / 15 / 16 / 35 / 46 / 99`，确认 `TODO-083` 只做 split / spline / trim 等价切片；先补测试，再实现；最后运行默认 CTest、readiness gate、OCCT 泄漏检查、git diff --check 和 xhigh 只读 review。
-- **Known Delays**：旧 UI 参数窗口字段、状态栏流程和失败提示最终仍依赖用户插狗后的现场运行；TODO-083 只能推进公共创建链几何行为切片，不能替代 TODO-078。
-- **Recovery Target**：如果 split / spline / trim 切片会被误读成完整线配筋算法，就缩小字段命名、保留 raw evidence 和 gap，不编造完整旧算法。
+- **Sampling Plan**：先读 `todo.csv / 03 / 08 / 11 / 15 / 16 / 35 / 46 / 99`，确认 `TODO-084` 只做 group-min-distance / dirty-write gap 切片；先补测试，再实现；最后运行默认 CTest、readiness gate、OCCT 泄漏检查、git diff --check 和 xhigh 只读 review。
+- **Known Delays**：旧 UI 参数窗口字段、状态栏流程和失败提示最终仍依赖用户插狗后的现场运行；TODO-084 只能推进公共创建链 mutation / dirty gap 边界，不能替代 TODO-078。
+- **Recovery Target**：如果 group-min-distance / dirty-write 切片会被误读成完整线配筋算法，就缩小字段命名、保留 raw evidence 和 gap，不编造完整旧算法。
 - **Rollback Trigger**：domain/rebar 出现 OCCT/AIS include；父目录 rebar 业务被迁入；无 IDA/运行证据却写成旧逻辑已确认；测试或 gate 失败仍继续堆功能。
 - **Constraints**：不使用 ACIS / HOOPS / Codejock 等商业库；新系统不引入 USB 狗 / 网络许可依赖；旧逻辑不确定时优先查 IDA MCP 或旧图石运行确认；xhigh 只读，修改由主流程 agent 完成；不自动安装 HASP，不自动再次启动旧图石。
-- **Boundary**：下一轮允许改 RebarGroupCreator / LegacyRebarGeometryReader 相关 split-spline-trim P0 切片与测试、实现记录、run report、追溯矩阵、缺口、todo 和必要门禁；禁止改 UI 文案，禁止实现完整线配筋算法，禁止继续扩张 DetailWriter 字段，禁止实现面配筋/接头/Excel/golden，禁止迁入父目录 rebar 业务。
+- **Boundary**：下一轮允许改 RebarGroupCreator / LegacyRebarGeometryReader 相关 group-min-distance / dirty-write P0 gap 切片与测试、实现记录、run report、追溯矩阵、缺口、todo 和必要门禁；禁止改 UI 文案，禁止实现完整线配筋算法，禁止继续扩张 DetailWriter 字段，禁止实现面配筋/接头/Excel/golden，禁止迁入父目录 rebar 业务。
 - **Coupling Notes**：`domain/rebar` 是业务对象边界；`LegacyGeometryAdapter` 是几何能力边界；线配筋创建若需要几何读取，只能通过 legacy 语义接口，不让业务层直接写 OCCT。
-- **Approximation Validity**：TODO-083 的目标是 split / spline / trim 等价切片，不是旧图石真实运行确认、完整旧参数窗口、完整线配筋、面配筋、弧筋、统计、出图或 golden。
-- **Actuator Budget**：下一轮只推进 `TODO-083`。完成后停止复盘，不自动进入完整线配筋算法、面配筋、弧筋、接头、Excel、Detail 字段继续扩张或 golden。
-- **Risks**：split / spline / trim 切片容易被误读成完整线配筋；必须保留 `createdObject + 112`、旧类名、运行 UI 和完整算法 gap，不得伪装成旧图石运行确认结论。
+- **Approximation Validity**：TODO-084 的目标是 group-min-distance / dirty-write gap 切片，不是旧图石真实运行确认、完整旧参数窗口、完整线配筋、面配筋、弧筋、统计、出图或 golden。
+- **Actuator Budget**：下一轮只推进 `TODO-084`。完成后停止复盘，不自动进入完整线配筋算法、面配筋、弧筋、接头、Excel、Detail 字段继续扩张或 golden。
+- **Risks**：group-min-distance / dirty-write gap 切片容易被误读成完整线配筋；必须保留 `createdObject + 112`、旧类名、运行 UI 和完整算法 gap，不得伪装成旧图石运行确认结论。
 ## Todo CSV 使用方式
 
 `todo.csv` 是后续执行看板。建议每次 goal 模式只拿 `status=next` 或最高优先级 `pending` 的任务推进。
@@ -989,7 +1000,7 @@ golden 采集 TODO-026 仍按用户要求保持 pending。
 下一步优先执行：
 
 ```text
-TODO-083 / 线配筋公共创建 sub_1405D5670 split-spline-trim 等价切片 P0
+TODO-084 / 线配筋公共创建 sub_1405D5670 group-min-distance / dirty-write gap 切片 P0
   -> TODO-071 已完成 sgroupbarline 入口契约冻结
   -> TODO-072 已完成 LineGroup command handler P0 事务接入
   -> TODO-073 已完成 LineGroup UI/AIS 可见反馈 P0
@@ -1002,7 +1013,8 @@ TODO-083 / 线配筋公共创建 sub_1405D5670 split-spline-trim 等价切片 P0
   -> TODO-080 已完成 sub_1404D10C0 公共创建 gate / diagnostic 对齐
   -> TODO-081 已完成 createdPayload / objA / objB 字段语义补证
   -> TODO-082 已完成 roles DTO / raw evidence 对齐
-  -> 下一轮只继续拆 sub_1405D5670 split / spline / trim 等价切片
+  -> TODO-083 已完成 split / spline / trim trace P0
+  -> 下一轮只继续拆 sub_1405D5670 group-min-distance / dirty-write gap
   -> 不自动安装 HASP
   -> 不自动启动旧图石
   -> 不用 OCCT 直接重写钢筋业务
@@ -1011,5 +1023,5 @@ TODO-083 / 线配筋公共创建 sub_1405D5670 split-spline-trim 等价切片 P0
   -> 不声明完整线配筋、AutoCAD L2 通过或 golden
 ```
 
-原因很简单：TODO-082 已把公共创建字段语义落成 app 内可测试的数据边界。下一步更稳的是继续把 `sub_1405D5670` 的 `split / spline / trim` 链拆成小的可验证切片，继续保持“按 VisualTS 证据复刻”，而不是用 OCCT 直接写一个新的钢筋生成器。
+原因很简单：TODO-083 已把 `sub_1405D5670` 的 `split / spline / trim` trace 落成 app 内可测试的数据边界。下一步更稳的是继续拆仍 deferred 的 `group minimum distance trim loop / backup-write edge / dirty` 缺口，继续保持“按 VisualTS 证据复刻”，而不是用 OCCT 直接写一个新的钢筋生成器。
 TODO-026 golden 采集暂按用户要求保持 pending。

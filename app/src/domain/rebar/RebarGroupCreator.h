@@ -34,6 +34,30 @@ struct LegacySegmentCurveNormalizeRequest
     double unresolvedEndpointDistanceThreshold = 0.0;
 };
 
+struct LegacySegmentCurveNormalizeTrace
+{
+    std::string capabilityLevel = "p0-summary";
+    bool entityDistanceAttempted = false;
+    bool entityDistanceApplied = false;
+    bool splitCurveAttempted = false;
+    bool splitCurveApplied = false;
+    bool curveSplineAttempted = false;
+    bool curveSplineApplied = false;
+    bool startTrimAttempted = false;
+    bool startTrimApplied = false;
+    bool endTrimAttempted = false;
+    bool endTrimApplied = false;
+    bool groupMinimumDistanceTrimLoopDeferred = true;
+    bool backupWriteEdgeDeferred = true;
+    int effectiveSplineSampleCount = 0;
+};
+
+struct LegacySegmentCurveNormalizeResult
+{
+    LegacyRebarCurveSnapshot curve;
+    LegacySegmentCurveNormalizeTrace trace;
+};
+
 struct LegacyPublicCreateGateSnapshot
 {
     bool objAResolved = true;
@@ -61,7 +85,7 @@ public:
     [[nodiscard]] virtual LegacyGeometryQueryResult<LegacyRebarCurveSnapshot>
     curveSnapshot(const LegacySelectionRef& ref, int requestedSampleCount) const = 0;
 
-    [[nodiscard]] virtual LegacyGeometryQueryResult<LegacyRebarCurveSnapshot>
+    [[nodiscard]] virtual LegacyGeometryQueryResult<LegacySegmentCurveNormalizeResult>
     normalizeSegmentCurve(const LegacyRebarCurveSnapshot& curve,
                           const LegacySegmentCurveNormalizeRequest& request) const = 0;
 };

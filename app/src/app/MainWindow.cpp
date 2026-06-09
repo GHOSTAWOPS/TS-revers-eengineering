@@ -63,13 +63,77 @@ public:
         return {true, snapshot, {}};
     }
 
-    [[nodiscard]] tsrebar::LegacyGeometryQueryResult<tsrebar::LegacyRebarCurveSnapshot>
+    [[nodiscard]] tsrebar::LegacyGeometryQueryResult<tsrebar::LegacySegmentCurveNormalizeResult>
     normalizeSegmentCurve(
         const tsrebar::LegacyRebarCurveSnapshot& curve,
         const tsrebar::LegacySegmentCurveNormalizeRequest& request) const override
     {
-        Q_UNUSED(request)
-        return {true, curve, {}};
+        tsrebar::LegacyGeometryQueryResult<tsrebar::LegacySegmentCurveNormalizeResult> result;
+        if (curve.stableId.empty()) {
+            result.diagnostic = QStringLiteral("SegmentCurveNormalizer requires a legacy edge stable id.");
+            return result;
+        }
+
+        tsrebar::LegacySelectionRef ref;
+        ref.stableId = curve.stableId;
+        ref.shapeKind = tsrebar::LegacyShapeKind::Edge;
+
+        tsrebar::LegacyPoint3d probePoint;
+        if (!curve.samplePoints.empty()) {
+            probePoint = curve.samplePoints[curve.samplePoints.size() / 2];
+        } else {
+            probePoint = {(curve.startPoint.x + curve.endPoint.x) * 0.5,
+                          (curve.startPoint.y + curve.endPoint.y) * 0.5,
+                          (curve.startPoint.z + curve.endPoint.z) * 0.5};
+        }
+
+        tsrebar::OccLegacyGeometryAdapter adapter(m_viewer.selectionIndex());
+        tsrebar::LegacySegmentCurveNormalizeTrace trace;
+        trace.capabilityLevel = "p0-split-spline-trim-summary";
+        const int effectiveSplineSampleCount = std::max(
+            request.minimumSplineSamples,
+            static_cast<int>(curve.length * request.splineSamplesPerUnitLength));
+        trace.effectiveSplineSampleCount = effectiveSplineSampleCount;
+
+        trace.entityDistanceAttempted = true;
+        const auto groupDistance =
+            adapter.pointToEdgeGroupDistance(probePoint,
+                                             std::vector<tsrebar::LegacySelectionRef>{ref},
+                                             request.unresolvedEndpointDistanceThreshold);
+        trace.entityDistanceApplied = groupDistance.ok && groupDistance.value.hasNearest;
+
+        trace.splitCurveAttempted = true;
+        const auto split =
+            adapter.edgeSplitAtPoint(ref, probePoint, request.minimumSplineSamples);
+        trace.splitCurveApplied =
+            split.ok &&
+            split.value.firstInterval.length >= request.minimumSplitLength &&
+            split.value.secondInterval.length >= request.minimumSplitLength;
+
+        trace.curveSplineAttempted = curve.samplePoints.size() >= 3;
+        if (trace.curveSplineAttempted) {
+            const auto spline =
+                adapter.buildSplineFromPoints(curve.samplePoints, effectiveSplineSampleCount);
+            if (spline.value.effectiveSampleCount > 0) {
+                trace.effectiveSplineSampleCount = spline.value.effectiveSampleCount;
+            }
+            trace.curveSplineApplied = spline.ok && spline.value.buildable;
+        }
+
+        trace.startTrimAttempted = true;
+        const auto startTrim =
+            adapter.edgeTrimEndpoint(ref, request.trimDelta, 0, request.minimumSplineSamples);
+        trace.startTrimApplied = startTrim.ok;
+
+        trace.endTrimAttempted = true;
+        const auto endTrim =
+            adapter.edgeTrimEndpoint(ref, request.trimDelta, 1, request.minimumSplineSamples);
+        trace.endTrimApplied = endTrim.ok;
+
+        result.ok = true;
+        result.value.curve = curve;
+        result.value.trace = trace;
+        return result;
     }
 
 private:

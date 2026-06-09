@@ -13,9 +13,11 @@
 #include <QSpinBox>
 #include <QTimer>
 
+#include <algorithm>
 #include <cmath>
 #include <cstdlib>
 #include <iostream>
+#include <string>
 
 namespace {
 
@@ -31,6 +33,17 @@ void expect(bool condition, const char* message)
 bool nearlyEqual(double left, double right)
 {
     return std::abs(left - right) < 1.0e-9;
+}
+
+std::string createdParameterValue(const tsrebar::LegacyRawBlock& block,
+                                  const std::string& name)
+{
+    for (const auto& field : block.fields) {
+        if (field.name == name) {
+            return field.value;
+        }
+    }
+    return {};
 }
 
 QString lineGroupActionObjectName()
@@ -213,9 +226,21 @@ int main(int argc, char* argv[])
     const auto& groups = window.steelDataForInspection().groups;
     expect(!groups.empty(), "successful line group command must leave groups inspectable");
     const tsrebar::SteelBarGroup& latest = groups.back();
+    const auto& segments = window.steelDataForInspection().segments;
+    expect(!segments.empty(), "successful line group command must leave segments inspectable");
+    const tsrebar::SteelBarSegment& latestSegment = segments.back();
     expect(nearlyEqual(latest.diameter, 32.0), "edited dialog diameter must reach handler");
     expect(nearlyEqual(latest.interval, 150.0), "edited dialog interval must reach handler");
     expect(latest.barCount == 5, "edited dialog bar count must reach handler");
     expect(latest.steelLevel == "HRB500", "edited dialog steel level must reach handler");
+    const std::string splineSampleCount =
+        createdParameterValue(latest.createdFromParameters,
+                              "sub_1405D5670.api_curve_spline.effectiveSampleCount");
+    expect(!splineSampleCount.empty(),
+           "line group raw evidence must record effective spline sample count");
+    const int expectedSplineSampleCount =
+        std::max(5, static_cast<int>(latestSegment.length * 50.0));
+    expect(std::stoi(splineSampleCount) == expectedSplineSampleCount,
+           "viewer reader spline trace must match the adapter requested sample count");
     return 0;
 }

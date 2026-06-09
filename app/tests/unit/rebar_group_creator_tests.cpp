@@ -96,7 +96,7 @@ public:
         return result;
     }
 
-    [[nodiscard]] tsrebar::LegacyGeometryQueryResult<tsrebar::LegacyRebarCurveSnapshot>
+    [[nodiscard]] tsrebar::LegacyGeometryQueryResult<tsrebar::LegacySegmentCurveNormalizeResult>
     normalizeSegmentCurve(
         const tsrebar::LegacyRebarCurveSnapshot& curve,
         const tsrebar::LegacySegmentCurveNormalizeRequest& request) const override
@@ -104,15 +104,21 @@ public:
         ++normalizeCallCount_;
         lastNormalizeRequest_ = request;
 
-        tsrebar::LegacyGeometryQueryResult<tsrebar::LegacyRebarCurveSnapshot> result;
+        tsrebar::LegacyGeometryQueryResult<tsrebar::LegacySegmentCurveNormalizeResult> result;
         result.ok = true;
-        result.value = normalizedCurve_.stableId.empty() ? curve : normalizedCurve_;
+        result.value.curve = normalizedCurve_.stableId.empty() ? curve : normalizedCurve_;
+        result.value.trace = normalizeTrace_;
         return result;
     }
 
     void setNormalizedCurve(tsrebar::LegacyRebarCurveSnapshot curve)
     {
         normalizedCurve_ = std::move(curve);
+    }
+
+    void setNormalizeTrace(tsrebar::LegacySegmentCurveNormalizeTrace trace)
+    {
+        normalizeTrace_ = std::move(trace);
     }
 
     [[nodiscard]] int callCount() const { return callCount_; }
@@ -130,6 +136,7 @@ private:
     mutable tsrebar::LegacySegmentCurveNormalizeRequest lastNormalizeRequest_;
     std::unordered_map<std::string, tsrebar::LegacyRebarCurveSnapshot> curves_;
     tsrebar::LegacyRebarCurveSnapshot normalizedCurve_;
+    tsrebar::LegacySegmentCurveNormalizeTrace normalizeTrace_;
 };
 
 tsrebar::LegacyRebarCurveSnapshot lineCurve(const std::string& stableId, double length)
@@ -166,6 +173,26 @@ tsrebar::LegacyRebarCurveSnapshot arcCurve(const std::string& stableId, double l
         curve.endPoint,
     };
     return curve;
+}
+
+tsrebar::LegacySegmentCurveNormalizeTrace fullP0NormalizeTrace()
+{
+    tsrebar::LegacySegmentCurveNormalizeTrace trace;
+    trace.capabilityLevel = "p0-split-spline-trim-summary";
+    trace.entityDistanceAttempted = true;
+    trace.entityDistanceApplied = true;
+    trace.splitCurveAttempted = true;
+    trace.splitCurveApplied = true;
+    trace.curveSplineAttempted = true;
+    trace.curveSplineApplied = true;
+    trace.startTrimAttempted = true;
+    trace.startTrimApplied = true;
+    trace.endTrimAttempted = true;
+    trace.endTrimApplied = true;
+    trace.groupMinimumDistanceTrimLoopDeferred = true;
+    trace.backupWriteEdgeDeferred = true;
+    trace.effectiveSplineSampleCount = 625;
+    return trace;
 }
 
 tsrebar::RebarGroupCreationRequest baseRequest(const std::string& stableId)
@@ -340,6 +367,62 @@ void testLineGroupCreatorRecordsPublicCreateRolesRawEvidence()
            "line group roles DTO must carry TODO-081 IDA evidence");
 }
 
+void testLineGroupCreatorRecordsSplitSplineTrimTraceRawEvidence()
+{
+    FakeLegacyRebarGeometryReader reader;
+    reader.addCurve(lineCurve("selection-v1:edge:trace", 18.0));
+    auto normalized = lineCurve("selection-v1:edge:trace", 17.4);
+    normalized.startPoint = {0.3, 0.0, 0.0};
+    normalized.endPoint = {17.7, 0.0, 0.0};
+    reader.setNormalizedCurve(normalized);
+    reader.setNormalizeTrace(fullP0NormalizeTrace());
+
+    auto request = baseRequest("selection-v1:edge:trace");
+    request.distanceA = 0.12349;
+
+    const auto result = tsrebar::RebarGroupCreator{}.createLineGroup(request, reader);
+
+    expect(result.ok, "line group split/spline/trim trace creation must succeed");
+    const auto& group = result.steelData.groups.front();
+    const auto& segment = result.steelData.segments.front();
+
+    expect(createdParameterValue(group.createdFromParameters,
+                                 "sub_1405D5670.normalize.capabilityLevel") ==
+               "p0-split-spline-trim-summary",
+           "line group must record TODO-083 normalizer capability level");
+    expect(createdParameterValue(group.createdFromParameters,
+                                 "sub_1405D5670.api_entity_entity_distance") == "applied",
+           "line group must record api_entity_entity_distance P0 trace");
+    expect(createdParameterValue(group.createdFromParameters,
+                                 "sub_1405D5670.api_split_curve") == "applied",
+           "line group must record api_split_curve P0 trace");
+    expect(createdParameterValue(group.createdFromParameters,
+                                 "sub_1405D5670.api_curve_spline") == "applied",
+           "line group must record api_curve_spline P0 trace");
+    expect(createdParameterValue(group.createdFromParameters,
+                                 "sub_1405D5670.api_curve_spline.effectiveSampleCount") == "625",
+           "line group must record effective spline sample count");
+    expect(createdParameterValue(group.createdFromParameters,
+                                 "sub_140580950.startTrim") == "applied",
+           "line group must record sub_140580950 start trim P0 trace");
+    expect(createdParameterValue(group.createdFromParameters,
+                                 "sub_140580950.endTrim") == "applied",
+           "line group must record sub_140580950 end trim P0 trace");
+    expect(createdParameterValue(group.createdFromParameters,
+                                 "sub_14059B980.groupMinimumDistanceTrimLoop") == "deferred-p0",
+           "group minimum distance trim loop must remain a deferred P0 boundary");
+    expect(createdParameterValue(group.createdFromParameters,
+                                 "sub_1405BD0C0.backupWriteEdge") == "deferred-domain-model",
+           "backup/write edge mutation must remain deferred outside P0 domain output");
+    expect(createdParameterValue(segment.legacyRaw,
+                                 "sub_1405D5670.api_split_curve") == "applied",
+           "segment raw evidence must carry the same split trace");
+    expect(hasUnresolvedField(group.unresolvedLegacyFields, "sub_1405D5670.fullEquivalence"),
+           "P0 trace must not close full sub_1405D5670 equivalence");
+    expect(hasEvidence(group.evidence, "E-IDA-022"),
+           "split/spline/trim trace must keep TODO-020 IDA evidence");
+}
+
 void testArcGroupCreatorBuildsArcSegmentAndKeepsUnresolvedUiGap()
 {
     FakeLegacyRebarGeometryReader reader;
@@ -501,6 +584,7 @@ int main()
 {
     testLineGroupCreatorBuildsDomainGroupFromLegacyEdge();
     testLineGroupCreatorRecordsPublicCreateRolesRawEvidence();
+    testLineGroupCreatorRecordsSplitSplineTrimTraceRawEvidence();
     testArcGroupCreatorBuildsArcSegmentAndKeepsUnresolvedUiGap();
     testCreationRejectsDistanceBelowVisualTsThresholdBeforeGeometryQuery();
     testCreationRejectsMissingLegacyObjBBeforeGeometryQuery();

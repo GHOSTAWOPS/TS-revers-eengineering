@@ -67,7 +67,7 @@ public:
         return result;
     }
 
-    [[nodiscard]] tsrebar::LegacyGeometryQueryResult<tsrebar::LegacyRebarCurveSnapshot>
+    [[nodiscard]] tsrebar::LegacyGeometryQueryResult<tsrebar::LegacySegmentCurveNormalizeResult>
     normalizeSegmentCurve(
         const tsrebar::LegacyRebarCurveSnapshot& curve,
         const tsrebar::LegacySegmentCurveNormalizeRequest& request) const override
@@ -75,13 +75,13 @@ public:
         ++normalizeCallCount_;
         lastNormalizeRequest_ = request;
 
-        tsrebar::LegacyGeometryQueryResult<tsrebar::LegacyRebarCurveSnapshot> result;
+        tsrebar::LegacyGeometryQueryResult<tsrebar::LegacySegmentCurveNormalizeResult> result;
         if (!normalizeFailure_.isEmpty()) {
             result.diagnostic = normalizeFailure_;
             return result;
         }
         result.ok = true;
-        result.value = normalizedCurve_.stableId.empty() ? curve : normalizedCurve_;
+        result.value.curve = normalizedCurve_.stableId.empty() ? curve : normalizedCurve_;
         return result;
     }
 

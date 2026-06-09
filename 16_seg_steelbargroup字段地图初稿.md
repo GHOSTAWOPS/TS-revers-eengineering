@@ -641,6 +641,15 @@ TODO-074 已完成 Rebar.Create.LineGroup 参数窗口 P0：
     -> SteelData append
     -> AIS display
 
-下一步可以做 Rebar.Create.LineGroup 选择预检与参数窗口顺序对齐 P0。
-但仍不能声明完整 ENTITY_LIST 选择对象、完整 sub_1405D5670、旧 UI 流程、失败提示、undo/dirty 或 golden 已闭合。
+TODO-083 已完成 sub_1405D5670 split / spline / trim trace P0：
+  LegacySegmentCurveNormalizeTrace
+    -> api_entity_entity_distance = applied / attempted-not-applied / not-attempted
+    -> api_split_curve = applied / attempted-not-applied / not-attempted
+    -> api_curve_spline = applied / attempted-not-applied / not-attempted
+    -> sub_140580950.startTrim / endTrim
+    -> sub_14059B980.groupMinimumDistanceTrimLoop = deferred-p0
+    -> sub_1405BD0C0.backupWriteEdge = deferred-domain-model
+
+下一步可以做 TODO-084，继续拆 group minimum distance trim loop 和 backup / dirty write gap。
+但仍不能声明完整 ENTITY_LIST 选择对象、完整 sub_1405D5670 topology mutation、旧 UI 流程、失败提示、undo/dirty 或 golden 已闭合。
 ```
