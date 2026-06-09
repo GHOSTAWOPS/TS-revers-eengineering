@@ -1,0 +1,48 @@
+{
+  "todoId": "TODO-078",
+  "phase": "M2-RebarCreate-008",
+  "evidenceIds": [
+    "E-DEV-100"
+  ],
+  "decision": "blocked_runtime_artifacts_missing",
+  "summary": {
+    "runtimeCaptureDirectory": "docs/phase1/runtime_capture/todo_077_line_group_ui_prompt_capture",
+    "templateFilesPresent": [
+      "README.md",
+      "capture_notes.md",
+      "collect_hashes.ps1"
+    ],
+    "hashesTxtPresent": false,
+    "screenshotsPresent": false,
+    "listingFilesPresent": false,
+    "captureNotesPopulated": false,
+    "runtimeCaptureBackfilled": false
+  },
+  "guardrails": {
+    "oldRuntimeAutomaticallyLaunched": false,
+    "haspInstalledAutomatically": false,
+    "systemDirectoryModifiedAutomatically": false,
+    "appBusinessCodeModified": false,
+    "rebarGroupCreatorAlgorithmChanged": false,
+    "lineGroupParameterDialogChanged": false,
+    "occtDirectRebarRewrite": false,
+    "parentRebarMigrated": false,
+    "golden": "not_started",
+    "autocadL2": "not_run",
+    "oldStatusPromptsConfirmed": false,
+    "oldDialogFieldsConfirmed": false
+  },
+  "verification": {
+    "readinessGateUnit": "pass",
+    "readinessGateStrict": "pass",
+    "defaultCTest": "pass",
+    "domainRebarCommandOCCLeak": "pass",
+    "todoSingleNext": "pass",
+    "gitDiffCheck": "pass",
+    "xhighReview": "not_required_docs_only"
+  },
+  "next": {
+    "todoId": "TODO-079",
+    "task": "线配筋旧 UI / Dialog 静态资源补证 P0"
+  }
+}
