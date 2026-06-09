@@ -1,0 +1,94 @@
+{
+  "todoId": "TODO-074",
+  "phase": "M2-RebarCreate-004",
+  "evidenceIds": ["E-DEV-096"],
+  "decision": "line-group-parameter-dialog-p0",
+  "changedCode": [
+    "app/CMakeLists.txt",
+    "app/src/app/MainWindow.cpp",
+    "app/src/app/MainWindow.h",
+    "app/src/ui/LineGroupParameterDialog.cpp",
+    "app/src/ui/LineGroupParameterDialog.h",
+    "app/tests/integration/line_group_display_smoke_tests.cpp",
+    "app/tests/unit/line_group_parameter_dialog_tests.cpp",
+    "tools/phase1_readiness_gate/check_phase1_readiness.py",
+    "tools/phase1_readiness_gate/test_phase1_readiness_gate.py"
+  ],
+  "implemented": {
+    "command": "Rebar.Create.LineGroup",
+    "legacyCommand": "sgroupbarline",
+    "dialog": "LineGroupParameterDialog",
+    "fields": [
+      "diameter",
+      "interval",
+      "requestedBarCount",
+      "steelLevel",
+      "distanceA",
+      "distanceB"
+    ],
+    "cancelPath": "dialog reject returns before command execution, SteelData append and AIS display",
+    "scope": "LineGroup parameter dialog P0 only"
+  },
+  "idaMcp": {
+    "session": "visualts",
+    "result": "sgroupbarline and sgroupbararc strings found; no direct LineGroup parameter dialog field strings confirmed; sub_1404DE720 still shows selection gate to sub_1404D10C0 creation chain",
+    "oldUiFieldsConfirmed": false,
+    "gap": "GAP-UI-REB-001"
+  },
+  "guards": {
+    "oldRuntimeAutomaticallyLaunched": false,
+    "haspInstalledAutomatically": false,
+    "systemDirectoryModifiedAutomatically": false,
+    "occtDirectRebarRewrite": false,
+    "parentRebarMigrated": false,
+    "domainRebarOccLeak": "pass",
+    "commandLayerOccLeak": "pass",
+    "golden": "not_started",
+    "autocadL2": "not_run"
+  },
+  "verification": {
+    "tddRed": "pass; initial build failed because LineGroupParameterDialog sources did not exist",
+    "targetedBuild": "pass; line_group_parameter_dialog_tests + line_group_display_smoke_tests",
+    "targetedTest": "pass; line_group_parameter_dialog_tests + line_group_display_smoke_123",
+    "fullBuildDebug": "pass; cmake --build app/build --config Debug",
+    "ctest": "pass; 21/21 pass; latest total 205.73 sec",
+    "readinessGateUnit": "pass; 34/34 pass",
+    "readinessGateStrict": "pass; M1-Formal-Ready; 84/84 pass",
+    "domainRebarBoundary": "pass",
+    "domainRebarCommandOCCLeak": "pass; no TopoDS_ / AIS_ / BRep / TopAbs_ matches",
+    "gitDiffCheck": "pass",
+    "xhighReview": "allow_commit; no Critical / Important; final reviewer closed"
+  },
+  "xhighReview": {
+    "agent": "Erdos initial; Nietzsche final",
+    "verdict": "allow_commit",
+    "critical": [],
+    "important": [],
+    "minor": [
+      "Cancelled parameter dialog consumes a P0 sequence id; acceptable for P0, should be revisited with transaction/undo.",
+      "steelDataForInspection is a const P0 test probe; could be narrowed later.",
+      "LineGroupParameterDialog includes handler header for DTO; DTO can be split later.",
+      "Current P0 opens dialog before handler selection validation while IDA sub_1404DE720 validates selection first; queued as TODO-075."
+    ],
+    "routeDrift": "none",
+    "finalReview": {
+      "agent": "Nietzsche",
+      "verdict": "allow_commit",
+      "critical": [],
+      "important": [],
+      "routeDrift": "none",
+      "requiredFixBeforeCommit": [],
+      "agentClosed": true
+    }
+  },
+  "residualGaps": {
+    "GAP-UI-REB-001": "old LineGroup dialog fields/defaults/units/gray state/status prompts still open",
+    "GAP-IDA-002": "old single-selected-entity-list / selection object business name still open",
+    "GAP-IDA-007": "full objA / objB / createdPayload / sub_1405D5670 arg semantics still open",
+    "GAP-REB-C-002": "full line rebar creation, undo/dirty/runtime golden still open"
+  },
+  "next": {
+    "todoId": "TODO-075",
+    "action": "LineGroup selection preflight and dialog ordering P0"
+  }
+}

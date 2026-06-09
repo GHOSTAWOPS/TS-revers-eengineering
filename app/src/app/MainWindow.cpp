@@ -5,6 +5,7 @@
 #include "geometry/occ/legacy_adapter/OccLegacyGeometryAdapter.h"
 #include "presentation/occ/OccViewerWidget.h"
 #include "presentation/occ/RebarAisPresentationAdapter.h"
+#include "ui/LineGroupParameterDialog.h"
 #include "ui/MainTabs.h"
 #include "ui/ModelTreePanel.h"
 
@@ -304,6 +305,11 @@ bool MainWindow::verifyLegacyUiActionMetadata(QString* errorMessage) const
     return true;
 }
 
+const tsrebar::SteelData& MainWindow::steelDataForInspection() const
+{
+    return m_steelData;
+}
+
 void MainWindow::buildUi()
 {
     setWindowTitle(QStringLiteral("图石钢筋 1:1 复刻"));
@@ -406,9 +412,9 @@ void MainWindow::buildCommandTabs()
 void MainWindow::executeCommand(tsrebar::CommandId id)
 {
     if (id == tsrebar::CommandId::RebarLineCreate) {
-        m_lineGroupParameters = nextLineGroupParameters();
-        if (m_lineGroupHandler) {
-            m_lineGroupHandler->setParameters(m_lineGroupParameters);
+        if (!configureLineGroupParametersForCommand()) {
+            statusBar()->showMessage(QStringLiteral("取消：线配筋参数"), 5000);
+            return;
         }
     }
 
@@ -424,6 +430,20 @@ void MainWindow::executeCommand(tsrebar::CommandId id)
         }
     }
     statusBar()->showMessage(commandStatusText(result), 5000);
+}
+
+bool MainWindow::configureLineGroupParametersForCommand()
+{
+    tsrebar::LineGroupParameterDialog dialog(nextLineGroupParameters(), this);
+    if (dialog.exec() != QDialog::Accepted) {
+        return false;
+    }
+
+    m_lineGroupParameters = dialog.parameters();
+    if (m_lineGroupHandler) {
+        m_lineGroupHandler->setParameters(m_lineGroupParameters);
+    }
+    return true;
 }
 
 tsrebar::RebarLineGroupCommandParameters MainWindow::nextLineGroupParameters()

@@ -97,6 +97,8 @@ add_library(tsrebar_core STATIC
     src/project/runtime/TsRebarProjectRuntime.h
     src/ui/MainTabs.cpp
     src/ui/MainTabs.h
+    src/ui/LineGroupParameterDialog.cpp
+    src/ui/LineGroupParameterDialog.h
     src/ui/ModelTreePanel.cpp
     src/ui/ModelTreePanel.h)
 
@@ -225,6 +227,11 @@ add_executable(rebar_line_group_command_handler_tests
 
 target_link_libraries(rebar_line_group_command_handler_tests PRIVATE tsrebar_core)
 
+add_executable(line_group_parameter_dialog_tests
+    tests/unit/line_group_parameter_dialog_tests.cpp)
+
+target_link_libraries(line_group_parameter_dialog_tests PRIVATE tsrebar_core)
+
 add_executable(rebar_edit_move_tests
     tests/unit/rebar_edit_move_tests.cpp)
 
@@ -307,6 +314,10 @@ add_test(NAME rebar_domain_model_tests COMMAND rebar_domain_model_tests)
 add_test(NAME rebar_group_creator_tests COMMAND rebar_group_creator_tests)
 add_test(NAME rebar_line_group_command_handler_tests
     COMMAND rebar_line_group_command_handler_tests)
+add_test(NAME line_group_parameter_dialog_tests
+    COMMAND line_group_parameter_dialog_tests)
+set_tests_properties(line_group_parameter_dialog_tests PROPERTIES
+    ENVIRONMENT "QT_QPA_PLATFORM=minimal;QT_QPA_PLATFORM_PLUGIN_PATH=${TSREBAR_QT_PLATFORM_PLUGIN_PATH}")
 add_test(NAME rebar_edit_move_tests COMMAND rebar_edit_move_tests)
 add_test(NAME rebar_edit_copy_tests COMMAND rebar_edit_copy_tests)
 add_test(NAME rebar_schedule_service_tests COMMAND rebar_schedule_service_tests)

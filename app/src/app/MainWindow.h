@@ -23,12 +23,14 @@ class MainWindow final : public QMainWindow
 public:
     explicit MainWindow(QWidget* parent = nullptr);
     bool verifyLegacyUiActionMetadata(QString* errorMessage = nullptr) const;
+    [[nodiscard]] const tsrebar::SteelData& steelDataForInspection() const;
 
 private:
     void buildUi();
     void buildCommandTabs();
     void registerCommandHandlers();
     void executeCommand(tsrebar::CommandId id);
+    [[nodiscard]] bool configureLineGroupParametersForCommand();
     [[nodiscard]] tsrebar::RebarLineGroupCommandParameters nextLineGroupParameters();
     [[nodiscard]] bool displayCreatedLineGroup(QString* errorMessage = nullptr);
 

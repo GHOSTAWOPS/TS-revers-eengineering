@@ -623,6 +623,13 @@ TODO-073 已完成 Rebar.Create.LineGroup UI / AIS 可见反馈 P0：
     -> OccViewerWidget::displayRebarPresentation
     -> AIS display
 
-下一步可以做 Rebar.Create.LineGroup 参数窗口 P0。
+TODO-074 已完成 Rebar.Create.LineGroup 参数窗口 P0：
+  LineGroupParameterDialog
+    -> diameter / interval / requestedBarCount / steelLevel / distanceA / distanceB
+    -> RebarLineGroupCommandHandler::setParameters(...)
+    -> SteelData append
+    -> AIS display
+
+下一步可以做 Rebar.Create.LineGroup 选择预检与参数窗口顺序对齐 P0。
 但仍不能声明完整 ENTITY_LIST 选择对象、完整 sub_1405D5670、旧 UI 流程、失败提示、undo/dirty 或 golden 已闭合。
 ```
