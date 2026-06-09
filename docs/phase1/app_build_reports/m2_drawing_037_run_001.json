@@ -1,0 +1,61 @@
+{
+  "todoId": "TODO-068",
+  "phase": "M2-Drawing-037",
+  "evidenceIds": ["E-DEV-090"],
+  "decision": "detail-writer-runtime-package-format-delta-complete",
+  "changedCode": [
+    "app/src/drawing/detail/DetailWriter.cpp",
+    "app/tests/unit/detail_writer_tests.cpp"
+  ],
+  "implemented": {
+    "detailXml": "<StyleRoot/>\\r\\n",
+    "tableDistribution": "Detail01 has StbTable and MaterialTable; Detail02+ keep empty StbTables",
+    "stbTableAttributes": [
+      "count",
+      "HeightValue0",
+      "HeightValueCount",
+      "Volume1225",
+      "NumCombineGoJians",
+      "SteelNetArea",
+      "GJTAOTNumber",
+      "GJTAOTVolue",
+      "LinkTop",
+      "LinkDown",
+      "DCGQSJ",
+      "HYLJJ"
+    ]
+  },
+  "guards": {
+    "oldRuntimeAutomaticallyLaunched": false,
+    "haspInstalledAutomatically": false,
+    "systemDirectoryModifiedAutomatically": false,
+    "excelWriterImplemented": false,
+    "autocadL2": "not_run",
+    "golden": "not_started",
+    "rebarBusinessCodeModified": false,
+    "parentRebarMigrated": false
+  },
+  "verification": {
+    "detailWriterTdd": "pass; new test failed before implementation and passed after implementation",
+    "detailWriterTargetBuild": "pass; cmake --build app/build --target detail_writer_tests",
+    "detailWriterTests": "pass; ctest -R detail_writer_tests",
+    "fullBuildDebug": "pass; cmake --build app/build --config Debug",
+    "ctest": "pass; 18/18 pass; total 132.26 sec",
+    "domainRebarOCCLeak": "pass; rg TopoDS_/AIS_/BRep/TopAbs_ app/src/domain/rebar returned no matches",
+    "gitDiffCheck": "pass; warnings only for existing CRLF normalization notice in 11_需求证据追溯矩阵.md and todo.csv",
+    "readinessGateUnit": "pass; py tools/phase1_readiness_gate/test_phase1_readiness_gate.py; 26 tests OK",
+    "readinessGateStrict": "pass; M1-Formal-Ready; 84/84 pass",
+    "xhighReview": "needs_fix_resolved; no Critical; Important stale 99 TODO-068 route fixed by main flow; agent closed"
+  },
+  "residualGaps": {
+    "GAP-DRAW-006": "old plugin existence/acceptance requirement still needs AutoCAD L2",
+    "GAP-DRAW-007": "StbRow extra attrs, Std# multi-container, table formulas and lineStb field narrowing remain open",
+    "GAP-DRAW-008": "real Excel workbook writer remains open",
+    "AutoCADL2": "not_run",
+    "golden": "not_started"
+  },
+  "next": {
+    "todoId": "TODO-069",
+    "action": "DetailWriter real-field delta P1: StbRow extended attribute skeleton"
+  }
+}

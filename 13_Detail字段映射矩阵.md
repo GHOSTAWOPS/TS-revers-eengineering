@@ -420,3 +420,36 @@ writer 级 ID 校验、缺省字段策略和失败回滚见：
 - `Detail.xml` 空 StyleRoot 是否为旧图石包兼容模式默认输出。
 - `StbTable / MaterialTable` 是否只应在主图纸 `Detail01.stl` 输出。
 - Excel 三表 writer 的单位换算、显示格式和焊接字段来源。
+
+## M2-Drawing-037 DetailWriter 真实字段差异 P0 状态
+
+当前正式证据已补：
+
+```text
+E-DEV-090
+TODO-068 / M2-Drawing-037
+```
+
+已实现映射：
+
+| Detail 字段 | 新实现来源 | 状态 | 说明 |
+|---|---|---|---|
+| `Detail.xml = <StyleRoot/>` | `DetailWriter::writeStyleXml` | 已实现骨架 | 字节级输出 `<StyleRoot/>\r\n`；旧插件是否必须检查该文件仍需 L2。 |
+| `Detail01.stl/StbTables/StbTable` | `RebarScheduleService.scheduleRows` | 已实现骨架 | 只在主图输出。 |
+| `Detail01.stl/StbTables/MaterialTable` | `RebarScheduleService.materialRows` | 已实现骨架 | 只在主图输出，质量公式仍 deferred。 |
+| `Detail02+ / StbTables` | 空容器 | 已实现骨架 | 副图保留空 `StbTables`，不输出 `StbTable / MaterialTable`。 |
+| `StbTable.HeightValue0` | 默认 `0` | 已实现骨架 | 公式未闭合。 |
+| `StbTable.HeightValueCount` | 默认 `0` | 已实现骨架 | 公式未闭合。 |
+| `StbTable.Volume1225` | `schedule.volume722` | 已实现骨架 | 真实公式和 `Volume722` 等价仍需更多证据。 |
+| `StbTable.NumCombineGoJians` | 默认 `T` | 已实现骨架 | 来自 RUN-20260609-001 样本默认值。 |
+| `StbTable.SteelNetArea` | 默认 `0` | 已实现骨架 | 公式未闭合。 |
+| `StbTable.GJTAOTNumber` | 默认 `0` | 已实现骨架 | 公式未闭合。 |
+| `StbTable.GJTAOTVolue` | 默认 `0` | 已实现骨架 | 保留旧字段拼写 `Volue`。 |
+| `StbTable.LinkTop / LinkDown` | 默认 `0` | 已实现骨架 | 公式未闭合。 |
+| `StbTable.DCGQSJ / HYLJJ` | 默认 `0` | 已实现骨架 | 公式未闭合。 |
+
+下一步优先：
+
+```text
+TODO-069 / StbRow smallTable / mirrorType / mirrorSEFlag 扩展属性骨架。
+```

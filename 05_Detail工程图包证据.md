@@ -596,3 +596,35 @@ PixPin_2026-06-09_09-50-13.png
 4. 真实剖切线 / 隐藏线 / 填充线 / 点筋 / FaceEdge 算法已实现。
 5. 接头链路恢复为当前优先级。
 ```
+
+## TODO-068 DetailWriter 格式纠偏补充
+
+Evidence：
+
+```text
+E-DEV-090
+```
+
+当前正式 `app` 已对齐的真实旧包格式：
+
+```text
+1. Detail.xml 现在按旧运行样本输出空 <StyleRoot/>\r\n。
+2. Detail01.stl 输出 StbTable / MaterialTable。
+3. Detail02.stl 及后续副图不再输出 StbTable / MaterialTable。
+4. 副图仍保留空 StbTables 容器。
+5. StbTable 已补 11 个表级属性骨架：
+   HeightValue0 / HeightValueCount / Volume1225 /
+   NumCombineGoJians / SteelNetArea / GJTAOTNumber /
+   GJTAOTVolue / LinkTop / LinkDown / DCGQSJ / HYLJJ。
+```
+
+仍未对齐：
+
+```text
+1. StbRow.smallTable / mirrorType / mirrorSEFlag。
+2. StbGroup 多 Std# 容器。
+3. lineStb StbGeo 字段条件化。
+4. General-Info 真实值。
+5. Excel 三表 writer。
+6. AutoCAD L2 / 旧插件接受度。
+```

@@ -2,6 +2,7 @@
 
 #include "domain/rebar/RebarScheduleService.h"
 
+#include <QByteArray>
 #include <QCryptographicHash>
 #include <QDir>
 #include <QDirIterator>
@@ -409,28 +410,27 @@ DetailWriteResult validateInput(const SteelData& steelData)
     return result;
 }
 
-void writeStyleXml(const QString& path, const SteelData& steelData)
+void writeStyleXml(const QString& path)
 {
-    writeXmlFile(path, [&steelData](QXmlStreamWriter& writer) {
-        writer.writeStartElement(QStringLiteral("StyleRoot"));
-        writer.writeAttribute(QStringLiteral("CurrPos"), QStringLiteral("1"));
-        writer.writeStartElement(QStringLiteral("Styles"));
-        writer.writeStartElement(QStringLiteral("Style1"));
-        writer.writeAttribute(QStringLiteral("Name"),
-                              steelData.gradeName.empty()
-                                  ? QStringLiteral("default")
-                                  : qstr(steelData.gradeName));
-        const double diameter = steelData.diameterSet.empty()
-            ? (!steelData.groups.empty() ? steelData.groups.front().diameter : 0.0)
-            : steelData.diameterSet.front();
-        writer.writeAttribute(QStringLiteral("dia"), formatNumber(diameter));
-        writer.writeAttribute(QStringLiteral("type"),
-                              steelData.level.empty() ? QStringLiteral("HRB") : qstr(steelData.level));
-        writer.writeAttribute(QStringLiteral("source"), QStringLiteral("E-DETAIL-001"));
-        writer.writeEndElement();
-        writer.writeEndElement();
-        writer.writeEndElement();
-    });
+    ensureParentDir(path);
+    QSaveFile file(path);
+    if (!file.open(QIODevice::WriteOnly)) {
+        throw std::runtime_error(QStringLiteral("cannot write xml: %1")
+                                     .arg(path)
+                                     .toStdString());
+    }
+
+    const QByteArray payload = QByteArrayLiteral("<StyleRoot/>\r\n");
+    if (file.write(payload) != payload.size()) {
+        throw std::runtime_error(QStringLiteral("cannot write empty StyleRoot: %1")
+                                     .arg(path)
+                                     .toStdString());
+    }
+    if (!file.commit()) {
+        throw std::runtime_error(QStringLiteral("cannot commit xml: %1")
+                                     .arg(path)
+                                     .toStdString());
+    }
 }
 
 void writePointAttributes(QXmlStreamWriter& writer,
@@ -528,6 +528,21 @@ void writeScheduleSegment(QXmlStreamWriter& writer,
         writer.writeAttribute(QStringLiteral("end_y"), formatNumber(segment.endPoint.y));
     }
     writer.writeEndElement();
+}
+
+void writeStbTableLegacyAttributes(QXmlStreamWriter& writer, const RebarSchedule& schedule)
+{
+    writer.writeAttribute(QStringLiteral("HeightValue0"), QStringLiteral("0"));
+    writer.writeAttribute(QStringLiteral("HeightValueCount"), QStringLiteral("0"));
+    writer.writeAttribute(QStringLiteral("Volume1225"), formatNumber(schedule.volume722));
+    writer.writeAttribute(QStringLiteral("NumCombineGoJians"), QStringLiteral("T"));
+    writer.writeAttribute(QStringLiteral("SteelNetArea"), QStringLiteral("0"));
+    writer.writeAttribute(QStringLiteral("GJTAOTNumber"), QStringLiteral("0"));
+    writer.writeAttribute(QStringLiteral("GJTAOTVolue"), QStringLiteral("0"));
+    writer.writeAttribute(QStringLiteral("LinkTop"), QStringLiteral("0"));
+    writer.writeAttribute(QStringLiteral("LinkDown"), QStringLiteral("0"));
+    writer.writeAttribute(QStringLiteral("DCGQSJ"), QStringLiteral("0"));
+    writer.writeAttribute(QStringLiteral("HYLJJ"), QStringLiteral("0"));
 }
 
 void writeLegacyGeneralInfo(QXmlStreamWriter& writer, const DetailDrawingViewOptions& view)
@@ -690,7 +705,8 @@ void writePartDetailDrawingSkeleton(QXmlStreamWriter& writer, const DetailDrawin
 
 void writeDrawingXml(const QString& path,
                      const SteelData& steelData,
-                     const DetailDrawingViewOptions& view)
+                     const DetailDrawingViewOptions& view,
+                     bool includeScheduleTables)
 {
     const auto barIndex = barsById(steelData);
     const auto segmentIndex = segmentsById(steelData);
@@ -700,53 +716,56 @@ void writeDrawingXml(const QString& path,
         writer.writeStartElement(QStringLiteral("DrawingRoot"));
 
         writer.writeStartElement(QStringLiteral("StbTables"));
-        writer.writeStartElement(QStringLiteral("StbTable"));
-        writer.writeAttribute(QStringLiteral("count"), QString::number(schedule.scheduleRows.size()));
+        if (includeScheduleTables) {
+            writer.writeStartElement(QStringLiteral("StbTable"));
+            writer.writeAttribute(QStringLiteral("count"), QString::number(schedule.scheduleRows.size()));
+            writeStbTableLegacyAttributes(writer, schedule);
 
-        int rowSequence = 0;
-        for (const RebarScheduleRow& row : schedule.scheduleRows) {
-            writer.writeStartElement(QStringLiteral("StbRow%1").arg(++rowSequence));
-            writer.writeAttribute(QStringLiteral("rsdID"), qstr(row.rsdId));
-            writer.writeAttribute(QStringLiteral("ComponentName"), qstr(row.componentName));
-            writer.writeAttribute(QStringLiteral("SteelWay"), qstr(row.steelWay));
-            writer.writeAttribute(QStringLiteral("diameter"), formatNumber(row.diameter));
-            writer.writeAttribute(QStringLiteral("length"), formatNumber(row.length));
-            writer.writeAttribute(QStringLiteral("segNum"), QString::number(row.segmentCount));
-            writer.writeAttribute(QStringLiteral("sameGrpNum"), QString::number(row.sameGroupCount));
-            writer.writeAttribute(QStringLiteral("stbNumSum"), QString::number(row.barNumberSum));
-            writer.writeAttribute(QStringLiteral("lenSum"), formatNumber(row.lengthSum));
-            writer.writeAttribute(QStringLiteral("stbLevel"), qstr(row.steelLevel));
-            writer.writeAttribute(QStringLiteral("stbLayer"), qstr(row.layer));
-            writer.writeAttribute(QStringLiteral("stbProfile"), qstr(row.profile));
-            writer.writeAttribute(QStringLiteral("stbUse"), qstr(row.use));
-            int scheduleSegSequence = 0;
-            for (const RebarScheduleSegmentRef& segmentRef : row.segments) {
-                const SteelBarSegment* segment = findSegmentById(segmentIndex, segmentRef.segmentId);
-                if (segment) {
-                    writeScheduleSegment(writer, *segment, ++scheduleSegSequence);
+            int rowSequence = 0;
+            for (const RebarScheduleRow& row : schedule.scheduleRows) {
+                writer.writeStartElement(QStringLiteral("StbRow%1").arg(++rowSequence));
+                writer.writeAttribute(QStringLiteral("rsdID"), qstr(row.rsdId));
+                writer.writeAttribute(QStringLiteral("ComponentName"), qstr(row.componentName));
+                writer.writeAttribute(QStringLiteral("SteelWay"), qstr(row.steelWay));
+                writer.writeAttribute(QStringLiteral("diameter"), formatNumber(row.diameter));
+                writer.writeAttribute(QStringLiteral("length"), formatNumber(row.length));
+                writer.writeAttribute(QStringLiteral("segNum"), QString::number(row.segmentCount));
+                writer.writeAttribute(QStringLiteral("sameGrpNum"), QString::number(row.sameGroupCount));
+                writer.writeAttribute(QStringLiteral("stbNumSum"), QString::number(row.barNumberSum));
+                writer.writeAttribute(QStringLiteral("lenSum"), formatNumber(row.lengthSum));
+                writer.writeAttribute(QStringLiteral("stbLevel"), qstr(row.steelLevel));
+                writer.writeAttribute(QStringLiteral("stbLayer"), qstr(row.layer));
+                writer.writeAttribute(QStringLiteral("stbProfile"), qstr(row.profile));
+                writer.writeAttribute(QStringLiteral("stbUse"), qstr(row.use));
+                int scheduleSegSequence = 0;
+                for (const RebarScheduleSegmentRef& segmentRef : row.segments) {
+                    const SteelBarSegment* segment = findSegmentById(segmentIndex, segmentRef.segmentId);
+                    if (segment) {
+                        writeScheduleSegment(writer, *segment, ++scheduleSegSequence);
+                    }
                 }
+                writer.writeEndElement();
+            }
+            writer.writeEndElement();
+
+            writer.writeStartElement(QStringLiteral("MaterialTable"));
+            writer.writeAttribute(QStringLiteral("rowCount"), QString::number(schedule.materialRows.size()));
+            writer.writeAttribute(QStringLiteral("Mass"), formatNumber(schedule.totalMass));
+            writer.writeAttribute(QStringLiteral("Volume722"), formatNumber(schedule.volume722));
+            writer.writeAttribute(QStringLiteral("MassNum"), QString::number(schedule.massNum));
+            int materialSequence = 0;
+            for (const RebarMaterialRow& material : schedule.materialRows) {
+                writer.writeStartElement(QStringLiteral("MatRow%1").arg(++materialSequence));
+                writer.writeAttribute(QStringLiteral("diameter"), formatNumber(material.diameter));
+                writer.writeAttribute(QStringLiteral("lenSum"), formatNumber(material.lengthSum));
+                writer.writeAttribute(QStringLiteral("countSum"), QString::number(material.countSum));
+                writer.writeAttribute(QStringLiteral("singleMass"), formatNumber(material.singleMass));
+                writer.writeAttribute(QStringLiteral("massSum"), formatNumber(material.massSum));
+                writer.writeAttribute(QStringLiteral("stbLevel"), qstr(material.steelLevel));
+                writer.writeEndElement();
             }
             writer.writeEndElement();
         }
-        writer.writeEndElement();
-
-        writer.writeStartElement(QStringLiteral("MaterialTable"));
-        writer.writeAttribute(QStringLiteral("rowCount"), QString::number(schedule.materialRows.size()));
-        writer.writeAttribute(QStringLiteral("Mass"), formatNumber(schedule.totalMass));
-        writer.writeAttribute(QStringLiteral("Volume722"), formatNumber(schedule.volume722));
-        writer.writeAttribute(QStringLiteral("MassNum"), QString::number(schedule.massNum));
-        int materialSequence = 0;
-        for (const RebarMaterialRow& material : schedule.materialRows) {
-            writer.writeStartElement(QStringLiteral("MatRow%1").arg(++materialSequence));
-            writer.writeAttribute(QStringLiteral("diameter"), formatNumber(material.diameter));
-            writer.writeAttribute(QStringLiteral("lenSum"), formatNumber(material.lengthSum));
-            writer.writeAttribute(QStringLiteral("countSum"), QString::number(material.countSum));
-            writer.writeAttribute(QStringLiteral("singleMass"), formatNumber(material.singleMass));
-            writer.writeAttribute(QStringLiteral("massSum"), formatNumber(material.massSum));
-            writer.writeAttribute(QStringLiteral("stbLevel"), qstr(material.steelLevel));
-            writer.writeEndElement();
-        }
-        writer.writeEndElement();
         writer.writeEndElement();
 
         writer.writeStartElement(QStringLiteral("HViewPorts"));
@@ -908,7 +927,7 @@ void validateL1File(const QString& dir, const QString& fileName, DetailWriteResu
                          fileName,
                          reader.errorString());
     }
-    if (groupRsdIds != rowRsdIds) {
+    if (!rowRsdIds.empty() && groupRsdIds != rowRsdIds) {
         appendDiagnostic(result,
                          QString::fromLatin1(kPackageValidationFailed),
                          fileName,
@@ -1055,11 +1074,12 @@ DetailWriteResult DetailWriter::writePackage(
     try {
         removeDirIfExists(candidate);
         QDir().mkpath(candidate);
-        writeStyleXml(QDir(candidate).filePath(QStringLiteral("Detail.xml")), steelData);
+        writeStyleXml(QDir(candidate).filePath(QStringLiteral("Detail.xml")));
         for (int index = 0; index < views.size(); ++index) {
             writeDrawingXml(QDir(candidate).filePath(detailDrawingFileName(index + 1)),
                             steelData,
-                            views.at(index));
+                            views.at(index),
+                            index == 0);
         }
 
         validateL0(candidate, packageFiles, result);

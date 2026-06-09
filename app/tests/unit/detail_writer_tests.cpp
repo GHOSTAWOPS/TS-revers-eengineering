@@ -25,11 +25,32 @@ QString readText(const QString& path)
     return QString::fromUtf8(file.readAll());
 }
 
+QByteArray readBytes(const QString& path)
+{
+    QFile file(path);
+    expect(file.open(QIODevice::ReadOnly), "file must open as bytes");
+    return file.readAll();
+}
+
 void writeText(const QString& path, const QByteArray& text)
 {
     QFile file(path);
     expect(file.open(QIODevice::WriteOnly | QIODevice::Text), "file must open for write");
     file.write(text);
+}
+
+bool hasElement(const QString& path, const QString& name)
+{
+    QFile file(path);
+    expect(file.open(QIODevice::ReadOnly | QIODevice::Text), "xml file must open");
+    QXmlStreamReader reader(&file);
+    while (!reader.atEnd()) {
+        reader.readNext();
+        if (reader.isStartElement() && reader.name() == name) {
+            return true;
+        }
+    }
+    return false;
 }
 
 QXmlStreamAttributes findElementAttrs(const QString& path, const QString& name)
@@ -472,6 +493,68 @@ void testDetailWriterMapsDomainRebarToDetailPackage()
     expect(matRow.value("diameter") == "25", "MatRow.diameter mismatch");
     expect(matRow.value("lenSum") == "45", "MatRow.lenSum mismatch");
     expect(matRow.value("countSum") == "3", "MatRow.countSum mismatch");
+}
+
+void testDetailWriterMatchesRealRuntimeTablePackageStrategy()
+{
+    QTemporaryDir temp;
+    expect(temp.isValid(), "temporary dir must be valid");
+    const QString outputDir = QDir(temp.path()).filePath("drawings");
+
+    tsrebar::DetailWriteOptions options;
+    options.runId = "DW-UNIT-TODO-068-001";
+    for (int index = 1; index <= 2; ++index) {
+        tsrebar::DetailDrawingViewOptions view;
+        view.viewId = QStringLiteral("runtime-view-%1").arg(index);
+        view.drawingName = QString::number(index);
+        view.modelFileName = QStringLiteral("runtime-model.step");
+        options.views.push_back(view);
+    }
+
+    const tsrebar::DetailWriter writer;
+    const auto result = writer.writePackage(outputDir, steelDataWithMixedGroup(), options);
+
+    expect(result.ok, "runtime package strategy Detail writer must succeed");
+    expect(result.l2 == "not_run", "runtime package strategy must not claim AutoCAD L2");
+
+    const QString detailXml = QDir(outputDir).filePath("Detail.xml");
+    const QByteArray detailXmlBytes = readBytes(detailXml);
+    expect(detailXmlBytes == QByteArrayLiteral("<StyleRoot/>\r\n"),
+           "Detail.xml must match old runtime empty StyleRoot placeholder");
+
+    const QString detail01 = QDir(outputDir).filePath("Detail01.stl");
+    const QString detail02 = QDir(outputDir).filePath("Detail02.stl");
+    expect(rootName(detail01) == "DrawingRoot", "Detail01 root must be DrawingRoot");
+    expect(rootName(detail02) == "DrawingRoot", "Detail02 root must be DrawingRoot");
+
+    const QStringList mainTableChildren = directChildElementNames(detail01, "StbTables");
+    expect(mainTableChildren.contains("StbTable"),
+           "Detail01 StbTables must contain StbTable");
+    expect(mainTableChildren.contains("MaterialTable"),
+           "Detail01 StbTables must contain MaterialTable");
+
+    const auto table = findElementAttrs(detail01, "StbTable");
+    expect(table.value("count") == "1", "StbTable.count mismatch");
+    expect(table.value("HeightValue0") == "0", "StbTable.HeightValue0 default mismatch");
+    expect(table.value("HeightValueCount") == "0",
+           "StbTable.HeightValueCount default mismatch");
+    expect(table.value("Volume1225") == "0", "StbTable.Volume1225 default mismatch");
+    expect(table.value("NumCombineGoJians") == "T",
+           "StbTable.NumCombineGoJians default mismatch");
+    expect(table.value("SteelNetArea") == "0", "StbTable.SteelNetArea default mismatch");
+    expect(table.value("GJTAOTNumber") == "0", "StbTable.GJTAOTNumber default mismatch");
+    expect(table.value("GJTAOTVolue") == "0", "StbTable.GJTAOTVolue default mismatch");
+    expect(table.value("LinkTop") == "0", "StbTable.LinkTop default mismatch");
+    expect(table.value("LinkDown") == "0", "StbTable.LinkDown default mismatch");
+    expect(table.value("DCGQSJ") == "0", "StbTable.DCGQSJ default mismatch");
+    expect(table.value("HYLJJ") == "0", "StbTable.HYLJJ default mismatch");
+
+    expect(directChildElementNames(detail02, "StbTables").isEmpty(),
+           "Detail02 StbTables must stay empty like old runtime secondary drawings");
+    expect(!hasElement(detail02, "StbTable"), "Detail02 must not write StbTable");
+    expect(!hasElement(detail02, "MaterialTable"), "Detail02 must not write MaterialTable");
+    expect(hasElement(detail02, "StbGroups"),
+           "Detail02 must still write drawing-local StbDetailDrawing groups");
 }
 
 void testDetailWriterWritesComplexPartDrawingSkeletonAndGeneralInfoDefaults()
@@ -964,6 +1047,7 @@ void testDetailWriterRemovesStaleDetailViewsOnSuccessfulInstall()
 int main()
 {
     testDetailWriterMapsDomainRebarToDetailPackage();
+    testDetailWriterMatchesRealRuntimeTablePackageStrategy();
     testDetailWriterWritesComplexPartDrawingSkeletonAndGeneralInfoDefaults();
     testDetailWriterWritesPointStbGeoFieldSkeleton();
     testDetailWriterWritesPointStbFaceEdgeFieldSkeleton();

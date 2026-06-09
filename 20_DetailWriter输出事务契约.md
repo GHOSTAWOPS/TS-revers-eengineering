@@ -1026,3 +1026,52 @@ TODO-047 / M2-Drawing-016
 - TODO-047 以运行 stop point 形式闭环，不等于拿到了旧运行样例。
 - 当前不能声明真实接头线算法或 Others 几何算法已实现。
 - 当前不能声明 AutoCAD L2 通过、旧插件接受、完整工程图或 golden。
+
+## M2-Drawing-037 DetailWriter 真实字段差异 P0 状态
+
+当前正式证据已补：
+
+```text
+E-DEV-090
+TODO-068 / M2-Drawing-037
+```
+
+事务契约保持不变：
+
+```text
+candidate tmp
+  -> L0 root 校验
+  -> L1 package 校验
+  -> replacePackage 原子替换 / 失败回滚
+```
+
+本轮只改变候选包内容：
+
+```text
+Detail.xml:
+  -> 固定空 <StyleRoot/>\r\n
+
+Detail01.stl:
+  -> 写 StbTable / MaterialTable
+
+Detail02.stl 及后续：
+  -> 写空 StbTables 容器
+  -> 仍写 HViewPorts / StbDetailDrawing / StbGroups
+```
+
+L1 校验调整：
+
+```text
+主图有 StbRow 时继续检查 StbGroup.rsdID 和 StbRow.rsdID 一致。
+副图没有 StbRow 时不再把空 StbTable 当失败。
+Std / StbGeo 数量一致性仍保留。
+```
+
+本轮仍不声明：
+
+```text
+AutoCAD L2 通过。
+旧插件接受度已确认。
+Excel writer 已实现。
+真实工程图算法已完成。
+```
