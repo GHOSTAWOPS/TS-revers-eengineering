@@ -187,6 +187,7 @@ add_executable(tsrebar_app
 target_link_libraries(tsrebar_app PRIVATE tsrebar_core)
 target_link_libraries(tsrebar_app PRIVATE tsrebar_occ_import)
 target_link_libraries(tsrebar_app PRIVATE tsrebar_occ_legacy_adapter)
+target_link_libraries(tsrebar_app PRIVATE tsrebar_occ_rebar_presentation)
 target_link_libraries(tsrebar_app PRIVATE tsrebar_occ_viewer)
 
 if(TSREBAR_QT_PLATFORM_PLUGIN_PATH)
@@ -278,6 +279,18 @@ add_executable(viewer_selection_tests
 
 target_link_libraries(viewer_selection_tests PRIVATE tsrebar_occ_viewer tsrebar_occ_selection)
 
+add_executable(line_group_display_smoke_tests
+    tests/integration/line_group_display_smoke_tests.cpp
+    src/app/MainWindow.cpp
+    src/app/MainWindow.h)
+
+target_link_libraries(line_group_display_smoke_tests PRIVATE
+    tsrebar_core
+    tsrebar_occ_import
+    tsrebar_occ_legacy_adapter
+    tsrebar_occ_rebar_presentation
+    tsrebar_occ_viewer)
+
 add_executable(occ_selection_index_tests
     tests/integration/occ_selection_index_tests.cpp)
 
@@ -339,4 +352,11 @@ if(EXISTS "${TSREBAR_123_STP}")
         NAME legacy_geometry_adapter_123
         COMMAND legacy_geometry_adapter_tests
             ${TSREBAR_123_STP})
+    add_test(
+        NAME line_group_display_smoke_123
+        COMMAND line_group_display_smoke_tests
+            ${TSREBAR_123_STP})
+    set_tests_properties(line_group_display_smoke_123 PROPERTIES
+        ENVIRONMENT "QT_QPA_PLATFORM=windows;QT_QPA_PLATFORM_PLUGIN_PATH=${TSREBAR_QT_PLATFORM_PLUGIN_PATH}"
+        TIMEOUT 120)
 endif()

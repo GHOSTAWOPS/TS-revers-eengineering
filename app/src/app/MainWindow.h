@@ -29,10 +29,13 @@ private:
     void buildCommandTabs();
     void registerCommandHandlers();
     void executeCommand(tsrebar::CommandId id);
+    [[nodiscard]] tsrebar::RebarLineGroupCommandParameters nextLineGroupParameters();
+    [[nodiscard]] bool displayCreatedLineGroup(QString* errorMessage = nullptr);
 
     tsrebar::CommandRegistry m_commands;
     tsrebar::SteelData m_steelData;
     tsrebar::RebarLineGroupCommandParameters m_lineGroupParameters;
+    int m_lineGroupCreateSequence = 0;
     std::shared_ptr<tsrebar::LegacyRebarGeometryReader> m_lineGroupGeometryReader;
     std::shared_ptr<tsrebar::RebarLineGroupCommandHandler> m_lineGroupHandler;
     QTabWidget* m_tabs = nullptr;

@@ -252,6 +252,44 @@ void testLineGroupHandlerCreatesSteelDataFromValidEdge()
            "handler path must preserve VisualTS trim delta through creator");
 }
 
+void testLineGroupHandlerUsesUpdatedParameters()
+{
+    std::vector<tsrebar::LegacySelectionRef> selection = {
+        edgeRef("selection-v1:edge:17"),
+    };
+
+    FakeLegacyRebarGeometryReader reader;
+    reader.addCurve(lineCurve("selection-v1:edge:17", 12.5));
+
+    tsrebar::SteelData model;
+    tsrebar::RebarLineGroupCommandHandler handler(
+        [&selection]() { return selection; },
+        reader,
+        model,
+        commandParameters());
+
+    tsrebar::RebarLineGroupCommandParameters updated = commandParameters();
+    updated.groupId = "cmd-line-group-002";
+    updated.barId = "cmd-line-bar-002";
+    updated.segmentId = "cmd-line-segment-002";
+    updated.requestedBarCount = 2;
+    handler.setParameters(updated);
+
+    const tsrebar::CommandResult result = handler.execute();
+
+    expect(result.status == tsrebar::CommandStatus::Completed,
+           "updated parameters must still complete the command");
+    expect(model.groups.size() == 1, "updated parameters must create one group");
+    expect(model.groups.front().groupId == "cmd-line-group-002",
+           "handler must use updated group id");
+    expect(model.bars.front().barId == "cmd-line-bar-002",
+           "handler must use updated bar id");
+    expect(model.segments.front().segmentId == "cmd-line-segment-002",
+           "handler must use updated segment id");
+    expect(model.groups.front().barCount == 2,
+           "handler must use updated bar count");
+}
+
 void testLineGroupHandlerLeavesModelUntouchedWhenGeometryFails()
 {
     std::vector<tsrebar::LegacySelectionRef> selection = {
@@ -317,6 +355,7 @@ int main()
     testLineGroupHandlerRejectsEmptySelectionWithoutGeometryQuery();
     testLineGroupHandlerRejectsWrongSelectionType();
     testLineGroupHandlerCreatesSteelDataFromValidEdge();
+    testLineGroupHandlerUsesUpdatedParameters();
     testLineGroupHandlerLeavesModelUntouchedWhenGeometryFails();
     testLineGroupHandlerLeavesModelUntouchedWhenNormalizerFails();
     return 0;

@@ -4,6 +4,7 @@
 #include "geometry/occ/import/OcctStepImportService.h"
 #include "geometry/occ/legacy_adapter/OccLegacyGeometryAdapter.h"
 #include "presentation/occ/OccViewerWidget.h"
+#include "presentation/occ/RebarAisPresentationAdapter.h"
 #include "ui/MainTabs.h"
 #include "ui/ModelTreePanel.h"
 
@@ -21,6 +22,7 @@
 #include <algorithm>
 #include <memory>
 #include <optional>
+#include <string>
 #include <vector>
 
 namespace {
@@ -73,12 +75,13 @@ private:
     const tsrebar::OccViewerWidget& m_viewer;
 };
 
-tsrebar::RebarLineGroupCommandParameters defaultLineGroupParameters()
+tsrebar::RebarLineGroupCommandParameters lineGroupParametersForSequence(int sequence)
 {
+    const std::string suffix = "p0-" + std::to_string(sequence);
     tsrebar::RebarLineGroupCommandParameters parameters;
-    parameters.groupId = "ui-line-group-p0";
-    parameters.barId = "ui-line-bar-p0";
-    parameters.segmentId = "ui-line-segment-p0";
+    parameters.groupId = "ui-line-group-" + suffix;
+    parameters.barId = "ui-line-bar-" + suffix;
+    parameters.segmentId = "ui-line-segment-" + suffix;
     parameters.steelDataId = "ui-steel-data-p0";
     parameters.distanceA = 0.25;
     parameters.distanceB = 1.2;
@@ -89,7 +92,7 @@ tsrebar::RebarLineGroupCommandParameters defaultLineGroupParameters()
     parameters.steelLevel = "HRB400";
     parameters.rsdId = "P0";
     parameters.componentName = "pending-ui";
-    parameters.projectSteelName = "line-group-p0";
+    parameters.projectSteelName = "line-group-" + suffix;
     return parameters;
 }
 
@@ -221,7 +224,7 @@ void MainWindow::registerCommandHandlers()
                                       QStringLiteral("选择模式：点")};
     });
 
-    m_lineGroupParameters = defaultLineGroupParameters();
+    m_lineGroupParameters = lineGroupParametersForSequence(m_lineGroupCreateSequence);
     m_lineGroupGeometryReader =
         std::make_shared<ViewerLegacyRebarGeometryReader>(*m_viewer);
     m_lineGroupHandler = std::make_shared<tsrebar::RebarLineGroupCommandHandler>(
@@ -402,6 +405,38 @@ void MainWindow::buildCommandTabs()
 
 void MainWindow::executeCommand(tsrebar::CommandId id)
 {
+    if (id == tsrebar::CommandId::RebarLineCreate) {
+        m_lineGroupParameters = nextLineGroupParameters();
+        if (m_lineGroupHandler) {
+            m_lineGroupHandler->setParameters(m_lineGroupParameters);
+        }
+    }
+
     const tsrebar::CommandResult result = m_commands.execute(id);
+    if (id == tsrebar::CommandId::RebarLineCreate &&
+        result.status == tsrebar::CommandStatus::Completed) {
+        QString displayError;
+        if (!displayCreatedLineGroup(&displayError)) {
+            statusBar()->showMessage(
+                QStringLiteral("完成但显示失败：%1").arg(displayError),
+                5000);
+            return;
+        }
+    }
     statusBar()->showMessage(commandStatusText(result), 5000);
+}
+
+tsrebar::RebarLineGroupCommandParameters MainWindow::nextLineGroupParameters()
+{
+    ++m_lineGroupCreateSequence;
+    return lineGroupParametersForSequence(m_lineGroupCreateSequence);
+}
+
+bool MainWindow::displayCreatedLineGroup(QString* errorMessage)
+{
+    const tsrebar::RebarAisPresentationResult presentation =
+        tsrebar::RebarAisPresentationAdapter{}.buildGroupPresentation(
+            m_steelData,
+            m_lineGroupParameters.groupId);
+    return m_viewer->displayRebarPresentation(presentation, errorMessage);
 }

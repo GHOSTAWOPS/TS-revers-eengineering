@@ -82,6 +82,11 @@ RebarLineGroupCommandHandler::RebarLineGroupCommandHandler(
 {
 }
 
+void RebarLineGroupCommandHandler::setParameters(RebarLineGroupCommandParameters parameters)
+{
+    m_parameters = std::move(parameters);
+}
+
 CommandResult RebarLineGroupCommandHandler::execute() const
 {
     if (!m_selectionProvider) {

@@ -336,27 +336,30 @@ M1-Formal-Ready
 当前正式 app 已达到：
 
 ```text
-M1-App-009
+M2-RebarCreate-003 / TODO-073
   -> Qt6 主窗口和旧图石一期页签
   -> OCCT STEP 导入和 AIS 显示
   -> selection-v1 face / edge / vertex 稳定选择引用
-  -> LegacyGeometryAdapter P0/P1/P2A/P2B/P2C/P3A
+  -> LegacyGeometryAdapter P0 到 P3E
   -> EDGE / FACE bbox、采样、boundary loop、fingerprint 和诊断
   -> edge 切向、selection ref 距离和最近点对
   -> face boundary edge stableId 和 edge-face 接触/重叠代表点
   -> edge 参数区间、子段长度、子段 bbox 和子段采样
-  -> edge split 语义和前后子段
+  -> edge split / projected split / endpoint trim / wire chain / offset / section / sweep preview
+  -> domain SteelData / SteelBarGroup / SteelBar / SteelBarSegment P1
+  -> Rebar.Create.LineGroup P0 creator / command handler / UI AIS visible feedback
 ```
 
 这代表：
 
 - 功能矩阵、命令契约、领域模型、Detail 映射、新工程格式、binding、依赖门禁、runtime gate 已具备进入 Qt6 + OCCT 开发的入口条件。
 - OCCT 能力已经开始被封装成旧 VisualTS 可用的几何语义，而不是直接暴露给钢筋业务层。
+- 线配筋首条主链已经能从 UI 选择 edge，进入 `RebarGroupCreator`，生成 domain `SteelBarGroup`，并通过 presentation 层显示到 AIS。
 
 这不代表：
 
 - 旧图石所有钢筋业务已经复刻完成。
-- 线配筋、弧形组、同心圆等复杂算法已全部闭合。
+- 线配筋旧参数窗口、完整 `ENTITY_LIST` 选择对象、完整 `sub_1405D5670` 等价、弧形组、同心圆等复杂算法已全部闭合。
 - 父目录源码可以直接拿来当最终业务代码。
 - 钢筋创建、编辑、统计、工程图业务规则已经由 OCCT 自动解决。
 

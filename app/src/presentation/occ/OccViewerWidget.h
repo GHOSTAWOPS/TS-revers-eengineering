@@ -24,6 +24,8 @@ class Aspect_DisplayConnection;
 
 namespace tsrebar {
 
+struct RebarAisPresentationResult;
+
 class OccViewerWidget final : public QWidget
 {
     Q_OBJECT
@@ -34,6 +36,9 @@ public:
 
     [[nodiscard]] bool displayDocument(const OcctImportedDocument& document,
                                        QString* errorMessage = nullptr);
+    [[nodiscard]] bool displayRebarPresentation(
+        const RebarAisPresentationResult& presentation,
+        QString* errorMessage = nullptr);
     [[nodiscard]] bool fitAll(QString* errorMessage = nullptr);
     void setSelectionMode(TopAbs_ShapeEnum shapeType);
     [[nodiscard]] TopAbs_ShapeEnum selectionMode() const;
@@ -47,6 +52,8 @@ public:
 
     [[nodiscard]] bool hasViewer() const;
     [[nodiscard]] int displayedShapeCount() const;
+    [[nodiscard]] int displayedRebarShapeCount() const;
+    [[nodiscard]] QString lastDisplayedRebarGroupId() const;
 
 signals:
     void selectionChanged(const QString& summary,
@@ -81,6 +88,8 @@ private:
     Handle(Aspect_NeutralWindow) m_window;
     bool m_windowReady = false;
     int m_displayedShapeCount = 0;
+    int m_displayedRebarShapeCount = 0;
+    QString m_lastDisplayedRebarGroupId;
     TopAbs_ShapeEnum m_selectionMode = TopAbs_SHAPE;
     OccSelectionIndex m_selectionIndex;
     std::optional<LegacySelectionRef> m_currentSelection;

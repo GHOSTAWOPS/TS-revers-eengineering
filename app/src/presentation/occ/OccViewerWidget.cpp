@@ -1,5 +1,7 @@
 #include "presentation/occ/OccViewerWidget.h"
 
+#include "presentation/occ/RebarAisPresentationAdapter.h"
+
 #include <AIS_Shape.hxx>
 #include <Aspect_DisplayConnection.hxx>
 #include <Graphic3d_GraphicDriver.hxx>
@@ -65,6 +67,8 @@ bool OccViewerWidget::displayDocument(const OcctImportedDocument& document,
 
         m_context->RemoveAll(Standard_False);
         m_displayedShapeCount = 0;
+        m_displayedRebarShapeCount = 0;
+        m_lastDisplayedRebarGroupId.clear();
         m_selectionIndex = {};
         clearCurrentSelection();
 
@@ -91,6 +95,55 @@ bool OccViewerWidget::displayDocument(const OcctImportedDocument& document,
     } catch (...) {
         if (errorMessage != nullptr) {
             *errorMessage = QStringLiteral("显示 STEP 失败：未知异常。");
+        }
+    }
+    return false;
+}
+
+bool OccViewerWidget::displayRebarPresentation(
+    const RebarAisPresentationResult& presentation,
+    QString* errorMessage)
+{
+    if (!presentation.ok || presentation.items.empty()) {
+        if (errorMessage != nullptr) {
+            *errorMessage = presentation.diagnostic.isEmpty()
+                                ? QStringLiteral("钢筋显示结果为空。")
+                                : presentation.diagnostic;
+        }
+        return false;
+    }
+
+    for (const RebarAisDisplayItem& item : presentation.items) {
+        if (item.aisShape.IsNull()) {
+            if (errorMessage != nullptr) {
+                *errorMessage = item.diagnostic.isEmpty()
+                                    ? QStringLiteral("钢筋显示对象为空。")
+                                    : item.diagnostic;
+            }
+            return false;
+        }
+    }
+
+    try {
+        if (!ensureViewer(errorMessage) || !initializeWindow(errorMessage)) {
+            return false;
+        }
+
+        for (const RebarAisDisplayItem& item : presentation.items) {
+            m_context->Display(item.aisShape, Standard_False);
+        }
+        m_displayedRebarShapeCount += static_cast<int>(presentation.items.size());
+        m_lastDisplayedRebarGroupId = QString::fromStdString(presentation.groupId);
+        m_context->UpdateCurrentViewer();
+        redraw();
+        return true;
+    } catch (const Standard_Failure& failure) {
+        if (errorMessage != nullptr) {
+            *errorMessage = failureMessage(QStringLiteral("显示钢筋"), failure);
+        }
+    } catch (...) {
+        if (errorMessage != nullptr) {
+            *errorMessage = QStringLiteral("显示钢筋失败：未知异常。");
         }
     }
     return false;
@@ -189,6 +242,16 @@ bool OccViewerWidget::hasViewer() const
 int OccViewerWidget::displayedShapeCount() const
 {
     return m_displayedShapeCount;
+}
+
+int OccViewerWidget::displayedRebarShapeCount() const
+{
+    return m_displayedRebarShapeCount;
+}
+
+QString OccViewerWidget::lastDisplayedRebarGroupId() const
+{
+    return m_lastDisplayedRebarGroupId;
 }
 
 QPaintEngine* OccViewerWidget::paintEngine() const
@@ -411,6 +474,8 @@ void OccViewerWidget::resetViewer()
 {
     m_windowReady = false;
     m_displayedShapeCount = 0;
+    m_displayedRebarShapeCount = 0;
+    m_lastDisplayedRebarGroupId.clear();
     clearCurrentSelection(false);
     m_selectionIndex = {};
     m_context.Nullify();

@@ -1,0 +1,68 @@
+{
+  "todoId": "TODO-073",
+  "phase": "M2-RebarCreate-003",
+  "evidenceIds": ["E-DEV-095"],
+  "decision": "line-group-ui-ais-feedback-p0",
+  "changedCode": [
+    "app/CMakeLists.txt",
+    "app/src/app/MainWindow.cpp",
+    "app/src/app/MainWindow.h",
+    "app/src/command/RebarLineGroupCommandHandler.cpp",
+    "app/src/command/RebarLineGroupCommandHandler.h",
+    "app/src/presentation/occ/OccViewerWidget.cpp",
+    "app/src/presentation/occ/OccViewerWidget.h",
+    "app/tests/integration/line_group_display_smoke_tests.cpp",
+    "app/tests/unit/rebar_line_group_command_handler_tests.cpp",
+    "tools/phase1_readiness_gate/check_phase1_readiness.py",
+    "tools/phase1_readiness_gate/test_phase1_readiness_gate.py"
+  ],
+  "implemented": {
+    "command": "Rebar.Create.LineGroup",
+    "legacyCommand": "sgroupbarline",
+    "idRefresh": "MainWindow refreshes unique P0 group/bar/segment ids before each LineGroup command execution",
+    "displayPath": "SteelData -> RebarAisPresentationAdapter -> OccViewerWidget::displayRebarPresentation -> AIS_InteractiveContext::Display",
+    "failurePath": "CommandStatus::Failed does not refresh rebar AIS display",
+    "scope": "LineGroup UI/AIS visible feedback P0 only"
+  },
+  "guards": {
+    "oldRuntimeAutomaticallyLaunched": false,
+    "haspInstalledAutomatically": false,
+    "systemDirectoryModifiedAutomatically": false,
+    "occtDirectRebarRewrite": false,
+    "parentRebarMigrated": false,
+    "domainRebarOccLeak": "pass",
+    "commandLayerOccLeak": "pass",
+    "golden": "not_started",
+    "autocadL2": "not_run"
+  },
+  "verification": {
+    "tddRed": "pass; line_group_display_smoke_tests initially failed because OccViewerWidget lacked displayedRebarShapeCount",
+    "targetedBuild": "pass; line_group_display_smoke_tests",
+    "targetedTest": "pass; line_group_display_smoke_123",
+    "ctest": "pass; 20/20 pass",
+    "readinessGateUnit": "pass; 33/33 pass",
+    "readinessGateStrict": "pass; M1-Formal-Ready; 84/84 pass",
+    "domainRebarBoundary": "pass",
+    "domainRebarCommandOCCLeak": "pass; no TopoDS_ / AIS_ / BRep / TopAbs_ matches",
+    "parentRebarBusinessReference": "pass; no forbidden parent rebar factory references in app code",
+    "gitDiffCheck": "pass",
+    "xhighReview": "needs_fix; critical review placeholder fixed; important duplicate group display fixed; route drift none"
+  },
+  "xhighReview": {
+    "agent": "Socrates",
+    "verdict": "needs_fix",
+    "criticalFixed": "review placeholder removed from implementation record, run report and JSON",
+    "importantFixed": "duplicate group display risk fixed by unique P0 ids and two-success smoke assertion",
+    "routeDrift": "none"
+  },
+  "residualGaps": {
+    "GAP-IDA-002": "old single-selected-entity-list / selection object business name still open",
+    "GAP-IDA-007": "full objA / objB / createdPayload / sub_1405D5670 arg semantics still open",
+    "GAP-REB-C-002": "full line rebar creation, parameter dialog, undo/dirty/runtime golden still open",
+    "GAP-UI-REB-001": "old LineGroup dialog fields/defaults/status prompts still open"
+  },
+  "next": {
+    "todoId": "TODO-074",
+    "action": "LineGroup parameter dialog P0"
+  }
+}

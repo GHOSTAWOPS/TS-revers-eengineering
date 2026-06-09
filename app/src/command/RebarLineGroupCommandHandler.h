@@ -38,6 +38,7 @@ public:
                                  SteelData& steelData,
                                  RebarLineGroupCommandParameters parameters);
 
+    void setParameters(RebarLineGroupCommandParameters parameters);
     [[nodiscard]] CommandResult execute() const;
 
 private:
