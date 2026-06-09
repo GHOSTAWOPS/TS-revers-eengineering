@@ -20,7 +20,7 @@
      输出目录 / hash / 覆盖策略记录模板和拒收伪工件规则已落文档
   -> output_uncut_steel / Dialog 0x57C / UnCutSteel.TXT
      继续只算可选旁证，不算前置设置窗
-  -> 现在的主线是 TODO-066
+  -> TODO-066 已完成真实工件回填；现在的主线是 TODO-067
 ```
 
 ## 可直接粘贴到 Goal 模式的目标
@@ -585,7 +585,7 @@ commit / tag / push 状态
 
 ### 短期 Goal（推荐本轮复制）
 
-目标：只完成 `TODO-066 / 生成工程图与下料表旧图石真实运行工件回填 P0` 这个短期阶段，不自动进入后续长期开发。
+目标：只完成 `TODO-067 / 旧图石真实 Detail 与下料表字段对照 P0` 这个短期阶段，不自动进入后续长期开发。
 
 当前状态：
 
@@ -600,18 +600,19 @@ commit / tag / push 状态
   TODO-063 = done
   TODO-064 = done
   TODO-065 = done
-  TODO-066 = next
+  TODO-066 = done
+  TODO-067 = next
 ```
 
 本轮只做：
 
 ```text
-VisualTS.GeneratePackageRuntimeEvidenceFill / TODO-066
-  -> 从 E-DEV-087 / GAP-IDA-005 / GAP-IDA-006 出发
-  -> 只接收用户现场旧图石真实运行工件回填
-  -> 只核对生成工程图输出目录 / 文件 / hash / 覆盖行为
-  -> 只核对下料表输出结果和额外运行时弹窗
-  -> 同步更新 05 / 11 / 12 / 46 / 99 / todo / 实现记录 / build report
+VisualTS.DetailScheduleFieldGapReport / TODO-067
+  -> 从 E-RUN-006 / E-DEV-088 出发
+  -> 只解析 RUN-20260609-001 的真实 Detail01..04.stl 和 下料表.xls
+  -> 只对照当前 DetailWriter / RebarScheduleService 字段覆盖
+  -> 只形成字段差距报告，不实现算法，不跑 AutoCAD L2
+  -> 同步更新 05 / 11 / 12 / 46 / 99 / todo / 字段对照报告 / build report
   -> 跑默认 CTest / readiness gate / OCCT 泄漏检查
   -> 不启动旧图石，不安装 HASP，不改 app 业务代码
   -> 不实现真实工程图算法，不进入 golden
@@ -630,13 +631,23 @@ TODO-065 已把当前准备状态推进到：
   docs/phase1/runtime_capture/todo_065_generate_package_and_schedule/
     -> README + capture_notes 模板已落地
 
+TODO-066 已确认：
+  - RUN-20260609-001 真实工件已归档
+  - Detail.xml 存在但为空 StyleRoot
+  - 用户补充多机生成结果一致，Detail.xml 都是 <StyleRoot/>
+  - 生成工程图 / CAD 导入时 Detail.xml 修改时间不更新
+  - 当前更倾向把 Detail.xml 视为固定空模板 / 占位文件
+  - Detail01..04.stl 是非空 DrawingRoot XML 图纸主体
+  - 下料表.xls 是非空 Excel workbook
+  - 父目录/外部有内容 Detail.xml 可能来自其他项目，不能混入同批证据
+
 当前仍未闭合：
-  - 旧图石真实输出目录 / 文件结果 / 覆盖行为
+  - 旧图石真实字段与当前 DetailWriter / RebarScheduleService 的差距
+  - 旧插件是否必须检查 Detail.xml 这个空占位文件
   - Detail.xml + DetailNN.stl 的真实 rerun 覆盖
-  - 下料表真实输出路径 / 文件结果 / 是否还有额外运行时弹窗
   - AutoCAD L2
 
-本轮只做 TODO-066，
+本轮只做 TODO-067，
 不回接头运行链，
 不同时做真实工程图算法、golden 采集、UI 新功能或 AutoCAD L2 通过声明。
 ```
@@ -889,11 +900,16 @@ TODO-065 / Evidence = done
   -> 已明确 `UnCutSteel.TXT` 只算可选旁证，
      不能单独证明 `生成工程图` 成功。
 
-TODO-066 / Evidence = next
-  -> 继续非接头主线：生成工程图与下料表旧图石真实运行工件回填 P0。
-  -> 优先核对真实输出目录 / 文件 / hash / rerun 覆盖行为和
-     下料表运行结果 / 弹窗截图。
-  -> 不自动启动旧图石，不进入 golden，不改 app 业务代码。
+TODO-066 / Evidence = done
+  -> 已完成真实工件回填：RUN-20260609-001 记录源 SFL 文件名/hash
+     （.sfl 本体按 .gitignore 不纳入 git）、空 StyleRoot Detail.xml、
+     非空 Detail01..04.stl、非空 下料表.xls 和截图。
+
+TODO-067 / Evidence = next
+  -> 继续非接头主线：旧图石真实 Detail 与下料表字段对照 P0。
+  -> 优先解析真实 Detail01..04.stl 和 下料表.xls，
+     并对照当前 DetailWriter / RebarScheduleService 字段覆盖。
+  -> 不自动启动旧图石，不进入 golden，不改 app 业务代码，不实现算法。
 ```
 
 工作目录：
@@ -1228,27 +1244,27 @@ TODO-056 验证 = DB6C0 static rebuild core traced, child+88/+108/+112/+116 and 
 当前下一步：
 
 ```text
-TODO-066 / 生成工程图与下料表旧图石真实运行工件回填 P0
-  -> TODO-065 已落地 runtime_capture 模板目录、
-     输出目录 listing / hash / 覆盖行为模板和拒收伪工件规则
+TODO-067 / 旧图石真实 Detail 与下料表字段对照 P0
+  -> TODO-066 已完成 RUN-20260609-001 真实工件回填
+  -> 只解析 Detail01..04.stl 和 下料表.xls 字段
+  -> 对照当前 DetailWriter / RebarScheduleService 字段覆盖
   -> 不自动安装 HASP，不自动启动旧图石
-  -> 下一步只继续接收和核对真实运行工件
   -> 不实现真实工程图算法，不声明 AutoCAD L2 通过，不进入 golden
 ```
 
 原因：
 
 ```text
-TODO-065 已经把准备工作进一步从
-  只有静态链和口头清单
+TODO-066 已经把运行确认从
+  模板和口头清单
 推进到
-  有固定目录、固定字段、固定拒收规则的运行确认模板。
+  有真实 Detail 包、真实下料表、截图、hash 和归档目录。
 
 当前真正剩下的是这两段：
-  旧图石真实输出目录 / 文件列表 / 覆盖策略的真实工件
-  下料表真实输出结果 / 运行时弹窗的真实工件
+  真实 Detail01..04.stl 与当前 DetailWriter 的字段差距
+  真实 下料表.xls 与当前 RebarScheduleService 的字段差距
 
-这比回到接头运行样例更贴近当前非接头主线。
+这比直接进入工程图算法实现更稳，也更贴近当前非接头主线。
 golden 采集 TODO-026 仍按用户要求保持 pending。
 ```
 
@@ -1314,18 +1330,18 @@ golden 采集 TODO-026 仍按用户要求保持 pending。
 
 ## CSE v2 Control Contract
 
-- **Primary Setpoint**：下一轮只完成 `TODO-066 / 生成工程图与下料表旧图石真实运行工件回填 P0`，在 `TODO-065` 已落地 runtime_capture 模板目录、输出目录 / 文件 / hash / 覆盖策略模板和拒收伪工件规则的基础上，只继续接收和核对真实旧图石运行工件。
-- **Acceptance**：形成新的实现记录和 run report；至少拿到 1 组真实 `生成工程图` 输出目录 listing / hash / rerun 覆盖记录，以及 1 组真实 `下料表` 输出结果或弹窗截图；`capture_notes` 信息齐全；默认 CTest、readiness gate、OCCT 泄漏检查通过；文档、追溯矩阵、缺口、46 和 todo 同步更新。
+- **Primary Setpoint**：下一轮只完成 `TODO-067 / 旧图石真实 Detail 与下料表字段对照 P0`，在 `TODO-066` 已归档 RUN-20260609-001 真实工件的基础上，只解析真实 Detail01..04.stl 和 下料表.xls，并对照当前 DetailWriter / RebarScheduleService 字段覆盖。
+- **Acceptance**：形成字段差距报告和 run report；列出真实 Detail01..04.stl / 下料表.xls 中当前已支持字段、缺失字段、低置信字段和后续证据需求；明确 Detail.xml 多机观察均为空 StyleRoot，当前更像固定空模板 / 占位文件，父目录/外部有内容 Detail.xml 不能混入同批证据；默认 CTest、readiness gate、OCCT 泄漏检查通过；文档、追溯矩阵、缺口、46 和 todo 同步更新。
 - **Guardrail Metrics**：不能把 `output_uncut_steel / Dialog 0x57C` 直接写死成生成工程图前置设置窗；不能把 `Dialog #427` 再升回下料表弹窗真值；不能伪造运行证据；不能实现真实工程图算法；不能在没有运行证据时声明 AutoCAD L2 通过；不能改钢筋创建业务；不能迁入父目录 rebar 业务；不能进入 golden。
-- **Sampling Plan**：先读 `todo.csv / 05 / 11 / 12 / 46 / 99 / 102 / 103`，确认 `TODO-065` 已落地的模板边界；然后只核对 runtime_capture 目录里的真实工件、输出目录 listing、hash、rerun 覆盖行为和弹窗截图；最后运行默认 CTest、readiness gate 和 OCCT 泄漏检查，证明本轮没有破坏工程基线。
-- **Known Delays**：旧 `VisualTS` 的真实输出目录、覆盖行为和运行时弹窗依赖现场环境；下一轮强依赖用户现场工件，不一定一次就能把所有 gap 关完。
-- **Recovery Target**：如果真实工件仍不完整，就把已拿到的部分和剩余缺口精确写回 `99` 与 build report，至少把“已确认了什么、还缺什么”说清楚，而不是把不完整样例写成 complete。
+- **Sampling Plan**：先读 `todo.csv / 05 / 11 / 12 / 13 / 20 / 46 / 99 / 104`，确认 `TODO-066` 已归档的真实工件边界；然后解析 runtime_capture 目录里的 Detail01..04.stl 与 下料表.xls 字段；再对照当前 DetailWriter / RebarScheduleService；最后运行默认 CTest、readiness gate 和 OCCT 泄漏检查，证明本轮没有破坏工程基线。
+- **Known Delays**：旧字段语义可能需要后续 IDA 或旧图石运行确认；Excel 公式、合并规则、旧插件是否必须检查空 Detail.xml、旧插件接受度和 AutoCAD L2 不在本轮关闭。
+- **Recovery Target**：如果字段语义无法判断，就把字段列入低置信或 gap，写回 `99` 与 build report；不能把未知字段硬解释成当前新系统字段。
 - **Rollback Trigger**：把无关截图或无关 Excel 误收成运行证据；无证据把 `output_uncut_steel / Dialog 0x57C` 升成前置设置窗；无证据把 `Dialog #427` 再写成下料表弹窗；实现真实工程图算法；让 `domain/rebar` 泄漏 OCCT/AIS；测试或 gate 失败仍继续堆功能。
 - **Constraints**：不使用 ACIS / HOOPS / Codejock 等商业库；新系统不引入 USB 狗 / 网络许可依赖；旧逻辑不确定时优先查 IDA MCP 或旧图石运行确认；xhigh 只读，修改由主流程 agent 完成；不自动安装 HASP，不自动再次启动旧图石。
-- **Boundary**：下一轮只允许补 `05 / 11 / 12 / 46 / 99 / todo.csv`、对应实现记录和 build report，以及 runtime_capture 目录下的真实工件；禁止实现真实 OCCT HLR/section/hidden-line/steeljoint-line/Others 算法、禁止修改 UI 新功能、钢筋创建业务、无证据 AutoCAD L2 结论和 golden。
+- **Boundary**：下一轮只允许补 `05 / 11 / 12 / 46 / 99 / todo.csv`、字段差距报告、对应实现记录和 build report；可只读 app 当前 DetailWriter / RebarScheduleService；禁止实现真实 OCCT HLR/section/hidden-line/steeljoint-line/Others 算法、禁止修改 UI 新功能、钢筋创建业务、无证据 AutoCAD L2 结论和 golden。
 - **Coupling Notes**：`drawing/export` 是 Detail 包输出边界；TODO-066 只核对“生成工程图 / 下料表”两个旧 command 的真实运行工件，不关闭旧插件容忍度、AutoCAD L2、隐藏线 / 填充线算法或完整工程图缺口。
 - **Approximation Validity**：TODO-066 的目标是真实运行工件回填和 gap 更新，不是完整工程图算法、AutoCAD L2 通过或 golden；即使拿到一轮真实工件，也不代表旧图石运行输出和新系统结果已经 1:1。
-- **Actuator Budget**：下一轮只推进 `TODO-066`。完成后停止复盘，不自动进入真实算法实现、隐藏线、填充线、点筋、FaceEdge 或 golden。
+- **Actuator Budget**：下一轮只推进 `TODO-067`。完成后停止复盘，不自动进入真实算法实现、隐藏线、填充线、点筋、FaceEdge 或 golden。
 - **Risks**：真实工件可能不完整、输出目录可能不方便直接复制进仓库、下料表可能只拿到截图没有原文件；如果记录不带路径 / hash / 操作步骤，证据仍然不够强。
 ## Todo CSV 使用方式
 
@@ -1351,16 +1367,15 @@ golden 采集 TODO-026 仍按用户要求保持 pending。
 下一步优先执行：
 
 ```text
-TODO-066 / 生成工程图与下料表旧图石真实运行工件回填 P0
-  -> TODO-065 已完成：
-     runtime_capture 模板目录、capture_notes 模板、
-     输出目录 / 文件 / hash / 覆盖策略记录模板和拒收伪工件门禁
-  -> 下一步只继续接收真实运行工件并核对
+TODO-067 / 旧图石真实 Detail 与下料表字段对照 P0
+  -> TODO-066 已完成真实工件回填：
+     RUN-20260609-001、Detail01..04.stl、下料表.xls、截图和 hash 已归档
+  -> 下一步只解析真实字段并对照当前 DetailWriter / RebarScheduleService
   -> 不自动安装 HASP
   -> 不自动启动旧图石
   -> 不实现真实工程图算法
   -> 不声明 AutoCAD L2 通过，不进入 golden
 ```
 
-原因很简单：TODO-065 已经把旧图石运行确认需要的工件清单和门禁整理清楚了。现在最值钱的是接真实工件回填，而不是继续在静态链上原地打转。
+原因很简单：TODO-066 已经拿到了真实旧图石工程图包和下料表。现在最值钱的是把真实字段和我们当前 writer / schedule service 的差距列清楚，而不是直接进入算法实现。
 TODO-026 golden 采集暂按用户要求保持 pending。

@@ -1,0 +1,21 @@
+NOTE: This is the archived run directory listing. It includes agent-generated metadata files and is not the old VisualTS output file list.
+
+
+Name                                       Length LastWriteTime
+----                                       ------ -------------
+下料表.xls                                  28160 2026/6/9 9:54:37
+消力池下游侧带齿槽底板结构图石钢筋模型.sfl 564135 2026/6/5 10:56:14
+capture_notes.md                             3119 2026/6/9 10:28:14
+detail_package_probe_01.txt                   606 2026/6/9 10:29:30
+Detail.xml                                     14 2026/6/9 10:10:04
+Detail01.stl                                17085 2026/6/9 10:09:37
+Detail02.stl                                 6604 2026/6/9 10:09:38
+Detail03.stl                                 8179 2026/6/9 10:09:39
+Detail04.stl                                 9717 2026/6/9 10:09:40
+generate_package_dir_listing_01.txt             0 2026/6/9 10:29:42
+generate_package_hashes_01.txt               1353 2026/6/9 10:29:42
+PixPin_2026-06-09_09-49-51.png             366437 2026/6/9 9:49:51
+PixPin_2026-06-09_09-50-13.png             374008 2026/6/9 9:50:13
+schedule_dir_listing_01.txt                   109 2026/6/9 10:29:05
+schedule_excel_preview_01.txt                 809 2026/6/9 10:29:06
+schedule_hashes_01.txt                         80 2026/6/9 10:29:05

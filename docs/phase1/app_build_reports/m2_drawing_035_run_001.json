@@ -1,0 +1,63 @@
+{
+  "todoId": "TODO-066",
+  "phase": "M2-Drawing-035",
+  "evidenceIds": ["E-RUN-006", "E-DEV-088"],
+  "decision": "generate-package-and-schedule-runtime-artifacts-accepted",
+  "runtimeArtifacts": {
+    "directory": "docs/phase1/runtime_capture/todo_065_generate_package_and_schedule/run_20260609_001/",
+    "sourceSfl": "消力池下游侧带齿槽底板结构图石钢筋模型.sfl",
+    "sourceSflTracking": "local staging file; sha256 recorded; *.sfl is gitignored and not committed",
+    "detailFiles": ["Detail.xml", "Detail01.stl", "Detail02.stl", "Detail03.stl", "Detail04.stl"],
+    "detailXml": {
+      "bytes": 14,
+      "content": "<StyleRoot/>",
+      "styleRootEmpty": true,
+      "role": "likely_fixed_empty_template_or_placeholder",
+      "multiMachineObservation": "same <StyleRoot/> content observed on multiple machines; file timestamp did not update during generate package or CAD import",
+      "sameRunWithParentOrExternalStyleXml": false
+    },
+    "scheduleWorkbook": "下料表.xls",
+    "screenshots": ["PixPin_2026-06-09_09-49-51.png", "PixPin_2026-06-09_09-50-13.png"]
+  },
+  "hashes": {
+    "sourceSfl": "6706F10836CA43D1D3275ACD09B373CAC5AF08C0D7A66B1C7025D30006C4B007",
+    "scheduleWorkbook": "A9CF511EF0513DDB45E975A822C19833009AB237C9B0C7E1CA320BC2B5BF5D1E",
+    "DetailXml": "CCBD220D75D7F9C7E26E2540D639FA5956A369A31D7902F75ED36461F778F271",
+    "ParentOrExternalDetailXml": "B02ABEEB7B9E0AB802566FA617E0627D9883010172EFD9CD50DACF940B5AFEB5",
+    "Detail01": "444BE32ED907C0393104F415639CED2FB698F21C93DF7F27F9ED830A70E40BE6",
+    "Detail02": "478D166A5DCE69A3BD8042E0118443780C8C7FBBDB93E7AC910EEB2CCB4E32F6",
+    "Detail03": "2531D11A15184909CC9FB3AA8CC96866F765E8254E443422854C176453A8FB43",
+    "Detail04": "03617911FBFCC2D53BCC310F515F8C375B3C6B78640C638CB2591DA1494D4D0E"
+  },
+  "guards": {
+    "oldRuntimeAutomaticallyLaunched": false,
+    "haspInstalledAutomatically": false,
+    "systemDirectoryModifiedAutomatically": false,
+    "appBusinessCodeModified": false,
+    "algorithmImplemented": false,
+    "autocadL2": "not_run",
+    "golden": "not_started",
+    "xhighReview": "needs_fix_then_fixed; Important on 99 GAP-IDA-006 top schedule row resolved"
+  },
+  "verification": {
+    "detailPackageProbe": "pass; Detail01..04 are DrawingRoot XML",
+    "styleRootProbe": "pass; Detail.xml is empty StyleRoot; multi-machine observation suggests fixed empty placeholder",
+    "scheduleWorkbookProbe": "pass; Excel COM read-only open; 3 non-empty sheets",
+    "artifactHashListing": "pass; SHA256 recorded",
+    "gitDiffCheck": "pass",
+    "ctest": "pass; 18/18",
+    "readinessGateStrict": "pass; M1-Formal-Ready; 84/84",
+    "domainRebarOCCLeak": "pass; no matches"
+  },
+  "residualGaps": {
+    "rerunOverwriteBehavior": "partial; missing before/after two-run listing",
+    "detailXmlRole": "likely fixed empty template / placeholder; old plugin existence requirement still unknown; parent/external non-empty Detail.xml is not same-run evidence",
+    "AutoCADL2": "not_run",
+    "newSystemComparison": "not_run",
+    "scheduleFullRules": "not_closed"
+  },
+  "next": {
+    "todoId": "TODO-067",
+    "action": "compare real old VisualTS Detail01..04.stl and 下料表.xls fields against current DetailWriter / RebarScheduleService; field gap report only"
+  }
+}

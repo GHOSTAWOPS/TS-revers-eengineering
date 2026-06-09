@@ -21,6 +21,7 @@ from typing import Any
 CN_TZ = timezone(timedelta(hours=8))
 PENDING_REPORT_MARKERS = (
     "pending_before_commit",
+    "pending_final",
     "pending_update_after_verification",
     "waiting_rereview",
 )
@@ -210,6 +211,7 @@ def done_node_report_requirements(root: Path, rows: list[dict[str, str]]) -> tup
         "TODO-056": ("92_M2-Drawing-025接头重建几何核心DB6C0静态深追P0实现记录.md", "docs/phase1/app_build_reports/m2_drawing_025_run_001.md"),
         "TODO-057": ("93_M2-Drawing-026接头DB6C0owning结构与Dialog428确定链补证P0实现记录.md", "docs/phase1/app_build_reports/m2_drawing_026_run_001.md"),
         "TODO-058": ("94_M2-Drawing-027JoingSegDlgMessageMap与ChildNode112字段收口P1实现记录.md", "docs/phase1/app_build_reports/m2_drawing_027_run_001.md"),
+        "TODO-066": ("104_M2-Drawing-035生成工程图与下料表旧图石真实运行工件回填P0实现记录.md", "docs/phase1/app_build_reports/m2_drawing_035_run_001.md"),
     }
     missing: list[str] = []
     checked: list[str] = []

@@ -477,6 +477,65 @@ class Phase1ReadinessGateTests(unittest.TestCase):
             self.assertIn("81_M2-Drawing-014真实接头线Others几何算法证据补齐P0实现记录.md",
                           report_checks[0].message)
 
+    def test_route_guardrail_accepts_todo066_done_report(self):
+        tmp, root = self.make_guardrail_root()
+        with tmp:
+            (root / "todo.csv").write_text(
+                '"id","priority","phase","task","status","goal_setpoint","acceptance","boundary","evidence","dependencies","risk","notes"\n'
+                '"TODO-066","P1","Evidence","生成工程图与下料表旧图石真实运行工件回填 P0","done","","","","","","",""\n'
+                '"TODO-067","P1","Evidence","next task","next","","","","","","",""\n',
+                encoding="utf-8",
+            )
+            reports_dir = root / "docs" / "phase1" / "app_build_reports"
+            reports_dir.mkdir(parents=True, exist_ok=True)
+            (root / "104_M2-Drawing-035生成工程图与下料表旧图石真实运行工件回填P0实现记录.md").write_text(
+                "# stub\n",
+                encoding="utf-8",
+            )
+            (reports_dir / "m2_drawing_035_run_001.md").write_text("# stub\n", encoding="utf-8")
+            (reports_dir / "m2_drawing_035_run_001.json").write_text("{}\n", encoding="utf-8")
+
+            checks = gate.collect_route_guardrail_checks(root)
+            report_checks = [check for check in checks if check.item == "done_node_reports"]
+
+            self.assertEqual(1, len(report_checks))
+            self.assertTrue(report_checks[0].ok)
+            self.assertIn("checked_done_nodes=1", report_checks[0].message)
+
+    def test_route_guardrail_rejects_todo066_pending_final_report(self):
+        tmp, root = self.make_guardrail_root()
+        with tmp:
+            (root / "todo.csv").write_text(
+                '"id","priority","phase","task","status","goal_setpoint","acceptance","boundary","evidence","dependencies","risk","notes"\n'
+                '"TODO-066","P1","Evidence","生成工程图与下料表旧图石真实运行工件回填 P0","done","","","","","","",""\n'
+                '"TODO-067","P1","Evidence","next task","next","","","","","","",""\n',
+                encoding="utf-8",
+            )
+            reports_dir = root / "docs" / "phase1" / "app_build_reports"
+            reports_dir.mkdir(parents=True, exist_ok=True)
+            (root / "104_M2-Drawing-035生成工程图与下料表旧图石真实运行工件回填P0实现记录.md").write_text(
+                "# stub\n",
+                encoding="utf-8",
+            )
+            (reports_dir / "m2_drawing_035_run_001.md").write_text(
+                "ctest = pending_final\n",
+                encoding="utf-8",
+            )
+            (reports_dir / "m2_drawing_035_run_001.json").write_text(
+                '{"verification":{"ctest":"pending_final"}}\n',
+                encoding="utf-8",
+            )
+
+            checks = gate.collect_route_guardrail_checks(root)
+            report_checks = [check for check in checks if check.item == "done_node_reports"]
+
+            self.assertEqual(1, len(report_checks))
+            self.assertFalse(report_checks[0].ok)
+            self.assertEqual("error", report_checks[0].severity)
+            self.assertIn("GAP-ROUTE-004", report_checks[0].gap)
+            self.assertIn("TODO-066", report_checks[0].message)
+            self.assertIn("pending_final", report_checks[0].message)
+
 
 if __name__ == "__main__":
     unittest.main()
