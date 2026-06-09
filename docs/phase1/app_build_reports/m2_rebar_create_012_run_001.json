@@ -1,0 +1,57 @@
+{
+  "todoId": "TODO-082",
+  "phase": "M2-RebarCreate-012",
+  "evidenceIds": [
+    "E-IDA-048",
+    "E-DEV-104"
+  ],
+  "decision": "done_roles_dto_raw_evidence_aligned",
+  "summary": {
+    "legacyPublicCreateRolesSnapshotAdded": true,
+    "createdPayloadRefRecorded": "createdObject+104",
+    "linkedModelRefRecordedLowConfidence": true,
+    "distanceA4DigitRecorded": true,
+    "distanceA4DigitUsedByNormalizer": true,
+    "objAObjBRoleSwapRiskRecorded": true,
+    "fullLineGroupAlgorithmImplemented": false
+  },
+  "guardrails": {
+    "oldRuntimeAutomaticallyLaunched": false,
+    "haspInstalledAutomatically": false,
+    "systemDirectoryModifiedAutomatically": false,
+    "uiTextChanged": false,
+    "fullLineGroupAlgorithmImplemented": false,
+    "faceRebarImplemented": false,
+    "arcRebarExpanded": false,
+    "jointImplemented": false,
+    "excelImplemented": false,
+    "detailChanged": false,
+    "golden": "not_started",
+    "occtDirectRebarRewrite": false,
+    "parentRebarMigrated": false,
+    "domainRebarOcctLeak": "pass"
+  },
+  "verification": {
+    "targetedBuildAndTest": "pass",
+    "targetedCTest": "pass",
+    "defaultCTest": "pass",
+    "defaultCTestTotal": "21/21 pass, 205.66 sec",
+    "readinessGateUnit": "pass",
+    "readinessGateStrict": "pass",
+    "domainRebarCommandOCCLeak": "pass",
+    "todoSingleNext": "pass",
+    "gitDiffCheck": "pass",
+    "xhighReview": "needs_fix_then_fixed_by_main_flow"
+  },
+  "xhighReview": {
+    "reviewer": "xhigh_readonly_reviewer / Kuhn",
+    "verdict": "needs_fix_then_fixed_by_main_flow",
+    "critical": "m2_rebar_create_012_run_001.md/json still contained unfinished verification markers while TODO-082 was already done",
+    "mainFlowFix": "unfinished verification markers removed after final checks",
+    "agentClosed": true
+  },
+  "next": {
+    "todoId": "TODO-083",
+    "task": "线配筋公共创建 sub_1405D5670 split-spline-trim 等价切片 P0"
+  }
+}

@@ -42,6 +42,17 @@ struct LegacyPublicCreateGateSnapshot
     int entityListCount = 1;
 };
 
+struct LegacyPublicCreateRolesSnapshot
+{
+    std::string objARole = "createContextOwner/sourceContextObject";
+    std::string objBRole = "refreshTargetObject/counterpartObject";
+    std::string roleConfidence = "candidate";
+    bool objAObjBMaySwapByEntryPoint = true;
+    std::string createdPayloadRef = "createdObject+104";
+    std::string linkedModelRef = "createdObject+112";
+    std::string linkedModelRefConfidence = "low";
+};
+
 class LegacyRebarGeometryReader
 {
 public:
@@ -63,6 +74,7 @@ struct RebarGroupCreationRequest
     std::string steelDataId;
     LegacySelectionRef sourceCurve;
     LegacyPublicCreateGateSnapshot publicCreateGate;
+    LegacyPublicCreateRolesSnapshot publicCreateRoles;
     double distanceA = 0.0;
     double distanceB = 0.0;
     char legacyFlag = 0;

@@ -244,8 +244,8 @@ void testLineGroupCreatorBuildsDomainGroupFromLegacyEdge()
     expect(hasEvidence(group.evidence, "E-IDA-022"), "line group must carry IDA evidence");
     expect(hasEvidence(group.evidence, "E-IDA-045"),
            "line group must carry TODO-071 sgroupbarline entry evidence");
-    expect(hasUnresolvedField(group.unresolvedLegacyFields, "sub_1405D5670.arg4"),
-           "line group must keep unresolved fourth double field");
+    expect(hasUnresolvedField(group.unresolvedLegacyFields, "sub_1405D5670.fullEquivalence"),
+           "line group must keep unresolved full equivalence field");
     expect(hasCreatedParameter(group.createdFromParameters, "minimumCreationDistance"),
            "line group must record legacy creation threshold");
     expect(createdParameterValue(group.createdFromParameters,
@@ -280,6 +280,64 @@ void testLineGroupCreatorBuildsDomainGroupFromLegacyEdge()
     expect(hasCreatedParameter(group.createdFromParameters,
                                "sgroupbarline.oddIndexedEntityExtraction"),
            "line group must record odd-indexed entity extraction");
+}
+
+void testLineGroupCreatorRecordsPublicCreateRolesRawEvidence()
+{
+    FakeLegacyRebarGeometryReader reader;
+    reader.addCurve(lineCurve("selection-v1:edge:roles", 18.0));
+
+    auto request = baseRequest("selection-v1:edge:roles");
+    request.distanceA = 0.12349;
+    request.publicCreateRoles.createdPayloadRef = "createdObject+104";
+    request.publicCreateRoles.linkedModelRef = "createdObject+112";
+    request.publicCreateRoles.linkedModelRefConfidence = "low";
+    request.publicCreateRoles.objARole = "createContextOwner/sourceContextObject";
+    request.publicCreateRoles.objBRole = "refreshTargetObject/counterpartObject";
+    request.publicCreateRoles.objAObjBMaySwapByEntryPoint = true;
+
+    const auto result = tsrebar::RebarGroupCreator{}.createLineGroup(request, reader);
+
+    expect(result.ok, "line group role evidence creation must succeed");
+    const auto& group = result.steelData.groups.front();
+
+    expect(createdParameterValue(group.createdFromParameters,
+                                 "sub_1405D5670.distanceA4Digit") == "0.1234",
+           "line group must record TODO-081 distanceA_4digit truncation");
+    expect(near(reader.lastNormalizeRequest().unresolvedEndpointDistanceThreshold, 0.1234),
+           "normalizer request must use distanceA_4digit, matching sub_1405D5670 arg4");
+    expect(createdParameterValue(group.createdFromParameters,
+                                 "sub_140451730.createdPayloadRef") == "createdObject+104",
+           "line group must record createdPayloadRef raw evidence");
+    expect(createdParameterValue(group.createdFromParameters,
+                                 "sub_140451730.linkedModelRef") == "createdObject+112",
+           "line group must record linkedModelRef raw evidence");
+    expect(createdParameterValue(group.createdFromParameters,
+                                 "sub_140451730.linkedModelRef.confidence") == "low",
+           "linkedModelRef must remain low confidence");
+    expect(createdParameterValue(group.createdFromParameters,
+                                 "sub_1404D10C0.objA.roleCandidate") ==
+               "createContextOwner/sourceContextObject",
+           "objA role must remain a candidate role, not a fixed business name");
+    expect(createdParameterValue(group.createdFromParameters,
+                                 "sub_1404D10C0.objB.roleCandidate") ==
+               "refreshTargetObject/counterpartObject",
+           "objB role must remain a candidate role, not a fixed business name");
+    expect(createdParameterValue(group.createdFromParameters,
+                                 "sub_1404D10C0.objAObjB.rolesMaySwapByEntryPoint") == "true",
+           "line group must record objA/objB role swap risk");
+    expect(createdParameterValue(group.createdFromParameters,
+                                 "sub_1404D10C0.objA.roleCandidate") != "sourceSteelGroup",
+           "objA must not be hard-coded as sourceSteelGroup");
+    expect(createdParameterValue(group.createdFromParameters,
+                                 "sub_1404D10C0.objB.roleCandidate") != "targetSteelGroup",
+           "objB must not be hard-coded as targetSteelGroup");
+    expect(!hasUnresolvedField(group.unresolvedLegacyFields, "sub_1405D5670.arg4"),
+           "distanceA_4digit source is now closed by TODO-081 and should not remain unresolved");
+    expect(hasUnresolvedField(group.unresolvedLegacyFields, "createdObject+112.businessMeaning"),
+           "linkedModelRef business meaning must remain explicitly unresolved");
+    expect(hasEvidence(group.evidence, "E-IDA-048"),
+           "line group roles DTO must carry TODO-081 IDA evidence");
 }
 
 void testArcGroupCreatorBuildsArcSegmentAndKeepsUnresolvedUiGap()
@@ -442,6 +500,7 @@ void testCreationRejectsInvalidLegacyRef()
 int main()
 {
     testLineGroupCreatorBuildsDomainGroupFromLegacyEdge();
+    testLineGroupCreatorRecordsPublicCreateRolesRawEvidence();
     testArcGroupCreatorBuildsArcSegmentAndKeepsUnresolvedUiGap();
     testCreationRejectsDistanceBelowVisualTsThresholdBeforeGeometryQuery();
     testCreationRejectsMissingLegacyObjBBeforeGeometryQuery();

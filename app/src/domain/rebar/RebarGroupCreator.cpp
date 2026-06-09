@@ -26,6 +26,11 @@ std::string boolText(bool value)
     return value ? "true" : "false";
 }
 
+double distanceA4Digit(double distanceA)
+{
+    return static_cast<int>(distanceA * 10000.0) / 10000.0;
+}
+
 DomainPoint3d toDomainPoint(const LegacyPoint3d& point)
 {
     return {point.x, point.y, point.z};
@@ -69,8 +74,16 @@ LegacyRawBlock creationParameters(const RebarGroupCreationRequest& request,
         "sub_1404D10C0.entityList.count",
         "sub_1404D10C0.entityList.minimum",
         "sub_1404D10C0.distanceA",
+        "sub_1405D5670.distanceA4Digit",
         "sub_1404D10C0.distanceB",
         "sub_1404D10C0.flag",
+        "sub_1404D10C0.objA.roleCandidate",
+        "sub_1404D10C0.objB.roleCandidate",
+        "sub_1404D10C0.objAObjB.roleConfidence",
+        "sub_1404D10C0.objAObjB.rolesMaySwapByEntryPoint",
+        "sub_140451730.createdPayloadRef",
+        "sub_140451730.linkedModelRef",
+        "sub_140451730.linkedModelRef.confidence",
     };
     block.fields.push_back(rawField("minimumCreationDistance",
                                     numberText(kMinimumCreationDistance),
@@ -99,10 +112,35 @@ LegacyRawBlock creationParameters(const RebarGroupCreationRequest& request,
                                     numberText(kMinimumPublicCreateEntityListCount),
                                     "E-IDA-047"));
     block.fields.push_back(rawField("distanceA", numberText(request.distanceA), "E-IDA-022"));
+    block.fields.push_back(rawField("sub_1405D5670.distanceA4Digit",
+                                    numberText(distanceA4Digit(request.distanceA)),
+                                    "E-IDA-048"));
     block.fields.push_back(rawField("distanceB", numberText(normalizedDistanceB), "E-IDA-022"));
     block.fields.push_back(rawField("legacyFlag",
                                     numberText(static_cast<int>(effectiveFlag)),
                                     "E-IDA-022"));
+    block.fields.push_back(rawField("sub_1404D10C0.objA.roleCandidate",
+                                    request.publicCreateRoles.objARole,
+                                    "E-IDA-048"));
+    block.fields.push_back(rawField("sub_1404D10C0.objB.roleCandidate",
+                                    request.publicCreateRoles.objBRole,
+                                    "E-IDA-048"));
+    block.fields.push_back(rawField("sub_1404D10C0.objAObjB.roleConfidence",
+                                    request.publicCreateRoles.roleConfidence,
+                                    "E-IDA-048"));
+    block.fields.push_back(rawField(
+        "sub_1404D10C0.objAObjB.rolesMaySwapByEntryPoint",
+        boolText(request.publicCreateRoles.objAObjBMaySwapByEntryPoint),
+        "E-IDA-048"));
+    block.fields.push_back(rawField("sub_140451730.createdPayloadRef",
+                                    request.publicCreateRoles.createdPayloadRef,
+                                    "E-IDA-048"));
+    block.fields.push_back(rawField("sub_140451730.linkedModelRef",
+                                    request.publicCreateRoles.linkedModelRef,
+                                    "E-IDA-048"));
+    block.fields.push_back(rawField("sub_140451730.linkedModelRef.confidence",
+                                    request.publicCreateRoles.linkedModelRefConfidence,
+                                    "E-IDA-048"));
     block.fields.push_back(rawField("segmentCurveNormalizerP0",
                                     normalizedCurve ? "applied" : "not-applied",
                                     "E-IDA-022"));
@@ -248,7 +286,7 @@ RebarGroupCreationResult createGroup(const RebarGroupCreationRequest& request,
     const double normalizedDistanceB =
         arcGroup ? kDefaultArcSecondaryDistance : request.distanceB;
     const char effectiveFlag = arcGroup ? 1 : request.legacyFlag;
-    const auto normalizeRequest = normalizerRequest(request.distanceA);
+    const auto normalizeRequest = normalizerRequest(distanceA4Digit(request.distanceA));
     const auto normalizedCurveResult = geometry.normalizeSegmentCurve(curve, normalizeRequest);
     if (!normalizedCurveResult.ok) {
         return reject(normalizedCurveResult.diagnostic.isEmpty()
@@ -281,8 +319,8 @@ RebarGroupCreationResult createGroup(const RebarGroupCreationRequest& request,
     segment.legacyRaw = creationParameters(request, legacyCommand, normalizedDistanceB,
                                            effectiveFlag, true);
     segment.unresolvedLegacyFields.push_back(unresolvedField(
-        "sub_1405D5670.arg4",
-        "Hex-Rays shows a fourth double used as an endpoint distance threshold, but TODO-020 did not close its call-site source."));
+        "sub_1405D5670.fullEquivalence",
+        "TODO-081 closed arg4 source as distanceA_4digit, but full split / spline / trim parity remains open."));
     segment.evidence.push_back(evidenceRef("sub_1405D5670 split / spline / trim chain"));
 
     SteelBar bar;
@@ -337,11 +375,14 @@ RebarGroupCreationResult createGroup(const RebarGroupCreationRequest& request,
                                    "geometryRef.curveStableIds[0]",
                                    "E-IDA-022"});
     group.unresolvedLegacyFields.push_back(unresolvedField(
-        "sub_1405D5670.arg4",
-        "TODO-020 confirmed the value is used, but did not close its true business source."));
+        "sub_1405D5670.fullEquivalence",
+        "TODO-081 closed arg4 source as distanceA_4digit, but full split / spline / trim parity remains open."));
     group.unresolvedLegacyFields.push_back(unresolvedField(
-        "objA/objB/createdPayload",
-        "TODO-020 kept old object business names unresolved."));
+        "objA/objB.oldClassNames",
+        "TODO-081 confirmed objA / objB can swap by entry path, but did not close their old class names or UI business names."));
+    group.unresolvedLegacyFields.push_back(unresolvedField(
+        "createdObject+112.businessMeaning",
+        "TODO-081 only narrowed createdObject+112 to a low-confidence linkedModelRef / createdLinkRef."));
     if (!arcGroup) {
         group.unresolvedLegacyFields.push_back(unresolvedField(
             "sgroupbarline.selectionObjectType",
@@ -358,6 +399,9 @@ RebarGroupCreationResult createGroup(const RebarGroupCreationRequest& request,
     group.evidence.push_back(evidenceRef(
         "E-IDA-047",
         "TODO-079 confirmed sub_1404D10C0 public creation gate diagnostics"));
+    group.evidence.push_back(evidenceRef(
+        "E-IDA-048",
+        "TODO-081 confirmed createdPayload, distanceA_4digit and objA / objB role swap risk"));
     if (!arcGroup) {
         group.evidence.push_back(evidenceRef(
             "E-IDA-045",
