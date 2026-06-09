@@ -1,0 +1,63 @@
+{
+  "todoId": "TODO-070",
+  "phase": "M2-Drawing-039",
+  "evidenceIds": ["E-DEV-092"],
+  "decision": "detail-writer-linestb-stbgeo-field-set-narrowed",
+  "changedCode": [
+    "app/src/drawing/detail/DetailWriter.cpp",
+    "app/tests/unit/detail_writer_tests.cpp"
+  ],
+  "implemented": {
+    "lineStbLineStbGeoFields": {
+      "kept": [
+        "segID",
+        "stbSeqNum",
+        "shapeType",
+        "start_x/y/z",
+        "end_x/y/z",
+        "offset_x/y/z"
+      ],
+      "omitted": [
+        "middle_x/y/z",
+        "start_r",
+        "end_r",
+        "length"
+      ]
+    },
+    "scope": "lineStb + SteelBarSegmentShape::Line field narrowing only; no real drawing algorithm closure"
+  },
+  "guards": {
+    "oldRuntimeAutomaticallyLaunched": false,
+    "haspInstalledAutomatically": false,
+    "systemDirectoryModifiedAutomatically": false,
+    "excelWriterImplemented": false,
+    "autocadL2": "not_run",
+    "golden": "not_started",
+    "rebarBusinessCodeModified": false,
+    "parentRebarMigrated": false,
+    "domainRebarOccLeak": false
+  },
+  "verification": {
+    "detailWriterTdd": "pass; new test failed before implementation with lineStb line StbGeo must not emit middle_x in TODO-070 field set and passed after implementation",
+    "detailWriterTargetBuild": "pass; cmake --build app/build --target detail_writer_tests",
+    "detailWriterTests": "pass; ctest -R detail_writer_tests",
+    "fullBuildDebug": "pass; cmake --build app/build --config Debug",
+    "ctest": "pass; 18/18 pass; total 172.89 sec",
+    "domainRebarOCCLeak": "pass; rg TopoDS_/AIS_/BRep/TopAbs_ app/src/domain/rebar returned no matches",
+    "gitDiffCheck": "pass",
+    "readinessGateUnit": "pass; py tools/phase1_readiness_gate/test_phase1_readiness_gate.py; 29 tests OK",
+    "readinessGateStrict": "pass; M1-Formal-Ready; 84/84 pass",
+    "xhighReview": "needs_fix_important_fixed; Critical none; Important doc/report xhigh status placeholders fixed by main flow"
+  },
+  "residualGaps": {
+    "GAP-DRAW-002": "lineStb line fields narrowed, but StbGroup multi-Std, arc/complex field conditions, old plugin import and real drawing algorithms remain open",
+    "GAP-DRAW-007": "StbRow formulas and mirror semantics remain open",
+    "GAP-DRAW-008": "real Excel workbook writer remains open",
+    "AutoCADL2": "not_run",
+    "golden": "not_started"
+  },
+  "next": {
+    "todoId": "TODO-071",
+    "action": "Rebar.Create.LineGroup old-logic evidence and P0 slice preparation"
+  }
+}

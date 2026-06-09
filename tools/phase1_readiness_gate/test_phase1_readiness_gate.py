@@ -644,6 +644,31 @@ class Phase1ReadinessGateTests(unittest.TestCase):
             self.assertTrue(report_checks[0].ok)
             self.assertIn("checked_done_nodes=1", report_checks[0].message)
 
+    def test_route_guardrail_accepts_todo070_done_report(self):
+        tmp, root = self.make_guardrail_root()
+        with tmp:
+            (root / "todo.csv").write_text(
+                '"id","priority","phase","task","status","goal_setpoint","acceptance","boundary","evidence","dependencies","risk","notes"\n'
+                '"TODO-070","P1","M2-Drawing-039","DetailWriter lineStb StbGeo fields","done","","","","","","",""\n'
+                '"TODO-071","P0","M2-RebarCreate-001","next task","next","","","","","","",""\n',
+                encoding="utf-8",
+            )
+            reports_dir = root / "docs" / "phase1" / "app_build_reports"
+            reports_dir.mkdir(parents=True, exist_ok=True)
+            (root / "108_M2-Drawing-039DetailWriterLineStbStbGeo字段条件化骨架实现记录.md").write_text(
+                "# stub\n",
+                encoding="utf-8",
+            )
+            (reports_dir / "m2_drawing_039_run_001.md").write_text("# stub\n", encoding="utf-8")
+            (reports_dir / "m2_drawing_039_run_001.json").write_text("{}\n", encoding="utf-8")
+
+            checks = gate.collect_route_guardrail_checks(root)
+            report_checks = [check for check in checks if check.item == "done_node_reports"]
+
+            self.assertEqual(1, len(report_checks))
+            self.assertTrue(report_checks[0].ok)
+            self.assertIn("checked_done_nodes=1", report_checks[0].message)
+
 
 if __name__ == "__main__":
     unittest.main()

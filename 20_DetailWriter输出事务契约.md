@@ -1122,3 +1122,46 @@ AutoCAD L2 通过。
 Excel writer 已实现。
 真实工程图算法已实现。
 ```
+
+## M2-Drawing-039 DetailWriter lineStb StbGeo 字段条件化状态
+
+当前正式证据已补：
+
+```text
+E-DEV-092
+TODO-070 / M2-Drawing-039
+```
+
+事务契约保持不变：
+
+```text
+candidate tmp
+  -> L0 root 校验
+  -> L1 package 校验
+  -> replacePackage 原子替换 / 失败回滚
+```
+
+本轮只改变 `StbDetailDrawing / StbGroups / StbGroup# / Std# / StbGeo#` 的字段输出分流：
+
+```text
+lineStb + shapeType=L:
+  -> 写 start / end / offset
+  -> 不写 middle / start_r / end_r / length
+
+pointStb:
+  -> 保持 point / offset / offset2 字段骨架
+
+其他非点筋：
+  -> 保持既有 start / middle / end / radius / offset / length 字段
+```
+
+本轮仍不声明：
+
+```text
+StbGroup 多 Std# 语义闭合。
+圆弧或复杂钢筋字段规则闭合。
+AutoCAD L2 通过。
+旧插件接受度已确认。
+Excel writer 已实现。
+真实工程图算法已实现。
+```

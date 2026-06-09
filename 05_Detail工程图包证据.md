@@ -657,7 +657,54 @@ StbRow.mirrorSEFlag = 0
 
 ```text
 1. StbGroup 多 Std# 容器。
-2. lineStb StbGeo 字段条件化。
+2. General-Info 真实值。
+3. Excel 三表 writer。
+4. AutoCAD L2 / 旧插件接受度。
+```
+
+## TODO-070 lineStb StbGeo 字段条件化补充
+
+Evidence：
+
+```text
+E-DEV-092
+```
+
+当前正式 `app` 已继续对齐的真实旧包字段集合：
+
+```text
+lineStb + shapeType=L / StbGeo#:
+  -> segID
+  -> stbSeqNum
+  -> shapeType
+  -> start_x / start_y / start_z
+  -> end_x / end_y / end_z
+  -> offset_x / offset_y / offset_z
+```
+
+当前正式 `app` 不再对该字段集输出：
+
+```text
+middle_x / middle_y / middle_z
+start_r
+end_r
+length
+```
+
+边界：
+
+```text
+1. 本轮只收窄 lineStb 直线段字段集合。
+2. 真实样例来自 RUN-20260609-001，不能外推成所有旧包规则。
+3. 点筋、FaceEdge 和弧段既有字段没有在本轮删除。
+4. 未实现 StbGroup 多 Std#、Excel writer、AutoCAD L2 或真实工程图算法。
+```
+
+下一步不继续抠 Detail 小字段，切到：
+
+```text
+TODO-071 / 线配筋生成旧逻辑证据与 P0 切片准备
+```
 3. General-Info 真实值。
 4. Excel 三表 writer。
 5. AutoCAD L2 / 旧插件接受度。

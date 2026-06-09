@@ -20,7 +20,7 @@
      输出目录 / hash / 覆盖策略记录模板和拒收伪工件规则已落文档
   -> output_uncut_steel / Dialog 0x57C / UnCutSteel.TXT
      继续只算可选旁证，不算前置设置窗
-  -> TODO-066 已完成真实工件回填；TODO-067 已完成字段对照；TODO-068 已完成最明显旧包格式纠偏；TODO-069 已完成 StbRow 扩展属性骨架；现在的主线是 TODO-070
+  -> TODO-066 已完成真实工件回填；TODO-067 已完成字段对照；TODO-068 已完成最明显旧包格式纠偏；TODO-069 已完成 StbRow 扩展属性骨架；TODO-070 已完成 lineStb StbGeo 字段条件化骨架；现在的主线是 TODO-071
 ```
 
 ## 可直接粘贴到 Goal 模式的目标
@@ -336,12 +336,12 @@ planned tag = evidence-058/joint-dialog-message-map-node112-stop-point
 当前下一步：
 
 ```text
-TODO-070 / DetailWriter 真实字段差异 P2：lineStb StbGeo 字段条件化骨架
+TODO-071 / 线配筋生成旧逻辑证据与 P0 切片准备
   -> 接头链路现阶段先记录、暂缓。
-  -> TODO-069 已完成 StbRow 扩展属性骨架。
-  -> 下一轮只收窄 lineStb StbGeo 字段集合。
-  -> 不自动启动旧图石，不安装 HASP，不实现 Excel writer、
-     隐藏线 / 填充线 / 点筋 / FaceEdge 或真实工程图算法。
+  -> TODO-070 已完成 lineStb 直线段 StbGeo 字段条件化骨架。
+  -> 下一轮回到钢筋生成主线，先用 IDA MCP / 15 / 16 文档确认
+     sgroupbarline 或等价线配筋入口、参数、对象创建、字段写入和 P0 切片边界。
+  -> 不自动启动旧图石，不安装 HASP，不用 OCCT 直接重写钢筋业务。
 ```
 
 长期执行循环：
@@ -585,7 +585,7 @@ commit / tag / push 状态
 
 ### 短期 Goal（推荐本轮复制）
 
-目标：只完成 `TODO-070 / DetailWriter 真实字段差异 P2：lineStb StbGeo 字段条件化骨架` 这个短期阶段，不自动进入后续长期开发。
+目标：只完成 `TODO-071 / 线配筋生成旧逻辑证据与 P0 切片准备` 这个短期阶段，不自动进入后续长期开发。
 
 当前状态：
 
@@ -604,22 +604,26 @@ commit / tag / push 状态
   TODO-067 = done
   TODO-068 = done
   TODO-069 = done
-  TODO-070 = next
+  TODO-070 = done
+  TODO-071 = next
 ```
 
 本轮只做：
 
 ```text
-DetailWriterRealFieldDelta / TODO-070
-  -> 从 E-DETAIL-004 / E-DEV-091 出发
-  -> 在 TODO-069 已完成 StbRow 扩展属性骨架之后
-  -> 只收窄 lineStb StbGeo 字段集合
-  -> 同步更新 05 / 11 / 13 / 20 / 34 / 46 / 99 / todo / 实现记录 / build report
+RebarCreateLineGroupEvidence / TODO-071
+  -> 从 03 / 08 / 09 / 15 / 16 / 35 / 46 / 99 出发
+  -> 在 TODO-070 已完成 Detail lineStb 直线段字段收窄之后
+  -> 回到钢筋生成主线，确认 sgroupbarline 或等价线配筋入口
+  -> 优先用 IDA MCP 查旧 VisualTS 调用链、参数、对象创建和字段写入
+  -> 同步更新 03 / 08 / 09 / 11 / 15 / 16 / 35 / 46 / 99 / todo / 实现记录 / build report
   -> 跑默认 CTest / readiness gate / OCCT 泄漏检查
   -> 代码节点 commit 前必须 xhigh 只读 review
-  -> 不启动旧图石，不安装 HASP，不改钢筋创建业务
-  -> 不实现 Excel writer、隐藏线、填充线、点筋、FaceEdge 或真实工程图算法
-  -> 不实现 StbGroup 多 Std# 真实算法
+  -> 不启动旧图石，不安装 HASP
+  -> 不用 OCCT 直接重写钢筋业务
+  -> 不迁入父目录 rebar 业务
+  -> domain/rebar 不引入 TopoDS / AIS / BRep / TopAbs
+  -> 不进入面配筋、接头、Excel、Detail 字段继续扩张
   -> 不跑 AutoCAD L2，不进入 golden
 ```
 
@@ -667,18 +671,23 @@ TODO-069 已完成：
   - 三个字段默认值均为 0
   - 字段真实公式和镜像语义仍保留 gap
 
+TODO-070 已完成：
+  - lineStb + shapeType=L 的 StbGeo 字段集已收窄到 start/end/offset
+  - 不再输出 middle / start_r / end_r / length
+  - 点筋、FaceEdge 和弧段既有字段保持不变
+
 当前仍未闭合：
   - 旧插件是否必须检查 Detail.xml 这个空占位文件
   - Detail.xml + DetailNN.stl 的真实 rerun 覆盖
   - StbTable 表级属性公式
   - StbRow smallTable / mirrorType / mirrorSEFlag 真实公式和镜像语义
-  - lineStb StbGeo 字段条件化
+  - StbGroup 多 Std# 和复杂钢筋 Detail 字段条件
   - Excel 三表 writer、单位换算和焊接字段
   - AutoCAD L2
 
-本轮只做 TODO-070，
+本轮只做 TODO-071，
 不回接头运行链，
-不同时做 Excel writer、真实工程图算法、golden 采集、UI 新功能或 AutoCAD L2 通过声明。
+不同时做面配筋、接头、Excel writer、真实工程图算法、golden 采集、UI 新功能或 AutoCAD L2 通过声明。
 ```
 
 当前已完成前置：
@@ -941,9 +950,11 @@ TODO-068 / M2-Drawing-037 = done
      和 StbTable 表级属性骨架。
 TODO-069 / M2-Drawing-038 = done
   -> 已完成 StbRow smallTable / mirrorType / mirrorSEFlag 扩展属性骨架。
-TODO-070 / M2-Drawing-039 = next
-  -> 继续非接头主线：DetailWriter 真实字段差异 P2。
-  -> 只收窄 lineStb StbGeo 字段集合。
+TODO-070 / M2-Drawing-039 = done
+  -> 已完成 lineStb 直线段 StbGeo 字段条件化骨架。
+TODO-071 / M2-RebarCreate-001 = next
+  -> 回到钢筋生成主线：线配筋生成旧逻辑证据与 P0 切片准备。
+  -> 先查 IDA / 15 / 16 证据，不用 OCCT 直接重写钢筋业务。
   -> 不进入 Excel writer、隐藏线 / 填充线 / 点筋 / FaceEdge 算法，
      不自动启动旧图石，不进入 golden。
 ```
@@ -1276,17 +1287,18 @@ TODO-054 验证 = joint handler object filters classified, bar/group/seg/feat so
 TODO-055 验证 = joint handler action field semantics traced, groupjoint obj+80 child chain and child+72/+88/+96/+108/+112/+116/+128 fields classified, backup write helpers closed, feat/goujian obj+192 clear adapter traced, segjoint clear/dialog init classified, full sub_1405DB6C0 geometry algorithm still open, autocadL2=not_run, xhigh not_required_docs_only
 TODO-056 验证 = DB6C0 static rebuild core traced, child+88/+108/+112/+116 and node+72/+80/+88/+104/+112 fields classified, reverse traversal and helper chain closed, bounded curve parameter sampling and end_indexed_polygon(rcx=node, rdx=point, r8d=intMmIndex) confirmed, owning structure names/dialog apply/runtime sample still open, autocadL2=not_run, xhigh review completed, critical fixed, important fixed
 TODO-069 验证 = StbRow smallTable / mirrorType / mirrorSEFlag 字段骨架已输出，CTest 18/18 pass, readiness unit 28/28 pass, strict readiness 84/84 pass, OCCT leak scan pass, xhigh needs_fix important fixed, one-shot reviewer process exited
+TODO-070 验证 = lineStb + shapeType=L 的 StbGeo 字段集已收窄到 start/end/offset，detail_writer_tests TDD red->green, CTest 18/18 pass, readiness unit 29/29 pass, strict readiness 84/84 pass, OCCT leak scan pass, xhigh needs_fix important fixed, one-shot reviewer process exited
 ```
 
 当前下一步：
 
 ```text
-TODO-070 / DetailWriter 真实字段差异 P2：lineStb StbGeo 字段条件化骨架
-  -> TODO-069 已完成 StbRow 扩展属性骨架
-  -> 只收窄 lineStb StbGeo 字段集合
+TODO-071 / 线配筋生成旧逻辑证据与 P0 切片准备
+  -> TODO-070 已完成 lineStb 直线段 StbGeo 字段条件化骨架
+  -> 回到钢筋生成主线，先确认 sgroupbarline 或等价线配筋入口
+  -> 用 IDA MCP / 15 / 16 文档确认参数、对象创建、字段写入和 P0 切片边界
   -> 不自动安装 HASP，不自动启动旧图石
-  -> 不实现 Excel writer、隐藏线、填充线、点筋、FaceEdge 或真实工程图算法
-  -> 不实现 StbGroup 多 Std# 真实算法
+  -> 不用 OCCT 直接重写钢筋业务，不迁入父目录 rebar 业务
   -> 不声明 AutoCAD L2 通过，不进入 golden
 ```
 
@@ -1296,14 +1308,15 @@ TODO-070 / DetailWriter 真实字段差异 P2：lineStb StbGeo 字段条件化�
 TODO-067 已经把真实字段差距列清楚。
 TODO-068 已经把最明显的旧包格式差异先修正。
 TODO-069 已经补齐 StbRow 扩展属性骨架。
+TODO-070 已经收窄 lineStb 直线段 StbGeo 字段集合。
 
-当前最值得继续补的是 lineStb StbGeo 字段条件化：
-  真实 lineStb 样例只见 segID / stbSeqNum / shapeType /
-  start_x/y/z / end_x/y/z / offset_x/y/z
-  当前 writer 对非点筋额外写 middle_x/y/z / start_r / end_r
+当前最值得继续推进的是线配筋生成主线：
+  先确认旧 VisualTS 的 sgroupbarline 或等价入口，
+  再确认参数、选择对象、钢筋对象创建、字段写入和 P0 可实现边界。
 
-这比直接进入 Excel writer、隐藏线、填充线或 AutoCAD L2 更稳，
-也更符合“先按旧图石真实证据补字段骨架，再逐步进算法”的路线。
+这比继续抠 Detail 小字段更贴近当前成熟度瓶颈：
+  钢筋生成算法还没完整复刻，
+  下一步应回到旧生成逻辑证据，而不是用 OCCT 直接写一个差不多的生成器。
 golden 采集 TODO-026 仍按用户要求保持 pending。
 ```
 
@@ -1369,19 +1382,19 @@ golden 采集 TODO-026 仍按用户要求保持 pending。
 
 ## CSE v2 Control Contract
 
-- **Primary Setpoint**：下一轮只完成 `TODO-070 / DetailWriter 真实字段差异 P2：lineStb StbGeo 字段条件化骨架`，在 `TODO-069` 已完成 StbRow 扩展属性骨架后，只收窄真实样例明确指出的 lineStb `StbGeo#` 字段集合差异。
-- **Acceptance**：DetailWriter 对 lineStb `StbGeo#` 的字段输出更接近真实旧包字段集合；对应测试通过；默认 CTest、readiness gate、OCCT 泄漏检查通过；xhigh 只读 review 完成；文档、追溯矩阵、缺口、46 和 todo 同步更新。
-- **Guardrail Metrics**：不能把 `output_uncut_steel / Dialog 0x57C` 直接写死成生成工程图前置设置窗；不能把 `Dialog #427` 再升回下料表弹窗真值；不能伪造运行证据；不能实现真实工程图算法；不能在没有运行证据时声明 AutoCAD L2 通过；不能改钢筋创建业务；不能迁入父目录 rebar 业务；不能进入 golden。
-- **Sampling Plan**：先读 `todo.csv / 05 / 11 / 13 / 20 / 46 / 99 / 105 / 107`，确认 `TODO-070` 只做 lineStb StbGeo 字段条件化骨架；再读 DetailWriter 代码和测试；先补测试，再改 writer；最后运行默认 CTest、readiness gate、OCCT 泄漏检查和 xhigh 只读 review。
-- **Known Delays**：lineStb 字段集合来自当前真实旧包样例，圆弧、点筋、FaceEdge 字段条件和旧插件容忍度可能需要后续 IDA 或旧图石运行确认；Excel 公式、合并规则和 AutoCAD L2 不在本轮关闭。
-- **Recovery Target**：如果字段语义无法判断，就把字段列入低置信或 gap，写回 `99` 与 build report；不能把未知字段硬解释成当前新系统字段。
-- **Rollback Trigger**：把无关截图或无关 Excel 误收成运行证据；无证据把 `output_uncut_steel / Dialog 0x57C` 升成前置设置窗；无证据把 `Dialog #427` 再写成下料表弹窗；实现真实工程图算法；让 `domain/rebar` 泄漏 OCCT/AIS；测试或 gate 失败仍继续堆功能。
+- **Primary Setpoint**：下一轮只完成 `TODO-071 / 线配筋生成旧逻辑证据与 P0 切片准备`，回到钢筋生成主线，确认 `sgroupbarline` 或等价线配筋入口、参数、对象创建、字段写入和 P0 可实现边界。
+- **Acceptance**：IDA / 15 / 16 / 旧命令契约证据被读取并落到实现记录；若进入代码切片，则业务层不直接依赖 OCCT/AIS；对应测试通过；默认 CTest、readiness gate、OCCT 泄漏检查通过；xhigh 只读 review 完成；文档、追溯矩阵、缺口、46 和 todo 同步更新。
+- **Guardrail Metrics**：不能用 OCCT 能怎么做替代旧图石怎么做；不能迁入父目录 rebar 业务；不能让 `domain/rebar` 依赖 TopoDS/AIS/BRep/TopAbs；不能伪造 IDA 或旧运行证据；不能在一个节点里铺开面配筋、接头、Excel、Detail 字段继续扩张或 golden。
+- **Sampling Plan**：先读 `todo.csv / 03 / 08 / 09 / 15 / 16 / 35 / 46 / 99`，确认 `TODO-071` 只做线配筋旧逻辑证据与 P0 切片准备；旧逻辑不确定时优先用 IDA MCP；若改代码，先补测试，再改实现；最后运行默认 CTest、readiness gate、OCCT 泄漏检查和 xhigh 只读 review。
+- **Known Delays**：旧线配筋生成链可能包含 ACIS/HOOPS/MFC 对象和旧字段偏移，IDA 命名低置信；没有 golden 时只能先闭合结构证据和 P0 行为，不声明完整 1:1。
+- **Recovery Target**：如果旧入口、参数或字段无法确认，就把结论写成 gap，回到 IDA / 旧运行确认；不能把现有 `RebarGroupCreator` 或父目录代码当旧图石真相。
+- **Rollback Trigger**：domain/rebar 出现 OCCT/AIS include；父目录 rebar 业务被迁入；无 IDA/运行证据却写成旧逻辑已确认；测试或 gate 失败仍继续堆功能。
 - **Constraints**：不使用 ACIS / HOOPS / Codejock 等商业库；新系统不引入 USB 狗 / 网络许可依赖；旧逻辑不确定时优先查 IDA MCP 或旧图石运行确认；xhigh 只读，修改由主流程 agent 完成；不自动安装 HASP，不自动再次启动旧图石。
-- **Boundary**：下一轮只允许改 `DetailWriter`、`detail_writer_tests`、必要 gate 映射和相关文档 / run report；禁止实现 Excel writer、真实 OCCT HLR/section/hidden-line/steeljoint-line/Others 算法、禁止修改 UI 新功能、钢筋创建业务、无证据 AutoCAD L2 结论和 golden。
-- **Coupling Notes**：`drawing/export` 是 Detail 包输出边界；TODO-070 只收窄 lineStb StbGeo 字段集合，不关闭旧插件容忍度、AutoCAD L2、隐藏线 / 填充线算法、Excel writer、StbGroup 多 Std# 或完整工程图缺口。
-- **Approximation Validity**：TODO-070 的目标是字段集合条件化，不是完整 lineStb 几何算法、StbGroup 多 Std# 语义、Excel writer、AutoCAD L2 通过或 golden；即使字段更接近旧包，也不代表旧图石运行输出和新系统结果已经 1:1。
-- **Actuator Budget**：下一轮只推进 `TODO-070`。完成后停止复盘，不自动进入 Excel writer、真实算法实现、隐藏线、填充线、点筋、FaceEdge、StbGroup 多 Std# 或 golden。
-- **Risks**：当前真实 lineStb 字段集合来自单个旧包样例；如果简单删字段，可能误伤圆弧、点筋或 FaceEdge 输出，需要测试明确区分 shapeType / StbType。
+- **Boundary**：下一轮优先允许改线配筋相关 domain/rebar、命令 handler、测试、IDA/证据文档和 run report；禁止继续扩张 DetailWriter 字段、禁止实现面配筋/接头/Excel/golden，禁止迁入父目录 rebar 业务。
+- **Coupling Notes**：`domain/rebar` 是业务对象边界；`LegacyGeometryAdapter` 是几何能力边界；线配筋创建若需要几何读取，只能通过 legacy 语义接口，不让业务层直接写 OCCT。
+- **Approximation Validity**：TODO-071 的目标是旧逻辑证据与 P0 切片准备，不是完整线配筋、面配筋、弧筋、统计、出图或 golden；即使 P0 代码通过，也不代表钢筋生成算法完整复刻。
+- **Actuator Budget**：下一轮只推进 `TODO-071`。完成后停止复盘，不自动进入面配筋、接头、Excel、Detail 字段继续扩张或 golden。
+- **Risks**：旧线配筋生成链复杂，现有 `RebarGroupCreator` 可能只是 P0 近似；必须用 IDA 或旧运行证据确认哪些可以保留、哪些必须重写。
 ## Todo CSV 使用方式
 
 `todo.csv` 是后续执行看板。建议每次 goal 模式只拿 `status=next` 或最高优先级 `pending` 的任务推进。
@@ -1406,15 +1419,16 @@ golden 采集 TODO-026 仍按用户要求保持 pending。
 下一步优先执行：
 
 ```text
-TODO-070 / DetailWriter 真实字段差异 P2：lineStb StbGeo 字段条件化骨架
-  -> TODO-069 已完成 StbRow 扩展属性骨架
-  -> 只收窄 lineStb StbGeo 字段集合
+TODO-071 / 线配筋生成旧逻辑证据与 P0 切片准备
+  -> TODO-070 已完成 lineStb 直线段 StbGeo 字段条件化骨架
+  -> 回到钢筋生成主线，先确认 sgroupbarline 或等价线配筋入口
+  -> 优先用 IDA MCP / 15 / 16 文档确认旧逻辑
   -> 不自动安装 HASP
   -> 不自动启动旧图石
-  -> 不实现 Excel writer、隐藏线、填充线、点筋、FaceEdge 或真实工程图算法
-  -> 不实现 StbGroup 多 Std# 真实算法
+  -> 不用 OCCT 直接重写钢筋业务
+  -> 不迁入父目录 rebar 业务
   -> 不声明 AutoCAD L2 通过，不进入 golden
 ```
 
-原因很简单：TODO-067 已经把真实字段差距列清楚，TODO-068 已把最明显的旧包格式差异先修完，TODO-069 已补齐 StbRow 扩展属性骨架。现在最值钱的是继续收窄真实样例里明确暴露的 lineStb StbGeo 字段集合差异，而不是直接进入 Excel、隐藏线、填充线或 AutoCAD L2。
+原因很简单：TODO-070 已把当前已知的 Detail lineStb 字段差异收窄到可追溯状态。现在成熟度瓶颈不在 Detail 小字段，而在钢筋生成算法本身；下一步必须回到旧 VisualTS 线配筋生成逻辑，用 IDA / 旧证据决定 P0 该怎么写。
 TODO-026 golden 采集暂按用户要求保持 pending。

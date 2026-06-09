@@ -136,6 +136,7 @@ M1-App-018 状态：
 - `SteelBarSegment` P1 已可表达 `segID / stbSeqNum / shapeType / startPoint / endPoint / middlePoint / startRadius / endRadius / offset / length`。
 - `shapeType` 使用 `SteelBarSegmentShape`，并提供 `detailShapeTypeCode()` 输出 `L / A / C`。
 - `startRadius / endRadius / offset` 字段已存在，但旧值来源、半径公式和点状 `C` 的完整语义仍未闭合。
+- `TODO-070 / E-DEV-092` 已把 `lineStb + shapeType=L` 的写出口收窄为真实样例字段集：`segID / stbSeqNum / shapeType / start / end / offset`，不再写 `middle / start_r / end_r / length`。该结论不外推到弧段、点筋或 FaceEdge。
 
 ## StbRow -> ScheduleRow
 
@@ -475,5 +476,28 @@ TODO-069 / M2-Drawing-038
 下一步优先：
 
 ```text
-TODO-070 / lineStb StbGeo 字段条件化骨架。
+TODO-071 / 线配筋生成旧逻辑证据与 P0 切片准备。
 ```
+
+## TODO-070 lineStb StbGeo 字段条件化实现补充
+
+Evidence：
+
+```text
+E-DEV-092
+TODO-070 / M2-Drawing-039
+```
+
+已实现映射：
+
+| Detail 字段 | 新实现来源 | 状态 | 说明 |
+|---|---|---|---|
+| `lineStb/StbGeo.segID` | `SteelBarSegment.segmentId` | 保留 | ID 生成规则仍未闭合。 |
+| `lineStb/StbGeo.stbSeqNum` | `SteelBarSegment.sequenceNo` | 保留 | 序号来源仍需旧算法确认。 |
+| `lineStb/StbGeo.shapeType` | `SteelBarSegmentShape::Line -> L` | 保留 | 本轮只处理直线段。 |
+| `lineStb/StbGeo.start_x/y/z` | `SteelBarSegment.startPoint` | 保留 | 真实样例确认字段。 |
+| `lineStb/StbGeo.end_x/y/z` | `SteelBarSegment.endPoint` | 保留 | 真实样例确认字段。 |
+| `lineStb/StbGeo.offset_x/y/z` | `SteelBarSegment.offset` | 保留 | 真实样例确认字段。 |
+| `lineStb/StbGeo.middle_x/y/z` | `SteelBarSegment.middlePoint` | 条件省略 | `lineStb + L` 不再输出；弧段仍保留。 |
+| `lineStb/StbGeo.start_r/end_r` | `SteelBarSegment.startRadius/endRadius` | 条件省略 | `lineStb + L` 不再输出；弧段仍保留。 |
+| `lineStb/StbGeo.length` | `SteelBarSegment.length` | 条件省略 | `lineStb + L` 不再输出；长度仍在下料表 / StbRow / StbSeg 链路中保留。 |

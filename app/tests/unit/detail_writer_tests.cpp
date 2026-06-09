@@ -470,11 +470,28 @@ void testDetailWriterMapsDomainRebarToDetailPackage()
     expect(geo1.value("shapeType") == "L", "line segment must map to StbGeo shape L");
     expect(geo1.value("start_x") == "0", "StbGeo line start_x mismatch");
     expect(geo1.value("end_x") == "10", "StbGeo line end_x mismatch");
+    expect(geo1.value("offset_x") == "0", "StbGeo line offset_x mismatch");
+    expect(geo1.value("offset_y") == "0", "StbGeo line offset_y mismatch");
+    expect(geo1.value("offset_z") == "0", "StbGeo line offset_z mismatch");
+    expect(geo1.value("middle_x").isEmpty(),
+           "lineStb line StbGeo must not emit middle_x in TODO-070 field set");
+    expect(geo1.value("middle_y").isEmpty(),
+           "lineStb line StbGeo must not emit middle_y in TODO-070 field set");
+    expect(geo1.value("middle_z").isEmpty(),
+           "lineStb line StbGeo must not emit middle_z in TODO-070 field set");
+    expect(geo1.value("start_r").isEmpty(),
+           "lineStb line StbGeo must not emit start_r in TODO-070 field set");
+    expect(geo1.value("end_r").isEmpty(),
+           "lineStb line StbGeo must not emit end_r in TODO-070 field set");
+    expect(geo1.value("length").isEmpty(),
+           "lineStb line StbGeo must not emit length in TODO-070 field set");
 
     const auto geo2 = findElementAttrs(detailStl, "StbGeo2");
     expect(geo2.value("segID") == "segment-arc-001", "arc StbGeo.segID mismatch");
     expect(geo2.value("shapeType") == "A", "arc segment must map to StbGeo shape A");
     expect(geo2.value("middle_x") == "12", "arc StbGeo middle_x mismatch");
+    expect(geo2.value("start_r") == "3", "arc StbGeo start_r must stay explicit");
+    expect(geo2.value("length") == "5", "arc StbGeo length must stay explicit");
 
     const auto row = findElementAttrs(detailStl, "StbRow1");
     expect(row.value("rsdID") == "Y12", "StbRow.rsdID must share StbGroup.rsdID");

@@ -449,9 +449,16 @@ void writeZeroSecondaryOffsetAttributes(QXmlStreamWriter& writer)
     writer.writeAttribute(QStringLiteral("offset_z2"), QStringLiteral("0"));
 }
 
+bool usesRuntimeLineStbLineGeoFieldSet(const std::string& rebarType,
+                                       SteelBarSegmentShape shapeType)
+{
+    return rebarType == "lineStb" && shapeType == SteelBarSegmentShape::Line;
+}
+
 void writeSegmentGeo(QXmlStreamWriter& writer,
                      const SteelBarSegment& segment,
-                     int sequence)
+                     int sequence,
+                     const std::string& rebarType)
 {
     writer.writeStartElement(QStringLiteral("StbGeo%1").arg(sequence));
     writer.writeAttribute(QStringLiteral("segID"), stableIdOrAlias(segment.segmentId, segment.id));
@@ -464,6 +471,10 @@ void writeSegmentGeo(QXmlStreamWriter& writer,
         writePointAttributes(writer, QStringLiteral("point"), segment.startPoint);
         writePointAttributes(writer, QStringLiteral("offset"), segment.offset);
         writeZeroSecondaryOffsetAttributes(writer);
+    } else if (usesRuntimeLineStbLineGeoFieldSet(rebarType, segment.shapeType)) {
+        writePointAttributes(writer, QStringLiteral("start"), segment.startPoint);
+        writePointAttributes(writer, QStringLiteral("end"), segment.endPoint);
+        writePointAttributes(writer, QStringLiteral("offset"), segment.offset);
     } else {
         writePointAttributes(writer, QStringLiteral("start"), segment.startPoint);
         writePointAttributes(writer, QStringLiteral("middle"), segment.middlePoint);
@@ -471,8 +482,8 @@ void writeSegmentGeo(QXmlStreamWriter& writer,
         writer.writeAttribute(QStringLiteral("start_r"), formatNumber(segment.startRadius));
         writer.writeAttribute(QStringLiteral("end_r"), formatNumber(segment.endRadius));
         writePointAttributes(writer, QStringLiteral("offset"), segment.offset);
+        writer.writeAttribute(QStringLiteral("length"), formatNumber(segment.length));
     }
-    writer.writeAttribute(QStringLiteral("length"), formatNumber(segment.length));
     writer.writeEndElement();
 }
 
@@ -817,7 +828,7 @@ void writeDrawingXml(const QString& path,
             writer.writeAttribute(QStringLiteral("segCount"), QString::number(segments.size()));
             int segmentSequence = 0;
             for (const SteelBarSegment* segment : segments) {
-                writeSegmentGeo(writer, *segment, ++segmentSequence);
+                writeSegmentGeo(writer, *segment, ++segmentSequence, group.rebarType);
             }
             writer.writeEndElement();
             if (group.rebarType == "pointStb") {
