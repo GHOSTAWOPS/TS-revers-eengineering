@@ -248,6 +248,21 @@ void testLineGroupCreatorBuildsDomainGroupFromLegacyEdge()
            "line group must keep unresolved fourth double field");
     expect(hasCreatedParameter(group.createdFromParameters, "minimumCreationDistance"),
            "line group must record legacy creation threshold");
+    expect(createdParameterValue(group.createdFromParameters,
+                                 "sub_1404D10C0.objA.present") == "true",
+           "line group must record old objA presence gate");
+    expect(createdParameterValue(group.createdFromParameters,
+                                 "sub_1404D10C0.objB.present") == "true",
+           "line group must record old objB presence gate");
+    expect(createdParameterValue(group.createdFromParameters,
+                                 "sub_1404D10C0.entityList.count") == "1",
+           "line group must record old ENTITY_LIST count gate");
+    expect(createdParameterValue(group.createdFromParameters,
+                                 "sub_1404D10C0.objA.sub_1405F25F0.count") == "3",
+           "line group must record old sub_1405F25F0(objA) gate");
+    expect(createdParameterValue(group.createdFromParameters,
+                                 "sub_1404D10C0.objA.sub_1405F25F0.minimum") == "3",
+           "line group must record old sub_1405F25F0(objA) minimum");
     expect(createdParameterValue(group.createdFromParameters, "sgroupbarline.selectionCount") == "1",
            "line group must record old single-selection entry contract");
     expect(createdParameterValue(group.createdFromParameters,
@@ -317,9 +332,83 @@ void testCreationRejectsDistanceBelowVisualTsThresholdBeforeGeometryQuery()
     const auto result = tsrebar::RebarGroupCreator{}.createLineGroup(request, reader);
 
     expect(!result.ok, "distance below 0.002 must be rejected");
+    expect(result.diagnostic.contains(QStringLiteral("sub_1404D10C0")),
+           "distance diagnostic must mention old common creation gate");
     expect(result.diagnostic.contains(QStringLiteral("0.002")),
            "threshold diagnostic must mention 0.002");
     expect(reader.callCount() == 0, "legacy distance gate must run before geometry query");
+}
+
+void testCreationRejectsMissingLegacyObjBBeforeGeometryQuery()
+{
+    FakeLegacyRebarGeometryReader reader;
+    reader.addCurve(lineCurve("selection-v1:edge:17", 12.5));
+
+    auto request = baseRequest("selection-v1:edge:17");
+    request.publicCreateGate.objBResolved = false;
+
+    const auto result = tsrebar::RebarGroupCreator{}.createLineGroup(request, reader);
+
+    expect(!result.ok, "missing objB surrogate must be rejected");
+    expect(result.diagnostic.contains(QStringLiteral("sub_1404D10C0")),
+           "objB diagnostic must mention old common creation gate");
+    expect(result.diagnostic.contains(QStringLiteral("objB")),
+           "objB diagnostic must mention objB");
+    expect(reader.callCount() == 0, "objB gate must run before geometry query");
+}
+
+void testCreationRejectsMissingLegacyObjABeforeGeometryQuery()
+{
+    FakeLegacyRebarGeometryReader reader;
+    reader.addCurve(lineCurve("selection-v1:edge:17", 12.5));
+
+    auto request = baseRequest("selection-v1:edge:17");
+    request.publicCreateGate.objAResolved = false;
+
+    const auto result = tsrebar::RebarGroupCreator{}.createLineGroup(request, reader);
+
+    expect(!result.ok, "missing objA surrogate must be rejected");
+    expect(result.diagnostic.contains(QStringLiteral("sub_1404D10C0")),
+           "objA diagnostic must mention old common creation gate");
+    expect(result.diagnostic.contains(QStringLiteral("objA")),
+           "objA diagnostic must mention objA");
+    expect(reader.callCount() == 0, "objA gate must run before geometry query");
+}
+
+void testCreationRejectsLegacyObjACountBelowVisualTsGateBeforeGeometryQuery()
+{
+    FakeLegacyRebarGeometryReader reader;
+    reader.addCurve(lineCurve("selection-v1:edge:17", 12.5));
+
+    auto request = baseRequest("selection-v1:edge:17");
+    request.publicCreateGate.objASub1405F25F0Count = 2;
+
+    const auto result = tsrebar::RebarGroupCreator{}.createLineGroup(request, reader);
+
+    expect(!result.ok, "sub_1405F25F0(objA) below 3 must be rejected");
+    expect(result.diagnostic.contains(QStringLiteral("sub_1405F25F0")),
+           "objA count diagnostic must mention sub_1405F25F0");
+    expect(result.diagnostic.contains(QStringLiteral("3")),
+           "objA count diagnostic must mention minimum 3");
+    expect(reader.callCount() == 0, "objA count gate must run before geometry query");
+}
+
+void testCreationRejectsEmptyLegacyEntityListBeforeGeometryQuery()
+{
+    FakeLegacyRebarGeometryReader reader;
+    reader.addCurve(lineCurve("selection-v1:edge:17", 12.5));
+
+    auto request = baseRequest("selection-v1:edge:17");
+    request.publicCreateGate.entityListCount = 0;
+
+    const auto result = tsrebar::RebarGroupCreator{}.createLineGroup(request, reader);
+
+    expect(!result.ok, "empty ENTITY_LIST surrogate must be rejected");
+    expect(result.diagnostic.contains(QStringLiteral("ENTITY_LIST")),
+           "entity list diagnostic must mention ENTITY_LIST");
+    expect(result.diagnostic.contains(QStringLiteral("1")),
+           "entity list diagnostic must mention minimum 1");
+    expect(reader.callCount() == 0, "ENTITY_LIST gate must run before geometry query");
 }
 
 void testCreationRejectsShortLegacySegment()
@@ -355,6 +444,10 @@ int main()
     testLineGroupCreatorBuildsDomainGroupFromLegacyEdge();
     testArcGroupCreatorBuildsArcSegmentAndKeepsUnresolvedUiGap();
     testCreationRejectsDistanceBelowVisualTsThresholdBeforeGeometryQuery();
+    testCreationRejectsMissingLegacyObjBBeforeGeometryQuery();
+    testCreationRejectsMissingLegacyObjABeforeGeometryQuery();
+    testCreationRejectsLegacyObjACountBelowVisualTsGateBeforeGeometryQuery();
+    testCreationRejectsEmptyLegacyEntityListBeforeGeometryQuery();
     testCreationRejectsShortLegacySegment();
     testCreationRejectsInvalidLegacyRef();
     return 0;

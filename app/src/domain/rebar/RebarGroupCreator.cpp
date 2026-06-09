@@ -11,12 +11,19 @@ constexpr double kMinimumCreationDistance = 0.002;
 constexpr double kMinimumSplitSegmentLength = 0.01;
 constexpr double kDefaultArcSecondaryDistance = 0.8;
 constexpr int kMinimumSplineSamples = 5;
+constexpr int kMinimumPublicCreateObjACount = 3;
+constexpr int kMinimumPublicCreateEntityListCount = 1;
 
 std::string numberText(double value)
 {
     std::ostringstream stream;
     stream << value;
     return stream.str();
+}
+
+std::string boolText(bool value)
+{
+    return value ? "true" : "false";
 }
 
 DomainPoint3d toDomainPoint(const LegacyPoint3d& point)
@@ -55,9 +62,12 @@ LegacyRawBlock creationParameters(const RebarGroupCreationRequest& request,
     LegacyRawBlock block;
     block.legacyType = legacyCommand;
     block.writeOrder = {
-        "sub_1404D10C0.entityList",
-        "sub_1404D10C0.objA",
-        "sub_1404D10C0.objB",
+        "sub_1404D10C0.objB.present",
+        "sub_1404D10C0.objA.present",
+        "sub_1404D10C0.objA.sub_1405F25F0.count",
+        "sub_1404D10C0.objA.sub_1405F25F0.minimum",
+        "sub_1404D10C0.entityList.count",
+        "sub_1404D10C0.entityList.minimum",
         "sub_1404D10C0.distanceA",
         "sub_1404D10C0.distanceB",
         "sub_1404D10C0.flag",
@@ -68,6 +78,26 @@ LegacyRawBlock creationParameters(const RebarGroupCreationRequest& request,
     block.fields.push_back(rawField("splitMinimumLength",
                                     numberText(kMinimumSplitSegmentLength),
                                     "E-IDA-022"));
+    block.fields.push_back(rawField("sub_1404D10C0.objB.present",
+                                    boolText(request.publicCreateGate.objBResolved),
+                                    "E-IDA-047"));
+    block.fields.push_back(rawField("sub_1404D10C0.objA.present",
+                                    boolText(request.publicCreateGate.objAResolved),
+                                    "E-IDA-047"));
+    block.fields.push_back(rawField(
+        "sub_1404D10C0.objA.sub_1405F25F0.count",
+        numberText(request.publicCreateGate.objASub1405F25F0Count),
+        "E-IDA-047"));
+    block.fields.push_back(rawField(
+        "sub_1404D10C0.objA.sub_1405F25F0.minimum",
+        numberText(kMinimumPublicCreateObjACount),
+        "E-IDA-047"));
+    block.fields.push_back(rawField("sub_1404D10C0.entityList.count",
+                                    numberText(request.publicCreateGate.entityListCount),
+                                    "E-IDA-047"));
+    block.fields.push_back(rawField("sub_1404D10C0.entityList.minimum",
+                                    numberText(kMinimumPublicCreateEntityListCount),
+                                    "E-IDA-047"));
     block.fields.push_back(rawField("distanceA", numberText(request.distanceA), "E-IDA-022"));
     block.fields.push_back(rawField("distanceB", numberText(normalizedDistanceB), "E-IDA-022"));
     block.fields.push_back(rawField("legacyFlag",
@@ -121,13 +151,29 @@ RebarGroupCreationResult validateAndReadCurve(const RebarGroupCreationRequest& r
                                               const LegacyRebarGeometryReader& geometry,
                                               LegacyRebarCurveSnapshot* curve)
 {
+    if (!request.publicCreateGate.objBResolved) {
+        return reject(QStringLiteral(
+            "sub_1404D10C0 gate rejected: objB is missing (E-IDA-047)."));
+    }
+    if (!request.publicCreateGate.objAResolved) {
+        return reject(QStringLiteral(
+            "sub_1404D10C0 gate rejected: objA is missing (E-IDA-047)."));
+    }
+    if (request.publicCreateGate.objASub1405F25F0Count < kMinimumPublicCreateObjACount) {
+        return reject(QStringLiteral(
+            "sub_1404D10C0 gate rejected: sub_1405F25F0(objA) must be at least 3 (E-IDA-047)."));
+    }
+    if (request.publicCreateGate.entityListCount < kMinimumPublicCreateEntityListCount) {
+        return reject(QStringLiteral(
+            "sub_1404D10C0 gate rejected: ENTITY_LIST count must be at least 1 (E-IDA-047)."));
+    }
     if (request.sourceCurve.shapeKind != LegacyShapeKind::Edge ||
         request.sourceCurve.stableId.empty()) {
         return reject(QStringLiteral("RebarGroupCreator expected a legacy edge ref."));
     }
     if (request.distanceA < kMinimumCreationDistance) {
         return reject(QStringLiteral(
-            "RebarGroupCreator rejected creation distance below VisualTS 0.002 threshold."));
+            "sub_1404D10C0 gate rejected: distanceA below VisualTS 0.002 threshold (E-IDA-047)."));
     }
 
     const auto curveResult = geometry.curveSnapshot(request.sourceCurve, kMinimumSplineSamples);
@@ -309,6 +355,9 @@ RebarGroupCreationResult createGroup(const RebarGroupCreationRequest& request,
             "GAP-IDA-001"));
     }
     group.evidence.push_back(evidenceRef("sgroupbarline / sgroupbararc common creation chain"));
+    group.evidence.push_back(evidenceRef(
+        "E-IDA-047",
+        "TODO-079 confirmed sub_1404D10C0 public creation gate diagnostics"));
     if (!arcGroup) {
         group.evidence.push_back(evidenceRef(
             "E-IDA-045",

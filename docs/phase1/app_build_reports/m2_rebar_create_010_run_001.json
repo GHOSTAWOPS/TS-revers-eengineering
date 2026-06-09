@@ -1,0 +1,52 @@
+{
+  "todoId": "TODO-080",
+  "phase": "M2-RebarCreate-010",
+  "evidenceIds": [
+    "E-IDA-045",
+    "E-IDA-047",
+    "E-DEV-102"
+  ],
+  "decision": "done_core_gate_diagnostic_aligned",
+  "summary": {
+    "legacyPublicCreateGateSnapshotAdded": true,
+    "objBGateBeforeGeometry": true,
+    "objAGateBeforeGeometry": true,
+    "objASub1405F25F0GateBeforeGeometry": true,
+    "entityListCountGateBeforeGeometry": true,
+    "distanceAGateDiagnosticAligned": true,
+    "rawEvidenceFieldsRecorded": true,
+    "fullLineGroupAlgorithmImplemented": false
+  },
+  "guardrails": {
+    "oldRuntimeAutomaticallyLaunched": false,
+    "haspInstalledAutomatically": false,
+    "systemDirectoryModifiedAutomatically": false,
+    "uiTextChanged": false,
+    "fullLineGroupAlgorithmImplemented": false,
+    "faceRebarImplemented": false,
+    "arcRebarExpanded": false,
+    "jointImplemented": false,
+    "excelImplemented": false,
+    "detailChanged": false,
+    "golden": "not_started",
+    "occtDirectRebarRewrite": false,
+    "parentRebarMigrated": false,
+    "domainRebarOcctLeak": "pass"
+  },
+  "verification": {
+    "rebarGroupCreatorTarget": "pass",
+    "defaultCTest": "pass",
+    "defaultCTestTotal": "21/21 pass, 210.43 sec",
+    "readinessGateUnit": "pass",
+    "readinessGateUnitTotal": "44 tests pass",
+    "readinessGateStrict": "pass",
+    "domainRebarCommandOCCLeak": "pass",
+    "todoSingleNext": "pass",
+    "gitDiffCheck": "pass",
+    "xhighReview": "needs_fix_then_fixed_by_main_flow"
+  },
+  "next": {
+    "todoId": "TODO-081",
+    "task": "线配筋公共创建 createdPayload 与 objA/objB 字段语义补证 P0"
+  }
+}

@@ -1057,6 +1057,66 @@ class Phase1ReadinessGateTests(unittest.TestCase):
             self.assertFalse(report_checks[0].ok)
             self.assertIn("pending_readonly_review", report_checks[0].message)
 
+    def test_route_guardrail_accepts_todo080_done_report(self):
+        tmp, root = self.make_guardrail_root()
+        with tmp:
+            (root / "todo.csv").write_text(
+                '"id","priority","phase","task","status","goal_setpoint","acceptance","boundary","evidence","dependencies","risk","notes"\n'
+                '"TODO-080","P0","M2-RebarCreate-010","LineGroup core gate diagnostics","done","","","","","","",""\n',
+                encoding="utf-8",
+            )
+            reports_dir = root / "docs" / "phase1" / "app_build_reports"
+            reports_dir.mkdir(parents=True, exist_ok=True)
+            (root / "118_M2-RebarCreate-010线配筋公共创建Core参数Gate与Diagnostic对齐P0实现记录.md").write_text(
+                "# stub\n",
+                encoding="utf-8",
+            )
+            (reports_dir / "m2_rebar_create_010_run_001.md").write_text(
+                "# stub\n",
+                encoding="utf-8",
+            )
+            (reports_dir / "m2_rebar_create_010_run_001.json").write_text(
+                "{}\n",
+                encoding="utf-8",
+            )
+
+            checks = gate.collect_route_guardrail_checks(root)
+            report_checks = [check for check in checks if check.item == "done_node_reports"]
+
+            self.assertEqual(1, len(report_checks))
+            self.assertTrue(report_checks[0].ok)
+            self.assertIn("checked_done_nodes=1", report_checks[0].message)
+
+    def test_route_guardrail_rejects_todo080_pending_review_report(self):
+        tmp, root = self.make_guardrail_root()
+        with tmp:
+            (root / "todo.csv").write_text(
+                '"id","priority","phase","task","status","goal_setpoint","acceptance","boundary","evidence","dependencies","risk","notes"\n'
+                '"TODO-080","P0","M2-RebarCreate-010","LineGroup core gate diagnostics","done","","","","","","",""\n',
+                encoding="utf-8",
+            )
+            reports_dir = root / "docs" / "phase1" / "app_build_reports"
+            reports_dir.mkdir(parents=True, exist_ok=True)
+            (root / "118_M2-RebarCreate-010线配筋公共创建Core参数Gate与Diagnostic对齐P0实现记录.md").write_text(
+                "# stub\n",
+                encoding="utf-8",
+            )
+            (reports_dir / "m2_rebar_create_010_run_001.md").write_text(
+                "xhighReview = pending_readonly_review\n",
+                encoding="utf-8",
+            )
+            (reports_dir / "m2_rebar_create_010_run_001.json").write_text(
+                "{}\n",
+                encoding="utf-8",
+            )
+
+            checks = gate.collect_route_guardrail_checks(root)
+            report_checks = [check for check in checks if check.item == "done_node_reports"]
+
+            self.assertEqual(1, len(report_checks))
+            self.assertFalse(report_checks[0].ok)
+            self.assertIn("pending_readonly_review", report_checks[0].message)
+
 
 if __name__ == "__main__":
     unittest.main()

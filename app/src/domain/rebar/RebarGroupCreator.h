@@ -34,6 +34,14 @@ struct LegacySegmentCurveNormalizeRequest
     double unresolvedEndpointDistanceThreshold = 0.0;
 };
 
+struct LegacyPublicCreateGateSnapshot
+{
+    bool objAResolved = true;
+    bool objBResolved = true;
+    int objASub1405F25F0Count = 3;
+    int entityListCount = 1;
+};
+
 class LegacyRebarGeometryReader
 {
 public:
@@ -54,6 +62,7 @@ struct RebarGroupCreationRequest
     std::string segmentId;
     std::string steelDataId;
     LegacySelectionRef sourceCurve;
+    LegacyPublicCreateGateSnapshot publicCreateGate;
     double distanceA = 0.0;
     double distanceB = 0.0;
     char legacyFlag = 0;
