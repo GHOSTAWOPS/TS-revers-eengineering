@@ -38,6 +38,15 @@ StbDetailDrawing / StbGroups
 
 ## StyleRoot -> RebarStyle
 
+`RUN-20260609-001` 真实旧图石输出补充：
+
+```text
+真实 Detail.xml 当前是空 <StyleRoot/>。
+当前 DetailWriter 会输出非空 StyleRoot / Styles / Style1。
+因此 StyleRoot -> RebarStyle 这条映射只能继续作为外部历史样式样例和未来兼容字段，
+不能再默认写成 RUN-20260609-001 的真实业务载体。
+```
+
 | Detail 字段 | 新模型字段 | 状态 | 说明 |
 |---|---|---|---|
 | `Name` | `RebarStyle.name` | 已确认 | 钢筋式样名称。 |
@@ -130,6 +139,26 @@ M1-App-018 状态：
 
 ## StbRow -> ScheduleRow
 
+`RUN-20260609-001` 真实字段补充：
+
+```text
+StbTable 表级属性：
+  count / HeightValue0 / HeightValueCount / Volume1225 /
+  NumCombineGoJians / SteelNetArea / GJTAOTNumber / GJTAOTVolue /
+  LinkTop / LinkDown / DCGQSJ / HYLJJ
+
+StbRow 额外属性：
+  smallTable / mirrorType / mirrorSEFlag
+```
+
+当前状态：
+
+```text
+DetailWriter 只写 StbTable.count。
+RebarScheduleService / DetailWriter 尚未写 smallTable / mirrorType / mirrorSEFlag。
+Volume1225 与 MaterialTable.Volume722 / Excel 混凝土(m3) 的关系需要继续确认。
+```
+
 | Detail 字段 | 新模型字段 | 状态 | 说明 |
 |---|---|---|---|
 | `rsdID` | `ScheduleRow.rsdId` | IDA 确认写值 | 必须能追回 RebarGroup。 |
@@ -145,6 +174,9 @@ M1-App-018 状态：
 | `stbLayer` | `ScheduleRow.layer` | 部分确认 | 层。 |
 | `stbProfile` | `ScheduleRow.profile` | 部分确认 | 断面/式样。 |
 | `stbUse` | `ScheduleRow.use` | 部分确认 | 用途。 |
+| `smallTable` | `ScheduleRow.smallTable` | 真实样例确认字段，未实现 | 当前样例值为 `0`，语义待 IDA 或运行确认。 |
+| `mirrorType` | `ScheduleRow.mirrorType` | 真实样例确认字段，未实现 | 当前样例值为 `0`，语义待确认。 |
+| `mirrorSEFlag` | `ScheduleRow.mirrorSEFlag` | 真实样例确认字段，未实现 | 当前样例值为 `0`，语义待确认。 |
 
 IDA 补证：
 
@@ -179,6 +211,16 @@ IDA 补证：
 | `Mass` | `MaterialSummary.totalMass` | IDA 确认写值 | 材料表总质量。 |
 | `Volume722` | `MaterialSummary.volume722` | IDA 确认写值 | 材料表体积字段，业务含义待确认。 |
 | `stbLevel` | `MaterialSummaryRow.steelLevel` | IDA 确认写值 | 钢筋级别；枚举待闭合。 |
+
+`RUN-20260609-001` 对照补充：
+
+```text
+真实 Excel 钢筋汇总表把 MaterialTable 映射成：
+  直径(mm) / 总长(m) / 单重(Kg/m) / 总重(Kg) / 钢筋合计(T) / 混凝土(m3)
+
+当前 RebarScheduleService 有 materialRows / totalMass / volume722 字段，
+但没有 Excel workbook writer，也没有闭合单重、总重、钢筋合计和混凝土体积公式。
+```
 
 IDA 补证：
 
@@ -375,3 +417,6 @@ writer 级 ID 校验、缺省字段策略和失败回滚见：
 - `stbUse` 的枚举。
 - `sameGrpNum` 的合并规则。
 - `diameter2` 的使用场景。
+- `Detail.xml` 空 StyleRoot 是否为旧图石包兼容模式默认输出。
+- `StbTable / MaterialTable` 是否只应在主图纸 `Detail01.stl` 输出。
+- Excel 三表 writer 的单位换算、显示格式和焊接字段来源。

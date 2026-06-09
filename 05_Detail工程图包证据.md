@@ -79,6 +79,34 @@ C:\Users\ghost\Desktop\reverse_engineering\autocad2020
 - `m_AddNum_start`
 - `m_AddNum_end`
 
+### RUN-20260609-001 真实输出补充
+
+`TODO-066 / TODO-067` 已确认本轮真实旧图石输出中的 `Detail.xml` 不是上面的非空样式表示例。
+
+真实文件为：
+
+```xml
+<StyleRoot/>
+```
+
+边界：
+
+```text
+1. 该文件来自用户现场旧图石真实运行回填。
+2. bytes = 14。
+3. 用户补充多台电脑生成结果一致，均为 <StyleRoot/>。
+4. 生成工程图和 CAD 导入时该文件修改时间不更新。
+5. 当前更倾向把它视为固定空模板 / 占位文件。
+6. 父目录/外部非空 Detail.xml 可能来自其他项目，不能混入本轮证据。
+```
+
+因此新系统后续要补 `GAP-DRAW-006`：
+
+```text
+DetailWriter 在旧图石包兼容模式下，应具备输出空 StyleRoot 的策略。
+旧插件是否必须检查该文件存在仍需 AutoCAD L2 或运行确认。
+```
+
 ## Detail01.stl / DrawingRoot
 
 样例根节点：
@@ -141,6 +169,41 @@ DrawingRoot
 - `smallTable`
 - `mirrorType`
 - `mirrorSEFlag`
+
+`RUN-20260609-001 / Detail01.stl` 真实 `StbTable` 还确认了表级属性：
+
+```text
+count
+HeightValue0
+HeightValueCount
+Volume1225
+NumCombineGoJians
+SteelNetArea
+GJTAOTNumber
+GJTAOTVolue
+LinkTop
+LinkDown
+DCGQSJ
+HYLJJ
+```
+
+字段分布：
+
+```text
+Detail01.stl 有 StbTable / MaterialTable。
+Detail02.stl 到 Detail04.stl 没有 StbTable / MaterialTable，
+但仍保留 StbTables 容器。
+```
+
+当前 `DetailWriter` 差距：
+
+```text
+1. 当前每张 DetailNN.stl 都写 StbTable / MaterialTable。
+2. 当前 StbTable 只写 count。
+3. 当前 StbRow 缺 smallTable / mirrorType / mirrorSEFlag。
+```
+
+这形成 `GAP-DRAW-007`。
 
 IDA 补证：
 
@@ -312,6 +375,7 @@ writer 事务、字段缺省、覆盖、回滚和 AutoCAD 导入门禁见：
 - `FDrawing.arx` / `FDrawingObj.dbx` 对字段缺失的容忍度。
 - 多图纸 `Detail02`、`Detail09`、`Detail10` 命名规则。
 - 真实复杂剖切视图、隐藏线、填充线和尺寸标注的字段保真。
+- 真实 Excel `钢筋表 / 钢筋汇总表 / 钢筋下料单` 三表 writer、单位换算、显示格式和焊接字段。
 
 ## M2-Drawing-003 复杂字段静态证据
 

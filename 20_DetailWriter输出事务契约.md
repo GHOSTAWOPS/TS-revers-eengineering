@@ -21,6 +21,22 @@ writer 输出：
 - `Detail02.stl`
 - 后续更多 `DetailNN.stl`
 
+`RUN-20260609-001` 真实旧图石输出补充：
+
+```text
+Detail.xml 当前真实样例为 <StyleRoot/>。
+Detail01.stl 有 StbTable / MaterialTable。
+Detail02.stl 到 Detail04.stl 没有 StbTable / MaterialTable。
+```
+
+因此后续 writer 要补两条兼容策略：
+
+```text
+1. 旧图石包兼容模式下输出空 StyleRoot。
+2. StbTable / MaterialTable 默认只输出到主图 Detail01.stl，
+   副图保留空 StbTables 容器。
+```
+
 注意：
 
 - `DetailNN.stl` 是 XML，根节点是 `DrawingRoot`。
@@ -160,7 +176,6 @@ IDA 已确认规则：
 - `StyleRoot`
 - `DrawingRoot`
 - `StbTables`
-- `MaterialTable`
 - `HViewPorts/ViewPort`
 - `PartDetailDrawing/General-Info`
 - `StbDetailDrawing/StbGroups`
@@ -176,6 +191,16 @@ IDA 已确认规则：
 - `StbTable.StbRow.rsdID`
 - `StbTable.StbRow.length`
 - `StbTable.StbRow.lenSum`
+
+主图 `Detail01.stl` 仍要求：
+
+- `StbTable`
+- `MaterialTable`
+
+副图 `Detail02.stl` 及以后：
+
+- 保留 `StbTables` 容器。
+- 是否写空 `StbTable / MaterialTable` 要按旧插件容忍度确认；`RUN-20260609-001` 真实输出中副图没有这两个节点。
 
 ### B 类：允许默认值，但必须记录
 

@@ -1,0 +1,80 @@
+{
+  "todoId": "TODO-067",
+  "phase": "M2-Drawing-036",
+  "evidenceIds": ["E-DETAIL-004", "E-DEV-089"],
+  "decision": "real-detail-and-schedule-field-gap-report-complete",
+  "inputs": {
+    "runtimeDirectory": "docs/phase1/runtime_capture/todo_065_generate_package_and_schedule/run_20260609_001/",
+    "detailFiles": ["Detail.xml", "Detail01.stl", "Detail02.stl", "Detail03.stl", "Detail04.stl"],
+    "scheduleWorkbook": "下料表.xls",
+    "comparedCode": [
+      "app/src/drawing/detail/DetailWriter.cpp",
+      "app/src/drawing/detail/DetailWriter.h",
+      "app/src/domain/rebar/RebarScheduleService.cpp",
+      "app/src/domain/rebar/RebarScheduleService.h"
+    ]
+  },
+  "fieldGaps": {
+    "detailXml": {
+      "oldRuntime": "<StyleRoot/>",
+      "currentWriter": "non-empty StyleRoot/Styles/Style1",
+      "gap": "GAP-DRAW-006"
+    },
+    "tableDistribution": {
+      "oldRuntime": "only Detail01 has StbTable and MaterialTable",
+      "currentWriter": "every DetailNN writes StbTable and MaterialTable",
+      "gap": "GAP-DRAW-007"
+    },
+    "stbTableAttributesMissing": [
+      "HeightValue0",
+      "HeightValueCount",
+      "Volume1225",
+      "NumCombineGoJians",
+      "SteelNetArea",
+      "GJTAOTNumber",
+      "GJTAOTVolue",
+      "LinkTop",
+      "LinkDown",
+      "DCGQSJ",
+      "HYLJJ"
+    ],
+    "stbRowAttributesMissing": ["smallTable", "mirrorType", "mirrorSEFlag"],
+    "excelWriter": {
+      "oldRuntimeSheets": ["钢筋表", "钢筋汇总表", "钢筋下料单"],
+      "currentApp": "no workbook writer",
+      "gap": "GAP-DRAW-008"
+    }
+  },
+  "guards": {
+    "oldRuntimeAutomaticallyLaunched": false,
+    "haspInstalledAutomatically": false,
+    "systemDirectoryModifiedAutomatically": false,
+    "appBusinessCodeModified": false,
+    "algorithmImplemented": false,
+    "autocadL2": "not_run",
+    "golden": "not_started",
+    "parentDetailXmlMixedIntoSameRun": false,
+    "xhighReview": "required_after_gate_mapping_change"
+  },
+  "verification": {
+    "fieldExtraction": "pass; Detail01..04 normalized XML schema inspected",
+    "excelExtraction": "pass; Excel COM read-only open; 3 sheet headers inspected",
+    "detailWriterComparison": "pass; DetailWriter.cpp/h inspected",
+    "scheduleServiceComparison": "pass; RebarScheduleService.cpp/h inspected",
+    "ctest": "pass; 18/18 tests passed; total real time 133.26s",
+    "readinessGateStrict": "pass; M1-Formal-Ready; 84/84 checks passed",
+    "domainRebarOCCLeak": "pass; rg TopoDS_/AIS_/BRep/TopAbs_ app/src/domain/rebar returned no matches",
+    "gitDiffCheck": "pass; git diff --check returned clean"
+  },
+  "residualGaps": {
+    "GAP-DRAW-006": "Detail.xml empty StyleRoot strategy and old plugin existence requirement",
+    "GAP-DRAW-007": "main-sheet-only StbTable/MaterialTable strategy and StbTable extended attributes",
+    "GAP-DRAW-008": "real Excel workbook writer, unit conversion, display format and joint/welding columns",
+    "AutoCADL2": "not_run",
+    "golden": "not_started"
+  },
+  "next": {
+    "todoId": "TODO-068",
+    "action": "DetailWriter real-field delta P0: empty Detail.xml and main-sheet table strategy"
+  }
+}
