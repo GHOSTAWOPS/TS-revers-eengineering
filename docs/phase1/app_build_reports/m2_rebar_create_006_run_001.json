@@ -1,0 +1,91 @@
+{
+  "todoId": "TODO-076",
+  "phase": "M2-RebarCreate-006",
+  "evidenceIds": [
+    "E-IDA-046",
+    "E-DEV-098"
+  ],
+  "decision": "line-group-old-ui-prompt-static-stop-point-p0",
+  "summary": {
+    "oldRuntimeAutomaticallyLaunched": false,
+    "haspInstalledAutomatically": false,
+    "systemDirectoryModifiedAutomatically": false,
+    "occtDirectRebarRewrite": false,
+    "parentRebarMigrated": false,
+    "rebarGroupCreatorAlgorithmChanged": false,
+    "lineGroupParameterDialogChanged": false,
+    "oldStatusPromptsConfirmed": false,
+    "dialog383ConfirmedAsCommonInputFloat": true,
+    "dialog383ConfirmedAsLineGroupMainParameterDialog": false
+  },
+  "ida": {
+    "database": "visualts_todo076",
+    "hexraysReady": true,
+    "functionsChecked": [
+      "sub_1404DE720",
+      "sub_14054B410",
+      "sub_1404D10C0",
+      "sub_14058B8D0",
+      "sub_1404F5120",
+      "sub_1406B7FE0",
+      "sub_1406B8140",
+      "sub_14054C720",
+      "sub_14054C760"
+    ],
+    "stringSweep": {
+      "pattern": "线配筋|请选择|选择.*边|边.*选择|钢筋组|状态栏|失败|参数|距离",
+      "matches": 0
+    },
+    "stopPoint": [
+      "sub_1404DE720 has no direct Chinese failure prompt string",
+      "sub_14054B410 has no direct Chinese failure prompt string",
+      "sub_1404D10C0 enters common ACIS outcome / part state path",
+      "sub_1404D10C0 opens Input_float / Dialog #383 through sub_14058B8D0",
+      "Dialog #383 is a common float input dialog, not confirmed as LineGroup main parameter dialog"
+    ]
+  },
+  "verification": {
+    "readinessGateUnit": "pass",
+    "readinessGateStrict": "pass",
+    "defaultCTest": "pass",
+    "domainRebarCommandOCCLeak": "pass",
+    "gitDiffCheck": "pass",
+    "xhighReview": "needs_fix_important_fixed",
+    "xhighReviewSummary": {
+      "assessment": "needs_fix",
+      "critical": "none",
+      "importantFixed": [
+        "filled xhighReview result in implementation record and run report",
+        "added readonly review pending state to done-report pending markers",
+        "added TODO-076 pending review negative gate test",
+        "fixed TODO-076 current-mainline residue in 99 gap document"
+      ]
+    },
+    "commands": [
+      {
+        "command": "py -3 .\\tools\\phase1_readiness_gate\\test_phase1_readiness_gate.py",
+        "result": "Ran 36 tests in 0.447s, OK"
+      },
+      {
+        "command": "py -3 .\\tools\\phase1_readiness_gate\\check_phase1_readiness.py --strict --report-id readiness_gate_run_todo_076",
+        "result": "decision=M1-Formal-Ready, errorCount=0, warningCount=0, passCount=84/84"
+      },
+      {
+        "command": "ctest --test-dir .\\app\\build --output-on-failure",
+        "result": "100% tests passed, 0 tests failed out of 21, total=206.57 sec"
+      },
+      {
+        "command": "rg -n \"TopoDS_|AIS_|BRep|TopAbs_|OpenCASCADE|opencascade\" .\\app\\src\\domain\\rebar .\\app\\src\\command",
+        "result": "no matches"
+      },
+      {
+        "command": "git diff --check",
+        "result": "exit 0"
+      }
+    ]
+  },
+  "next": {
+    "todoId": "TODO-077",
+    "task": "线配筋旧图石运行确认清单与工件门禁 P0"
+  }
+}

@@ -336,7 +336,7 @@ M1-Formal-Ready
 当前正式 app 已达到：
 
 ```text
-M2-RebarCreate-003 / TODO-073
+M2-RebarCreate-006 / TODO-076
   -> Qt6 主窗口和旧图石一期页签
   -> OCCT STEP 导入和 AIS 显示
   -> selection-v1 face / edge / vertex 稳定选择引用
@@ -348,6 +348,7 @@ M2-RebarCreate-003 / TODO-073
   -> edge split / projected split / endpoint trim / wire chain / offset / section / sweep preview
   -> domain SteelData / SteelBarGroup / SteelBar / SteelBarSegment P1
   -> Rebar.Create.LineGroup P0 creator / command handler / UI AIS visible feedback / parameter dialog / selection preflight
+  -> 旧 UI 失败提示 / 状态栏口径 IDA 静态 stop point
 ```
 
 这代表：
@@ -355,11 +356,13 @@ M2-RebarCreate-003 / TODO-073
 - 功能矩阵、命令契约、领域模型、Detail 映射、新工程格式、binding、依赖门禁、runtime gate 已具备进入 Qt6 + OCCT 开发的入口条件。
 - OCCT 能力已经开始被封装成旧 VisualTS 可用的几何语义，而不是直接暴露给钢筋业务层。
 - 线配筋首条主链已经能从 UI 选择 edge，先通过最小 edge 预检，再打开 P0 参数窗口，进入 `RebarGroupCreator`，生成 domain `SteelBarGroup`，并通过 presentation 层显示到 AIS。
+- `TODO-076 / E-IDA-046` 已确认 `sgroupbarline` handler 和 secondary helper 内没有直接中文失败提示字符串；公共创建链只收窄到 ACIS outcome / part state 路径和公共 `Input_float / Dialog #383`。这让旧 UI 失败提示和状态栏口径更窄，但尚未闭合。
 
 这不代表：
 
 - 旧图石所有钢筋业务已经复刻完成。
-- 线配筋旧参数窗口字段 / 默认值 / 灰显状态、完整 `ENTITY_LIST` 选择对象、完整 `sub_1405D5670` 等价、弧形组、同心圆等复杂算法已全部闭合。
+- 线配筋旧参数窗口字段 / 默认值 / 灰显状态、旧失败提示、状态栏 pane 文案、完整 `ENTITY_LIST` 选择对象、完整 `sub_1405D5670` 等价、弧形组、同心圆等复杂算法尚未闭合；这些仍处于待 IDA 或旧图石运行确认状态。
+- 当前 `LineGroupParameterDialog` 是 P0 参数输入壳；`Input_float / Dialog #383` 是旧公共浮点输入窗；二者都不能被写成旧线配筋主参数窗口已经 1:1 复刻。
 - 父目录源码可以直接拿来当最终业务代码。
 - 钢筋创建、编辑、统计、工程图业务规则已经由 OCCT 自动解决。
 

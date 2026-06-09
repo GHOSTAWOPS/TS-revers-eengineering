@@ -474,6 +474,197 @@ objA / objB / createdPayload 的最终业务名。
 sub_1405D5670 第 4 个 double 的真实调用来源。
 ```
 
+## TODO-076 线配筋旧 UI 失败提示与状态栏口径静态 stop point
+
+Evidence ID：
+
+- `E-IDA-046`
+
+IDA MCP 会话：
+
+```text
+database = visualts_todo076
+input = C:\Users\ghost\Desktop\reverse_engineering\【03】图石软件\VisualTS.exe.i64
+hexrays_ready = true
+```
+
+本轮补看的函数：
+
+```text
+sub_1404DE720     // sgroupbarline handler
+sub_14054B410     // secondary / availability helper
+sub_1404D10C0     // line / arc group common creation core
+sub_14058B8D0     // Input_float modal wrapper
+sub_1404F5120     // Input_float constructor
+sub_1406B7FE0     // common outcome / part note state path
+sub_1406B8140     // api_part_start_state wrapper
+sub_14054C720
+sub_14054C760
+```
+
+字符串扫查：
+
+```text
+pattern = 线配筋|请选择|选择.*边|边.*选择|钢筋组|状态栏|失败|参数|距离
+matches = 0
+```
+
+### `sub_1404DE720` 失败路径
+
+本轮确认该 handler 内部没有直接中文提示字符串，也没有直接 `MessageBox / AfxMessageBox / SetPaneText` 类调用。
+
+失败分支基本是前置 gate 后直接 `return 0`：
+
+```text
+selection count != 1                         -> return 0
+sub_1405C6820(selected) fail                 -> return 0
+sub_1405DA020(selected+13) fail              -> return 0
+child count < 2                              -> return 0
+sub_1405BC270(obj+80) null                   -> return 0
+first child +96 null                         -> return 0
+```
+
+继续通过后，函数仍是旧入口契约主线：
+
+```text
+odd-index child entities -> temporary ENTITY_LIST
+4 endpoint distance candidates
+initial minimum distance candidate = 10.0
+sub_1404D10C0(entityList, objA, objB, minDistance, selectedEndpointDistance, flag)
+```
+
+### `sub_14054B410` 可用性 / 状态 helper
+
+本轮确认该 helper 也没有直接提示字符串。
+
+当前最稳妥伪代码：
+
+```text
+ctx = sub_1406ED3C0(a1)
+if ctx && selection_count >= 1:
+  iterate selection list
+  every selected entity must:
+    pass sub_1405C6820
+    and sub_1405C6F90(entity) == 120
+  all pass -> return 1
+return 0
+```
+
+工程含义：
+
+```text
+它更像命令启用 / 可用性判断，
+不能证明旧线配筋失败提示或状态栏文案。
+```
+
+### `sub_1404D10C0` 公共创建链
+
+本轮确认 `sub_1404D10C0` 仍只有公共创建 / ACIS outcome 路径，没有线配筋专属中文失败提示。
+
+关键路径：
+
+```text
+validate objA / objB / ENTITY_LIST / distance
+distance < 0.002 -> fail
+sub_14045BEF0(Buffer, ..., a4)
+roundedDistance = int(a4 * 10000.0) / 10000.0
+sub_14058B8D0(titleOrLabel, labelOrTitle, &roundedDistance)
+api_bb_begin
+ACISExceptionCheck("API")
+sub_140451730(...)
+sub_1405D5670(...)
+sub_1405C7260(...)
+sub_1405E49D0(...)
+problems_list_prop::process_result(...)
+sub_1406B7FE0(...)
+```
+
+本轮只看到字符串：
+
+```text
+"API"
+```
+
+这说明失败 / 状态处理主要进入 ACIS `outcome` 和公共 `problems_list_prop / part_note_state` 链路，但该静态路径仍未给出旧图石线配筋用户可见提示文本。
+
+### `Input_float / Dialog #383`
+
+`sub_14058B8D0` 会构造并 `DoModal` 一个公共浮点输入窗口：
+
+```text
+sub_14058B8D0(char *title, char *label, double *value)
+  -> sub_1404F5120(stackObject, *value, title, label, 0)
+  -> CDialog::DoModal()
+  -> OK 后写回 double
+```
+
+`sub_1404F5120` 确认：
+
+```text
+CDialog::CDialog(..., 0x17F, ...)
+0x17F = 383
+source path = e:\tushi3d\dam\tool\input_float.cpp
+a1 + 304 = double value
+a1 + 320 = copied title string
+a1 + 328 = copied label string
+```
+
+工程含义：
+
+```text
+Dialog #383 是公共 Input_float 浮点输入窗。
+它可以证明旧公共创建链里存在距离 / 数值确认步骤，
+但不能等同于旧线配筋主参数窗口字段清单。
+```
+
+### 公共状态路径
+
+`sub_1406B7FE0` 调用：
+
+```text
+api_part_note_state
+api_part_name_state
+ha_rendering_context::GetGeomPattern
+view/model refresh-like call
+```
+
+`sub_1406B8140` 只是：
+
+```text
+api_part_start_state(...)
+```
+
+二者都是大量 ACIS API 调用共用的 outcome / part state 路径，当前没有线配筋专属状态栏文案证据。
+
+### 本轮 stop point
+
+已确认：
+
+```text
+sgroupbarline handler 内没有直接中文失败提示字符串。
+secondary helper 内没有直接中文失败提示字符串。
+common creation core 没有线配筋专属提示字符串，只有公共 ACIS outcome 链。
+common creation core 会打开 Input_float Dialog #383。
+Dialog #383 是公共浮点输入窗，不是旧线配筋主参数窗口字段清单。
+直接中文字符串扫查未命中线配筋 / 请选择 / 状态栏 / 失败 / 参数等候选。
+```
+
+仍未闭合：
+
+```text
+旧线配筋运行时失败提示。
+旧线配筋状态栏 pane 文案。
+旧线配筋完整参数 Dialog 字段、默认值、单位、灰显状态。
+旧 UI 点击流程中 #383 的标题和标签实参最终中文。
+旧 UI 选择对象业务名。
+```
+
+后续建议：
+
+```text
+TODO-077 / 线配筋旧图石运行确认清单与工件门禁 P0
+```
+
 `Dialog #449` 字段：
 
 - 集合1。

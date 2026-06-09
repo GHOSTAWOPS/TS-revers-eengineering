@@ -24,6 +24,7 @@ PENDING_REPORT_MARKERS = (
     "pending_before_commit",
     "pending_final",
     "pending_update_after_verification",
+    "pending_readonly_review",
     "waiting_rereview",
     "not_run_before_commit_review",
     "not_run_until_docs_mapping",
@@ -224,6 +225,7 @@ def done_node_report_requirements(root: Path, rows: list[dict[str, str]]) -> tup
         "TODO-073": ("111_M2-RebarCreate-003线配筋UI到AIS显示P0实现记录.md", "docs/phase1/app_build_reports/m2_rebar_create_003_run_001.md"),
         "TODO-074": ("112_M2-RebarCreate-004线配筋参数窗口P0实现记录.md", "docs/phase1/app_build_reports/m2_rebar_create_004_run_001.md"),
         "TODO-075": ("113_M2-RebarCreate-005线配筋选择预检与参数窗口顺序对齐P0实现记录.md", "docs/phase1/app_build_reports/m2_rebar_create_005_run_001.md"),
+        "TODO-076": ("114_M2-RebarCreate-006线配筋旧UI失败提示与状态栏口径证据P0实现记录.md", "docs/phase1/app_build_reports/m2_rebar_create_006_run_001.md"),
     }
     missing: list[str] = []
     checked: list[str] = []
