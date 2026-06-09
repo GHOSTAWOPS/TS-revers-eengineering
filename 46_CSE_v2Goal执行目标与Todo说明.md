@@ -20,7 +20,7 @@
      输出目录 / hash / 覆盖策略记录模板和拒收伪工件规则已落文档
   -> output_uncut_steel / Dialog 0x57C / UnCutSteel.TXT
      继续只算可选旁证，不算前置设置窗
-  -> TODO-066 已完成真实工件回填；TODO-067 已完成字段对照；TODO-068 已完成最明显旧包格式纠偏；TODO-069 已完成 StbRow 扩展属性骨架；TODO-070 已完成 lineStb StbGeo 字段条件化骨架；TODO-071 已完成线配筋入口契约冻结；TODO-072 已完成 LineGroup command handler P0；TODO-073 已完成 LineGroup UI/AIS 可见反馈 P0；TODO-074 已完成 LineGroup 参数窗口 P0；TODO-075 已完成选择预检与参数窗口顺序对齐 P0；TODO-076 已完成旧 UI 失败提示与状态栏口径静态 stop point；现在的主线是 TODO-077
+  -> TODO-066 已完成真实工件回填；TODO-067 已完成字段对照；TODO-068 已完成最明显旧包格式纠偏；TODO-069 已完成 StbRow 扩展属性骨架；TODO-070 已完成 lineStb StbGeo 字段条件化骨架；TODO-071 已完成线配筋入口契约冻结；TODO-072 已完成 LineGroup command handler P0；TODO-073 已完成 LineGroup UI/AIS 可见反馈 P0；TODO-074 已完成 LineGroup 参数窗口 P0；TODO-075 已完成选择预检与参数窗口顺序对齐 P0；TODO-076 已完成旧 UI 失败提示与状态栏口径静态 stop point；TODO-077 已完成旧图石运行确认采样清单与拒收规则；现在的主线是 TODO-078
 ```
 
 ## 可直接粘贴到 Goal 模式的目标
@@ -336,7 +336,7 @@ planned tag = evidence-058/joint-dialog-message-map-node112-stop-point
 当前下一步：
 
 ```text
-TODO-077 / 线配筋旧图石运行确认清单与工件门禁 P0
+TODO-078 / 线配筋旧图石运行确认工件回填 P0
   -> 接头链路现阶段先记录、暂缓。
   -> TODO-071 已完成 sgroupbarline 入口契约冻结。
   -> TODO-072 已完成 LineGroup command handler P0 事务接入。
@@ -344,7 +344,8 @@ TODO-077 / 线配筋旧图石运行确认清单与工件门禁 P0
   -> TODO-074 已完成 LineGroup 参数窗口 P0。
   -> TODO-075 已完成先选择预检、再打开参数窗口的最小顺序对齐。
   -> TODO-076 已确认旧 handler / helper 无直接中文失败提示，公共链只收窄到 Input_float / Dialog #383。
-  -> 下一轮只把旧 UI 失败提示 / 状态栏口径 / 参数 Dialog 字段转成用户可执行运行确认清单与工件门禁。
+  -> TODO-077 已完成旧 UI 失败提示 / 状态栏口径 / 参数 Dialog 字段的运行确认清单与工件门禁。
+  -> 下一轮只回填和核对用户现场旧图石运行截图、状态栏、参数窗口、Dialog #383、hash 和步骤。
   -> 不自动启动旧图石，不安装 HASP，不用 OCCT 直接重写钢筋业务。
 ```
 
@@ -589,7 +590,7 @@ commit / tag / push 状态
 
 ### 短期 Goal（推荐本轮复制）
 
-目标：只完成 `TODO-077 / 线配筋旧图石运行确认清单与工件门禁 P0` 这个短期阶段，不自动进入后续长期开发。
+目标：只完成 `TODO-078 / 线配筋旧图石运行确认工件回填 P0` 这个短期阶段，不自动进入后续长期开发。
 
 当前状态：
 
@@ -615,25 +616,27 @@ commit / tag / push 状态
   TODO-074 = done
   TODO-075 = done
   TODO-076 = done
-  TODO-077 = next
+  TODO-077 = done
+  TODO-078 = next
 ```
 
 本轮只做：
 
 ```text
-LineGroupRuntimeCaptureChecklistP0 / TODO-077
+LineGroupRuntimeCaptureBackfillP0 / TODO-078
   -> 从 03 / 08 / 09 / 15 / 16 / 35 / 46 / 99 出发
   -> 在 TODO-071 已冻结 sgroupbarline 入口契约、TODO-072 已接通 command handler 事务、TODO-073 已接通 UI/AIS 可见反馈之后
   -> 在 TODO-074 已增加最小参数窗口 P0 后
   -> 在 TODO-075 已完成先选择预检、再打开参数窗口后
   -> 在 TODO-076 已确认旧 handler / helper 无直接中文失败提示、公共链只收窄到 Input_float / Dialog #383 后
-  -> 把旧 UI 失败提示 / 状态栏口径 / 参数 Dialog 字段转成用户可执行运行确认清单和拒收伪工件门禁
-  -> 形成 docs/phase1/runtime_capture/todo_077_line_group_ui_prompt_capture 模板
-  -> 覆盖无选择、选错对象、有效对象、Dialog #383 标题/标签/默认值、参数窗口字段、状态栏 pane 和确认/取消行为
-  -> 不写成完整旧 UI 已闭合，不把 P0 文案当旧图石真值
-  -> 同步更新 03 / 08 / 09 / 11 / 15 / 16 / 35 / 46 / 99 / todo / 实现记录 / build report
+  -> 在 TODO-077 已形成 docs/phase1/runtime_capture/todo_077_line_group_ui_prompt_capture 采样模板和拒收规则后
+  -> 只接收并核对用户现场旧图石运行工件
+  -> 回填无选择、选错对象、有效对象、Dialog #383 标题/标签/默认值、参数窗口字段、状态栏 pane 和确认/取消行为
+  -> 使用 hashes.txt / listing / capture_notes.md 校验工件来源和上下文
+  -> 不写成完整旧 UI 已闭合，除非真实工件足以闭合对应字段
+  -> 同步更新 02 / 08 / 11 / 35 / 46 / 99 / todo / 实现记录 / build report
   -> 跑默认 CTest / readiness gate / OCCT 泄漏检查
-  -> 代码节点 commit 前必须 xhigh 只读 review
+  -> 涉及代码、测试、门禁脚本时 commit 前必须 xhigh 只读 review；纯文档回填可记录 not_required_docs_only
   -> 不启动旧图石，不安装 HASP
   -> 不用 OCCT 直接重写钢筋业务
   -> 不迁入父目录 rebar 业务
@@ -1015,9 +1018,13 @@ TODO-076 / M2-RebarCreate-006 = done
   -> 线配筋旧 UI 失败提示与状态栏口径证据 P0。
   -> IDA MCP 已确认 handler / helper 无直接中文失败提示，公共链只收窄到 Input_float / Dialog #383。
   -> 不证明旧运行提示、状态栏 pane 或旧线配筋主参数窗口已闭合。
-TODO-077 / M2-RebarCreate-007 = next
+TODO-077 / M2-RebarCreate-007 = done
   -> 线配筋旧图石运行确认清单与工件门禁 P0。
   -> 只准备用户采样清单和门禁，不自动启动旧图石，不进入完整线配筋算法或 golden。
+TODO-078 / M2-RebarCreate-008 = next
+  -> 线配筋旧图石运行确认工件回填 P0。
+  -> 只核对用户现场旧图石运行截图、状态栏、参数窗口、Dialog #383、hash 和步骤。
+  -> 不自动启动旧图石，不安装 HASP，不进入完整线配筋算法或 golden。
 ```
 
 工作目录：
@@ -1360,14 +1367,15 @@ TODO-076 验证 = IDA MCP 已确认 sub_1404DE720 / sub_14054B410 无直接中�
 当前下一步：
 
 ```text
-TODO-077 / 线配筋旧图石运行确认清单与工件门禁 P0
+TODO-078 / 线配筋旧图石运行确认工件回填 P0
   -> TODO-071 已完成 sgroupbarline 入口契约冻结
   -> TODO-072 已完成 LineGroup command handler P0 事务接入
   -> TODO-073 已完成 LineGroup UI/AIS 可见反馈 P0
   -> TODO-074 已完成 LineGroup 参数窗口 P0
   -> TODO-075 已完成选择预检与参数窗口顺序对齐 P0
   -> TODO-076 已完成旧 UI 失败提示与状态栏口径静态 stop point
-  -> 下一轮只准备旧图石运行确认清单、截图/输出工件模板和拒收伪工件门禁
+  -> TODO-077 已完成旧图石运行确认清单、截图/输出工件模板和拒收伪工件门禁
+  -> 下一轮只回填和核对用户现场旧图石运行工件
   -> 不自动安装 HASP，不自动启动旧图石
   -> 不用 OCCT 直接重写钢筋业务，不迁入父目录 rebar 业务
   -> 不声明完整线配筋、AutoCAD L2 通过或 golden
@@ -1390,8 +1398,8 @@ TODO-076 已经用 IDA MCP 把旧 handler/helper 的直接失败提示证据收�
   Dialog #383 是公共 Input_float，不是旧线配筋主参数窗口。
 
 当前最值得继续推进的是线配筋生成主线：
-  把无法静态闭合的旧提示、状态栏 pane、参数窗口字段和 Dialog #383 运行流程，
-  转成用户可执行采样清单和工件门禁。
+  用 TODO-077 已准备好的采样模板，
+  回填真实旧图石运行截图、状态栏 pane、参数窗口字段和 Dialog #383 运行流程。
 
 这比继续抠 Detail 小字段更贴近当前成熟度瓶颈：
   线配筋还没有完整旧运行 UI 提示、状态栏口径和旧默认值链，
@@ -1461,19 +1469,19 @@ golden 采集 TODO-026 仍按用户要求保持 pending。
 
 ## CSE v2 Control Contract
 
-- **Primary Setpoint**：下一轮只完成 `TODO-077 / 线配筋旧图石运行确认清单与工件门禁 P0`，把 TODO-076 静态 stop point 中无法闭合的旧提示、状态栏 pane、参数窗口字段和 Dialog #383 运行流程转成用户可执行采样清单。
-- **Acceptance**：新增 `docs/phase1/runtime_capture/todo_077_line_group_ui_prompt_capture` 模板；清单覆盖无选择、选错对象、有效对象、Dialog #383 标题/标签/默认值、参数窗口字段、状态栏 pane、确认/取消行为、输出前后截图/hash；更新 02 / 08 / 11 / 35 / 46 / 99 / todo / run report；默认 readiness gate、OCCT 泄漏检查通过；不声明旧 UI 已闭合。
+- **Primary Setpoint**：下一轮只完成 `TODO-078 / 线配筋旧图石运行确认工件回填 P0`，使用 TODO-077 采样模板核对用户现场旧图石运行工件，回填旧提示、状态栏 pane、参数窗口字段和 Dialog #383 运行流程。
+- **Acceptance**：`docs/phase1/runtime_capture/todo_077_line_group_ui_prompt_capture` 中的 `capture_notes.md / hashes.txt / 截图 / listing` 至少覆盖无选择、选错对象、有效对象、Dialog #383 标题/标签/默认值、参数窗口字段、状态栏 pane、确认/取消行为、输出前后截图/hash；拒收伪工件规则生效；更新 02 / 08 / 11 / 35 / 46 / 99 / todo / run report；默认 readiness gate、OCCT 泄漏检查通过；不因部分工件缺失声明旧 UI 全部闭合。
 - **Guardrail Metrics**：不能用 OCCT 能怎么做替代旧图石怎么做；不能迁入父目录 rebar 业务；不能让 `domain/rebar` 依赖 TopoDS/AIS/BRep/TopAbs；不能伪造 IDA 或旧运行证据；不能在一个节点里铺开面配筋、接头、Excel、Detail 字段继续扩张或 golden。
-- **Sampling Plan**：先读 `todo.csv / 02 / 03 / 08 / 09 / 15 / 16 / 35 / 46 / 99`，确认 `TODO-077` 只做旧图石运行确认清单和工件门禁；不自动启动旧图石，不安装 HASP；不得把当前 P0 文案写成旧图石真值；最后运行 readiness gate、OCCT 泄漏检查，若涉及代码/门禁脚本再跑默认 CTest 和 xhigh 只读 review。
+- **Sampling Plan**：先读 `todo.csv / 02 / 03 / 08 / 09 / 15 / 16 / 35 / 46 / 99` 和 `docs/phase1/runtime_capture/todo_077_line_group_ui_prompt_capture/README.md`，确认 `TODO-078` 只做旧图石运行工件回填；不自动启动旧图石，不安装 HASP；不得把当前 P0 文案或不完整截图写成旧图石真值；最后运行 readiness gate、OCCT 泄漏检查，若涉及代码/门禁脚本再跑默认 CTest 和 xhigh 只读 review。
 - **Known Delays**：旧 UI 参数窗口字段、状态栏流程和失败提示仍依赖用户插狗后的现场运行；没有 golden 时只能准备采样清单，不声明完整 1:1。
 - **Recovery Target**：如果运行确认所需工件不齐，就把缺项写成 gap 和拒收规则；不能把现有 `RebarGroupCreator` 或父目录代码当旧图石完整真相。
 - **Rollback Trigger**：domain/rebar 出现 OCCT/AIS include；父目录 rebar 业务被迁入；无 IDA/运行证据却写成旧逻辑已确认；测试或 gate 失败仍继续堆功能。
 - **Constraints**：不使用 ACIS / HOOPS / Codejock 等商业库；新系统不引入 USB 狗 / 网络许可依赖；旧逻辑不确定时优先查 IDA MCP 或旧图石运行确认；xhigh 只读，修改由主流程 agent 完成；不自动安装 HASP，不自动再次启动旧图石。
-- **Boundary**：下一轮优先允许改运行确认清单、模板目录、02/08/11/35/46/99、run report、todo 和必要门禁。禁止自动启动旧图石，禁止改 RebarGroupCreator 算法，禁止改 UI 文案，禁止继续扩张 DetailWriter 字段，禁止实现面配筋/接头/Excel/golden，禁止迁入父目录 rebar 业务。
+- **Boundary**：下一轮优先允许改运行确认工件归档、02/08/11/35/46/99、run report、todo 和必要门禁。禁止自动启动旧图石，禁止改 RebarGroupCreator 算法，禁止改 UI 文案，禁止继续扩张 DetailWriter 字段，禁止实现面配筋/接头/Excel/golden，禁止迁入父目录 rebar 业务。
 - **Coupling Notes**：`domain/rebar` 是业务对象边界；`LegacyGeometryAdapter` 是几何能力边界；线配筋创建若需要几何读取，只能通过 legacy 语义接口，不让业务层直接写 OCCT。
-- **Approximation Validity**：TODO-077 的目标是运行确认清单和门禁，不是完整旧参数窗口、完整线配筋、面配筋、弧筋、统计、出图或 golden；没有现场工件时只能作为待采样清单。
-- **Actuator Budget**：下一轮只推进 `TODO-077`。完成后停止复盘，不自动进入完整线配筋算法、面配筋、弧筋、接头、Excel、Detail 字段继续扩张或 golden。
-- **Risks**：采样清单容易被误读成旧 UI 已确认；必须保留 `GAP-UI-REB-001`，不得伪装成旧图石确认结论。
+- **Approximation Validity**：TODO-078 的目标是回填真实运行工件，不是完整旧参数窗口、完整线配筋、面配筋、弧筋、统计、出图或 golden；若工件只覆盖部分路径，只能关闭对应路径，不能整体关闭旧 UI 缺口。
+- **Actuator Budget**：下一轮只推进 `TODO-078`。完成后停止复盘，不自动进入完整线配筋算法、面配筋、弧筋、接头、Excel、Detail 字段继续扩张或 golden。
+- **Risks**：不完整截图容易被误读成旧 UI 已确认；必须保留未覆盖字段的 `GAP-UI-REB-001`，不得伪装成旧图石确认结论。
 ## Todo CSV 使用方式
 
 `todo.csv` 是后续执行看板。建议每次 goal 模式只拿 `status=next` 或最高优先级 `pending` 的任务推进。
@@ -1498,14 +1506,15 @@ golden 采集 TODO-026 仍按用户要求保持 pending。
 下一步优先执行：
 
 ```text
-TODO-077 / 线配筋旧图石运行确认清单与工件门禁 P0
+TODO-078 / 线配筋旧图石运行确认工件回填 P0
   -> TODO-071 已完成 sgroupbarline 入口契约冻结
   -> TODO-072 已完成 LineGroup command handler P0 事务接入
   -> TODO-073 已完成 LineGroup UI/AIS 可见反馈 P0
   -> TODO-074 已完成最小参数窗口和参数传递
   -> TODO-075 已完成打开参数窗口前的选择预检
   -> TODO-076 已完成旧 UI 失败提示与状态栏口径静态 stop point
-  -> 下一轮只准备旧运行采样清单和工件门禁
+  -> TODO-077 已完成旧运行采样清单和工件门禁
+  -> 下一轮只回填和核对真实旧图石运行工件
   -> 不自动安装 HASP
   -> 不自动启动旧图石
   -> 不用 OCCT 直接重写钢筋业务
@@ -1513,5 +1522,5 @@ TODO-077 / 线配筋旧图石运行确认清单与工件门禁 P0
   -> 不声明完整线配筋、AutoCAD L2 通过或 golden
 ```
 
-原因很简单：TODO-071 已把旧 `sgroupbarline` 入口契约冻结到 P0 creator raw/evidence，TODO-072/073/074/075 已依次接通 handler、AIS 可见反馈、参数窗口和选择预检顺序，TODO-076 已把静态失败提示证据收窄到 stop point。现在要把静态无法确认的旧运行 UI 信息转成可采样清单，而不是继续抠 Detail 小字段，也不是用 OCCT 直接写一个新的钢筋生成器。
+原因很简单：TODO-071 已把旧 `sgroupbarline` 入口契约冻结到 P0 creator raw/evidence，TODO-072/073/074/075 已依次接通 handler、AIS 可见反馈、参数窗口和选择预检顺序，TODO-076 已把静态失败提示证据收窄到 stop point，TODO-077 已把静态无法确认的旧运行 UI 信息转成可采样清单。现在要按这个清单核对真实旧图石运行工件，而不是继续抠 Detail 小字段，也不是用 OCCT 直接写一个新的钢筋生成器。
 TODO-026 golden 采集暂按用户要求保持 pending。

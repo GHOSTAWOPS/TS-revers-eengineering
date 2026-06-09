@@ -1,0 +1,88 @@
+{
+  "todoId": "TODO-077",
+  "phase": "M2-RebarCreate-007",
+  "evidenceIds": [
+    "E-DEV-099"
+  ],
+  "decision": "line-group-old-runtime-capture-checklist-p0",
+  "summary": {
+    "oldRuntimeAutomaticallyLaunched": false,
+    "haspInstalledAutomatically": false,
+    "systemDirectoryModifiedAutomatically": false,
+    "appBusinessCodeModified": false,
+    "rebarGroupCreatorAlgorithmChanged": false,
+    "lineGroupParameterDialogChanged": false,
+    "occtDirectRebarRewrite": false,
+    "parentRebarMigrated": false,
+    "golden": "not_started",
+    "autocadL2": "not_run",
+    "oldStatusPromptsConfirmed": false,
+    "oldDialogFieldsConfirmed": false,
+    "runtimeCaptureTemplate": "docs/phase1/runtime_capture/todo_077_line_group_ui_prompt_capture"
+  },
+  "checklist": [
+    "no-selection click result",
+    "wrong-object click result",
+    "valid-object click result",
+    "old main parameter dialog fields/defaults/units/disabled state",
+    "Dialog #383 title/label/default/unit/OK/Cancel behavior if it appears",
+    "status bar pane before/after",
+    "model tree or output artifact before/after",
+    "screenshots/listings/hashes/steps"
+  ],
+  "rejectRules": [
+    "menu screenshot alone is not runtime evidence",
+    "screenshot without status bar or popup context cannot close prompt/status gaps",
+    "Dialog #383 screenshot without title/label/default/button context is rejected",
+    "new Qt6 P0 dialog screenshot is not old VisualTS evidence",
+    "SFL/hash/steps are mandatory for runtime closure",
+    "startup/license/HASP prompt alone is rejected"
+  ],
+  "verification": {
+    "readinessGateUnit": "pass",
+    "readinessGateStrict": "pass",
+    "defaultCTest": "pass",
+    "domainRebarCommandOCCLeak": "pass",
+    "gitDiffCheck": "pass",
+    "xhighReview": "needs_fix_important_fixed",
+    "xhighReviewSummary": {
+      "assessment": "needs_fix",
+      "critical": "none",
+      "importantFixed": [
+        "replaced TODO-077 done report pending verification placeholders with fresh verification results",
+        "added the final-verification placeholder to done-report pending markers",
+        "added TODO-077 pending final verification negative gate test"
+      ],
+      "minorDeferred": [
+        "TODO-077 accept test can later assert todoId and phase, but this is not a P0 blocker"
+      ],
+      "reviewerAgentClosed": true
+    },
+    "commands": [
+      {
+        "command": "py -3 .\\tools\\phase1_readiness_gate\\test_phase1_readiness_gate.py",
+        "result": "Ran 40 tests, OK"
+      },
+      {
+        "command": "py -3 .\\tools\\phase1_readiness_gate\\check_phase1_readiness.py --strict --report-id readiness_gate_run_todo_077",
+        "result": "decision=M1-Formal-Ready, errorCount=0, warningCount=0, passCount=84/84"
+      },
+      {
+        "command": "ctest --test-dir .\\app\\build --output-on-failure",
+        "result": "100% tests passed, 0 tests failed out of 21, total=207.14 sec"
+      },
+      {
+        "command": "rg -n \"TopoDS_|AIS_|BRep|TopAbs_|OpenCASCADE|opencascade\" .\\app\\src\\domain\\rebar .\\app\\src\\command",
+        "result": "no matches"
+      },
+      {
+        "command": "git diff --check",
+        "result": "exit 0; CRLF normalization warnings only for 11_需求证据追溯矩阵.md and todo.csv"
+      }
+    ]
+  },
+  "next": {
+    "todoId": "TODO-078",
+    "task": "线配筋旧图石运行确认工件回填 P0"
+  }
+}
