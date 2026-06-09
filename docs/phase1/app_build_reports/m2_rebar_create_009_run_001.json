@@ -1,0 +1,45 @@
+{
+  "todoId": "TODO-079",
+  "phase": "M2-RebarCreate-009",
+  "evidenceIds": [
+    "E-IDA-047",
+    "E-DEV-101"
+  ],
+  "decision": "done_static_stop_point_recorded",
+  "summary": {
+    "sgroupbarlineBindingConfirmed": true,
+    "directChineseLineGroupUiStringsFound": false,
+    "inputFloatDialog383ConfirmedCommonDialog": true,
+    "statusBarApiFound": true,
+    "statusBarPromptBoundToSgroupbarline": false,
+    "runtimeCaptureBackfilled": false
+  },
+  "guardrails": {
+    "oldRuntimeAutomaticallyLaunched": false,
+    "haspInstalledAutomatically": false,
+    "systemDirectoryModifiedAutomatically": false,
+    "appBusinessCodeModified": false,
+    "rebarGroupCreatorAlgorithmChanged": false,
+    "lineGroupParameterDialogChanged": false,
+    "occtDirectRebarRewrite": false,
+    "parentRebarMigrated": false,
+    "golden": "not_started",
+    "autocadL2": "not_run",
+    "oldStatusPromptsConfirmed": false,
+    "oldDialogFieldsConfirmed": false
+  },
+  "verification": {
+    "readinessGateUnit": "pass",
+    "readinessGateStrict": "pass",
+    "defaultCTest": "pass",
+    "domainRebarCommandOCCLeak": "pass",
+    "todoSingleNext": "pass",
+    "gitDiffCheck": "pass",
+    "xhighReview": "allow_commit_after_report_update",
+    "xhighNotes": "first two reviewer agents timed out and were closed; third reviewer returned no blocker and required pending report update, now applied"
+  },
+  "next": {
+    "todoId": "TODO-080",
+    "task": "线配筋公共创建 core 参数 gate 与 diagnostic 对齐 P0"
+  }
+}

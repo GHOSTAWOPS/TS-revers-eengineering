@@ -665,6 +665,266 @@ Dialog #383 是公共浮点输入窗，不是旧线配筋主参数窗口字段�
 TODO-077 / 线配筋旧图石运行确认清单与工件门禁 P0
 ```
 
+## TODO-079 线配筋旧 UI / Dialog 静态资源补证 P0
+
+Evidence ID：
+
+- `E-IDA-047`
+
+IDA MCP 会话：
+
+```text
+database = visualts_todo079
+input = C:\Users\ghost\Desktop\reverse_engineering\【03】图石软件\VisualTS.exe.i64
+hexrays_ready = true
+strings_cache_size = 16320
+```
+
+本轮补查目标：
+
+```text
+sgroupbarline 命令表绑定
+旧资源字符串 / 中文 UI 文案
+Dialog #383 / Input_float 调用链
+状态栏 SetPaneText 写入链
+sgroupbarline 与旧 UI caption / status prompt 的直接绑定
+```
+
+### 字符串和导入扫查
+
+IDA MCP `entity_query(strings)` 使用候选：
+
+```text
+sgroupbarline|sgroupbararc|线配筋|配筋|请选择|选择.*边|边.*选择|状态栏|失败|参数|距离|钢筋组|Input_float|钢筋
+```
+
+直接命中：
+
+```text
+0x1407689F8 = "sgroupbararc"
+0x140768A08 = "sgroupbarline"
+0x140990C98 = ".?AVInput_float@@"
+0x140990CC0 = ".?AVInput_float2@@"
+0x140990CE8 = ".?AVInput_float21@@"
+0x140990D10 = ".?AVInput_float3@@"
+0x140990D38 = ".?AVInput_floatdir@@"
+```
+
+未直接命中：
+
+```text
+线配筋
+请选择
+选择边 / 边选择
+状态栏
+失败
+参数
+钢筋组
+钢筋
+```
+
+相关 MFC 导入存在：
+
+```text
+AfxMessageBox
+CDialog::DoModal
+CWnd::SetWindowTextA
+CString::LoadStringA
+CStatusBar::SetPaneText
+CWnd::SetDlgItemTextA
+```
+
+工程含义：
+
+```text
+旧程序全局存在 Dialog / LoadString / 状态栏 API。
+但当前没有直接字符串证据把中文线配筋提示或状态栏文案绑定到 sgroupbarline。
+```
+
+### `sgroupbarline` 表绑定复核
+
+`0x140768A08` 的数据 xref：
+
+```text
+0x140959978 -> dq offset aSgroupbarline
+0x14095B440 -> dq offset aSgroupbarline
+```
+
+`0x14095B440` 已与旧命令表保持一致：
+
+```text
+command string = sgroupbarline
+handler        = sub_1404DE720
+secondary      = sub_14054B410
+```
+
+本轮没有从该表项继续找到直接中文 caption / Ribbon caption / 状态栏 prompt 绑定。
+
+### handler / helper 复核
+
+`sub_1404DE720` 仍保持 TODO-071 / TODO-076 的入口契约：
+
+```text
+selection count must be 1
+selected entity passes sub_1405C6820
+selected payload passes sub_1405DA020
+internal child count >= 2
+odd-index child entities -> temporary ENTITY_LIST
+4 endpoint distance candidates
+initial minimum distance candidate = 10.0
+sub_1404D10C0(entityList, objA, objB, minDistance, selectedEndpointDistance, flag)
+```
+
+`sub_14054B410` 仍像命令启用 / selection 可用性 helper：
+
+```text
+iterate current selection
+every selected entity must pass sub_1405C6820
+sub_1405C6F90(entity) must equal 120
+all pass -> return 1
+otherwise -> return 0
+```
+
+二者仍没有直接中文提示字符串、`AfxMessageBox` 或 `SetPaneText` 调用。
+
+### `sub_1404D10C0` 与 `Input_float / Dialog #383`
+
+`sub_1404D10C0` 本轮复核到的公共创建入口条件：
+
+```text
+objB must be non-null
+objA must be non-null
+sub_1405F25F0(objA) >= 3
+ENTITY_LIST count >= 1
+distance >= 0.002
+```
+
+通过 gate 后：
+
+```text
+sub_14045BEF0(Buffer, byte_140762190, distance)
+roundedDistance = int(distance * 10000.0) / 10000.0
+title candidate = unk_1407621C8 if flag else byte_1407621E0
+label candidate = byte_1407621B8
+sub_14058B8D0(title, label, &roundedDistance)
+api_bb_begin
+ACISExceptionCheck("API")
+sub_140451730(...)
+sub_1405D5670(...)
+sub_1405C7260(...)
+sub_1405E49D0(...)
+problems_list_prop::process_result(...)
+sub_1406B7FE0(...)
+```
+
+`sub_14058B8D0`：
+
+```text
+sub_1404F5120(stackObject, *value, title, label, 0)
+CDialog::DoModal()
+OK -> write back double
+```
+
+`sub_1404F5120`：
+
+```text
+CDialog::CDialog(..., 0x17F, ...)
+0x17F = Dialog #383
+source path = e:\tushi3d\dam\tool\input_float.cpp
+object +304 = double value
+object +320 = copied title string
+object +328 = copied label string
+```
+
+`sub_1404F5380`：
+
+```text
+GetDlgItem(1341)->SetWindowText(object+328)
+SetWindowText(object+320)
+if title == byte_1407621E0 and label == byte_1407621B8:
+  GetDlgItem(1)->EnableWindow(false)
+if object+312:
+  GetDlgItem(1308)->ShowWindow(true)
+UpdateData(false)
+```
+
+本轮结论：
+
+```text
+Dialog #383 是公共 Input_float 浮点输入窗。
+它由线/弧公共创建 core 调用，但不等价旧线配筋主参数窗口字段清单。
+当前 IDA MCP 未解出 0x140762190 / 0x1407621B8 / 0x1407621C8 / 0x1407621E0 的最终中文文本。
+```
+
+### 状态栏链补查
+
+`CStatusBar::SetPaneText` 的导入和大量调用点存在。
+
+本轮 trace 到的调用主要集中在：
+
+```text
+sub_1406F6120
+sub_1406F6A40
+sub_1406F6B70
+sub_1406F6F80
+sub_1406F7070
+sub_1406F72A0
+sub_1406F76B0
+sub_1406F8140
+sub_1406F8EA0
+sub_1406FA130
+sub_1406FA200
+sub_1406FA700
+sub_1406FABE0
+sub_1406FAE60
+sub_1406FB8F0
+sub_1406FBA90
+sub_1406FBB30
+sub_1406FBDD0
+sub_1406FC1E0
+```
+
+这些调用点证明旧程序存在集中状态栏更新层，但本轮没有发现从 `sgroupbarline / sub_1404DE720 / sub_1404D10C0` 到某条具体 `SetPaneText` 文案的直接静态绑定。
+
+`sub_1406F72A0` 仍可作为 generated node / steelbar 状态展示候选链记录，但不能直接当作线配筋点击提示。
+
+### TODO-079 static stop point
+
+本轮新增确认：
+
+```text
+sgroupbarline 命令表绑定仍是：
+  sgroupbarline -> sub_1404DE720 + sub_14054B410
+
+直接字符串扫查没有命中线配筋中文 UI / 失败提示 / 状态栏提示。
+
+Dialog #383 的构造、OnInit 设置标题/标签、OK 禁用条件和 ShowWindow(1308) 已复核。
+
+状态栏 SetPaneText API 和集中调用层存在，
+但没有静态证据直接绑定到 sgroupbarline 的旧用户可见提示。
+```
+
+本轮不能证明：
+
+```text
+旧线配筋没有状态栏提示。
+旧线配筋没有失败弹窗。
+Dialog #383 一定出现在真实线配筋运行流程。
+当前 Qt6 LineGroupParameterDialog 已 1:1 等于旧图石参数窗口。
+旧线配筋完整 UI 流程已闭合。
+```
+
+仍需旧图石运行确认：
+
+```text
+无选择点击线配筋后的可见反馈。
+选错对象点击线配筋后的可见反馈。
+有效对象点击后的旧主参数窗口字段。
+Dialog #383 在真实流程中的标题、标签、默认值、OK/Cancel 行为。
+状态栏 pane 文案和刷新位置。
+模型树 / 输出对象前后变化。
+```
+
 `Dialog #449` 字段：
 
 - 集合1。
