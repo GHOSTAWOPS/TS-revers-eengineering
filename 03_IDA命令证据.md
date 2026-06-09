@@ -421,6 +421,59 @@ checkmindststeel  -> sub_14059BB00 -> Dialog #450 平行钢筋最小距离
 checkgmindststeel -> sub_14059BA80 -> Dialog #450 平行钢筋最小距离
 ```
 
+## TODO-071 线配筋入口契约 IDA MCP 复核
+
+Evidence ID：
+
+- `E-IDA-045`
+
+本轮 IDA MCP 重新打开：
+
+```text
+VisualTS.exe.i64
+session_id = visualts_todo071_line_rebar
+hexrays_ready = true
+```
+
+本轮复核 `sgroupbarline` 表项：
+
+```text
+0x14095B440:
+  0x140768A08 -> "sgroupbarline"
+  0x1404DE720 -> sub_1404DE720
+  0x14054B410 -> secondary handler / helper
+```
+
+`sub_1404DE720` 本轮再次确认：
+
+```text
+selection count == 1
+selected entity passes sub_1405C6820
+selected payload passes sub_1405DA020
+internal child count >= 2
+odd-index child entities are extracted into a temporary ENTITY_LIST
+four endpoint distance candidates are calculated
+initial minimum distance candidate = 10.0
+sub_14058F580 selects the minimum distance candidate
+sub_1404D10C0(entityList, objA, objB, minDistance, selectedEndpointDistance, flag)
+```
+
+工程含义：
+
+```text
+Rebar.Create.LineGroup 的业务入口不能简化成“用户选一条 OCCT Edge 就生成钢筋”。
+当前 P0 可把单 edge 作为 spike 输入，但必须在领域对象 raw/evidence 中保留旧入口契约。
+```
+
+仍未闭合：
+
+```text
+旧 UI 选择对象的业务名。
+旧运行状态栏提示。
+objA / objB / createdPayload 的最终业务名。
+sub_1405D5670 第 4 个 double 的真实调用来源。
+```
+
 `Dialog #449` 字段：
 
 - 集合1。

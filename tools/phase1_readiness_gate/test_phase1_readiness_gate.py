@@ -384,6 +384,38 @@ class Phase1ReadinessGateTests(unittest.TestCase):
             self.assertIn("not_run_until_docs_mapping", report_checks[0].message)
             self.assertIn("not_run_before_commit_review", report_checks[0].message)
 
+    def test_route_guardrail_rejects_todo071_pending_after_docs_report(self):
+        tmp, root = self.make_guardrail_root()
+        with tmp:
+            (root / "todo.csv").write_text(
+                '"id","priority","phase","task","status","goal_setpoint","acceptance","boundary","evidence","dependencies","risk","notes"\n'
+                '"TODO-071","P0","M2-RebarCreate-001","LineGroup evidence","done","","","","","","",""\n'
+                '"TODO-072","P0","M2-RebarCreate-002","next task","next","","","","","","",""\n',
+                encoding="utf-8",
+            )
+            reports_dir = root / "docs" / "phase1" / "app_build_reports"
+            reports_dir.mkdir(parents=True, exist_ok=True)
+            (root / "109_M2-RebarCreate-001线配筋生成旧逻辑证据与P0切片准备实现记录.md").write_text(
+                "# stub\n",
+                encoding="utf-8",
+            )
+            (reports_dir / "m2_rebar_create_001_run_001.md").write_text(
+                "domainRebarOCCLeak = pending_after_docs\n",
+                encoding="utf-8",
+            )
+            (reports_dir / "m2_rebar_create_001_run_001.json").write_text(
+                '{"verification":{"domainRebarOCCLeak":"pending_after_docs"}}\n',
+                encoding="utf-8",
+            )
+
+            checks = gate.collect_route_guardrail_checks(root)
+            report_checks = [check for check in checks if check.item == "done_node_reports"]
+
+            self.assertEqual(1, len(report_checks))
+            self.assertFalse(report_checks[0].ok)
+            self.assertEqual("error", report_checks[0].severity)
+            self.assertIn("pending_after_docs", report_checks[0].message)
+
     def test_route_guardrail_requires_todo040_done_report(self):
         tmp, root = self.make_guardrail_root()
         with tmp:
@@ -661,6 +693,31 @@ class Phase1ReadinessGateTests(unittest.TestCase):
             )
             (reports_dir / "m2_drawing_039_run_001.md").write_text("# stub\n", encoding="utf-8")
             (reports_dir / "m2_drawing_039_run_001.json").write_text("{}\n", encoding="utf-8")
+
+            checks = gate.collect_route_guardrail_checks(root)
+            report_checks = [check for check in checks if check.item == "done_node_reports"]
+
+            self.assertEqual(1, len(report_checks))
+            self.assertTrue(report_checks[0].ok)
+            self.assertIn("checked_done_nodes=1", report_checks[0].message)
+
+    def test_route_guardrail_accepts_todo071_done_report(self):
+        tmp, root = self.make_guardrail_root()
+        with tmp:
+            (root / "todo.csv").write_text(
+                '"id","priority","phase","task","status","goal_setpoint","acceptance","boundary","evidence","dependencies","risk","notes"\n'
+                '"TODO-071","P0","M2-RebarCreate-001","LineGroup evidence","done","","","","","","",""\n'
+                '"TODO-072","P0","M2-RebarCreate-002","next task","next","","","","","","",""\n',
+                encoding="utf-8",
+            )
+            reports_dir = root / "docs" / "phase1" / "app_build_reports"
+            reports_dir.mkdir(parents=True, exist_ok=True)
+            (root / "109_M2-RebarCreate-001线配筋生成旧逻辑证据与P0切片准备实现记录.md").write_text(
+                "# stub\n",
+                encoding="utf-8",
+            )
+            (reports_dir / "m2_rebar_create_001_run_001.md").write_text("# stub\n", encoding="utf-8")
+            (reports_dir / "m2_rebar_create_001_run_001.json").write_text("{}\n", encoding="utf-8")
 
             checks = gate.collect_route_guardrail_checks(root)
             report_checks = [check for check in checks if check.item == "done_node_reports"]

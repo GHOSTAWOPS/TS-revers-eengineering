@@ -15,6 +15,7 @@
 ```text
 已确认核心算法链。
 TODO-020 已用 IDA MCP 补强 split / spline / trim / min-distance / 写回规则。
+TODO-071 已用 IDA MCP 复核 sgroupbarline 表项和入口契约，并固化到 RebarGroupCreator P0 raw/evidence。
 字段业务名仍是初稿，不能当成最终 SFL 字段表。
 ```
 
@@ -596,4 +597,19 @@ TODO-020 后的开发边界：
 可以进入 TODO-021 的 P0 业务创建 spike。
 但仍不能声明完整 1:1 复刻完成。
 字段业务名、旧 UI 流程、失败提示和 golden 对照仍需继续补证。
+```
+
+TODO-071 后的开发边界：
+
+```text
+sgroupbarline 入口契约已冻结到 P0：
+  selectionCount = 1
+  minimumInternalItemCount = 2
+  oddIndexedEntityExtraction = child-index-1-3-5-...
+  endpointDistanceCandidateCount = 4
+  initialMinimumDistanceCandidate = 10
+  publicCreateCall = sub_1404D10C0(entityList,objA,objB,minDistance,selectedEndpointDistance,flag)
+
+下一步可以做 Rebar.Create.LineGroup command handler P0。
+但仍不能声明完整 sub_1405D5670、旧 UI 流程、失败提示或 golden 已闭合。
 ```

@@ -29,9 +29,14 @@ LegacyRawField rawField(std::string name, std::string value, std::string evidenc
     return {std::move(name), std::move(value), std::move(evidenceId)};
 }
 
+RebarEvidenceRef evidenceRef(std::string evidenceId, std::string note)
+{
+    return {std::move(evidenceId), std::move(note)};
+}
+
 RebarEvidenceRef evidenceRef(const std::string& note)
 {
-    return {"E-IDA-022", note};
+    return evidenceRef("E-IDA-022", note);
 }
 
 UnresolvedLegacyField unresolvedField(std::string name,
@@ -71,6 +76,31 @@ LegacyRawBlock creationParameters(const RebarGroupCreationRequest& request,
     block.fields.push_back(rawField("segmentCurveNormalizerP0",
                                     normalizedCurve ? "applied" : "not-applied",
                                     "E-IDA-022"));
+    if (std::string(legacyCommand) == "sgroupbarline") {
+        block.fields.push_back(rawField("sgroupbarline.selectionCount", "1", "E-IDA-045"));
+        block.fields.push_back(rawField("sgroupbarline.selectionGate.structureCandidate",
+                                        "sub_1405C6820",
+                                        "E-IDA-045"));
+        block.fields.push_back(rawField("sgroupbarline.selectionGate.payloadCandidate",
+                                        "sub_1405DA020",
+                                        "E-IDA-045"));
+        block.fields.push_back(rawField("sgroupbarline.minimumInternalItemCount",
+                                        "2",
+                                        "E-IDA-045"));
+        block.fields.push_back(rawField("sgroupbarline.oddIndexedEntityExtraction",
+                                        "child-index-1-3-5-...",
+                                        "E-IDA-045"));
+        block.fields.push_back(rawField("sgroupbarline.endpointDistanceCandidateCount",
+                                        "4",
+                                        "E-IDA-045"));
+        block.fields.push_back(rawField("sgroupbarline.initialMinimumDistanceCandidate",
+                                        "10.0",
+                                        "E-IDA-045"));
+        block.fields.push_back(rawField(
+            "sgroupbarline.publicCreateCall",
+            "sub_1404D10C0(entityList,objA,objB,minDistance,selectedEndpointDistance,flag)",
+            "E-IDA-045"));
+    }
     if (std::string(legacyCommand) == "sgroupbararc") {
         block.fields.push_back(rawField("arcSecondaryDistance",
                                         numberText(kDefaultArcSecondaryDistance),
@@ -266,6 +296,12 @@ RebarGroupCreationResult createGroup(const RebarGroupCreationRequest& request,
     group.unresolvedLegacyFields.push_back(unresolvedField(
         "objA/objB/createdPayload",
         "TODO-020 kept old object business names unresolved."));
+    if (!arcGroup) {
+        group.unresolvedLegacyFields.push_back(unresolvedField(
+            "sgroupbarline.selectionObjectType",
+            "TODO-071 confirmed VisualTS selection gates, but did not close the business name of the selected object type.",
+            "GAP-IDA-002"));
+    }
     if (arcGroup) {
         group.unresolvedLegacyFields.push_back(unresolvedField(
             "sgroupbararc.uiMapping",
@@ -273,6 +309,11 @@ RebarGroupCreationResult createGroup(const RebarGroupCreationRequest& request,
             "GAP-IDA-001"));
     }
     group.evidence.push_back(evidenceRef("sgroupbarline / sgroupbararc common creation chain"));
+    if (!arcGroup) {
+        group.evidence.push_back(evidenceRef(
+            "E-IDA-045",
+            "TODO-071 confirmed sgroupbarline table entry and line-group entry contract"));
+    }
 
     SteelData steelData;
     steelData.steelDataId = request.steelDataId;

@@ -125,6 +125,20 @@ sgroupbarline / sgroupbararc
 
 这说明线配筋、弧形组等逻辑不是 ACIS 自动生成，而是旧图石自己的分段钢筋组逻辑在做创建、裁剪、分裂、样条和刷新。
 
+TODO-071 已进一步把 `sgroupbarline` 入口契约冻结为：
+
+```text
+单选对象
+内部子项不少于 2
+奇数索引子项抽取为 ENTITY_LIST
+四组端点距离候选
+10.0 初始最小距离候选
+sub_1404D10C0(entityList,objA,objB,minDistance,selectedEndpointDistance,flag)
+```
+
+因此新 UI handler 的 P0 可以先接 `LegacySelectionRef + 参数 -> RebarGroupCreator`，
+但必须把旧入口契约、低置信字段和 gap 保留到领域对象 evidence/raw 中。
+
 ## LegacyGeometryAdapter 边界
 
 钢筋业务层应该依赖旧语义接口：

@@ -242,10 +242,29 @@ void testLineGroupCreatorBuildsDomainGroupFromLegacyEdge()
     expect(group.barCount == 3, "line group bar count mismatch");
     expect(group.segmentCount == 1, "line group segment count mismatch");
     expect(hasEvidence(group.evidence, "E-IDA-022"), "line group must carry IDA evidence");
+    expect(hasEvidence(group.evidence, "E-IDA-045"),
+           "line group must carry TODO-071 sgroupbarline entry evidence");
     expect(hasUnresolvedField(group.unresolvedLegacyFields, "sub_1405D5670.arg4"),
            "line group must keep unresolved fourth double field");
     expect(hasCreatedParameter(group.createdFromParameters, "minimumCreationDistance"),
            "line group must record legacy creation threshold");
+    expect(createdParameterValue(group.createdFromParameters, "sgroupbarline.selectionCount") == "1",
+           "line group must record old single-selection entry contract");
+    expect(createdParameterValue(group.createdFromParameters,
+                                 "sgroupbarline.selectionGate.structureCandidate") == "sub_1405C6820",
+           "line group must record old structure selection gate");
+    expect(createdParameterValue(group.createdFromParameters,
+                                 "sgroupbarline.selectionGate.payloadCandidate") == "sub_1405DA020",
+           "line group must record old payload selection gate");
+    expect(createdParameterValue(group.createdFromParameters,
+                                 "sgroupbarline.endpointDistanceCandidateCount") == "4",
+           "line group must record old four endpoint distance candidates");
+    expect(createdParameterValue(group.createdFromParameters,
+                                 "sgroupbarline.initialMinimumDistanceCandidate") == "10.0",
+           "line group must preserve old initial minimum distance literal");
+    expect(hasCreatedParameter(group.createdFromParameters,
+                               "sgroupbarline.oddIndexedEntityExtraction"),
+           "line group must record odd-indexed entity extraction");
 }
 
 void testArcGroupCreatorBuildsArcSegmentAndKeepsUnresolvedUiGap()

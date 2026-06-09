@@ -1,0 +1,57 @@
+{
+  "todoId": "TODO-071",
+  "phase": "M2-RebarCreate-001",
+  "evidenceIds": ["E-IDA-045", "E-DEV-093"],
+  "decision": "sgroupbarline-entry-contract-p0-slice-prepared",
+  "changedCode": [
+    "app/src/domain/rebar/RebarGroupCreator.cpp",
+    "app/tests/unit/rebar_group_creator_tests.cpp"
+  ],
+  "implemented": {
+    "lineEntryContractFields": [
+      "sgroupbarline.selectionCount",
+      "sgroupbarline.selectionGate.structureCandidate",
+      "sgroupbarline.selectionGate.payloadCandidate",
+      "sgroupbarline.minimumInternalItemCount",
+      "sgroupbarline.oddIndexedEntityExtraction",
+      "sgroupbarline.endpointDistanceCandidateCount",
+      "sgroupbarline.initialMinimumDistanceCandidate",
+      "sgroupbarline.publicCreateCall"
+    ],
+    "evidenceAdded": ["E-IDA-045"],
+    "scope": "sgroupbarline legacy entry contract and P0 creator evidence only"
+  },
+  "guards": {
+    "oldRuntimeAutomaticallyLaunched": false,
+    "haspInstalledAutomatically": false,
+    "systemDirectoryModifiedAutomatically": false,
+    "occtDirectRebarRewrite": false,
+    "parentRebarMigrated": false,
+    "detailWriterModified": false,
+    "golden": "not_started",
+    "autocadL2": "not_run",
+    "domainRebarOccLeak": "pass"
+  },
+  "verification": {
+    "idaMcp": "pass; visualts_todo071_line_rebar opened VisualTS.exe.i64 and confirmed sgroupbarline table / handler / call chain",
+    "tddRed": "pass; rebar_group_creator_tests failed before implementation with missing E-IDA-045 evidence",
+    "targetedBuild": "pass; cmake --build app/build --target rebar_group_creator_tests --config Debug",
+    "targetedTest": "pass; ctest -R rebar_group_creator_tests",
+    "fullBuildDebug": "pass; cmake --build app/build --config Debug",
+    "ctest": "pass; 18/18 pass; total 157.10 sec",
+    "domainRebarOCCLeak": "pass; no TopoDS_ / AIS_ / BRep / TopAbs_ matches",
+    "gitDiffCheck": "pass",
+    "readinessGateUnit": "pass; 31/31 pass",
+    "readinessGateStrict": "pass; M1-Formal-Ready; 84/84 pass",
+    "xhighReview": "needs_fix; important findings fixed by main agent; agent closed"
+  },
+  "residualGaps": {
+    "GAP-IDA-002": "line selection object business name / old UI flow still needs runtime confirmation",
+    "GAP-IDA-007": "objA / objB / createdPayload / sub_1405D5670.arg4 still not fully named",
+    "GAP-REB-C-002": "full line rebar creation, command transaction, undo/dirty/runtime golden still open"
+  },
+  "next": {
+    "todoId": "TODO-072",
+    "action": "Rebar.Create.LineGroup command handler P0"
+  }
+}
