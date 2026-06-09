@@ -336,7 +336,7 @@ M1-Formal-Ready
 当前正式 app 已达到：
 
 ```text
-M2-RebarCreate-010 / TODO-080 done
+M2-RebarCreate-011 / TODO-081 done
   -> Qt6 主窗口和旧图石一期页签
   -> OCCT STEP 导入和 AIS 显示
   -> selection-v1 face / edge / vertex 稳定选择引用
@@ -352,6 +352,7 @@ M2-RebarCreate-010 / TODO-080 done
   -> 旧图石运行确认采样清单和拒收伪工件规则
   -> 旧图石运行工件回填审计：当前只有模板，真实截图 / hash / listing 缺失
   -> sub_1404D10C0 公共创建 gate P0：objB / objA / sub_1405F25F0(objA) / ENTITY_LIST / distanceA
+  -> sub_1404D10C0 createdPayload / linkedModelRef / distanceA_4digit / objA-objB role 静态补证
 ```
 
 这代表：
@@ -364,11 +365,12 @@ M2-RebarCreate-010 / TODO-080 done
 - `TODO-078 / E-DEV-100` 已确认当前采样目录只有模板，没有真实旧图石截图、hash、listing 或填写后的运行 notes，所以运行回填 blocked；这避免了把空模板误读成旧 UI 已确认。
 - `TODO-079 / E-IDA-047 / E-DEV-101` 已完成旧 UI / Dialog 静态资源补证：`sgroupbarline` 表项、公共 `Input_float / Dialog #383` 和状态栏 API 调用层已复核；没有找到直接绑定到线配筋的中文 UI / 状态栏文案，因此旧 UI 真实行为仍需运行确认。
 - `TODO-080 / E-DEV-102` 已把 `sub_1404D10C0` 已确认的公共创建 gate 落到 `RebarGroupCreator` P0：在几何查询前校验 `objB / objA / sub_1405F25F0(objA) >= 3 / ENTITY_LIST count >= 1 / distanceA >= 0.002`，并把 gate 快照写入 raw evidence。该实现只对齐旧 gate 和 diagnostic，不关闭完整旧创建对象语义。
+- `TODO-081 / E-IDA-048 / E-DEV-103` 已把公共创建对象角色继续收窄：`createdObject + 104` 可作为 `createdPayload`，`createdObject + 112` 只能低置信记为 `linkedModelRef / createdLinkRef`，`sub_1405D5670` 第 4 个 double 是 `distanceA_4digit`，且 `objA / objB` 在线配筋和弧形组入口会交换角色，不能硬编码为固定源/目标组。
 
 这不代表：
 
 - 旧图石所有钢筋业务已经复刻完成。
-- 线配筋旧参数窗口字段 / 默认值 / 灰显状态、旧失败提示、状态栏 pane 文案、完整 `ENTITY_LIST` 选择对象、`objA/objB/createdPayload` 业务名、完整 `sub_1405D5670` 等价、弧形组、同心圆等复杂算法尚未闭合；这些仍处于待 IDA 或旧图石运行确认状态。
+- 线配筋旧参数窗口字段 / 默认值 / 灰显状态、旧失败提示、状态栏 pane 文案、完整 `ENTITY_LIST` 选择对象、`createdObject + 112` 准确业务名、`objA/objB` 旧源码真实类名、完整 `sub_1405D5670` 等价、弧形组、同心圆等复杂算法尚未闭合；这些仍处于待 IDA 或旧图石运行确认状态。
 - 当前 `LineGroupParameterDialog` 是 P0 参数输入壳；`Input_float / Dialog #383` 是旧公共浮点输入窗；二者都不能被写成旧线配筋主参数窗口已经 1:1 复刻。
 - `TODO-077` 只准备了运行确认包，`TODO-078` 已明确当前没有真实旧图石运行截图或参数窗口字段；`TODO-079` 的静态补证也不能替代现场运行确认。
 - 父目录源码可以直接拿来当最终业务代码。

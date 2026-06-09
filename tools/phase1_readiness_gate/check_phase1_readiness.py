@@ -34,6 +34,14 @@ JSONLESS_DONE_NODE_REPORT_TODOS = {
     # Historical app report created before JSON sibling became mandatory.
     "TODO-021",
 }
+DONE_NODE_JSON_CONTRACTS = {
+    "TODO-081": {
+        "todoId": "TODO-081",
+        "decision": "done_static_payload_role_evidence",
+        "nextTodoId": "TODO-082",
+        "requiredVerification": ("readinessGateUnit", "readinessGateStrict", "xhighReview"),
+    },
+}
 
 
 @dataclass(frozen=True)
@@ -167,6 +175,32 @@ def read_todo_rows(root: Path) -> list[dict[str, str]] | None:
         return None
 
 
+def done_node_json_contract_issues(todo_id: str, report_json: dict[str, Any], report_path: str) -> list[str]:
+    contract = DONE_NODE_JSON_CONTRACTS.get(todo_id)
+    if not contract:
+        return []
+
+    issues: list[str] = []
+    if report_json.get("todoId") != contract["todoId"]:
+        issues.append(f"{todo_id}:{report_path}:json_todoId_mismatch")
+    if report_json.get("decision") != contract["decision"]:
+        issues.append(f"{todo_id}:{report_path}:json_decision_mismatch")
+
+    next_report = report_json.get("next")
+    if not isinstance(next_report, dict) or next_report.get("todoId") != contract["nextTodoId"]:
+        issues.append(f"{todo_id}:{report_path}:json_nextTodoId_mismatch")
+
+    verification = report_json.get("verification")
+    if not isinstance(verification, dict):
+        issues.append(f"{todo_id}:{report_path}:json_verification_missing")
+        return issues
+
+    for key in contract["requiredVerification"]:
+        if key not in verification:
+            issues.append(f"{todo_id}:{report_path}:json_verification_{key}_missing")
+    return issues
+
+
 def done_node_report_requirements(root: Path, rows: list[dict[str, str]]) -> tuple[list[str], list[str], list[str]]:
     known_reports = {
         "TODO-010": ("47_M1-App-010LegacyGeometryAdapterP3B实现记录.md", "docs/phase1/app_build_reports/m1_app_010_run_001.md"),
@@ -230,6 +264,7 @@ def done_node_report_requirements(root: Path, rows: list[dict[str, str]]) -> tup
         "TODO-077": ("115_M2-RebarCreate-007线配筋旧图石运行确认清单与工件门禁P0实现记录.md", "docs/phase1/app_build_reports/m2_rebar_create_007_run_001.md"),
         "TODO-079": ("117_M2-RebarCreate-009线配筋旧UIDialog静态资源补证P0实现记录.md", "docs/phase1/app_build_reports/m2_rebar_create_009_run_001.md"),
         "TODO-080": ("118_M2-RebarCreate-010线配筋公共创建Core参数Gate与Diagnostic对齐P0实现记录.md", "docs/phase1/app_build_reports/m2_rebar_create_010_run_001.md"),
+        "TODO-081": ("119_M2-RebarCreate-011线配筋公共创建CreatedPayload与ObjAB字段语义补证P0实现记录.md", "docs/phase1/app_build_reports/m2_rebar_create_011_run_001.md"),
     }
     missing: list[str] = []
     checked: list[str] = []
@@ -253,9 +288,12 @@ def done_node_report_requirements(root: Path, rows: list[dict[str, str]]) -> tup
             if not path.exists():
                 missing.append(f"{todo_id}:{required_path}")
                 continue
-            if required_path.endswith(".json") and read_json(path) is None:
-                issues.append(f"{todo_id}:{required_path}:invalid_json")
-                continue
+            if required_path.endswith(".json"):
+                report_json = read_json(path)
+                if report_json is None:
+                    issues.append(f"{todo_id}:{required_path}:invalid_json")
+                    continue
+                issues.extend(done_node_json_contract_issues(todo_id, report_json, required_path))
             if required_path.startswith("docs/phase1/app_build_reports/"):
                 text = read_text_lossy(path)
                 marker = next((candidate for candidate in PENDING_REPORT_MARKERS if candidate in text), "")

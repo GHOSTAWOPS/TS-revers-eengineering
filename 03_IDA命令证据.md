@@ -470,8 +470,8 @@ Rebar.Create.LineGroup 的业务入口不能简化成“用户选一条 OCCT Edg
 ```text
 旧 UI 选择对象的业务名。
 旧运行状态栏提示。
-objA / objB / createdPayload 的最终业务名。
-sub_1405D5670 第 4 个 double 的真实调用来源。
+objA / objB / createdObject+112 的最终业务名。
+sub_1405D5670 第 4 个 double 已在 TODO-081 静态确认来自 distanceA_4digit。
 ```
 
 ## TODO-076 线配筋旧 UI 失败提示与状态栏口径静态 stop point
@@ -2193,9 +2193,100 @@ sub_1405E49D0(object)
 
 本轮不能过度推断：
 
-- `sub_1405D5670` 第 4 个 double 参数在函数内被用作端部最小距离阈值，但 `sub_1404D10C0` 里的反编译调用只显示 3 个显式实参，真实来源仍需继续确认。
-- `objA / objB / createdPayload` 的业务对象名仍未完全闭合。
+- TODO-081 已在汇编层确认 `sub_1405D5670` 第 4 个 double 来自 `distanceA` 的 4 位截断值：`movsd xmm3, [var_1C8]`，其中 `var_1C8 = (int)(distanceA * 10000.0) / 10000.0`。
+- TODO-081 已确认 `createdObject + 104` 是传入 `sub_1405D5670`、显示挂接和 dirty 标记的 `createdPayload`；`createdObject + 112` 进入后续模型/映射刷新链，但业务名仍低置信。
+- `objA / objB` 在线配筋和弧形组入口会交换角色，旧源码真实类名和 UI 业务名仍未完全闭合。
 - `sgroupbararc` 对应旧 UI 的 `扇形筋`、`同心圆`，还是二者共用，仍需旧图石运行确认。
+
+## TODO-081 线配筋公共创建 createdPayload 与 objA/objB 字段语义补证
+
+- `E-IDA-048`
+
+IDA MCP 会话：
+
+```text
+database = visualts_todo079
+input = C:\Users\ghost\Desktop\reverse_engineering\【03】图石软件\VisualTS.exe.i64
+```
+
+本轮复核：
+
+```text
+sub_1404D10C0
+sub_140451730
+sub_1405D5670
+sub_1404DE720
+sub_1404DE110
+```
+
+`sub_1404D10C0` 创建成功后的字段流：
+
+```text
+sub_140451730(*(_QWORD *)(objA + 96), copiedEntityList, &createdObject)
+
+movsd xmm3, [distanceA_4digit]
+sub_1405D5670(objB, *(createdObject + 104), objA, distanceA_4digit)
+sub_1405C7260(objB)
+vtable_call(runtimeContext, *(createdObject + 104), 1)
+sub_1405E49D0(*(createdObject + 104))
+
+sub_1406B6E20(context, *(createdObject + 112))
+sub_1405F4ED0(...)
+sub_1405F4A90(..., *(createdObject + 112))
+sub_1405F5880(...)
+sub_1406B2270(context, *(createdObject + 112))
+```
+
+`sub_140451730` 本轮新增确认：
+
+- 入口参数为 `(__int64 createContext, ENTITY_LIST *entityList, _QWORD *outCreatedObject)`。
+- 函数要求实体列表非空，读取首个实体的 `+80 / +88` 关系。
+- 通过 `sub_140447D90(...)` 创建或取得内部对象 `v10`。
+- 把实体加入映射 / 挂接链后，最终执行：
+
+```text
+*outCreatedObject = sub_1406B6A00(context, v10)
+return v10
+```
+
+本轮对 `outCreatedObject` 的安全命名：
+
+- `createdObject + 104`：暂命名 `createdPayload`，置信度中高。
+- `createdObject + 112`：暂命名 `linkedModelRef / createdLinkRef`，置信度低。
+
+`sub_1405D5670` 第 4 个 double 来源：
+
+```text
+1404d1169..1188  distanceA_4digit = (int)(distanceA * 10000.0) / 10000.0
+1404d1300        movsd xmm3, [distanceA_4digit]
+1404d1310        call sub_1405D5670
+```
+
+因此旧缺口从“来源未知”收窄为：
+
+```text
+trimDistance / minDistanceThreshold = distanceA_4digit
+```
+
+`objA / objB` 角色边界：
+
+```text
+sub_1404DE720 -> sub_1404D10C0(entityList, v6, v4, minDistance, selectedEndpointDistance, flag)
+sub_1404DE110 -> sub_1404D10C0(entityList, v4, v6, distance, 0.8, 1)
+```
+
+所以 `objA / objB` 不能在新代码里硬命名为固定“源组/目标组”。更安全的工程命名是：
+
+```text
+objA = createContextOwner / sourceContextObject
+objB = refreshTargetObject / counterpartObject
+```
+
+本轮不能过度推断：
+
+- `createdObject + 112` 的准确业务名仍未闭合。
+- `object + 80 / 88 / 96` 在不同对象上的准确含义仍未闭合。
+- 旧线配筋 UI、状态栏、主参数窗口和 golden 仍需运行确认。
 
 ## TODO-034 FDrawing 插件工程图对象符号静态证据
 
@@ -3103,7 +3194,7 @@ Others / symbolcutIOS 的 producer 链已从 writer 继续追到 HVIEWPORT +840/
 ## 待继续分析
 
 - `sub_1404DE110` 和 `sub_1404DE720` 已完成第二轮 IDA MCP 补证，公共生成链已追到 `sub_1404D10C0 -> sub_140451730 -> sub_1405D5670 -> sub_1405BD0C0 / sub_1405C7260 / sub_1405E49D0`。
-- `sub_1405D5670` 已确认 split / spline / trim / min-distance / 写回主规则，但第 4 个 double 参数来源、字段业务名和对象名仍需继续闭合。
+- `sub_1405D5670` 已确认 split / spline / trim / min-distance / 写回主规则；TODO-081 已确认第 4 个 double 参数来源为 `distanceA_4digit`。字段业务名和对象名仍需继续闭合。
 - `TODO-046 / E-IDA-029` 已把 `JointRuler / JointDistbet / JointWeldLength` 的旧参数链、`JointWeldLength / 2000.0` 半长公式、`pattern` raw byte `'L'`、`Others / symbolcutIOS` gate 和额外弧线 / `DrawTaoTong` 关系继续补证；`TODO-050 / E-IDA-032` 又把接头内部命令分成 `barjoint* / groupjoint* / goujianjoint* / featjoint*` 三类采样入口；`TODO-051 / E-IDA-033` 已把 `Others / symbolcutIOS` producer 追到 `sub_14060C940 -> sub_14060A810 -> HVIEWPORT +840/+848 -> sub_14061F970`；但 owning enum / 结构名、旧 UI caption、旧运行非空样例和旧插件接受度仍需继续闭合。
 - `TODO-048 / E-IDA-030` 已把旧图石启动期阻塞链闭合到 `sub_1406BBFC0 -> sub_1406BC3B0 -> sub_14070C760`，并确认 `41 -> 许可已过期`、其他非 0 -> `请检查网线是否接好`、`ChaspBase` 许可对象和 `HASP / SuperDog / NetHASP` 许可栈侧证据；`TODO-049 / E-IDA-031` 又补充了 fallback 是宽兜底许可初始化失败文案，不是纯网络专用报错；但当前本机究竟卡在“许可过期 / 网络不可达 / 许可服务未就绪 / 许可文件链异常”的哪一种真实环境原因，仍需用户手工确认。
 - `rebarz` / `rebarpost` 业务含义未闭合。

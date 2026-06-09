@@ -20,7 +20,7 @@
      输出目录 / hash / 覆盖策略记录模板和拒收伪工件规则已落文档
   -> output_uncut_steel / Dialog 0x57C / UnCutSteel.TXT
      继续只算可选旁证，不算前置设置窗
-  -> TODO-066 已完成真实工件回填；TODO-067 已完成字段对照；TODO-068 已完成最明显旧包格式纠偏；TODO-069 已完成 StbRow 扩展属性骨架；TODO-070 已完成 lineStb StbGeo 字段条件化骨架；TODO-071 已完成线配筋入口契约冻结；TODO-072 已完成 LineGroup command handler P0；TODO-073 已完成 LineGroup UI/AIS 可见反馈 P0；TODO-074 已完成 LineGroup 参数窗口 P0；TODO-075 已完成选择预检与参数窗口顺序对齐 P0；TODO-076 已完成旧 UI 失败提示与状态栏口径静态 stop point；TODO-077 已完成旧图石运行确认采样清单与拒收规则；TODO-078 已审计为 blocked，因为当前只有模板、没有真实旧图石运行截图/hash/listing/填写后的 notes；TODO-079 已完成旧 UI / Dialog 静态资源补证；TODO-080 已完成公共创建 core gate 与 diagnostic P0 对齐；现在的主线是 TODO-081
+  -> TODO-066 已完成真实工件回填；TODO-067 已完成字段对照；TODO-068 已完成最明显旧包格式纠偏；TODO-069 已完成 StbRow 扩展属性骨架；TODO-070 已完成 lineStb StbGeo 字段条件化骨架；TODO-071 已完成线配筋入口契约冻结；TODO-072 已完成 LineGroup command handler P0；TODO-073 已完成 LineGroup UI/AIS 可见反馈 P0；TODO-074 已完成 LineGroup 参数窗口 P0；TODO-075 已完成选择预检与参数窗口顺序对齐 P0；TODO-076 已完成旧 UI 失败提示与状态栏口径静态 stop point；TODO-077 已完成旧图石运行确认采样清单与拒收规则；TODO-078 已审计为 blocked，因为当前只有模板、没有真实旧图石运行截图/hash/listing/填写后的 notes；TODO-079 已完成旧 UI / Dialog 静态资源补证；TODO-080 已完成公共创建 core gate 与 diagnostic P0 对齐；TODO-081 已完成 createdPayload / objA / objB 字段语义补证；现在的主线是 TODO-082
 ```
 
 ## 可直接粘贴到 Goal 模式的目标
@@ -329,14 +329,14 @@ TODO-044 验证 = othersSteeljoint.passed=true, Others empty container, steeljoi
 TODO-057 验证 = owner types traced to steelbar / steelbargroup / seg_steelbargroup, Dialog #428 OK chain traced to sub_14045D720 -> sub_1405CB160 -> sub_1405B7350, child+112 narrowed to phase/position/start offset, phase1 gate unittest 18 tests pass, CTest 18/18 pass, readiness 84/84 pass, OCCT leak scan pass, xhigh completed important_fixed minor_refined
 TODO-069 验证 = StbRow smallTable / mirrorType / mirrorSEFlag 字段骨架已输出，CTest 18/18 pass, readiness unit 28/28 pass, strict readiness 84/84 pass, OCCT leak scan pass, xhigh needs_fix important fixed, one-shot reviewer process exited
 
-latest pushed baseline tag = m2-rebar-create-009-todo-079-linegroup-ui-static-evidence
-current node tag to create after verification = m2-rebar-create-010-todo-080-linegroup-core-gate-diagnostics
+latest pushed baseline tag = m2-rebar-create-010-todo-080-linegroup-core-gate-diagnostics
+current node tag to create after verification = m2-rebar-create-011-todo-081-linegroup-payload-role-evidence
 ```
 
 当前下一步：
 
 ```text
-TODO-081 / 线配筋公共创建 createdPayload 与 objA/objB 字段语义补证 P0
+TODO-082 / 线配筋公共创建 roles DTO 与 raw evidence 对齐 P0
   -> 接头链路现阶段先记录、暂缓。
   -> TODO-071 已完成 sgroupbarline 入口契约冻结。
   -> TODO-072 已完成 LineGroup command handler P0 事务接入。
@@ -348,7 +348,8 @@ TODO-081 / 线配筋公共创建 createdPayload 与 objA/objB 字段语义补证
   -> TODO-078 已确认采样目录只有模板、缺真实旧图石运行工件，因此 blocked。
   -> TODO-079 已完成旧 UI / Dialog 静态资源补证，仍没有直接旧中文 UI / 状态栏文案绑定。
   -> TODO-080 已完成旧 sub_1404D10C0 已确认公共创建 gate 与 diagnostic P0 对齐。
-  -> 下一轮只补 sub_1404D10C0 -> sub_140451730 -> createdObject / payload 字段语义。
+  -> TODO-081 已完成 sub_1404D10C0 -> sub_140451730 -> createdObject / payload 字段语义补证。
+  -> 下一轮只把 roles 快照转成 app 可测试 DTO / raw evidence。
   -> 不自动启动旧图石，不安装 HASP，不用 OCCT 直接重写钢筋业务。
   -> 不替代 TODO-078 的真实运行确认。
 ```
@@ -594,7 +595,7 @@ commit / tag / push 状态
 
 ### 短期 Goal（下一轮推荐复制）
 
-目标：只完成 `TODO-081 / 线配筋公共创建 createdPayload 与 objA/objB 字段语义补证 P0` 这个短期阶段，不自动进入后续长期开发。
+目标：只完成 `TODO-082 / 线配筋公共创建 roles DTO 与 raw evidence 对齐 P0` 这个短期阶段，不自动进入后续长期开发。
 
 当前状态：
 
@@ -615,21 +616,23 @@ commit / tag / push 状态
   TODO-078 = blocked  当前只有模板，没有真实旧图石运行截图/hash/listing/填写后的 notes
   TODO-079 = done  旧 UI / Dialog 静态资源补证 static stop point
   TODO-080 = done  公共创建 core gate 与 diagnostic P0 对齐
-  TODO-081 = next
+  TODO-081 = done  createdPayload / objA / objB 字段语义补证
+  TODO-082 = next
 ```
 
 本轮只做：
 
 ```text
-LineGroupCreatedPayloadEvidenceP0 / TODO-081
+LineGroupCreateRolesDtoP0 / TODO-082
   -> 从 todo.csv / 03 / 08 / 11 / 15 / 16 / 35 / 46 / 99 出发
-  -> 基于 E-IDA-045 / E-IDA-047 / E-DEV-102 已确认的 sub_1404D10C0 公共创建 gate
-  -> 优先用 IDA MCP 追 sub_1404D10C0 -> sub_140451730 -> createdObject / payload 字段
-  -> 只做静态证据、字段语义、可开发边界和缺口收口
+  -> 基于 E-IDA-048 / E-DEV-103 已确认的 createdPayload / distanceA_4digit / objA-objB 角色交换风险
+  -> 把 TODO-081 的静态证据转成正式 app 可测试的 roles DTO / raw evidence 边界
+  -> 测试覆盖 distanceA_4digit、createdPayloadRef、linkedModelRef 低置信和 objA/objB role 不硬编码
   -> 不直接实现完整线配筋算法
   -> 更新实现记录、run report、追溯矩阵、缺口文档、46 和 todo
-  -> 如本轮只改文档/证据，运行 readiness gate 和 git diff --check
-  -> 如涉及代码、测试或门禁脚本，必须补测试并在 commit 前执行 xhigh 只读 review
+  -> 本轮是代码 / 测试节点，必须先补测试，再实现
+  -> 运行默认 CTest、readiness gate、OCCT 泄漏检查和 git diff --check
+  -> commit 前必须执行 xhigh 只读 review
   -> 不启动旧图石，不安装 HASP
   -> 不改 LineGroupParameterDialog 文案
   -> 不用 OCCT 直接重写钢筋业务
@@ -654,27 +657,34 @@ TODO-080 已完成：
   不再继续猜 UI 文案。
   已把旧 sub_1404D10C0 已确认的公共创建 gate 和失败诊断对齐到 P0 代码/测试。
 
-TODO-080 仍不能证明：
+TODO-081 已完成：
+  createdObject + 104 可作为 createdPayload。
+  sub_1405D5670 第 4 个 double 来自 distanceA_4digit。
+  createdObject + 112 只能低置信记为 linkedModelRef / createdLinkRef。
+  objA / objB 在线配筋和弧形组入口存在角色交换风险，不能硬编码为固定源/目标组。
+
+TODO-081 仍不能证明：
   完整线配筋算法已完成。
   旧图石真实运行提示已闭合。
   Dialog #383 一定出现在真实线配筋流程。
   当前 Qt6 LineGroupParameterDialog 已 1:1 等于旧图石窗口。
   面配筋、弧筋、接头、Excel、Detail 或 golden 已完成。
 
-TODO-081 的价值是：
-  在继续编码完整线配筋算法前，
-  先把 objA / objB / createdPayload 字段语义继续从 IDA 静态证据里收窄。
-  这能防止后续把 P0 gate 快照误当成完整旧对象模型。
+TODO-082 的价值是：
+  在继续实现完整 sub_1405D5670 等价算法前，
+  先把 createdPayload / linkedModelRef / distanceA_4digit / objA-objB role
+  从文档证据落到正式 app 可测试的 DTO 和 raw evidence。
+  这能防止后续把静态角色名误当成完整旧对象模型。
 ```
 
 本轮完成后必须停止并复盘：
 
 ```text
-完成了哪些 gate / diagnostic 对齐
-验证了哪些门禁
-还缺哪些旧图石运行工件
-TODO-078 需要用户补什么
-下一阶段建议继续 TODO-081 还是回填 TODO-078
+完成了哪些 roles DTO / raw evidence 对齐
+验证了哪些门禁和 xhigh review
+还缺哪些旧图石运行工件和旧类名
+TODO-078 是否仍 blocked
+下一阶段建议继续 TODO-083 还是回填 TODO-078
 ```
 ### 按任务补读的参考文档
 
@@ -823,7 +833,7 @@ TODO-076 验证 = IDA MCP 已确认 sub_1404DE720 / sub_14054B410 无直接中�
 当前下一步：
 
 ```text
-TODO-081 / 线配筋公共创建 createdPayload 与 objA/objB 字段语义补证 P0
+TODO-082 / 线配筋公共创建 roles DTO 与 raw evidence 对齐 P0
   -> TODO-071 已完成 sgroupbarline 入口契约冻结
   -> TODO-072 已完成 LineGroup command handler P0 事务接入
   -> TODO-073 已完成 LineGroup UI/AIS 可见反馈 P0
@@ -834,7 +844,8 @@ TODO-081 / 线配筋公共创建 createdPayload 与 objA/objB 字段语义补证
   -> TODO-078 已确认当前只有模板、缺真实旧图石运行工件，因此 blocked
   -> TODO-079 已完成旧 UI / Dialog 静态资源补证
   -> TODO-080 已完成公共创建 core gate 与 diagnostic P0 对齐
-  -> 下一轮只用 IDA MCP / 静态证据补证 createdPayload 与 objA/objB 字段语义
+  -> TODO-081 已完成 createdPayload / distanceA_4digit / objA-objB 字段语义补证
+  -> 下一轮只把 TODO-081 的证据落成 roles DTO / raw evidence
   -> 不自动安装 HASP，不自动启动旧图石
   -> 不用 OCCT 直接重写钢筋业务，不迁入父目录 rebar 业务
   -> 不替代 TODO-078 的真实运行确认
@@ -863,10 +874,11 @@ TODO-078 已审计当前采样目录只有模板，无法回填真实运行结�
   在等待 TODO-078 用户现场运行工件期间，
   TODO-079 已经完成旧 UI / Dialog / 状态栏的静态资源补证。
   TODO-080 已经把公共创建 gate 和 diagnostic 落到 P0。
+  TODO-081 已经把 createdPayload / distanceA_4digit / objA-objB 角色语义收窄到静态证据。
 
 这比继续抠 Detail 小字段更贴近当前成熟度瓶颈：
-  线配筋还没有完整 objA / objB / createdPayload 业务对象字段语义，
-  下一步应先继续收窄静态证据，而不是用 OCCT 直接写一个差不多的生成器。
+  线配筋还需要把 roles 语义落进 app 的 DTO / raw evidence，
+  下一步应先建立可测试边界，而不是用 OCCT 直接写一个差不多的生成器。
 golden 采集 TODO-026 仍按用户要求保持 pending。
 ```
 
@@ -932,19 +944,19 @@ golden 采集 TODO-026 仍按用户要求保持 pending。
 
 ## CSE v2 Control Contract
 
-- **Primary Setpoint**：下一轮只完成 `TODO-081 / 线配筋公共创建 createdPayload 与 objA/objB 字段语义补证 P0`，把旧 `sub_1404D10C0 -> sub_140451730 -> createdObject / payload` 字段语义继续收窄到可开发边界。
-- **Acceptance**：用 IDA MCP 或等价静态证据补齐 `createdPayload / objA / objB` 字段语义、仍未闭合项和下一步可编码边界；更新实现记录、run report、03/08/11/15/16/35/46/99/todo；readiness gate、git diff --check 通过；若涉及代码、测试或门禁脚本，默认 CTest、OCCT 泄漏检查和 xhigh 只读 review 必须通过。
+- **Primary Setpoint**：下一轮只完成 `TODO-082 / 线配筋公共创建 roles DTO 与 raw evidence 对齐 P0`，把 TODO-081 收窄出的 `createdPayload / linkedModelRef / distanceA_4digit / objA-objB` 角色语义落到正式 app 可测试边界。
+- **Acceptance**：新增或调整最小 roles DTO / raw evidence；测试覆盖 `distanceA_4digit`、`createdPayloadRef`、`linkedModelRef` 低置信、`objA/objB` role 不硬编码；更新实现记录、run report、03/08/11/15/16/35/46/99/todo；默认 CTest、readiness gate、OCCT 泄漏检查、git diff --check 和 xhigh 只读 review 必须通过。
 - **Guardrail Metrics**：不能用 OCCT 能怎么做替代旧图石怎么做；不能迁入父目录 rebar 业务；不能让 `domain/rebar` 依赖 TopoDS/AIS/BRep/TopAbs；不能把 P0 diagnostic 写成完整旧运行行为；不能在一个节点里铺开面配筋、接头、Excel、Detail 字段继续扩张或 golden。
-- **Sampling Plan**：先读 `todo.csv / 03 / 08 / 11 / 15 / 16 / 35 / 46 / 99`，确认 `TODO-081` 只做公共创建 payload / 字段语义补证；优先查 IDA MCP；最后运行 readiness gate、git diff --check，代码节点再跑默认 CTest、OCCT 泄漏检查和 xhigh 只读 review。
-- **Known Delays**：旧 UI 参数窗口字段、状态栏流程和失败提示最终仍依赖用户插狗后的现场运行；TODO-081 只能继续收窄静态字段语义，不能替代 TODO-078。
-- **Recovery Target**：如果 `createdPayload / objA / objB` 语义仍不足以编码，就只记录 static stop point 和缺口，不编造完整旧算法。
+- **Sampling Plan**：先读 `todo.csv / 03 / 08 / 11 / 15 / 16 / 35 / 46 / 99`，确认 `TODO-082` 只做 roles DTO / raw evidence 对齐；先补测试，再实现；最后运行默认 CTest、readiness gate、OCCT 泄漏检查、git diff --check 和 xhigh 只读 review。
+- **Known Delays**：旧 UI 参数窗口字段、状态栏流程和失败提示最终仍依赖用户插狗后的现场运行；TODO-082 只能把静态证据落进 app 可测试边界，不能替代 TODO-078。
+- **Recovery Target**：如果 roles DTO 会被误读成完整旧对象模型，就缩小字段命名、保留 raw evidence 和 gap，不编造完整旧算法。
 - **Rollback Trigger**：domain/rebar 出现 OCCT/AIS include；父目录 rebar 业务被迁入；无 IDA/运行证据却写成旧逻辑已确认；测试或 gate 失败仍继续堆功能。
 - **Constraints**：不使用 ACIS / HOOPS / Codejock 等商业库；新系统不引入 USB 狗 / 网络许可依赖；旧逻辑不确定时优先查 IDA MCP 或旧图石运行确认；xhigh 只读，修改由主流程 agent 完成；不自动安装 HASP，不自动再次启动旧图石。
-- **Boundary**：下一轮优先只改 IDA / 静态证据文档、run report、todo 和必要门禁；若证据足够且范围清楚，才允许补极小测试或 DTO。禁止改 UI 文案，禁止实现完整线配筋算法，禁止继续扩张 DetailWriter 字段，禁止实现面配筋/接头/Excel/golden，禁止迁入父目录 rebar 业务。
+- **Boundary**：下一轮允许改 RebarGroupCreator 相关 DTO / raw evidence 与测试、实现记录、run report、追溯矩阵、缺口、todo 和必要门禁；禁止改 UI 文案，禁止实现完整线配筋算法，禁止继续扩张 DetailWriter 字段，禁止实现面配筋/接头/Excel/golden，禁止迁入父目录 rebar 业务。
 - **Coupling Notes**：`domain/rebar` 是业务对象边界；`LegacyGeometryAdapter` 是几何能力边界；线配筋创建若需要几何读取，只能通过 legacy 语义接口，不让业务层直接写 OCCT。
-- **Approximation Validity**：TODO-081 的目标是静态字段语义补证，不是旧图石真实运行确认、完整旧参数窗口、完整线配筋、面配筋、弧筋、统计、出图或 golden。
-- **Actuator Budget**：下一轮只推进 `TODO-081`。完成后停止复盘，不自动进入完整线配筋算法、面配筋、弧筋、接头、Excel、Detail 字段继续扩张或 golden。
-- **Risks**：静态字段语义容易被误读成完整旧算法；必须保留 `GAP-IDA-002 / GAP-IDA-007 / GAP-UI-REB-001`，不得伪装成旧图石运行确认结论。
+- **Approximation Validity**：TODO-082 的目标是 roles DTO / raw evidence 对齐，不是旧图石真实运行确认、完整旧参数窗口、完整线配筋、面配筋、弧筋、统计、出图或 golden。
+- **Actuator Budget**：下一轮只推进 `TODO-082`。完成后停止复盘，不自动进入完整 `sub_1405D5670` 算法、面配筋、弧筋、接头、Excel、Detail 字段继续扩张或 golden。
+- **Risks**：roles DTO 容易被误读成完整旧对象模型；必须保留 `createdObject + 112`、旧类名、运行 UI 和完整算法 gap，不得伪装成旧图石运行确认结论。
 ## Todo CSV 使用方式
 
 `todo.csv` 是后续执行看板。建议每次 goal 模式只拿 `status=next` 或最高优先级 `pending` 的任务推进。
@@ -969,7 +981,7 @@ golden 采集 TODO-026 仍按用户要求保持 pending。
 下一步优先执行：
 
 ```text
-TODO-081 / 线配筋公共创建 createdPayload 与 objA/objB 字段语义补证 P0
+TODO-082 / 线配筋公共创建 roles DTO 与 raw evidence 对齐 P0
   -> TODO-071 已完成 sgroupbarline 入口契约冻结
   -> TODO-072 已完成 LineGroup command handler P0 事务接入
   -> TODO-073 已完成 LineGroup UI/AIS 可见反馈 P0
@@ -980,7 +992,8 @@ TODO-081 / 线配筋公共创建 createdPayload 与 objA/objB 字段语义补证
   -> TODO-078 已因缺真实旧图石运行工件 blocked
   -> TODO-079 已完成旧 UI / Dialog 静态资源补证 static stop point
   -> TODO-080 已完成 sub_1404D10C0 公共创建 gate / diagnostic 对齐
-  -> 下一轮只做 createdPayload / objA / objB 字段语义补证
+  -> TODO-081 已完成 createdPayload / objA / objB 字段语义补证
+  -> 下一轮只把 roles 快照转成 app DTO / raw evidence
   -> 不自动安装 HASP
   -> 不自动启动旧图石
   -> 不用 OCCT 直接重写钢筋业务
@@ -989,5 +1002,5 @@ TODO-081 / 线配筋公共创建 createdPayload 与 objA/objB 字段语义补证
   -> 不声明完整线配筋、AutoCAD L2 通过或 golden
 ```
 
-原因很简单：TODO-079 已把旧 UI / Dialog 静态证据收窄到 stop point，继续猜中文 UI 文案收益很低。在没有真实旧图石运行工件前，下一步更稳的是把 `sub_1404D10C0` 已确认的公共创建 gate 和失败诊断先落到 P0 代码/测试，继续保持“按 VisualTS 证据复刻”，而不是用 OCCT 直接写一个新的钢筋生成器。
+原因很简单：TODO-081 已把公共创建字段语义收窄到静态证据，但这些证据还没有变成 app 内可测试的数据边界。下一步更稳的是先把 `createdPayload / linkedModelRef / distanceA_4digit / objA-objB role` 落成 DTO / raw evidence，继续保持“按 VisualTS 证据复刻”，而不是用 OCCT 直接写一个新的钢筋生成器。
 TODO-026 golden 采集暂按用户要求保持 pending。

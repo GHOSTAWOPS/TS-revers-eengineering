@@ -1117,6 +1117,114 @@ class Phase1ReadinessGateTests(unittest.TestCase):
             self.assertFalse(report_checks[0].ok)
             self.assertIn("pending_readonly_review", report_checks[0].message)
 
+    def test_route_guardrail_accepts_todo081_done_report(self):
+        tmp, root = self.make_guardrail_root()
+        with tmp:
+            (root / "todo.csv").write_text(
+                '"id","priority","phase","task","status","goal_setpoint","acceptance","boundary","evidence","dependencies","risk","notes"\n'
+                '"TODO-081","P0","M2-RebarCreate-011","LineGroup payload role evidence","done","","","","","","",""\n',
+                encoding="utf-8",
+            )
+            reports_dir = root / "docs" / "phase1" / "app_build_reports"
+            reports_dir.mkdir(parents=True, exist_ok=True)
+            (root / "119_M2-RebarCreate-011线配筋公共创建CreatedPayload与ObjAB字段语义补证P0实现记录.md").write_text(
+                "# stub\n",
+                encoding="utf-8",
+            )
+            (reports_dir / "m2_rebar_create_011_run_001.md").write_text(
+                "# stub\n",
+                encoding="utf-8",
+            )
+            (reports_dir / "m2_rebar_create_011_run_001.json").write_text(
+                '{'
+                '"todoId":"TODO-081",'
+                '"decision":"done_static_payload_role_evidence",'
+                '"verification":{'
+                '"readinessGateUnit":"pass",'
+                '"readinessGateStrict":"pass",'
+                '"xhighReview":"needs_fix_then_fixed_by_main_flow"'
+                '},'
+                '"next":{"todoId":"TODO-082"}'
+                '}\n',
+                encoding="utf-8",
+            )
+
+            checks = gate.collect_route_guardrail_checks(root)
+            report_checks = [check for check in checks if check.item == "done_node_reports"]
+
+            self.assertEqual(1, len(report_checks))
+            self.assertTrue(report_checks[0].ok)
+            self.assertIn("checked_done_nodes=1", report_checks[0].message)
+
+    def test_route_guardrail_rejects_todo081_empty_json_report(self):
+        tmp, root = self.make_guardrail_root()
+        with tmp:
+            (root / "todo.csv").write_text(
+                '"id","priority","phase","task","status","goal_setpoint","acceptance","boundary","evidence","dependencies","risk","notes"\n'
+                '"TODO-081","P0","M2-RebarCreate-011","LineGroup payload role evidence","done","","","","","","",""\n',
+                encoding="utf-8",
+            )
+            reports_dir = root / "docs" / "phase1" / "app_build_reports"
+            reports_dir.mkdir(parents=True, exist_ok=True)
+            (root / "119_M2-RebarCreate-011线配筋公共创建CreatedPayload与ObjAB字段语义补证P0实现记录.md").write_text(
+                "# stub\n",
+                encoding="utf-8",
+            )
+            (reports_dir / "m2_rebar_create_011_run_001.md").write_text(
+                "# stub\n",
+                encoding="utf-8",
+            )
+            (reports_dir / "m2_rebar_create_011_run_001.json").write_text(
+                "{}\n",
+                encoding="utf-8",
+            )
+
+            checks = gate.collect_route_guardrail_checks(root)
+            report_checks = [check for check in checks if check.item == "done_node_reports"]
+
+            self.assertEqual(1, len(report_checks))
+            self.assertFalse(report_checks[0].ok)
+            self.assertIn("json_todoId_mismatch", report_checks[0].message)
+
+    def test_route_guardrail_rejects_todo081_pending_docs_report(self):
+        tmp, root = self.make_guardrail_root()
+        with tmp:
+            (root / "todo.csv").write_text(
+                '"id","priority","phase","task","status","goal_setpoint","acceptance","boundary","evidence","dependencies","risk","notes"\n'
+                '"TODO-081","P0","M2-RebarCreate-011","LineGroup payload role evidence","done","","","","","","",""\n',
+                encoding="utf-8",
+            )
+            reports_dir = root / "docs" / "phase1" / "app_build_reports"
+            reports_dir.mkdir(parents=True, exist_ok=True)
+            (root / "119_M2-RebarCreate-011线配筋公共创建CreatedPayload与ObjAB字段语义补证P0实现记录.md").write_text(
+                "# stub\n",
+                encoding="utf-8",
+            )
+            (reports_dir / "m2_rebar_create_011_run_001.md").write_text(
+                "readinessGateStrict = pending_after_docs\n",
+                encoding="utf-8",
+            )
+            (reports_dir / "m2_rebar_create_011_run_001.json").write_text(
+                '{'
+                '"todoId":"TODO-081",'
+                '"decision":"done_static_payload_role_evidence",'
+                '"verification":{'
+                '"readinessGateUnit":"pass",'
+                '"readinessGateStrict":"pass",'
+                '"xhighReview":"needs_fix_then_fixed_by_main_flow"'
+                '},'
+                '"next":{"todoId":"TODO-082"}'
+                '}\n',
+                encoding="utf-8",
+            )
+
+            checks = gate.collect_route_guardrail_checks(root)
+            report_checks = [check for check in checks if check.item == "done_node_reports"]
+
+            self.assertEqual(1, len(report_checks))
+            self.assertFalse(report_checks[0].ok)
+            self.assertIn("pending_after_docs", report_checks[0].message)
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -85,8 +85,20 @@ sub_1405E49D0(*(_QWORD *)(createdObject + 104))
 sub_1405D5670(__int64 objB, __int64 createdPayload, __int64 objA, double trimDistance)
 ```
 
-IDA 反编译显示只有 3 个显式实参调用，但函数原型识别出第 4 个 double。
-因此 `trimDistance` 的来源和默认值仍需继续确认。
+TODO-081 已用 `sub_1404D10C0` 汇编调用点确认第 4 个 double：
+
+```text
+movsd xmm3, [distanceA_4digit]
+call sub_1405D5670
+```
+
+其中：
+
+```text
+distanceA_4digit = (int)(distanceA * 10000.0) / 10000.0
+```
+
+因此 `trimDistance` 可静态收窄为 `distanceA_4digit`。
 
 已确认行为：
 
@@ -329,8 +341,8 @@ return result;
 | `+80` | `ownerNode` / `attachNode` | 多处以 `object + 80` 进入链表或父级查找 | 中 |
 | `+88` | `nextEntity` / `childOrNext` | `sub_1405DC840` 顺链表遍历；`sub_14059B980` 遍历组内边 | 中 |
 | `+96` | `nextRefNode` / `nextGroupNode` | `sub_1405D5670` 循环中 `v6 = *(v6 + 96)` | 低 |
-| `+104` | `createdPayload` | `sub_1404D10C0` 从 `createdObject + 104` 传入 `sub_1405D5670` | 中 |
-| `+112` | `linkedDisplayOrModel` | `sub_1405E49D0` 对 `v5 + 112` 关联对象加 `*` | 低 |
+| `+104` | `createdPayload` | `sub_1404D10C0` 从 `createdObject + 104` 传入 `sub_1405D5670`，再用于显示挂接和 `sub_1405E49D0` dirty 标记；TODO-081 补强 | 中高 |
+| `+112` | `linkedModelRef` / `createdLinkRef` | TODO-081 确认它进入 `sub_1406B6E20 / sub_1405F4ED0 / sub_1405F4A90 / sub_1405F5880 / sub_1406B2270` 链；准确业务名仍未闭合 | 低 |
 | `+384` | `skipDirtyOrLockedFlag` | `sub_1405E49D0` 仅在该 DWORD 为 0 时刷新 | 低 |
 
 注意：
@@ -559,8 +571,7 @@ IDA 的 +72/+80/+88 等是运行内存对象偏移。
 
 P0：
 
-- `sub_1405D5670` 第 4 个 double 参数的来源。TODO-020 已确认它在端部最小距离循环中作为阈值使用，但 `sub_1404D10C0` 反编译调用只显示 3 个显式实参，真实来源仍不能写死。
-- `createdObject + 104`、`createdObject + 112` 的业务对象名。
+- `createdObject + 112` 的准确业务对象名。TODO-081 只确认它进入模型/映射刷新链，不能写成确定业务真值。
 - `object + 80/88/96` 在不同对象上的准确含义。
 
 P1：
