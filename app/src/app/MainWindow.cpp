@@ -2,6 +2,7 @@
 
 #include "command/LegacyUiCommandMap.h"
 #include "geometry/occ/import/OcctStepImportService.h"
+#include "geometry/occ/legacy_adapter/OccLegacyGeometryAdapter.h"
 #include "presentation/occ/OccViewerWidget.h"
 #include "ui/MainTabs.h"
 #include "ui/ModelTreePanel.h"
@@ -17,7 +18,80 @@
 #include <QToolBar>
 #include <QVBoxLayout>
 
+#include <algorithm>
+#include <memory>
+#include <optional>
+#include <vector>
+
 namespace {
+
+class ViewerLegacyRebarGeometryReader final : public tsrebar::LegacyRebarGeometryReader
+{
+public:
+    explicit ViewerLegacyRebarGeometryReader(const tsrebar::OccViewerWidget& viewer)
+        : m_viewer(viewer)
+    {
+    }
+
+    [[nodiscard]] tsrebar::LegacyGeometryQueryResult<tsrebar::LegacyRebarCurveSnapshot>
+    curveSnapshot(const tsrebar::LegacySelectionRef& ref, int requestedSampleCount) const override
+    {
+        tsrebar::OccLegacyGeometryAdapter adapter(m_viewer.selectionIndex());
+        const auto edge = adapter.edgeGeometry(ref);
+        if (!edge.ok) {
+            return {false, {}, edge.diagnostic};
+        }
+
+        tsrebar::LegacyRebarCurveSnapshot snapshot;
+        snapshot.stableId = edge.value.stableId;
+        snapshot.curveKind = edge.value.curveKind;
+        snapshot.length = edge.value.length;
+        snapshot.startPoint = edge.value.startPoint;
+        snapshot.endPoint = edge.value.endPoint;
+
+        const auto samples =
+            adapter.edgeSamplePoints(ref, std::max(2, requestedSampleCount));
+        if (samples.ok) {
+            snapshot.samplePoints = samples.value;
+        } else {
+            snapshot.samplePoints = {snapshot.startPoint, snapshot.endPoint};
+        }
+
+        return {true, snapshot, {}};
+    }
+
+    [[nodiscard]] tsrebar::LegacyGeometryQueryResult<tsrebar::LegacyRebarCurveSnapshot>
+    normalizeSegmentCurve(
+        const tsrebar::LegacyRebarCurveSnapshot& curve,
+        const tsrebar::LegacySegmentCurveNormalizeRequest& request) const override
+    {
+        Q_UNUSED(request)
+        return {true, curve, {}};
+    }
+
+private:
+    const tsrebar::OccViewerWidget& m_viewer;
+};
+
+tsrebar::RebarLineGroupCommandParameters defaultLineGroupParameters()
+{
+    tsrebar::RebarLineGroupCommandParameters parameters;
+    parameters.groupId = "ui-line-group-p0";
+    parameters.barId = "ui-line-bar-p0";
+    parameters.segmentId = "ui-line-segment-p0";
+    parameters.steelDataId = "ui-steel-data-p0";
+    parameters.distanceA = 0.25;
+    parameters.distanceB = 1.2;
+    parameters.legacyFlag = 0;
+    parameters.diameter = 25.0;
+    parameters.interval = 200.0;
+    parameters.requestedBarCount = 1;
+    parameters.steelLevel = "HRB400";
+    parameters.rsdId = "P0";
+    parameters.componentName = "pending-ui";
+    parameters.projectSteelName = "line-group-p0";
+    return parameters;
+}
 
 QString joinIds(const QVector<QString>& values)
 {
@@ -68,6 +142,14 @@ QString commandStatusText(const tsrebar::CommandResult& result)
 
 MainWindow::MainWindow(QWidget* parent)
     : QMainWindow(parent)
+{
+    buildUi();
+    registerCommandHandlers();
+    buildCommandTabs();
+    statusBar()->showMessage(QStringLiteral("就绪"));
+}
+
+void MainWindow::registerCommandHandlers()
 {
     m_commands.registerHandler(tsrebar::CommandId::ImportStep, [this]() {
         const QString path = QFileDialog::getOpenFileName(
@@ -139,11 +221,25 @@ MainWindow::MainWindow(QWidget* parent)
                                       QStringLiteral("选择模式：点")};
     });
 
-    tsrebar::registerLegacyUiCommandPlaceholders(m_commands);
+    m_lineGroupParameters = defaultLineGroupParameters();
+    m_lineGroupGeometryReader =
+        std::make_shared<ViewerLegacyRebarGeometryReader>(*m_viewer);
+    m_lineGroupHandler = std::make_shared<tsrebar::RebarLineGroupCommandHandler>(
+        [this]() {
+            std::vector<tsrebar::LegacySelectionRef> selection;
+            const std::optional<tsrebar::LegacySelectionRef> current =
+                m_viewer->currentSelectionRef();
+            if (current.has_value()) {
+                selection.push_back(*current);
+            }
+            return selection;
+        },
+        *m_lineGroupGeometryReader,
+        m_steelData,
+        m_lineGroupParameters);
+    tsrebar::registerRebarLineGroupCommandHandler(m_commands, m_lineGroupHandler);
 
-    buildUi();
-    buildCommandTabs();
-    statusBar()->showMessage(QStringLiteral("就绪"));
+    tsrebar::registerLegacyUiCommandPlaceholders(m_commands);
 }
 
 bool MainWindow::verifyLegacyUiActionMetadata(QString* errorMessage) const

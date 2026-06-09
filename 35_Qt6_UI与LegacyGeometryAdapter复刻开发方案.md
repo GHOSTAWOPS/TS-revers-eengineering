@@ -206,6 +206,38 @@ adapter 内部再用 OCCT 实现
 
 如后续复用，必须先经过兼容层改造。
 
+## TODO-072 后的 LineGroup 命令接入边界
+
+`TODO-072 / E-DEV-094` 已把 `Rebar.Create.LineGroup` 从 UI 命令入口接到 P0 事务链：
+
+```text
+Qt QAction / CommandId::RebarLineCreate
+  -> RebarLineGroupCommandHandler
+  -> LegacySelectionRef(edge-p0-surrogate)
+  -> LegacyRebarGeometryReader
+  -> RebarGroupCreator
+  -> SteelData append
+```
+
+这里有一个明确的 P0 过渡层：
+
+```text
+MainWindow / ViewerLegacyRebarGeometryReader
+  -> OccViewerWidget.currentSelectionRef()
+  -> OccLegacyGeometryAdapter
+```
+
+这层属于 app / presentation 桥接，允许内部用 OCCT 读取当前 viewer 的 edge geometry；但 `RebarLineGroupCommandHandler` 和 `domain/rebar` 不直接接收 `TopoDS_Edge / AIS_Shape / BRepAdaptor_Curve`。
+
+当前仍未闭合：
+
+```text
+旧 VisualTS 完整 ENTITY_LIST 选择对象语义
+旧 UI 参数窗口 / 状态栏提示 / 失败提示
+命令完成后的 AIS 钢筋显示刷新
+undo / dirty / save / golden
+```
+
 ## 开发顺序
 
 ### 1. Qt6 操作外壳

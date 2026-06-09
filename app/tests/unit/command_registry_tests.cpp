@@ -233,16 +233,19 @@ bool testLegacyRebarCommandContracts()
     }
     if (!lineGroup->evidenceIds.contains(QStringLiteral("E-IDA-002")) ||
         !lineGroup->evidenceIds.contains(QStringLiteral("E-IDA-010")) ||
+        !lineGroup->evidenceIds.contains(QStringLiteral("E-IDA-045")) ||
+        !lineGroup->evidenceIds.contains(QStringLiteral("E-DEV-093")) ||
         !lineGroup->gapIds.contains(QStringLiteral("GAP-IDA-002")) ||
-        !lineGroup->inputSelectionTypes.contains(QStringLiteral("single-selected-entity-list"))) {
+        !lineGroup->inputSelectionTypes.contains(QStringLiteral("single-selected-entity-list")) ||
+        !lineGroup->inputSelectionTypes.contains(QStringLiteral("edge-p0-surrogate"))) {
         return fail("Rebar.Create.LineGroup evidence, gap or input contract mismatch");
     }
     if (lineGroup->uiSurface != tsrebar::LegacyCommandUiSurface::Ribbon) {
         return fail("Rebar.Create.LineGroup must be a ribbon command");
     }
     if (lineGroup->implementationState !=
-        tsrebar::LegacyCommandImplementationState::NotImplemented) {
-        return fail("Rebar.Create.LineGroup must remain NotImplemented in M1-App-019");
+        tsrebar::LegacyCommandImplementationState::Implemented) {
+        return fail("Rebar.Create.LineGroup must be implemented after TODO-072");
     }
     if (!lineGroup->interactionStates.contains(tsrebar::LegacyCommandInteractionState::Idle) ||
         !lineGroup->interactionStates.contains(tsrebar::LegacyCommandInteractionState::Picking) ||
@@ -302,8 +305,11 @@ bool testLegacyPlaceholdersRegisterStableNotImplementedHandlers()
     tsrebar::CommandRegistry registry;
     tsrebar::registerLegacyUiCommandPlaceholders(registry);
 
-    if (!registry.hasHandler(tsrebar::CommandId::RebarLineCreate) ||
-        !registry.hasHandler(tsrebar::CommandId::RebarArcGroupCreate) ||
+    if (registry.hasHandler(tsrebar::CommandId::RebarLineCreate)) {
+        return fail("implemented line group command must not receive a placeholder handler");
+    }
+
+    if (!registry.hasHandler(tsrebar::CommandId::RebarArcGroupCreate) ||
         !registry.hasHandler(tsrebar::CommandId::RebarGroupTrimByLine) ||
         !registry.hasHandler(tsrebar::CommandId::RebarGroupTrimByFace)) {
         return fail("legacy rebar command placeholders must register handlers");

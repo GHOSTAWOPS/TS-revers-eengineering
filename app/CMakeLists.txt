@@ -73,6 +73,8 @@ add_library(tsrebar_core STATIC
     src/command/CommandId.h
     src/command/LegacyUiCommandMap.cpp
     src/command/LegacyUiCommandMap.h
+    src/command/RebarLineGroupCommandHandler.cpp
+    src/command/RebarLineGroupCommandHandler.h
     src/drawing/detail/DetailWriter.cpp
     src/drawing/detail/DetailWriter.h
     src/geometry/legacy/LegacyGeometry.h
@@ -184,6 +186,7 @@ add_executable(tsrebar_app
 
 target_link_libraries(tsrebar_app PRIVATE tsrebar_core)
 target_link_libraries(tsrebar_app PRIVATE tsrebar_occ_import)
+target_link_libraries(tsrebar_app PRIVATE tsrebar_occ_legacy_adapter)
 target_link_libraries(tsrebar_app PRIVATE tsrebar_occ_viewer)
 
 if(TSREBAR_QT_PLATFORM_PLUGIN_PATH)
@@ -215,6 +218,11 @@ add_executable(rebar_group_creator_tests
     tests/unit/rebar_group_creator_tests.cpp)
 
 target_link_libraries(rebar_group_creator_tests PRIVATE tsrebar_core)
+
+add_executable(rebar_line_group_command_handler_tests
+    tests/unit/rebar_line_group_command_handler_tests.cpp)
+
+target_link_libraries(rebar_line_group_command_handler_tests PRIVATE tsrebar_core)
 
 add_executable(rebar_edit_move_tests
     tests/unit/rebar_edit_move_tests.cpp)
@@ -284,6 +292,8 @@ add_test(NAME command_registry_tests COMMAND command_registry_tests)
 add_test(NAME legacy_selection_ref_tests COMMAND legacy_selection_ref_tests)
 add_test(NAME rebar_domain_model_tests COMMAND rebar_domain_model_tests)
 add_test(NAME rebar_group_creator_tests COMMAND rebar_group_creator_tests)
+add_test(NAME rebar_line_group_command_handler_tests
+    COMMAND rebar_line_group_command_handler_tests)
 add_test(NAME rebar_edit_move_tests COMMAND rebar_edit_move_tests)
 add_test(NAME rebar_edit_copy_tests COMMAND rebar_edit_copy_tests)
 add_test(NAME rebar_schedule_service_tests COMMAND rebar_schedule_service_tests)

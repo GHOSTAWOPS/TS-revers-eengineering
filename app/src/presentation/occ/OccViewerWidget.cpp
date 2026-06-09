@@ -156,6 +156,11 @@ bool OccViewerWidget::selectByStableId(const QString& stableId, QString* errorMe
     return true;
 }
 
+std::optional<LegacySelectionRef> OccViewerWidget::currentSelectionRef() const
+{
+    return m_currentSelection;
+}
+
 std::string OccViewerWidget::currentSelectionStableId() const
 {
     return m_currentSelection.has_value() ? m_currentSelection->stableId : std::string();
@@ -169,6 +174,11 @@ QString OccViewerWidget::currentSelectionSummary() const
 QString OccViewerWidget::currentSelectionDetails() const
 {
     return m_currentSelectionDetails;
+}
+
+const OccSelectionIndex& OccViewerWidget::selectionIndex() const
+{
+    return m_selectionIndex;
 }
 
 bool OccViewerWidget::hasViewer() const

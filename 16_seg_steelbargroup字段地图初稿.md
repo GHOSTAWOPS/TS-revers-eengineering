@@ -610,6 +610,12 @@ sgroupbarline 入口契约已冻结到 P0：
   initialMinimumDistanceCandidate = 10
   publicCreateCall = sub_1404D10C0(entityList,objA,objB,minDistance,selectedEndpointDistance,flag)
 
-下一步可以做 Rebar.Create.LineGroup command handler P0。
-但仍不能声明完整 sub_1405D5670、旧 UI 流程、失败提示或 golden 已闭合。
+TODO-072 已完成 Rebar.Create.LineGroup command handler P0：
+  LegacySelectionRef(edge-p0-surrogate)
+    -> LegacyRebarGeometryReader
+    -> RebarGroupCreator
+    -> SteelData append transaction
+
+下一步可以做 Rebar.Create.LineGroup UI / AIS 可见反馈 P0。
+但仍不能声明完整 ENTITY_LIST 选择对象、完整 sub_1405D5670、旧 UI 流程、失败提示或 golden 已闭合。
 ```

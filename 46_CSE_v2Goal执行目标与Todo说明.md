@@ -20,7 +20,7 @@
      输出目录 / hash / 覆盖策略记录模板和拒收伪工件规则已落文档
   -> output_uncut_steel / Dialog 0x57C / UnCutSteel.TXT
      继续只算可选旁证，不算前置设置窗
-  -> TODO-066 已完成真实工件回填；TODO-067 已完成字段对照；TODO-068 已完成最明显旧包格式纠偏；TODO-069 已完成 StbRow 扩展属性骨架；TODO-070 已完成 lineStb StbGeo 字段条件化骨架；TODO-071 已完成线配筋入口契约冻结；现在的主线是 TODO-072
+  -> TODO-066 已完成真实工件回填；TODO-067 已完成字段对照；TODO-068 已完成最明显旧包格式纠偏；TODO-069 已完成 StbRow 扩展属性骨架；TODO-070 已完成 lineStb StbGeo 字段条件化骨架；TODO-071 已完成线配筋入口契约冻结；TODO-072 已完成 LineGroup command handler P0；现在的主线是 TODO-073
 ```
 
 ## 可直接粘贴到 Goal 模式的目标
@@ -336,11 +336,11 @@ planned tag = evidence-058/joint-dialog-message-map-node112-stop-point
 当前下一步：
 
 ```text
-TODO-072 / 线配筋命令 handler P0：LegacySelection 到 RebarGroupCreator 事务接入
+TODO-073 / 线配筋 UI 到 AIS 显示 P0：命令完成后显示创建的 SteelBarGroup
   -> 接头链路现阶段先记录、暂缓。
   -> TODO-071 已完成 sgroupbarline 入口契约冻结。
-  -> 下一轮只把 `Rebar.Create.LineGroup` 命令 handler 接到
-     `LegacySelectionRef + 参数 -> RebarGroupCreator` P0 事务边界。
+  -> TODO-072 已完成 LineGroup command handler P0 事务接入。
+  -> 下一轮只做命令完成后的 UI 可见反馈 / AIS 显示 P0。
   -> 不自动启动旧图石，不安装 HASP，不用 OCCT 直接重写钢筋业务。
 ```
 
@@ -585,7 +585,7 @@ commit / tag / push 状态
 
 ### 短期 Goal（推荐本轮复制）
 
-目标：只完成 `TODO-072 / 线配筋命令 handler P0：LegacySelection 到 RebarGroupCreator 事务接入` 这个短期阶段，不自动进入后续长期开发。
+目标：只完成 `TODO-073 / 线配筋 UI 到 AIS 显示 P0：命令完成后显示创建的 SteelBarGroup` 这个短期阶段，不自动进入后续长期开发。
 
 当前状态：
 
@@ -606,18 +606,19 @@ commit / tag / push 状态
   TODO-069 = done
   TODO-070 = done
   TODO-071 = done
-  TODO-072 = next
+  TODO-072 = done
+  TODO-073 = next
 ```
 
 本轮只做：
 
 ```text
-RebarCreateLineGroupCommandHandler / TODO-072
+LineGroupAisVisibleFeedback / TODO-073
   -> 从 03 / 08 / 09 / 15 / 16 / 35 / 46 / 99 出发
-  -> 在 TODO-071 已冻结 sgroupbarline 入口契约之后
-  -> 把 Rebar.Create.LineGroup 从命令入口接到 LegacySelection/参数/RebarGroupCreator P0 事务边界
-  -> handler 只能使用 LegacySelectionRef / LegacyRebarGeometryReader / RebarGroupCreator
-  -> 测试覆盖 empty selection / wrong type / valid edge
+  -> 在 TODO-071 已冻结 sgroupbarline 入口契约、TODO-072 已接通 command handler 事务之后
+  -> 把 Rebar.Create.LineGroup 成功创建的 SteelBarGroup 做 UI 可见反馈 / AIS 显示 P0
+  -> 只能通过 domain SteelData / RebarAisPresentationAdapter / presentation 层刷新，不让 domain/rebar 依赖 AIS/OCCT
+  -> 测试覆盖命令成功后新增组进入可显示路径、失败路径不刷新显示
   -> 同步更新 03 / 08 / 09 / 11 / 15 / 16 / 35 / 46 / 99 / todo / 实现记录 / build report
   -> 跑默认 CTest / readiness gate / OCCT 泄漏检查
   -> 代码节点 commit 前必须 xhigh 只读 review
@@ -625,7 +626,7 @@ RebarCreateLineGroupCommandHandler / TODO-072
   -> 不用 OCCT 直接重写钢筋业务
   -> 不迁入父目录 rebar 业务
   -> domain/rebar 不引入 TopoDS / AIS / BRep / TopAbs
-  -> 不进入面配筋、接头、Excel、Detail 字段继续扩张
+  -> 不进入完整参数弹窗、面配筋、接头、Excel、Detail 字段继续扩张
   -> 不跑 AutoCAD L2，不进入 golden
 ```
 
@@ -696,9 +697,9 @@ TODO-071 已完成：
   - Excel 三表 writer、单位换算和焊接字段
   - AutoCAD L2
 
-本轮只做 TODO-072，
+本轮只做 TODO-073，
 不回接头运行链，
-不同时做面配筋、接头、Excel writer、真实工程图算法、golden 采集、UI 新功能或 AutoCAD L2 通过声明。
+不同时做面配筋、接头、Excel writer、真实工程图算法、golden 采集、完整参数弹窗或 AutoCAD L2 通过声明。
 ```
 
 当前已完成前置：
@@ -966,9 +967,11 @@ TODO-070 / M2-Drawing-039 = done
 TODO-071 / M2-RebarCreate-001 = done
   -> 已完成线配筋生成旧逻辑证据与 P0 切片准备。
   -> IDA MCP 已冻结 sgroupbarline 入口契约并写入 RebarGroupCreator P0 raw/evidence。
-TODO-072 / M2-RebarCreate-002 = next
-  -> 线配筋命令 handler P0：LegacySelection 到 RebarGroupCreator 事务接入。
-  -> 只接 handler 事务边界，不用 OCCT 直接重写钢筋业务。
+TODO-072 / M2-RebarCreate-002 = done
+  -> 线配筋命令 handler P0 已接到 LegacySelectionRef -> LegacyRebarGeometryReader -> RebarGroupCreator -> SteelData 事务边界。
+  -> edge-p0-surrogate 只作为 P0 选择代用，不等价旧完整 ENTITY_LIST。
+TODO-073 / M2-RebarCreate-003 = next
+  -> 线配筋 UI 到 AIS 显示 P0：命令完成后显示创建的 SteelBarGroup。
   -> 不进入 Excel writer、隐藏线 / 填充线 / 点筋 / FaceEdge 算法，
      不自动启动旧图石，不进入 golden。
 ```
@@ -1303,15 +1306,17 @@ TODO-056 验证 = DB6C0 static rebuild core traced, child+88/+108/+112/+116 and 
 TODO-069 验证 = StbRow smallTable / mirrorType / mirrorSEFlag 字段骨架已输出，CTest 18/18 pass, readiness unit 28/28 pass, strict readiness 84/84 pass, OCCT leak scan pass, xhigh needs_fix important fixed, one-shot reviewer process exited
 TODO-070 验证 = lineStb + shapeType=L 的 StbGeo 字段集已收窄到 start/end/offset，detail_writer_tests TDD red->green, CTest 18/18 pass, readiness unit 29/29 pass, strict readiness 84/84 pass, OCCT leak scan pass, xhigh needs_fix important fixed, one-shot reviewer process exited
 TODO-071 验证 = sgroupbarline 表项、sub_1404DE720 入口契约和 sub_1404D10C0 公共创建调用已由 IDA MCP 复核，RebarGroupCreator P0 raw/evidence 已写入 E-IDA-045 / E-DEV-093，rebar_group_creator_tests TDD red->green, CTest 18/18 pass, readiness unit 31/31 pass, strict readiness 84/84 pass, xhigh needs_fix important fixed, agent closed
+TODO-072 验证 = RebarLineGroupCommandHandler 已接入 CommandId::RebarLineCreate，测试覆盖 empty selection / wrong type / valid edge / geometry failure / normalizer failure，CTest 19/19 pass, readiness unit 32/32 pass, strict readiness 84/84 pass, domain/rebar + command OCCT leak scan pass, xhigh allow_commit，Franklin reviewer 已关闭
 ```
 
 当前下一步：
 
 ```text
-TODO-072 / 线配筋命令 handler P0：LegacySelection 到 RebarGroupCreator 事务接入
+TODO-073 / 线配筋 UI 到 AIS 显示 P0：命令完成后显示创建的 SteelBarGroup
   -> TODO-071 已完成 sgroupbarline 入口契约冻结
-  -> 把 Rebar.Create.LineGroup 命令 handler 接到 LegacySelection / 参数 / RebarGroupCreator
-  -> 测试 empty selection / wrong type / valid edge
+  -> TODO-072 已完成 LineGroup command handler P0 事务接入
+  -> 把 Rebar.Create.LineGroup 成功创建的 SteelBarGroup 接到 UI 可见反馈 / AIS 显示 P0
+  -> 测试成功路径进入可显示路径、失败路径不刷新显示
   -> 不自动安装 HASP，不自动启动旧图石
   -> 不用 OCCT 直接重写钢筋业务，不迁入父目录 rebar 业务
   -> 不声明完整线配筋、AutoCAD L2 通过或 golden
@@ -1398,19 +1403,19 @@ golden 采集 TODO-026 仍按用户要求保持 pending。
 
 ## CSE v2 Control Contract
 
-- **Primary Setpoint**：下一轮只完成 `TODO-072 / 线配筋命令 handler P0：LegacySelection 到 RebarGroupCreator 事务接入`，把 `Rebar.Create.LineGroup` 从旧命令入口接到当前 P0 业务创建事务。
-- **Acceptance**：handler 使用 `LegacySelectionRef` 和 `LegacyRebarGeometryReader` 创建 `SteelData / SteelBarGroup`；测试覆盖 empty selection、wrong type、valid edge；业务层和 handler 不直接依赖 OCCT/AIS；默认 CTest、readiness gate、OCCT 泄漏检查通过；xhigh 只读 review 完成；文档、追溯矩阵、缺口、46 和 todo 同步更新。
+- **Primary Setpoint**：下一轮只完成 `TODO-073 / 线配筋 UI 到 AIS 显示 P0：命令完成后显示创建的 SteelBarGroup`，让 `Rebar.Create.LineGroup` 成功事务有最小可见反馈。
+- **Acceptance**：LineGroup 成功后新增 `SteelBarGroup` 进入 UI/AIS 可显示路径；失败路径不刷新显示；业务层不直接依赖 OCCT/AIS；默认 CTest、readiness gate、OCCT 泄漏检查通过；xhigh 只读 review 完成；文档、追溯矩阵、缺口、46 和 todo 同步更新。
 - **Guardrail Metrics**：不能用 OCCT 能怎么做替代旧图石怎么做；不能迁入父目录 rebar 业务；不能让 `domain/rebar` 依赖 TopoDS/AIS/BRep/TopAbs；不能伪造 IDA 或旧运行证据；不能在一个节点里铺开面配筋、接头、Excel、Detail 字段继续扩张或 golden。
-- **Sampling Plan**：先读 `todo.csv / 03 / 08 / 09 / 15 / 16 / 35 / 46 / 99`，确认 `TODO-072` 只做 LineGroup handler P0；旧逻辑不确定时优先用 TODO-071 的 IDA 证据或继续查 IDA MCP；先补 handler 测试，再改实现；最后运行默认 CTest、readiness gate、OCCT 泄漏检查和 xhigh 只读 review。
+- **Sampling Plan**：先读 `todo.csv / 03 / 08 / 09 / 15 / 16 / 35 / 46 / 99`，确认 `TODO-073` 只做 LineGroup UI/AIS 可见反馈 P0；旧逻辑不确定时优先用 TODO-071/TODO-072 证据或继续查 IDA MCP；先补显示/刷新事务测试，再改实现；最后运行默认 CTest、readiness gate、OCCT 泄漏检查和 xhigh 只读 review。
 - **Known Delays**：旧 UI 参数窗口和状态栏流程仍未运行确认；没有 golden 时只能先闭合命令 handler 事务边界，不声明完整 1:1。
 - **Recovery Target**：如果 handler 需要的选择对象业务名或参数无法确认，就把结论写成 gap，回到 IDA / 旧运行确认；不能把现有 `RebarGroupCreator` 或父目录代码当旧图石完整真相。
 - **Rollback Trigger**：domain/rebar 出现 OCCT/AIS include；父目录 rebar 业务被迁入；无 IDA/运行证据却写成旧逻辑已确认；测试或 gate 失败仍继续堆功能。
 - **Constraints**：不使用 ACIS / HOOPS / Codejock 等商业库；新系统不引入 USB 狗 / 网络许可依赖；旧逻辑不确定时优先查 IDA MCP 或旧图石运行确认；xhigh 只读，修改由主流程 agent 完成；不自动安装 HASP，不自动再次启动旧图石。
 - **Boundary**：下一轮优先允许改线配筋 command handler、domain/rebar 事务接入、测试、证据文档和 run report；禁止继续扩张 DetailWriter 字段、禁止实现面配筋/接头/Excel/golden，禁止迁入父目录 rebar 业务。
 - **Coupling Notes**：`domain/rebar` 是业务对象边界；`LegacyGeometryAdapter` 是几何能力边界；线配筋创建若需要几何读取，只能通过 legacy 语义接口，不让业务层直接写 OCCT。
-- **Approximation Validity**：TODO-072 的目标是命令 handler P0，不是完整线配筋、面配筋、弧筋、统计、出图或 golden；即使 handler 测试通过，也不代表钢筋生成算法完整复刻。
-- **Actuator Budget**：下一轮只推进 `TODO-072`。完成后停止复盘，不自动进入面配筋、接头、Excel、Detail 字段继续扩张或 golden。
-- **Risks**：handler 容易滑成 OCCT 直接重写或绕过旧入口契约；必须通过 `LegacySelectionRef / LegacyRebarGeometryReader / RebarGroupCreator` 保持旧 VisualTS 语义边界。
+- **Approximation Validity**：TODO-073 的目标是 UI/AIS 可见反馈 P0，不是完整线配筋、面配筋、弧筋、统计、出图或 golden；即使可见反馈测试通过，也不代表钢筋生成算法完整复刻。
+- **Actuator Budget**：下一轮只推进 `TODO-073`。完成后停止复盘，不自动进入完整参数弹窗、面配筋、接头、Excel、Detail 字段继续扩张或 golden。
+- **Risks**：显示反馈容易滑成 AIS/OCCT 反向污染 domain/rebar；必须通过 domain SteelData 和 presentation adapter 保持业务层与显示层隔离。
 ## Todo CSV 使用方式
 
 `todo.csv` 是后续执行看板。建议每次 goal 模式只拿 `status=next` 或最高优先级 `pending` 的任务推进。
@@ -1435,10 +1440,10 @@ golden 采集 TODO-026 仍按用户要求保持 pending。
 下一步优先执行：
 
 ```text
-TODO-072 / 线配筋命令 handler P0：LegacySelection 到 RebarGroupCreator 事务接入
+TODO-073 / 线配筋 UI 到 AIS 显示 P0：命令完成后显示创建的 SteelBarGroup
   -> TODO-071 已完成 sgroupbarline 入口契约冻结
-  -> 把 Rebar.Create.LineGroup 从命令入口接到 LegacySelection / 参数 / RebarGroupCreator
-  -> 优先使用 LegacySelectionRef / LegacyRebarGeometryReader，不直接写 OCCT
+  -> TODO-072 已完成 LineGroup command handler P0 事务接入
+  -> 优先通过 domain SteelData / RebarAisPresentationAdapter / presentation 刷新，不让 domain/rebar 直接写 AIS 或 OCCT
   -> 不自动安装 HASP
   -> 不自动启动旧图石
   -> 不用 OCCT 直接重写钢筋业务

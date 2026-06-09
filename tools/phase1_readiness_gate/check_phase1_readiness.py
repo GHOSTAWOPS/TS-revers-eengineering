@@ -220,6 +220,7 @@ def done_node_report_requirements(root: Path, rows: list[dict[str, str]]) -> tup
         "TODO-069": ("107_M2-Drawing-038DetailWriterStbRow扩展属性骨架实现记录.md", "docs/phase1/app_build_reports/m2_drawing_038_run_001.md"),
         "TODO-070": ("108_M2-Drawing-039DetailWriterLineStbStbGeo字段条件化骨架实现记录.md", "docs/phase1/app_build_reports/m2_drawing_039_run_001.md"),
         "TODO-071": ("109_M2-RebarCreate-001线配筋生成旧逻辑证据与P0切片准备实现记录.md", "docs/phase1/app_build_reports/m2_rebar_create_001_run_001.md"),
+        "TODO-072": ("110_M2-RebarCreate-002线配筋命令HandlerP0实现记录.md", "docs/phase1/app_build_reports/m2_rebar_create_002_run_001.md"),
     }
     missing: list[str] = []
     checked: list[str] = []

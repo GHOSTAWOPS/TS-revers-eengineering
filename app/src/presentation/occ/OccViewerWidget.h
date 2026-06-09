@@ -39,9 +39,11 @@ public:
     [[nodiscard]] TopAbs_ShapeEnum selectionMode() const;
     [[nodiscard]] bool selectByStableId(const QString& stableId,
                                         QString* errorMessage = nullptr);
+    [[nodiscard]] std::optional<LegacySelectionRef> currentSelectionRef() const;
     [[nodiscard]] std::string currentSelectionStableId() const;
     [[nodiscard]] QString currentSelectionSummary() const;
     [[nodiscard]] QString currentSelectionDetails() const;
+    [[nodiscard]] const OccSelectionIndex& selectionIndex() const;
 
     [[nodiscard]] bool hasViewer() const;
     [[nodiscard]] int displayedShapeCount() const;

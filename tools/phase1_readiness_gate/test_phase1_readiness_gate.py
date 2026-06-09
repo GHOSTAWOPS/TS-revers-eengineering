@@ -726,6 +726,37 @@ class Phase1ReadinessGateTests(unittest.TestCase):
             self.assertTrue(report_checks[0].ok)
             self.assertIn("checked_done_nodes=1", report_checks[0].message)
 
+    def test_route_guardrail_accepts_todo072_done_report(self):
+        tmp, root = self.make_guardrail_root()
+        with tmp:
+            (root / "todo.csv").write_text(
+                '"id","priority","phase","task","status","goal_setpoint","acceptance","boundary","evidence","dependencies","risk","notes"\n'
+                '"TODO-072","P0","M2-RebarCreate-002","LineGroup command handler","done","","","","","","",""\n'
+                '"TODO-073","P0","M2-RebarCreate-003","next task","next","","","","","","",""\n',
+                encoding="utf-8",
+            )
+            reports_dir = root / "docs" / "phase1" / "app_build_reports"
+            reports_dir.mkdir(parents=True, exist_ok=True)
+            (root / "110_M2-RebarCreate-002线配筋命令HandlerP0实现记录.md").write_text(
+                "# stub\n",
+                encoding="utf-8",
+            )
+            (reports_dir / "m2_rebar_create_002_run_001.md").write_text(
+                "# stub\n",
+                encoding="utf-8",
+            )
+            (reports_dir / "m2_rebar_create_002_run_001.json").write_text(
+                "{}\n",
+                encoding="utf-8",
+            )
+
+            checks = gate.collect_route_guardrail_checks(root)
+            report_checks = [check for check in checks if check.item == "done_node_reports"]
+
+            self.assertEqual(1, len(report_checks))
+            self.assertTrue(report_checks[0].ok)
+            self.assertIn("checked_done_nodes=1", report_checks[0].message)
+
 
 if __name__ == "__main__":
     unittest.main()
