@@ -1075,3 +1075,50 @@ AutoCAD L2 通过。
 Excel writer 已实现。
 真实工程图算法已完成。
 ```
+
+## M2-Drawing-038 DetailWriter StbRow 扩展属性骨架状态
+
+当前正式证据已补：
+
+```text
+E-DEV-091
+TODO-069 / M2-Drawing-038
+```
+
+事务契约保持不变：
+
+```text
+candidate tmp
+  -> L0 root 校验
+  -> L1 package 校验
+  -> replacePackage 原子替换 / 失败回滚
+```
+
+本轮只改变主图 `StbTable / StbRow#` 内容：
+
+```text
+StbRow#:
+  -> smallTable = 0
+  -> mirrorType = 0
+  -> mirrorSEFlag = 0
+```
+
+本轮没有改变：
+
+```text
+Detail.xml 空模板策略。
+Detail01 主图表格策略。
+Detail02+ 副图空 StbTables 策略。
+L1 校验规则。
+```
+
+本轮仍不声明：
+
+```text
+smallTable / mirrorType / mirrorSEFlag 公式闭合。
+镜像语义闭合。
+AutoCAD L2 通过。
+旧插件接受度已确认。
+Excel writer 已实现。
+真实工程图算法已实现。
+```

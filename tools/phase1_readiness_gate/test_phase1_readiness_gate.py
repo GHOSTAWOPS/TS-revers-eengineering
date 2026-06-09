@@ -351,6 +351,39 @@ class Phase1ReadinessGateTests(unittest.TestCase):
             self.assertEqual("error", report_checks[0].severity)
             self.assertIn("waiting_rereview", report_checks[0].message)
 
+    def test_route_guardrail_rejects_todo069_not_run_report_placeholders(self):
+        tmp, root = self.make_guardrail_root()
+        with tmp:
+            (root / "todo.csv").write_text(
+                '"id","priority","phase","task","status","goal_setpoint","acceptance","boundary","evidence","dependencies","risk","notes"\n'
+                '"TODO-069","P1","M2-Drawing-038","DetailWriter StbRow attrs","done","","","","","","",""\n'
+                '"TODO-070","P1","M2-Drawing-039","next task","next","","","","","","",""\n',
+                encoding="utf-8",
+            )
+            (root / "107_M2-Drawing-038DetailWriterStbRow扩展属性骨架实现记录.md").write_text(
+                "# stub\n",
+                encoding="utf-8",
+            )
+            reports_dir = root / "docs" / "phase1" / "app_build_reports"
+            reports_dir.mkdir(parents=True, exist_ok=True)
+            (reports_dir / "m2_drawing_038_run_001.md").write_text(
+                "readinessGateStrict = not_run_until_docs_mapping\n",
+                encoding="utf-8",
+            )
+            (reports_dir / "m2_drawing_038_run_001.json").write_text(
+                '{\n  "verification": {\n    "xhighReview": "not_run_before_commit_review"\n  }\n}\n',
+                encoding="utf-8",
+            )
+
+            checks = gate.collect_route_guardrail_checks(root)
+            report_checks = [check for check in checks if check.item == "done_node_reports"]
+
+            self.assertEqual(1, len(report_checks))
+            self.assertFalse(report_checks[0].ok)
+            self.assertEqual("error", report_checks[0].severity)
+            self.assertIn("not_run_until_docs_mapping", report_checks[0].message)
+            self.assertIn("not_run_before_commit_review", report_checks[0].message)
+
     def test_route_guardrail_requires_todo040_done_report(self):
         tmp, root = self.make_guardrail_root()
         with tmp:
@@ -578,6 +611,31 @@ class Phase1ReadinessGateTests(unittest.TestCase):
             )
             (reports_dir / "m2_drawing_037_run_001.md").write_text("# stub\n", encoding="utf-8")
             (reports_dir / "m2_drawing_037_run_001.json").write_text("{}\n", encoding="utf-8")
+
+            checks = gate.collect_route_guardrail_checks(root)
+            report_checks = [check for check in checks if check.item == "done_node_reports"]
+
+            self.assertEqual(1, len(report_checks))
+            self.assertTrue(report_checks[0].ok)
+            self.assertIn("checked_done_nodes=1", report_checks[0].message)
+
+    def test_route_guardrail_accepts_todo069_done_report(self):
+        tmp, root = self.make_guardrail_root()
+        with tmp:
+            (root / "todo.csv").write_text(
+                '"id","priority","phase","task","status","goal_setpoint","acceptance","boundary","evidence","dependencies","risk","notes"\n'
+                '"TODO-069","P1","M2-Drawing-038","DetailWriter StbRow attrs","done","","","","","","",""\n'
+                '"TODO-070","P1","M2-Drawing-039","next task","next","","","","","","",""\n',
+                encoding="utf-8",
+            )
+            reports_dir = root / "docs" / "phase1" / "app_build_reports"
+            reports_dir.mkdir(parents=True, exist_ok=True)
+            (root / "107_M2-Drawing-038DetailWriterStbRow扩展属性骨架实现记录.md").write_text(
+                "# stub\n",
+                encoding="utf-8",
+            )
+            (reports_dir / "m2_drawing_038_run_001.md").write_text("# stub\n", encoding="utf-8")
+            (reports_dir / "m2_drawing_038_run_001.json").write_text("{}\n", encoding="utf-8")
 
             checks = gate.collect_route_guardrail_checks(root)
             report_checks = [check for check in checks if check.item == "done_node_reports"]

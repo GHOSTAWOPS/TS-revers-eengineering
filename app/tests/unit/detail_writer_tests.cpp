@@ -549,6 +549,11 @@ void testDetailWriterMatchesRealRuntimeTablePackageStrategy()
     expect(table.value("DCGQSJ") == "0", "StbTable.DCGQSJ default mismatch");
     expect(table.value("HYLJJ") == "0", "StbTable.HYLJJ default mismatch");
 
+    const auto row = findElementAttrs(detail01, "StbRow1");
+    expect(row.value("smallTable") == "0", "StbRow.smallTable default mismatch");
+    expect(row.value("mirrorType") == "0", "StbRow.mirrorType default mismatch");
+    expect(row.value("mirrorSEFlag") == "0", "StbRow.mirrorSEFlag default mismatch");
+
     expect(directChildElementNames(detail02, "StbTables").isEmpty(),
            "Detail02 StbTables must stay empty like old runtime secondary drawings");
     expect(!hasElement(detail02, "StbTable"), "Detail02 must not write StbTable");

@@ -154,8 +154,9 @@ StbRow 额外属性：
 当前状态：
 
 ```text
-DetailWriter 只写 StbTable.count。
-RebarScheduleService / DetailWriter 尚未写 smallTable / mirrorType / mirrorSEFlag。
+TODO-067 对照时 DetailWriter 只写 StbTable.count；TODO-068 已补 StbTable 表级属性骨架。
+TODO-067 对照时 RebarScheduleService / DetailWriter 尚未写 smallTable / mirrorType / mirrorSEFlag；
+TODO-069 已由 DetailWriter 补字段骨架，真实公式和镜像语义仍未闭合。
 Volume1225 与 MaterialTable.Volume722 / Excel 混凝土(m3) 的关系需要继续确认。
 ```
 
@@ -174,9 +175,9 @@ Volume1225 与 MaterialTable.Volume722 / Excel 混凝土(m3) 的关系需要继�
 | `stbLayer` | `ScheduleRow.layer` | 部分确认 | 层。 |
 | `stbProfile` | `ScheduleRow.profile` | 部分确认 | 断面/式样。 |
 | `stbUse` | `ScheduleRow.use` | 部分确认 | 用途。 |
-| `smallTable` | `ScheduleRow.smallTable` | 真实样例确认字段，未实现 | 当前样例值为 `0`，语义待 IDA 或运行确认。 |
-| `mirrorType` | `ScheduleRow.mirrorType` | 真实样例确认字段，未实现 | 当前样例值为 `0`，语义待确认。 |
-| `mirrorSEFlag` | `ScheduleRow.mirrorSEFlag` | 真实样例确认字段，未实现 | 当前样例值为 `0`，语义待确认。 |
+| `smallTable` | `DetailWriter` 默认骨架 | 已实现骨架 | 当前样例值为 `0`，语义待 IDA 或运行确认；暂不进入 `ScheduleRow`。 |
+| `mirrorType` | `DetailWriter` 默认骨架 | 已实现骨架 | 当前样例值为 `0`，镜像语义待确认；暂不进入 `ScheduleRow`。 |
+| `mirrorSEFlag` | `DetailWriter` 默认骨架 | 已实现骨架 | 当前样例值为 `0`，镜像起止含义待确认；暂不进入 `ScheduleRow`。 |
 
 IDA 补证：
 
@@ -448,8 +449,31 @@ TODO-068 / M2-Drawing-037
 | `StbTable.LinkTop / LinkDown` | 默认 `0` | 已实现骨架 | 公式未闭合。 |
 | `StbTable.DCGQSJ / HYLJJ` | 默认 `0` | 已实现骨架 | 公式未闭合。 |
 
-下一步优先：
+已由下一节点完成：
 
 ```text
 TODO-069 / StbRow smallTable / mirrorType / mirrorSEFlag 扩展属性骨架。
+```
+
+## TODO-069 StbRow 扩展属性骨架实现补充
+
+Evidence：
+
+```text
+E-DEV-091
+TODO-069 / M2-Drawing-038
+```
+
+已实现映射：
+
+| Detail 字段 | 新实现来源 | 状态 | 说明 |
+|---|---|---|---|
+| `StbRow.smallTable` | `DetailWriter` 默认 `0` | 已实现骨架 | 真实样例确认字段存在；公式未闭合。 |
+| `StbRow.mirrorType` | `DetailWriter` 默认 `0` | 已实现骨架 | 真实样例确认字段存在；镜像类型语义未闭合。 |
+| `StbRow.mirrorSEFlag` | `DetailWriter` 默认 `0` | 已实现骨架 | 真实样例确认字段存在；起止镜像语义未闭合。 |
+
+下一步优先：
+
+```text
+TODO-070 / lineStb StbGeo 字段条件化骨架。
 ```

@@ -545,6 +545,13 @@ void writeStbTableLegacyAttributes(QXmlStreamWriter& writer, const RebarSchedule
     writer.writeAttribute(QStringLiteral("HYLJJ"), QStringLiteral("0"));
 }
 
+void writeStbRowLegacyAttributes(QXmlStreamWriter& writer)
+{
+    writer.writeAttribute(QStringLiteral("smallTable"), QStringLiteral("0"));
+    writer.writeAttribute(QStringLiteral("mirrorType"), QStringLiteral("0"));
+    writer.writeAttribute(QStringLiteral("mirrorSEFlag"), QStringLiteral("0"));
+}
+
 void writeLegacyGeneralInfo(QXmlStreamWriter& writer, const DetailDrawingViewOptions& view)
 {
     writer.writeStartElement(QStringLiteral("General-Info"));
@@ -737,6 +744,7 @@ void writeDrawingXml(const QString& path,
                 writer.writeAttribute(QStringLiteral("stbLayer"), qstr(row.layer));
                 writer.writeAttribute(QStringLiteral("stbProfile"), qstr(row.profile));
                 writer.writeAttribute(QStringLiteral("stbUse"), qstr(row.use));
+                writeStbRowLegacyAttributes(writer);
                 int scheduleSegSequence = 0;
                 for (const RebarScheduleSegmentRef& segmentRef : row.segments) {
                     const SteelBarSegment* segment = findSegmentById(segmentIndex, segmentRef.segmentId);

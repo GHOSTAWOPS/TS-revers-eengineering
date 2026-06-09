@@ -621,10 +621,44 @@ E-DEV-090
 仍未对齐：
 
 ```text
-1. StbRow.smallTable / mirrorType / mirrorSEFlag。
-2. StbGroup 多 Std# 容器。
-3. lineStb StbGeo 字段条件化。
-4. General-Info 真实值。
-5. Excel 三表 writer。
-6. AutoCAD L2 / 旧插件接受度。
+1. StbGroup 多 Std# 容器。
+2. lineStb StbGeo 字段条件化。
+3. General-Info 真实值。
+4. Excel 三表 writer。
+5. AutoCAD L2 / 旧插件接受度。
+```
+
+## TODO-069 StbRow 扩展属性骨架补充
+
+Evidence：
+
+```text
+E-DEV-091
+```
+
+当前正式 `app` 已继续对齐的真实旧包字段：
+
+```text
+StbRow.smallTable = 0
+StbRow.mirrorType = 0
+StbRow.mirrorSEFlag = 0
+```
+
+边界：
+
+```text
+1. 本轮只补字段骨架。
+2. smallTable / mirrorType / mirrorSEFlag 的真实公式和镜像语义未闭合。
+3. 未扩展 RebarScheduleRow，避免把未知语义提前写入领域模型。
+4. 未实现 Excel writer、AutoCAD L2 或真实工程图算法。
+```
+
+下一步仍未对齐：
+
+```text
+1. StbGroup 多 Std# 容器。
+2. lineStb StbGeo 字段条件化。
+3. General-Info 真实值。
+4. Excel 三表 writer。
+5. AutoCAD L2 / 旧插件接受度。
 ```
