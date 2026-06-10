@@ -168,6 +168,33 @@ DONE_NODE_JSON_CONTRACTS = {
             "xhighReview": ("allow_commit", "needs_fix_then_fixed_by_main_flow"),
         },
     },
+    "TODO-087": {
+        "todoId": "TODO-087",
+        "decision": "done_line_group_save_package_runtime_openback_p0",
+        "nextTodoId": "TODO-088",
+        "requiredVerification": (
+            "targetedRuntimeOpenBackTests",
+            "targetedSmoke",
+            "defaultCTest",
+            "readinessGateUnit",
+            "readinessGateStrict",
+            "domainRebarCommandOCCLeak",
+            "todoSingleNext",
+            "gitDiffCheck",
+            "xhighReview",
+        ),
+        "requiredVerificationValues": {
+            "targetedRuntimeOpenBackTests": ("pass",),
+            "targetedSmoke": ("pass",),
+            "defaultCTest": ("pass",),
+            "readinessGateUnit": ("pass",),
+            "readinessGateStrict": ("pass",),
+            "domainRebarCommandOCCLeak": ("pass",),
+            "todoSingleNext": ("pass",),
+            "gitDiffCheck": ("pass",),
+            "xhighReview": ("allow_commit", "needs_fix_then_fixed_by_main_flow"),
+        },
+    },
 }
 
 
@@ -405,6 +432,7 @@ def done_node_report_requirements(root: Path, rows: list[dict[str, str]]) -> tup
         "TODO-084": ("122_M2-RebarCreate-014线配筋公共创建GroupMinDirtyGapP0实现记录.md", "docs/phase1/app_build_reports/m2_rebar_create_014_run_001.md"),
         "TODO-085": ("123_M2-RebarCreate-015线配筋命令成功DirtyTransaction状态P0实现记录.md", "docs/phase1/app_build_reports/m2_rebar_create_015_run_001.md"),
         "TODO-086": ("124_M2-RebarCreate-016线配筋Dirty状态与保存清除入口准备P0实现记录.md", "docs/phase1/app_build_reports/m2_rebar_create_016_run_001.md"),
+        "TODO-087": ("125_M2-RebarCreate-017线配筋保存包Runtime回读验证P0实现记录.md", "docs/phase1/app_build_reports/m2_rebar_create_017_run_001.md"),
     }
     missing: list[str] = []
     checked: list[str] = []

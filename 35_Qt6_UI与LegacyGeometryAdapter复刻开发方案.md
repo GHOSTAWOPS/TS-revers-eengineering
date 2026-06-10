@@ -375,6 +375,7 @@ M2-RebarCreate-015 / TODO-085 done
 - `TODO-084 / E-IDA-049 / E-DEV-106` 已把 `sub_14059B980` group min-distance loop、`sub_1405BD0C0` backup/write edge 和 `sub_1405E49D0` dirty call position 写成 P0 gap contract，并新增 false applied claim 防线。它仍不等价旧 ACIS group list、真实 topology mutation、旧 dirty / undo / save parity、旧 UI 或 golden。
 - `TODO-085 / E-DEV-107` 已把新 app 线配筋命令成功后的 dirty/transaction P0 接通：成功创建才标记 `ProjectDirty + RebarDirty + DrawingDirty`，并追溯到 `E-IDA-049 / GAP-REB-C-002`；空选择、错类型、取消参数窗口和失败路径不 dirty。这只是 app-level dirty P0，不是旧 `sub_1405E49D0` 完整 dirty / undo / save parity。
 - `TODO-086 / E-DEV-108` 已把新 app 的 `Project.Save` P0 保存清除入口接通：保存成功清 `ProjectDirty / RebarDirty / DrawingDirty`，保存失败保持 dirty，并在 app 保存边界把线配筋 binding geometryPath 重写为 runtime 可验证 JSON path。这只是新 app save-clear P0，不是旧图石完整保存 UI、旧 undo/save parity 或关闭提示。
+- `TODO-087 / E-DEV-109` 已把保存包 runtime open-back P0 接通：`Project.Save` 产出的 `.tsrebar` 包可被 `TsRebarProjectRuntime.open(...)` 回读，并恢复线配筋 `SteelData / binding / evidence` 基本结构。这只是 runtime 回读验证，不是旧图石完整打开 UI、`.sfl` 兼容或完整保存 / 撤销 parity。
 
 这不代表：
 

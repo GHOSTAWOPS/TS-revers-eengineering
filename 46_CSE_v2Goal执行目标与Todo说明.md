@@ -1,4 +1,4 @@
-﻿# CSE v2 Goal 执行目标与 Todo 说明
+# CSE v2 Goal 执行目标与 Todo 说明
 
 ## 一句话结论
 
@@ -20,7 +20,7 @@
      输出目录 / hash / 覆盖策略记录模板和拒收伪工件规则已落文档
   -> output_uncut_steel / Dialog 0x57C / UnCutSteel.TXT
      继续只算可选旁证，不算前置设置窗
-  -> TODO-066 已完成真实工件回填；TODO-067 已完成字段对照；TODO-068 已完成最明显旧包格式纠偏；TODO-069 已完成 StbRow 扩展属性骨架；TODO-070 已完成 lineStb StbGeo 字段条件化骨架；TODO-071 已完成线配筋入口契约冻结；TODO-072 已完成 LineGroup command handler P0；TODO-073 已完成 LineGroup UI/AIS 可见反馈 P0；TODO-074 已完成 LineGroup 参数窗口 P0；TODO-075 已完成选择预检与参数窗口顺序对齐 P0；TODO-076 已完成旧 UI 失败提示与状态栏口径静态 stop point；TODO-077 已完成旧图石运行确认采样清单与拒收规则；TODO-078 已审计为 blocked，因为当前只有模板、没有真实旧图石运行截图/hash/listing/填写后的 notes；TODO-079 已完成旧 UI / Dialog 静态资源补证；TODO-080 已完成公共创建 core gate 与 diagnostic P0 对齐；TODO-081 已完成 createdPayload / objA / objB 字段语义补证；TODO-082 已完成 roles DTO 与 raw evidence 对齐；TODO-083 已完成 split / spline / trim trace P0；TODO-084 已完成 group-min-distance / backup-write / dirty-write gap contract；TODO-085 已完成线配筋命令成功 dirty/transaction P0；TODO-086 已完成线配筋 dirty 保存清除入口 P0；现在的主线是 TODO-087
+  -> TODO-066 已完成真实工件回填；TODO-067 已完成字段对照；TODO-068 已完成最明显旧包格式纠偏；TODO-069 已完成 StbRow 扩展属性骨架；TODO-070 已完成 lineStb StbGeo 字段条件化骨架；TODO-071 已完成线配筋入口契约冻结；TODO-072 已完成 LineGroup command handler P0；TODO-073 已完成 LineGroup UI/AIS 可见反馈 P0；TODO-074 已完成 LineGroup 参数窗口 P0；TODO-075 已完成选择预检与参数窗口顺序对齐 P0；TODO-076 已完成旧 UI 失败提示与状态栏口径静态 stop point；TODO-077 已完成旧图石运行确认采样清单与拒收规则；TODO-078 已审计为 blocked，因为当前只有模板、没有真实旧图石运行截图/hash/listing/填写后的 notes；TODO-079 已完成旧 UI / Dialog 静态资源补证；TODO-080 已完成公共创建 core gate 与 diagnostic P0 对齐；TODO-081 已完成 createdPayload / objA / objB 字段语义补证；TODO-082 已完成 roles DTO 与 raw evidence 对齐；TODO-083 已完成 split / spline / trim trace P0；TODO-084 已完成 group-min-distance / backup-write / dirty-write gap contract；TODO-085 已完成线配筋命令成功 dirty/transaction P0；TODO-086 已完成线配筋 dirty 保存清除入口 P0；TODO-087 已完成线配筋保存包 runtime 回读验证 P0；现在的主线是 TODO-088
 ```
 
 ## 可直接粘贴到 Goal 模式的目标
@@ -329,14 +329,14 @@ TODO-044 验证 = othersSteeljoint.passed=true, Others empty container, steeljoi
 TODO-057 验证 = owner types traced to steelbar / steelbargroup / seg_steelbargroup, Dialog #428 OK chain traced to sub_14045D720 -> sub_1405CB160 -> sub_1405B7350, child+112 narrowed to phase/position/start offset, phase1 gate unittest 18 tests pass, CTest 18/18 pass, readiness 84/84 pass, OCCT leak scan pass, xhigh completed important_fixed minor_refined
 TODO-069 验证 = StbRow smallTable / mirrorType / mirrorSEFlag 字段骨架已输出，CTest 18/18 pass, readiness unit 28/28 pass, strict readiness 84/84 pass, OCCT leak scan pass, xhigh needs_fix important fixed, one-shot reviewer process exited
 
-latest completed baseline tag = m2-rebar-create-016-todo-086-linegroup-dirty-save-clear-entry
-current node tag to create after verification = m2-rebar-create-017-todo-087-linegroup-save-package-runtime-openback
+latest completed baseline tag = m2-rebar-create-017-todo-087-linegroup-save-package-runtime-openback
+current node tag to create after verification = m2-rebar-create-018-todo-088-project-open-runtime-snapshot-app-entry
 ```
 
 当前下一步：
 
 ```text
-TODO-087 / 线配筋保存包 runtime 回读验证 P0
+TODO-088 / Project.Open runtime snapshot 恢复到 app 内存 / 显示入口 P0
   -> 接头链路现阶段先记录、暂缓。
   -> TODO-071 已完成 sgroupbarline 入口契约冻结。
   -> TODO-072 已完成 LineGroup command handler P0 事务接入。
@@ -353,7 +353,9 @@ TODO-087 / 线配筋保存包 runtime 回读验证 P0
   -> TODO-083 已完成 split / spline / trim trace P0。
   -> TODO-084 已完成 group minimum distance trim loop、backup/write edge 和 dirty 写回 gap contract。
   -> TODO-085 已完成新 app 线配筋命令成功后的 dirty/transaction P0 状态。
-  -> 下一轮只做保存包 runtime 回读验证 P0。
+  -> TODO-086 已完成新 app 保存成功清 dirty / 保存失败保持 dirty P0。
+  -> TODO-087 已完成保存包 runtime 回读验证 P0。
+  -> 下一轮只做 Project.Open runtime snapshot 恢复到 app 内存 / 显示入口 P0。
   -> 不自动启动旧图石，不安装 HASP，不用 OCCT 直接重写钢筋业务。
   -> 不替代 TODO-078 的真实运行确认。
 ```
@@ -599,7 +601,7 @@ commit / tag / push 状态
 
 ### 短期 Goal（下一轮推荐复制）
 
-目标：只完成 `TODO-087 / 线配筋保存包 runtime 回读验证 P0` 这个短期阶段，不自动进入后续长期开发。
+目标：只完成 `TODO-088 / Project.Open runtime snapshot 恢复到 app 内存 / 显示入口 P0` 这个短期阶段，不自动进入后续长期开发。
 
 当前状态：
 
@@ -626,19 +628,21 @@ commit / tag / push 状态
   TODO-084 = done  group-min-distance / backup-write / dirty-write gap contract
   TODO-085 = done  线配筋命令成功 dirty/transaction 状态 P0
   TODO-086 = done  线配筋 dirty 状态与保存清除入口准备 P0
-  TODO-087 = next  线配筋保存包 runtime 回读验证 P0
+  TODO-087 = done  线配筋保存包 runtime 回读验证 P0
+  TODO-088 = next  Project.Open runtime snapshot 恢复到 app 内存 / 显示入口 P0
 ```
 
 本轮只做：
 
 ```text
-LineGroupSavePackageOpenBackP0 / TODO-087
-  -> 从 todo.csv / 33 / 46 / 99 / 124 出发
-  -> 基于 E-DEV-046 / E-DEV-108 已确认的 runtime save 和 save-clear P0
-  -> 验证正式 app 产出的 tsrebar 保存包可被 runtime open 回读
-  -> 保存后 open 成功可观察
-  -> group / bar / segment 数量可恢复
-  -> binding / evidence 基本结构可恢复
+ProjectOpenRuntimeSnapshotAppEntryP0 / TODO-088
+  -> 从 todo.csv / 33 / 46 / 99 / 125 出发
+  -> 基于 E-DEV-046 / E-DEV-108 / E-DEV-109 已确认的 runtime save/open-back P0
+  -> 把 Project.OpenTsRebar 最小 app 入口接到 TsRebarProjectRuntime.open 结果
+  -> 打开后 MainWindow/app 内存可恢复 group / bar / segment
+  -> bindingDecision 不 blocked
+  -> open 后不 dirty
+  -> 为后续 AIS 重新显示入口准备最小状态
   -> 仍保留旧 sub_1405E49D0 / undo / save prompt / golden parity gap
   -> 不一次性实现完整旧 Save/Open UI、SaveAs、关闭提示或旧 SFL 兼容
   -> 更新实现记录、run report、追溯矩阵、缺口文档、46 和 todo
@@ -724,11 +728,11 @@ TODO-086 的价值是：
 本轮完成后必须停止并复盘：
 
 ```text
-完成了哪些 save-open runtime 回读 P0 状态切片
+完成了哪些 Project.Open app 内存恢复 P0 状态切片
 验证了哪些门禁和 xhigh review
 还缺哪些旧图石运行工件、旧类名、旧保存提示和完整算法证据
 TODO-078 是否仍 blocked
-下一阶段建议继续 TODO-088 还是回填 TODO-078
+下一阶段建议继续 TODO-089 还是回填 TODO-078
 ```
 ### 按任务补读的参考文档
 
@@ -893,7 +897,9 @@ TODO-087 / 线配筋保存包 runtime 回读验证 P0
   -> TODO-083 已完成 split / spline / trim trace P0
   -> TODO-084 已完成 group-min-distance / backup-write / dirty-write gap contract
   -> TODO-085 已完成新 app 线配筋命令成功后的 dirty/transaction P0 状态
-  -> 下一轮只做保存包 runtime 回读验证 P0
+  -> TODO-086 已完成新 app 保存成功清 dirty / 保存失败保持 dirty P0
+  -> TODO-087 已完成保存包 runtime 回读验证 P0
+  -> 下一轮只做 Project.Open runtime snapshot 恢复到 app 内存 / 显示入口 P0
   -> 不自动安装 HASP，不自动启动旧图石
   -> 不用 OCCT 直接重写钢筋业务，不迁入父目录 rebar 业务
   -> 不替代 TODO-078 的真实运行确认
@@ -996,19 +1002,19 @@ golden 采集 TODO-026 仍按用户要求保持 pending。
 
 ## CSE v2 Control Contract
 
-- **Primary Setpoint**：下一轮只完成 `TODO-087 / 线配筋保存包 runtime 回读验证 P0`，让 `Project.Save` 产出的 tsrebar 包能被 `TsRebarProjectRuntime.open()` 回读，并恢复线配筋 SteelData / binding / evidence 基本结构。
-- **Acceptance**：新增或调整最小 save-open runtime 回读 P0 切片；测试覆盖保存后 open 成功、group/bar/segment 数量恢复、bindingDecision 不 blocked、dirty 清除状态不被 open 验证伪造；更新实现记录、run report、11/35/46/99/todo；默认 CTest、readiness gate、OCCT 泄漏检查、git diff --check 和 xhigh 只读 review 必须通过。
-- **Guardrail Metrics**：不能用 runtime open smoke 冒充旧图石 SFL 兼容或完整 UI Open；不能用 OCCT 能怎么做替代旧图石怎么做；不能迁入父目录 rebar 业务；不能让 `domain/rebar` 依赖 TopoDS/AIS/BRep/TopAbs；不能在一个节点里铺开完整旧保存 UI、面配筋、接头、Excel、Detail 字段继续扩张或 golden。
-- **Sampling Plan**：先读 `todo.csv / 33 / 46 / 99 / 124`，确认 `TODO-087` 只做保存包 runtime 回读验证 P0；先补测试，再实现；最后运行默认 CTest、readiness gate、OCCT 泄漏检查、git diff --check 和 xhigh 只读 review。
-- **Known Delays**：旧 dirty/undo/save parity、旧保存提示、关闭提示、旧 UI 参数窗口字段、状态栏流程和失败提示最终仍依赖 IDA 深追或用户插狗后的现场运行；TODO-087 只能推进新 app runtime open-back 边界，不能替代 TODO-078、旧图石 SFL 兼容或旧 dirty/save 完整等价。
-- **Recovery Target**：如果 save-open smoke 会被误读成完整旧图石 SFL/Open/dirty/save 体系，就缩小字段命名、保留 raw evidence 和 gap，不编造旧状态机。
+- **Primary Setpoint**：下一轮只完成 `TODO-088 / Project.Open runtime snapshot 恢复到 app 内存 / 显示入口 P0`，把 `Project.OpenTsRebar` 最小 app 入口接到 `TsRebarProjectRuntime.open()` 结果，让线配筋 SteelData / binding / evidence 可恢复到 MainWindow/app 内存状态。
+- **Acceptance**：新增或调整最小 Project.Open app 入口 P0 切片；测试覆盖打开 TODO-087 保存包后 MainWindow/app 内存恢复 group/bar/segment、bindingDecision 不 blocked、open 后不 dirty、旧保存/打开 UI gap 保留；更新实现记录、run report、11/35/46/99/todo；默认 CTest、readiness gate、OCCT 泄漏检查、git diff --check 和 xhigh 只读 review 必须通过。
+- **Guardrail Metrics**：不能用 Project.Open P0 冒充旧图石 SFL 兼容或完整 UI Open；不能用 OCCT 能怎么做替代旧图石怎么做；不能迁入父目录 rebar 业务；不能让 `domain/rebar` 依赖 TopoDS/AIS/BRep/TopAbs；不能在一个节点里铺开完整旧保存/打开 UI、面配筋、接头、Excel、Detail 字段继续扩张或 golden。
+- **Sampling Plan**：先读 `todo.csv / 33 / 46 / 99 / 125`，确认 `TODO-088` 只做 Project.Open runtime snapshot 恢复到 app 内存 / 显示入口 P0；先补测试，再实现；最后运行默认 CTest、readiness gate、OCCT 泄漏检查、git diff --check 和 xhigh 只读 review。
+- **Known Delays**：旧 dirty/undo/save parity、旧保存提示、关闭提示、旧 UI 参数窗口字段、状态栏流程和失败提示最终仍依赖 IDA 深追或用户插狗后的现场运行；TODO-088 只能推进新 app Project.Open 内存恢复边界，不能替代 TODO-078、旧图石 SFL 兼容或旧 dirty/save/open 完整等价。
+- **Recovery Target**：如果 Project.Open P0 会被误读成完整旧图石 SFL/Open/dirty/save 体系，就缩小字段命名、保留 raw evidence 和 gap，不编造旧状态机。
 - **Rollback Trigger**：domain/rebar 出现 OCCT/AIS include；父目录 rebar 业务被迁入；无 IDA/运行证据却写成旧逻辑已确认；测试或 gate 失败仍继续堆功能。
 - **Constraints**：不使用 ACIS / HOOPS / Codejock 等商业库；新系统不引入 USB 狗 / 网络许可依赖；旧逻辑不确定时优先查 IDA MCP 或旧图石运行确认；xhigh 只读，修改由主流程 agent 完成；不自动安装 HASP，不自动再次启动旧图石。
-- **Boundary**：下一轮允许改 MainWindow 保存/打开准备接口、project runtime 调用测试、实现记录、run report、追溯矩阵、缺口、todo 和必要门禁；禁止启动旧图石，禁止安装 HASP，禁止改旧 UI 文案，禁止实现完整旧 dirty/undo/save parity、完整线配筋算法、面配筋、弧筋、接头、Excel、Detail、golden，禁止迁入父目录 rebar 业务。
+- **Boundary**：下一轮允许改 MainWindow Project.OpenTsRebar P0 handler / inspection 接口、project runtime 调用测试、实现记录、run report、追溯矩阵、缺口、todo 和必要门禁；禁止启动旧图石，禁止安装 HASP，禁止改旧 UI 文案，禁止实现完整旧 dirty/undo/save parity、完整线配筋算法、面配筋、弧筋、接头、Excel、Detail、golden，禁止迁入父目录 rebar 业务。
 - **Coupling Notes**：`domain/rebar` 是业务对象边界；command / app 状态是 dirty/transaction 边界；`LegacyGeometryAdapter` 是几何能力边界；线配筋创建若需要几何读取，只能通过 legacy 语义接口，不让业务层直接写 OCCT。
-- **Approximation Validity**：TODO-087 的目标是新 app save-open runtime 回读 P0，不是旧图石真实运行确认、完整旧 dirty/undo/save parity、完整旧参数窗口、完整线配筋、面配筋、弧筋、统计、出图或 golden。
-- **Actuator Budget**：下一轮只推进 `TODO-087`。完成后停止复盘，不自动进入完整线配筋算法、面配筋、弧筋、接头、Excel、Detail 字段继续扩张或 golden。
-- **Risks**：save-open runtime 回读 P0 容易被误读成旧图石完整 SFL/Open/dirty/save；必须保留旧 sub_1405E49D0、旧 undo/save、运行 UI 和完整算法 gap，不得伪装成旧图石运行确认结论。
+- **Approximation Validity**：TODO-088 的目标是新 app Project.Open runtime snapshot 恢复到 app 内存 / 显示入口 P0，不是旧图石真实运行确认、完整旧 dirty/undo/save/open parity、完整旧参数窗口、完整线配筋、面配筋、弧筋、统计、出图或 golden。
+- **Actuator Budget**：下一轮只推进 `TODO-088`。完成后停止复盘，不自动进入完整线配筋算法、面配筋、弧筋、接头、Excel、Detail 字段继续扩张或 golden。
+- **Risks**：Project.Open P0 容易被误读成旧图石完整 SFL/Open/dirty/save；必须保留旧 sub_1405E49D0、旧 undo/save/open、运行 UI 和完整算法 gap，不得伪装成旧图石运行确认结论。
 ## Todo CSV 使用方式
 
 `todo.csv` 是后续执行看板。建议每次 goal 模式只拿 `status=next` 或最高优先级 `pending` 的任务推进。
@@ -1049,7 +1055,9 @@ TODO-087 / 线配筋保存包 runtime 回读验证 P0
   -> TODO-083 已完成 split / spline / trim trace P0
   -> TODO-084 已完成 group-min-distance / backup-write / dirty-write gap contract
   -> TODO-085 已完成新 app 线配筋命令成功后的 dirty/transaction P0 状态
-  -> 下一轮只做保存包 runtime 回读验证 P0
+  -> TODO-086 已完成新 app 保存成功清 dirty / 保存失败保持 dirty P0
+  -> TODO-087 已完成保存包 runtime 回读验证 P0
+  -> 下一轮只做 Project.Open runtime snapshot 恢复到 app 内存 / 显示入口 P0
   -> 不自动安装 HASP
   -> 不自动启动旧图石
   -> 不用 OCCT 直接重写钢筋业务
@@ -1058,5 +1066,5 @@ TODO-087 / 线配筋保存包 runtime 回读验证 P0
   -> 不声明完整线配筋、AutoCAD L2 通过或 golden
 ```
 
-原因很简单：TODO-086 已把线配筋保存成功清 dirty / 保存失败保持 dirty 的边界落成可测试切片。下一步更稳的是验证保存包能被 runtime 回读，继续保持“按 VisualTS 证据复刻”，而不是扩张成完整旧保存 UI 或用 OCCT 直接写一个新的钢筋生成器。
+原因很简单：TODO-087 已把线配筋保存包 runtime open-back 的边界落成可测试切片。下一步更稳的是把 runtime open 结果接到 Project.Open 的 app 内存恢复入口，继续保持“按 VisualTS 证据复刻”，而不是扩张成完整旧打开 UI 或用 OCCT 直接写一个新的钢筋生成器。
 TODO-026 golden 采集暂按用户要求保持 pending。

@@ -22,6 +22,7 @@
 #include <cstdlib>
 #include <iostream>
 #include <string>
+#include <vector>
 
 namespace {
 
@@ -37,6 +38,11 @@ void expect(bool condition, const char* message)
 bool nearlyEqual(double left, double right)
 {
     return std::abs(left - right) < 1.0e-9;
+}
+
+bool containsId(const std::vector<std::string>& ids, const char* expected)
+{
+    return std::find(ids.begin(), ids.end(), std::string(expected)) != ids.end();
 }
 
 std::string createdParameterValue(const tsrebar::LegacyRawBlock& block,
@@ -308,6 +314,32 @@ int main(int argc, char* argv[])
         window,
         1,
         "Project.Save success must clear project/rebar/drawing dirty and keep transaction evidence");
+
+    const tsrebar::TsRebarProjectRuntime runtime;
+    const auto open = runtime.open(packagePath);
+    expect(open.ok, "saved line group package must open through runtime");
+    expect(open.finalState == tsrebar::ProjectDocumentState::OpenedWarning,
+           "line group package open must preserve pending legacy warning state");
+    expect(open.bindingDecision != QStringLiteral("blocked"),
+           "line group package open binding decision must not be blocked");
+    expect(open.snapshot.steelData.groups.size() == 1,
+           "line group package open must restore one SteelBarGroup");
+    expect(open.snapshot.steelData.bars.size() == 1,
+           "line group package open must restore one SteelBar");
+    expect(open.snapshot.steelData.segments.size() == 1,
+           "line group package open must restore one SteelBarSegment");
+    expect(!open.snapshot.steelData.groups.front().binding.items.empty(),
+           "line group package open must restore group binding items");
+    expect(open.snapshot.steelData.groups.front().binding.items.front().geometryPath.rfind(
+               "geometry/topology_refs.json#/topologyRefs/",
+               0) == 0,
+           "line group package open must restore runtime topology binding path");
+    expect(containsId(open.snapshot.evidenceIds, "E-DEV-108"),
+           "line group package open must restore save-clear evidence id");
+    expect(containsId(open.snapshot.evidenceIds, "E-IDA-049"),
+           "line group package open must restore dirty/write IDA evidence id");
+    expect(containsId(open.snapshot.evidenceIds, "GAP-REB-C-002"),
+           "line group package open must restore unresolved dirty parity gap id");
 
     const int beforeSecondSuccess = viewer->displayedRebarShapeCount();
     acceptLineGroupDialogWithEditedParameters();

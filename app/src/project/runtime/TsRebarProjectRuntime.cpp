@@ -1051,10 +1051,33 @@ std::map<QString, std::vector<UnresolvedLegacyField>> unresolvedFieldsByObject(
     return fields;
 }
 
+std::vector<std::string> evidenceIdsFromIndex(const QString& packagePath)
+{
+    std::vector<std::string> ids;
+    const QString path = QDir(packagePath).filePath(kEvidenceIndex);
+    if (!QFileInfo::exists(path)) {
+        return ids;
+    }
+
+    const QJsonArray items = readJsonObject(path).value("items").toArray();
+    for (const QJsonValue& value : items) {
+        const QString id = value.toObject().value("id").toString();
+        if (id.isEmpty()) {
+            continue;
+        }
+        const std::string evidenceId = stdstr(id);
+        if (std::find(ids.begin(), ids.end(), evidenceId) == ids.end()) {
+            ids.push_back(evidenceId);
+        }
+    }
+    return ids;
+}
+
 TsRebarProjectSnapshot readSnapshot(const QString& packagePath)
 {
     TsRebarProjectSnapshot snapshot;
     const auto unresolved = unresolvedFieldsByObject(packagePath);
+    snapshot.evidenceIds = evidenceIdsFromIndex(packagePath);
     if (QFileInfo::exists(QDir(packagePath).filePath(kProject))) {
         const QJsonObject project = readJsonObject(QDir(packagePath).filePath(kProject));
         snapshot.projectId = stdstr(project.value("projectId").toString());

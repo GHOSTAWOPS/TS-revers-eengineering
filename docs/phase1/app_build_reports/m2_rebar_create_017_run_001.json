@@ -1,0 +1,65 @@
+{
+  "todoId": "TODO-087",
+  "phase": "M2-RebarCreate-017",
+  "evidenceIds": [
+    "E-DEV-046",
+    "E-DEV-108",
+    "E-DEV-109"
+  ],
+  "decision": "done_line_group_save_package_runtime_openback_p0",
+  "summary": {
+    "projectSavePackageOpenedByRuntime": true,
+    "lineGroupSteelDataRestored": true,
+    "bindingDecision": "not_blocked",
+    "bindingGeometryPathRestored": true,
+    "evidenceIndexIdsRestored": true,
+    "oldOpenUiImplemented": false,
+    "oldSaveUiImplemented": false,
+    "sflCompatibilityImplemented": false,
+    "oldDirtyUndoSaveParityImplemented": false
+  },
+  "guardrails": {
+    "oldRuntimeAutomaticallyLaunched": false,
+    "haspInstalledAutomatically": false,
+    "systemDirectoryModifiedAutomatically": false,
+    "usbDogInheritedByNewSystem": false,
+    "oldSaveUiImplemented": false,
+    "oldOpenUiImplemented": false,
+    "oldUndoSaveParityImplemented": false,
+    "sflCompatibilityImplemented": false,
+    "fullLineGroupAlgorithmImplemented": false,
+    "faceRebarImplemented": false,
+    "arcRebarExpanded": false,
+    "jointImplemented": false,
+    "excelImplemented": false,
+    "detailChanged": false,
+    "golden": "not_started",
+    "occtDirectRebarRewrite": false,
+    "parentRebarMigrated": false,
+    "domainRebarOcctLeak": "pass"
+  },
+  "verification": {
+    "targetedRuntimeOpenBackTests": "pass",
+    "targetedSmoke": "pass",
+    "defaultCTest": "pass",
+    "readinessGateUnit": "pass",
+    "readinessGateStrict": "pass",
+    "domainRebarCommandOCCLeak": "pass",
+    "todoSingleNext": "pass",
+    "gitDiffCheck": "pass",
+    "xhighReview": "allow_commit"
+  },
+  "xhighReview": {
+    "reviewer": "019eb093-8ac4-7150-b503-e513af6ee0e3",
+    "verdict": "allow_commit",
+    "critical": [],
+    "important": [],
+    "minor": [],
+    "mainFlowFix": [],
+    "agentClosed": true
+  },
+  "next": {
+    "todoId": "TODO-088",
+    "task": "Project.Open runtime snapshot 恢复到 app 内存 / 显示入口 P0"
+  }
+}

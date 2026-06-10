@@ -10,6 +10,7 @@
 #include <QTemporaryDir>
 
 #include <cmath>
+#include <algorithm>
 #include <cstdlib>
 #include <iostream>
 
@@ -442,6 +443,31 @@ void testOpenSaveRoundTripPreservesUnresolvedFields()
            "save after open must preserve unresolved_fields entries");
 }
 
+void testOpenRestoresEvidenceIndexIds()
+{
+    QTemporaryDir temp;
+    expect(temp.isValid(), "temporary dir must be valid");
+    const QString packagePath = QDir(temp.path()).filePath("evidence_index.tsrebar");
+
+    const tsrebar::TsRebarProjectRuntime runtime;
+    const auto save = runtime.saveSnapshot(packagePath, snapshotWithLineGroup(), true);
+    expect(save.ok, "evidence index fixture must save");
+
+    const auto open = runtime.open(packagePath);
+
+    const auto containsEvidence = [&](const std::string& id) {
+        return std::find(open.snapshot.evidenceIds.begin(),
+                         open.snapshot.evidenceIds.end(),
+                         id) != open.snapshot.evidenceIds.end();
+    };
+    expect(containsEvidence("E-DEV-004"),
+           "open must restore snapshot evidence ids from evidence_index");
+    expect(containsEvidence("E-IDA-016"),
+           "open must restore group evidence id from evidence_index");
+    expect(containsEvidence("GAP-SFL-004"),
+           "open must restore gap id from evidence_index");
+}
+
 void testSaveInstallFailureCleansTemporaryDirsAndKeepsDirty()
 {
     QTemporaryDir temp;
@@ -497,6 +523,7 @@ int main()
     testSaveDoesNotHardcodeStepMainInGeometryRefs();
     testSaveAcceptsRelativePackagePathWithoutHashHang();
     testOpenSaveRoundTripPreservesUnresolvedFields();
+    testOpenRestoresEvidenceIndexIds();
     testSaveInstallFailureCleansTemporaryDirsAndKeepsDirty();
     exportRuntimePackageIfRequested();
     return 0;

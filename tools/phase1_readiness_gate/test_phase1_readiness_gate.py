@@ -1775,6 +1775,96 @@ class Phase1ReadinessGateTests(unittest.TestCase):
             self.assertIn("json_verification_xhighReview_not_closed:pending_readonly_review",
                           report_checks[0].message)
 
+    def test_route_guardrail_accepts_todo087_done_report(self):
+        tmp, root = self.make_guardrail_root()
+        with tmp:
+            (root / "todo.csv").write_text(
+                '"id","priority","phase","task","status","goal_setpoint","acceptance","boundary","evidence","dependencies","risk","notes"\n'
+                '"TODO-087","P0","M2-RebarCreate-017","LineGroup save package runtime openback","done","","","","","","",""\n',
+                encoding="utf-8",
+            )
+            reports_dir = root / "docs" / "phase1" / "app_build_reports"
+            reports_dir.mkdir(parents=True, exist_ok=True)
+            (root / "125_M2-RebarCreate-017线配筋保存包Runtime回读验证P0实现记录.md").write_text(
+                "# stub\n",
+                encoding="utf-8",
+            )
+            (reports_dir / "m2_rebar_create_017_run_001.md").write_text(
+                "# stub\n",
+                encoding="utf-8",
+            )
+            (reports_dir / "m2_rebar_create_017_run_001.json").write_text(
+                '{'
+                '"todoId":"TODO-087",'
+                '"decision":"done_line_group_save_package_runtime_openback_p0",'
+                '"verification":{'
+                '"targetedRuntimeOpenBackTests":"pass",'
+                '"targetedSmoke":"pass",'
+                '"defaultCTest":"pass",'
+                '"readinessGateUnit":"pass",'
+                '"readinessGateStrict":"pass",'
+                '"domainRebarCommandOCCLeak":"pass",'
+                '"todoSingleNext":"pass",'
+                '"gitDiffCheck":"pass",'
+                '"xhighReview":"allow_commit"'
+                '},'
+                '"next":{"todoId":"TODO-088"}'
+                '}\n',
+                encoding="utf-8",
+            )
+
+            checks = gate.collect_route_guardrail_checks(root)
+            report_checks = [check for check in checks if check.item == "done_node_reports"]
+
+            self.assertEqual(1, len(report_checks))
+            self.assertTrue(report_checks[0].ok)
+            self.assertIn("checked_done_nodes=1", report_checks[0].message)
+
+    def test_route_guardrail_rejects_todo087_missing_openback_test(self):
+        tmp, root = self.make_guardrail_root()
+        with tmp:
+            (root / "todo.csv").write_text(
+                '"id","priority","phase","task","status","goal_setpoint","acceptance","boundary","evidence","dependencies","risk","notes"\n'
+                '"TODO-087","P0","M2-RebarCreate-017","LineGroup save package runtime openback","done","","","","","","",""\n',
+                encoding="utf-8",
+            )
+            reports_dir = root / "docs" / "phase1" / "app_build_reports"
+            reports_dir.mkdir(parents=True, exist_ok=True)
+            (root / "125_M2-RebarCreate-017线配筋保存包Runtime回读验证P0实现记录.md").write_text(
+                "# stub\n",
+                encoding="utf-8",
+            )
+            (reports_dir / "m2_rebar_create_017_run_001.md").write_text(
+                "# stub\n",
+                encoding="utf-8",
+            )
+            (reports_dir / "m2_rebar_create_017_run_001.json").write_text(
+                '{'
+                '"todoId":"TODO-087",'
+                '"decision":"done_line_group_save_package_runtime_openback_p0",'
+                '"verification":{'
+                '"targetedSmoke":"pass",'
+                '"defaultCTest":"pass",'
+                '"readinessGateUnit":"pass",'
+                '"readinessGateStrict":"pass",'
+                '"domainRebarCommandOCCLeak":"pass",'
+                '"todoSingleNext":"pass",'
+                '"gitDiffCheck":"pass",'
+                '"xhighReview":"allow_commit"'
+                '},'
+                '"next":{"todoId":"TODO-088"}'
+                '}\n',
+                encoding="utf-8",
+            )
+
+            checks = gate.collect_route_guardrail_checks(root)
+            report_checks = [check for check in checks if check.item == "done_node_reports"]
+
+            self.assertEqual(1, len(report_checks))
+            self.assertFalse(report_checks[0].ok)
+            self.assertIn("json_verification_targetedRuntimeOpenBackTests_missing",
+                          report_checks[0].message)
+
 
 if __name__ == "__main__":
     unittest.main()
