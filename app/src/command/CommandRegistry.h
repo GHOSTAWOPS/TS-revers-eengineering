@@ -15,10 +15,30 @@ enum class CommandStatus {
     Failed
 };
 
+struct CommandDirtyFlags
+{
+    bool projectDirty = false;
+    bool geometryDirty = false;
+    bool rebarDirty = false;
+    bool drawingDirty = false;
+    bool selectionDirty = false;
+    bool viewDirty = false;
+};
+
+struct CommandTransactionState
+{
+    bool committed = false;
+    QString commandKey;
+    QString legacyDirtyEvidenceId;
+    QString unresolvedDirtyParityGap;
+};
+
 struct CommandResult
 {
     CommandStatus status = CommandStatus::NotImplemented;
     QString message;
+    CommandDirtyFlags dirtyFlags;
+    CommandTransactionState transaction;
 };
 
 class CommandRegistry
@@ -43,4 +63,3 @@ private:
 };
 
 } // namespace tsrebar
-

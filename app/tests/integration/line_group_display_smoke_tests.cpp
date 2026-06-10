@@ -57,6 +57,19 @@ QString lineGroupActionObjectName()
     return {};
 }
 
+void expectCleanDirtyState(const MainWindow& window, const char* message)
+{
+    const MainWindow::DirtyState& dirty = window.dirtyStateForInspection();
+    expect(!dirty.projectDirty, message);
+    expect(!dirty.geometryDirty, message);
+    expect(!dirty.rebarDirty, message);
+    expect(!dirty.drawingDirty, message);
+    expect(!dirty.selectionDirty, message);
+    expect(!dirty.viewDirty, message);
+    expect(dirty.committedTransactionCount == 0, message);
+    expect(dirty.lastDirtyCommand.isEmpty(), message);
+}
+
 template <typename T>
 T* requireChild(QWidget& parent, const char* objectName)
 {
@@ -159,6 +172,7 @@ int main(int argc, char* argv[])
 
     const int beforeFailure = viewer->displayedRebarShapeCount();
     const std::size_t groupsBeforeNoSelection = window.steelDataForInspection().groups.size();
+    expectCleanDirtyState(window, "initial app dirty state must be clean");
     bool noSelectionDialogOpened = false;
     failIfLineGroupDialogOpens(noSelectionDialogOpened);
     action->trigger();
@@ -169,6 +183,7 @@ int main(int argc, char* argv[])
            "failed line group command must not refresh rebar AIS display");
     expect(window.steelDataForInspection().groups.size() == groupsBeforeNoSelection,
            "no-selection preflight must not mutate SteelData");
+    expectCleanDirtyState(window, "no-selection preflight must not dirty the app");
 
     const auto faceRefs = viewer->selectionIndex().refs(tsrebar::LegacyShapeKind::Face);
     expect(!faceRefs.isEmpty(), "test STEP must have face selection refs");
@@ -187,6 +202,7 @@ int main(int argc, char* argv[])
            "wrong-type preflight must not refresh rebar AIS display");
     expect(window.steelDataForInspection().groups.size() == groupsBeforeWrongType,
            "wrong-type preflight must not mutate SteelData");
+    expectCleanDirtyState(window, "wrong-type preflight must not dirty the app");
 
     const auto edgeRefs = viewer->selectionIndex().refs(tsrebar::LegacyShapeKind::Edge);
     expect(!edgeRefs.isEmpty(), "test STEP must have edge selection refs");
@@ -202,6 +218,7 @@ int main(int argc, char* argv[])
            "cancelled parameter dialog must not refresh rebar AIS display");
     expect(window.steelDataForInspection().groups.size() == groupsBeforeCancel,
            "cancelled parameter dialog must not mutate SteelData");
+    expectCleanDirtyState(window, "cancelled parameter dialog must not dirty the app");
 
     const int beforeSuccess = viewer->displayedRebarShapeCount();
     acceptLineGroupDialog();
@@ -210,6 +227,21 @@ int main(int argc, char* argv[])
 
     expect(viewer->displayedRebarShapeCount() > beforeSuccess,
            "successful line group command must display created SteelBarGroup in AIS");
+    const MainWindow::DirtyState& dirtyAfterSuccess = window.dirtyStateForInspection();
+    expect(dirtyAfterSuccess.projectDirty && dirtyAfterSuccess.rebarDirty &&
+               dirtyAfterSuccess.drawingDirty,
+           "successful line group command must mark project/rebar/drawing dirty");
+    expect(!dirtyAfterSuccess.geometryDirty && !dirtyAfterSuccess.selectionDirty &&
+               !dirtyAfterSuccess.viewDirty,
+           "line group dirty P0 must not mark unrelated dirty flags");
+    expect(dirtyAfterSuccess.committedTransactionCount == 1,
+           "first successful line group command must commit one dirty transaction");
+    expect(dirtyAfterSuccess.lastDirtyCommand == QStringLiteral("Rebar.Create.LineGroup"),
+           "dirty transaction must keep the line group command key");
+    expect(dirtyAfterSuccess.legacyDirtyEvidenceId == QStringLiteral("E-IDA-049"),
+           "dirty transaction must trace the old dirty call evidence");
+    expect(dirtyAfterSuccess.unresolvedDirtyParityGap == QStringLiteral("GAP-REB-C-002"),
+           "dirty transaction must keep old dirty parity unresolved");
     const QString firstDisplayedGroup = viewer->lastDisplayedRebarGroupId();
     expect(!firstDisplayedGroup.isEmpty(),
            "successful line group command must record displayed group id");
@@ -223,6 +255,8 @@ int main(int argc, char* argv[])
            "second successful line group command must add AIS display items");
     expect(viewer->lastDisplayedRebarGroupId() != firstDisplayedGroup,
            "second successful line group command must display the newly created group");
+    expect(window.dirtyStateForInspection().committedTransactionCount == 2,
+           "second successful line group command must commit a second dirty transaction");
     const auto& groups = window.steelDataForInspection().groups;
     expect(!groups.empty(), "successful line group command must leave groups inspectable");
     const tsrebar::SteelBarGroup& latest = groups.back();

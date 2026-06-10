@@ -25,6 +25,17 @@ bool near(double left, double right)
     return std::abs(left - right) < 1.0e-9;
 }
 
+void expectNoDirtyTransaction(const tsrebar::CommandResult& result, const char* context)
+{
+    expect(!result.transaction.committed, context);
+    expect(!result.dirtyFlags.projectDirty, context);
+    expect(!result.dirtyFlags.geometryDirty, context);
+    expect(!result.dirtyFlags.rebarDirty, context);
+    expect(!result.dirtyFlags.drawingDirty, context);
+    expect(!result.dirtyFlags.selectionDirty, context);
+    expect(!result.dirtyFlags.viewDirty, context);
+}
+
 tsrebar::LegacySelectionRef edgeRef(const std::string& stableId)
 {
     tsrebar::LegacySelectionRef ref;
@@ -178,6 +189,7 @@ void testLineGroupHandlerRejectsEmptySelectionWithoutGeometryQuery()
            "empty selection must fail the command");
     expect(result.message.contains(QStringLiteral("exactly one")),
            "empty selection diagnostic must mention single selection");
+    expectNoDirtyTransaction(result, "empty selection must not commit dirty transaction");
     expect(reader.curveSnapshotCallCount() == 0,
            "empty selection must not query legacy geometry");
     expect(model.groups.empty(), "empty selection must not mutate steel data");
@@ -203,6 +215,7 @@ void testLineGroupHandlerRejectsWrongSelectionType()
            "wrong selection type must fail the command");
     expect(result.message.contains(QStringLiteral("edge")),
            "wrong type diagnostic must mention edge");
+    expectNoDirtyTransaction(result, "wrong selection type must not commit dirty transaction");
     expect(reader.curveSnapshotCallCount() == 0,
            "wrong selection type must not query legacy geometry");
     expect(model.groups.empty(), "wrong selection type must not mutate steel data");
@@ -234,6 +247,20 @@ void testLineGroupHandlerCreatesSteelDataFromValidEdge()
            "valid edge must complete the command");
     expect(result.message.contains(QStringLiteral("Rebar.Create.LineGroup")),
            "success message must mention the command key");
+    expect(result.transaction.committed,
+           "successful line group command must commit a transaction");
+    expect(result.transaction.commandKey == QStringLiteral("Rebar.Create.LineGroup"),
+           "successful line group transaction must name the command key");
+    expect(result.transaction.legacyDirtyEvidenceId == QStringLiteral("E-IDA-049"),
+           "successful line group transaction must trace old dirty call evidence");
+    expect(result.transaction.unresolvedDirtyParityGap == QStringLiteral("GAP-REB-C-002"),
+           "successful line group transaction must keep old dirty parity unresolved");
+    expect(result.dirtyFlags.projectDirty && result.dirtyFlags.rebarDirty &&
+               result.dirtyFlags.drawingDirty,
+           "successful line group command must mark project/rebar/drawing dirty");
+    expect(!result.dirtyFlags.geometryDirty && !result.dirtyFlags.selectionDirty &&
+               !result.dirtyFlags.viewDirty,
+           "line group dirty P0 must not mark unrelated dirty flags");
     expect(model.groups.size() == 1, "valid edge must append one group");
     expect(model.bars.size() == 1, "valid edge must append one bar");
     expect(model.segments.size() == 1, "valid edge must append one segment");
@@ -317,6 +344,7 @@ void testLineGroupHandlerLeavesModelUntouchedWhenGeometryFails()
            "missing legacy curve must fail the command");
     expect(result.message.contains(QStringLiteral("fake curve not found")),
            "geometry failure diagnostic must pass through");
+    expectNoDirtyTransaction(result, "geometry failure must not commit dirty transaction");
     expect(reader.curveSnapshotCallCount() == 1,
            "valid edge must reach legacy geometry before failure");
     expect(reader.normalizeCallCount() == 0,
@@ -347,6 +375,7 @@ void testLineGroupHandlerLeavesModelUntouchedWhenNormalizerFails()
            "normalizer failure must fail the command");
     expect(result.message.contains(QStringLiteral("fake normalizer failed")),
            "normalizer failure diagnostic must pass through");
+    expectNoDirtyTransaction(result, "normalizer failure must not commit dirty transaction");
     expect(reader.curveSnapshotCallCount() == 1,
            "normalizer failure path must read legacy curve once");
     expect(reader.normalizeCallCount() == 1,
@@ -379,6 +408,7 @@ void testLineGroupHandlerLeavesModelUntouchedWhenMutationGapClaimIsApplied()
            "false applied TODO-084 mutation gap must fail the command");
     expect(result.message.contains(QStringLiteral("sub_14059B980")),
            "false applied mutation gap diagnostic must pass through");
+    expectNoDirtyTransaction(result, "false applied mutation gap must not commit dirty transaction");
     expect(reader.curveSnapshotCallCount() == 1,
            "mutation gap diagnostic must happen after reading the selected curve");
     expect(reader.normalizeCallCount() == 1,

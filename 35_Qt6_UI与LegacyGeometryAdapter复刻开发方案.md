@@ -336,7 +336,7 @@ M1-Formal-Ready
 当前正式 app 已达到：
 
 ```text
-M2-RebarCreate-014 / TODO-084 done
+M2-RebarCreate-015 / TODO-085 done
   -> Qt6 主窗口和旧图石一期页签
   -> OCCT STEP 导入和 AIS 显示
   -> selection-v1 face / edge / vertex 稳定选择引用
@@ -356,6 +356,7 @@ M2-RebarCreate-014 / TODO-084 done
   -> roles DTO / raw evidence P0：LegacyPublicCreateRolesSnapshot、createdPayloadRef、linkedModelRef 低置信、distanceA_4digit normalizer 参数
   -> sub_1405D5670 split / spline / trim trace P0：LegacySegmentCurveNormalizeTrace、api_entity_entity_distance、api_split_curve、api_curve_spline、endpoint trim
   -> sub_1405D5670 group-min-distance / dirty-write gap contract P0：sub_14059B980、sub_1405BD0C0、sub_1405E49D0 链路位置和 deferred 状态
+  -> Rebar.Create.LineGroup 成功 dirty/transaction P0：ProjectDirty + RebarDirty + DrawingDirty、E-IDA-049、GAP-REB-C-002；失败 / 取消不 dirty
 ```
 
 这代表：
@@ -372,6 +373,7 @@ M2-RebarCreate-014 / TODO-084 done
 - `TODO-082 / E-DEV-104` 已把 TODO-081 的静态证据落进正式 app：`RebarGroupCreator` 新增 `LegacyPublicCreateRolesSnapshot`，在 `createdFromParameters / legacyRaw` 记录 `createdPayloadRef / linkedModelRef / distanceA_4digit / objA-objB role`，并让 normalizer 使用 `distanceA_4digit`。这只是 roles DTO / raw evidence 边界，不是完整旧对象模型。
 - `TODO-083 / E-DEV-105` 已把 `sub_1405D5670` 的 split / spline / trim 链落成 P0 trace：`RebarGroupCreator` 只接收 `LegacySegmentCurveNormalizeTrace / Result`，`MainWindow` 的 viewer reader 通过 `OccLegacyGeometryAdapter` 生成 summary，OCCT 没有进入 `domain/rebar`。这只是 `api_entity_entity_distance / api_split_curve / api_curve_spline / endpoint trim` 的 trace，不是完整 topology mutation、group min-distance loop 或 dirty 写回等价。
 - `TODO-084 / E-IDA-049 / E-DEV-106` 已把 `sub_14059B980` group min-distance loop、`sub_1405BD0C0` backup/write edge 和 `sub_1405E49D0` dirty call position 写成 P0 gap contract，并新增 false applied claim 防线。它仍不等价旧 ACIS group list、真实 topology mutation、旧 dirty / undo / save parity、旧 UI 或 golden。
+- `TODO-085 / E-DEV-107` 已把新 app 线配筋命令成功后的 dirty/transaction P0 接通：成功创建才标记 `ProjectDirty + RebarDirty + DrawingDirty`，并追溯到 `E-IDA-049 / GAP-REB-C-002`；空选择、错类型、取消参数窗口和失败路径不 dirty。这只是 app-level dirty P0，不是旧 `sub_1405E49D0` 完整 dirty / undo / save parity。
 
 这不代表：
 
@@ -380,6 +382,7 @@ M2-RebarCreate-014 / TODO-084 done
 - 当前 `LineGroupParameterDialog` 是 P0 参数输入壳；`Input_float / Dialog #383` 是旧公共浮点输入窗；二者都不能被写成旧线配筋主参数窗口已经 1:1 复刻。
 - `TODO-077` 只准备了运行确认包，`TODO-078` 已明确当前没有真实旧图石运行截图或参数窗口字段；`TODO-079` 的静态补证也不能替代现场运行确认。
 - `LegacyPublicCreateRolesSnapshot` 只是防止证据丢失和角色误硬编码的 P0 DTO；不能把 `createdObject + 112` 或 `objA/objB` 写成已闭合旧业务名。
+- 当前 `DirtyState / CommandTransactionState` 只是新 app 的最小状态污染边界；不能写成旧图石保存提示、撤销栈、关闭提示或保存成功清 dirty 已经 1:1 复刻。
 - 父目录源码可以直接拿来当最终业务代码。
 - 钢筋创建、编辑、统计、工程图业务规则已经由 OCCT 自动解决。
 

@@ -12,6 +12,22 @@ CommandResult failed(QString message)
     return {CommandStatus::Failed, std::move(message)};
 }
 
+CommandResult lineGroupCommitted(int groupCount)
+{
+    CommandResult result;
+    result.status = CommandStatus::Completed;
+    result.message = QStringLiteral("Rebar.Create.LineGroup created %1 SteelBarGroup(s).")
+                         .arg(groupCount);
+    result.dirtyFlags.projectDirty = true;
+    result.dirtyFlags.rebarDirty = true;
+    result.dirtyFlags.drawingDirty = true;
+    result.transaction.committed = true;
+    result.transaction.commandKey = QStringLiteral("Rebar.Create.LineGroup");
+    result.transaction.legacyDirtyEvidenceId = QStringLiteral("E-IDA-049");
+    result.transaction.unresolvedDirtyParityGap = QStringLiteral("GAP-REB-C-002");
+    return result;
+}
+
 RebarGroupCreationRequest toCreationRequest(
     const RebarLineGroupCommandParameters& parameters,
     const LegacySelectionRef& sourceCurve)
@@ -117,9 +133,7 @@ CommandResult RebarLineGroupCommandHandler::execute() const
     const int groupCount = static_cast<int>(created.steelData.groups.size());
     appendCreatedSteelData(m_steelData, std::move(created.steelData));
 
-    return {CommandStatus::Completed,
-            QStringLiteral("Rebar.Create.LineGroup created %1 SteelBarGroup(s).")
-                .arg(groupCount)};
+    return lineGroupCommitted(groupCount);
 }
 
 void registerRebarLineGroupCommandHandler(CommandRegistry& registry,

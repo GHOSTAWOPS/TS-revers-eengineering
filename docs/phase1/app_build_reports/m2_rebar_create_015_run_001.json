@@ -1,0 +1,64 @@
+{
+  "todoId": "TODO-085",
+  "phase": "M2-RebarCreate-015",
+  "evidenceIds": [
+    "E-IDA-049",
+    "E-DEV-106",
+    "E-DEV-107"
+  ],
+  "decision": "done_line_group_dirty_transaction_p0",
+  "summary": {
+    "commandDirtyFlagsAdded": true,
+    "commandTransactionStateAdded": true,
+    "lineGroupSuccessProjectDirty": true,
+    "lineGroupSuccessRebarDirty": true,
+    "lineGroupSuccessDrawingDirty": true,
+    "failurePathsNoDirty": true,
+    "cancelPathNoDirty": true,
+    "legacyDirtyEvidenceId": "E-IDA-049",
+    "unresolvedDirtyParityGap": "GAP-REB-C-002",
+    "oldDirtyUndoSaveParityImplemented": false
+  },
+  "guardrails": {
+    "oldRuntimeAutomaticallyLaunched": false,
+    "haspInstalledAutomatically": false,
+    "systemDirectoryModifiedAutomatically": false,
+    "uiTextChanged": false,
+    "oldDirtyUndoSaveParityImplemented": false,
+    "fullLineGroupAlgorithmImplemented": false,
+    "faceRebarImplemented": false,
+    "arcRebarExpanded": false,
+    "jointImplemented": false,
+    "excelImplemented": false,
+    "detailChanged": false,
+    "golden": "not_started",
+    "occtDirectRebarRewrite": false,
+    "parentRebarMigrated": false,
+    "domainRebarOcctLeak": "pass"
+  },
+  "verification": {
+    "targetedDirtyTransactionTests": "pass",
+    "targetedSmoke": "pass",
+    "defaultCTest": "pass",
+    "readinessGateUnit": "pass",
+    "readinessGateStrict": "pass",
+    "domainRebarCommandOCCLeak": "pass",
+    "todoSingleNext": "pass",
+    "gitDiffCheck": "pass",
+    "xhighReview": "allow_commit"
+  },
+  "xhighReview": {
+    "reviewer": "Halley",
+    "verdict": "allow_commit",
+    "critical": [],
+    "important": [],
+    "minor": [],
+    "mainFlowFix": [],
+    "note": "applyDirtyStateFromCommandResult before displayCreatedLineGroup is acceptable for this P0 because handler Completed already means SteelData was appended; AIS display failure is presentation failure, not model rollback.",
+    "agentClosed": true
+  },
+  "next": {
+    "todoId": "TODO-086",
+    "task": "线配筋 dirty 状态与保存清除入口准备 P0"
+  }
+}

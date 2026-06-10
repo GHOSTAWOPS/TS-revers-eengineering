@@ -374,6 +374,11 @@ const tsrebar::SteelData& MainWindow::steelDataForInspection() const
     return m_steelData;
 }
 
+const MainWindow::DirtyState& MainWindow::dirtyStateForInspection() const
+{
+    return m_dirtyState;
+}
+
 void MainWindow::buildUi()
 {
     setWindowTitle(QStringLiteral("图石钢筋 1:1 复刻"));
@@ -490,6 +495,7 @@ void MainWindow::executeCommand(tsrebar::CommandId id)
     const tsrebar::CommandResult result = m_commands.execute(id);
     if (id == tsrebar::CommandId::RebarLineCreate &&
         result.status == tsrebar::CommandStatus::Completed) {
+        applyDirtyStateFromCommandResult(result);
         QString displayError;
         if (!displayCreatedLineGroup(&displayError)) {
             statusBar()->showMessage(
@@ -499,6 +505,24 @@ void MainWindow::executeCommand(tsrebar::CommandId id)
         }
     }
     statusBar()->showMessage(commandStatusText(result), 5000);
+}
+
+void MainWindow::applyDirtyStateFromCommandResult(const tsrebar::CommandResult& result)
+{
+    if (!result.transaction.committed) {
+        return;
+    }
+
+    m_dirtyState.projectDirty = m_dirtyState.projectDirty || result.dirtyFlags.projectDirty;
+    m_dirtyState.geometryDirty = m_dirtyState.geometryDirty || result.dirtyFlags.geometryDirty;
+    m_dirtyState.rebarDirty = m_dirtyState.rebarDirty || result.dirtyFlags.rebarDirty;
+    m_dirtyState.drawingDirty = m_dirtyState.drawingDirty || result.dirtyFlags.drawingDirty;
+    m_dirtyState.selectionDirty = m_dirtyState.selectionDirty || result.dirtyFlags.selectionDirty;
+    m_dirtyState.viewDirty = m_dirtyState.viewDirty || result.dirtyFlags.viewDirty;
+    ++m_dirtyState.committedTransactionCount;
+    m_dirtyState.lastDirtyCommand = result.transaction.commandKey;
+    m_dirtyState.legacyDirtyEvidenceId = result.transaction.legacyDirtyEvidenceId;
+    m_dirtyState.unresolvedDirtyParityGap = result.transaction.unresolvedDirtyParityGap;
 }
 
 bool MainWindow::lineGroupSelectionPreflightForCommand(QString* errorMessage) const
