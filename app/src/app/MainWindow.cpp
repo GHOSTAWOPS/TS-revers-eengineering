@@ -21,6 +21,7 @@
 #include <QVBoxLayout>
 
 #include <algorithm>
+#include <map>
 #include <memory>
 #include <optional>
 #include <string>
@@ -206,6 +207,91 @@ QString commandStatusText(const tsrebar::CommandResult& result)
     return QStringLiteral("未知命令状态");
 }
 
+void appendTopologyRefForIds(const std::vector<std::string>& ids,
+                             const std::string& shapeType,
+                             const std::string& sourceStepId,
+                             std::vector<tsrebar::TsRebarTopologyRef>& refs,
+                             std::map<std::string, int>& indexByStableId)
+{
+    for (const std::string& id : ids) {
+        if (id.empty() || indexByStableId.find(id) != indexByStableId.end()) {
+            continue;
+        }
+        const int index = static_cast<int>(refs.size());
+        indexByStableId[id] = index;
+        refs.push_back({id, shapeType, sourceStepId, id, {"E-DEV-108"}});
+    }
+}
+
+void appendTopologyRefsFromGeometry(const tsrebar::GeometryReference& geometry,
+                                    const std::string& sourceStepId,
+                                    std::vector<tsrebar::TsRebarTopologyRef>& refs,
+                                    std::map<std::string, int>& indexByStableId)
+{
+    appendTopologyRefForIds(geometry.faceStableIds, "face", sourceStepId,
+                            refs, indexByStableId);
+    appendTopologyRefForIds(geometry.edgeStableIds, "edge", sourceStepId,
+                            refs, indexByStableId);
+    appendTopologyRefForIds(geometry.curveStableIds, "edge", sourceStepId,
+                            refs, indexByStableId);
+}
+
+std::optional<std::string> firstGeometryStableId(const tsrebar::GeometryReference& geometry)
+{
+    if (!geometry.curveStableIds.empty()) {
+        return geometry.curveStableIds.front();
+    }
+    if (!geometry.edgeStableIds.empty()) {
+        return geometry.edgeStableIds.front();
+    }
+    if (!geometry.faceStableIds.empty()) {
+        return geometry.faceStableIds.front();
+    }
+    return std::nullopt;
+}
+
+std::string topologyGeometryPathFor(const std::map<std::string, int>& indexByStableId,
+                                    const tsrebar::GeometryReference& geometry)
+{
+    const std::optional<std::string> stableId = firstGeometryStableId(geometry);
+    if (!stableId.has_value()) {
+        return {};
+    }
+    const auto found = indexByStableId.find(*stableId);
+    if (found == indexByStableId.end()) {
+        return {};
+    }
+    return "geometry/topology_refs.json#/topologyRefs/" + std::to_string(found->second);
+}
+
+void rewriteBindingForRuntimeSave(tsrebar::BindingAnchor& binding,
+                                  const tsrebar::GeometryReference& geometry,
+                                  const std::map<std::string, int>& indexByStableId,
+                                  const char* fallbackLegacyPath)
+{
+    if (binding.state != tsrebar::BindingState::Resolved) {
+        return;
+    }
+
+    const std::string geometryPath = topologyGeometryPathFor(indexByStableId, geometry);
+    if (geometryPath.empty()) {
+        return;
+    }
+
+    std::string legacyPath = fallbackLegacyPath;
+    std::string evidenceId = "E-DEV-108";
+    if (!binding.items.empty()) {
+        if (!binding.items.front().legacyPath.empty()) {
+            legacyPath = binding.items.front().legacyPath;
+        }
+        if (!binding.items.front().evidenceId.empty()) {
+            evidenceId = binding.items.front().evidenceId;
+        }
+    }
+
+    binding.items = {tsrebar::BindingItem{legacyPath, geometryPath, evidenceId}};
+}
+
 } // namespace
 
 MainWindow::MainWindow(QWidget* parent)
@@ -219,6 +305,30 @@ MainWindow::MainWindow(QWidget* parent)
 
 void MainWindow::registerCommandHandlers()
 {
+    m_commands.registerHandler(tsrebar::CommandId::ProjectSave, [this]() {
+        if (m_projectPackagePath.isEmpty()) {
+            return tsrebar::CommandResult{
+                tsrebar::CommandStatus::Failed,
+                QStringLiteral("Project.Save 需要工程包路径；TODO-086 仅提供保存清 dirty P0 入口。")};
+        }
+
+        m_lastSaveResult = m_projectRuntime.saveSnapshot(
+            m_projectPackagePath,
+            currentProjectSnapshotForSave(),
+            hasPersistentDirtyState());
+        applyDirtyStateFromSaveResult(*m_lastSaveResult);
+        if (!m_lastSaveResult->ok) {
+            return tsrebar::CommandResult{
+                tsrebar::CommandStatus::Failed,
+                QStringLiteral("保存失败：dirty 保持，validation=%1")
+                    .arg(m_lastSaveResult->validation.decision)};
+        }
+
+        return tsrebar::CommandResult{
+            tsrebar::CommandStatus::Completed,
+            QStringLiteral("保存完成：Project/Rebar/Drawing dirty 已清除")};
+    });
+
     m_commands.registerHandler(tsrebar::CommandId::ImportStep, [this]() {
         const QString path = QFileDialog::getOpenFileName(
             this,
@@ -379,6 +489,17 @@ const MainWindow::DirtyState& MainWindow::dirtyStateForInspection() const
     return m_dirtyState;
 }
 
+void MainWindow::setProjectPackagePathForInspection(const QString& path)
+{
+    m_projectPackagePath = path;
+}
+
+const std::optional<tsrebar::TsRebarProjectSaveResult>&
+MainWindow::lastSaveResultForInspection() const
+{
+    return m_lastSaveResult;
+}
+
 void MainWindow::buildUi()
 {
     setWindowTitle(QStringLiteral("图石钢筋 1:1 复刻"));
@@ -523,6 +644,72 @@ void MainWindow::applyDirtyStateFromCommandResult(const tsrebar::CommandResult& 
     m_dirtyState.lastDirtyCommand = result.transaction.commandKey;
     m_dirtyState.legacyDirtyEvidenceId = result.transaction.legacyDirtyEvidenceId;
     m_dirtyState.unresolvedDirtyParityGap = result.transaction.unresolvedDirtyParityGap;
+}
+
+void MainWindow::applyDirtyStateFromSaveResult(
+    const tsrebar::TsRebarProjectSaveResult& result)
+{
+    if (!result.ok || result.dirtyAfter) {
+        return;
+    }
+
+    m_dirtyState.projectDirty = false;
+    m_dirtyState.rebarDirty = false;
+    m_dirtyState.drawingDirty = false;
+}
+
+tsrebar::TsRebarProjectSnapshot MainWindow::currentProjectSnapshotForSave() const
+{
+    tsrebar::TsRebarProjectSnapshot snapshot;
+    snapshot.projectId = "ui-project-p0";
+    snapshot.projectName = "ui project p0";
+    snapshot.sourceStep.sourceStepId = "step-main";
+    snapshot.sourceStep.path = "models/source.step";
+    snapshot.sourceStep.originalPath = "ui-p0";
+    snapshot.sourceStep.sha256 = "sha256-ui-p0";
+    snapshot.steelData = m_steelData;
+    snapshot.evidenceIds = {
+        "E-DEV-046",
+        "E-DEV-107",
+        "E-DEV-108",
+        "E-IDA-049",
+        "GAP-REB-C-002",
+    };
+
+    std::map<std::string, int> indexByStableId;
+    for (const tsrebar::SteelBarGroup& group : snapshot.steelData.groups) {
+        appendTopologyRefsFromGeometry(group.geometryRef, snapshot.sourceStep.sourceStepId,
+                                       snapshot.topologyRefs, indexByStableId);
+    }
+    for (const tsrebar::SteelBar& bar : snapshot.steelData.bars) {
+        appendTopologyRefsFromGeometry(bar.geometryRef, snapshot.sourceStep.sourceStepId,
+                                       snapshot.topologyRefs, indexByStableId);
+    }
+    for (const tsrebar::SteelBarSegment& segment : snapshot.steelData.segments) {
+        appendTopologyRefsFromGeometry(segment.geometryRef, snapshot.sourceStep.sourceStepId,
+                                       snapshot.topologyRefs, indexByStableId);
+    }
+
+    for (tsrebar::SteelBarGroup& group : snapshot.steelData.groups) {
+        rewriteBindingForRuntimeSave(group.binding, group.geometryRef, indexByStableId,
+                                     "rebar/groups.json#/items/0/geometryRef/curveRefs/0");
+    }
+    for (tsrebar::SteelBar& bar : snapshot.steelData.bars) {
+        rewriteBindingForRuntimeSave(bar.binding, bar.geometryRef, indexByStableId,
+                                     "rebar/bars.json#/items/0/geometryRef/curveRefs/0");
+    }
+    for (tsrebar::SteelBarSegment& segment : snapshot.steelData.segments) {
+        rewriteBindingForRuntimeSave(segment.binding, segment.geometryRef, indexByStableId,
+                                     "rebar/segments.json#/items/0/geometryRef/curveRefs/0");
+    }
+
+    return snapshot;
+}
+
+bool MainWindow::hasPersistentDirtyState() const
+{
+    return m_dirtyState.projectDirty || m_dirtyState.geometryDirty ||
+           m_dirtyState.rebarDirty || m_dirtyState.drawingDirty;
 }
 
 bool MainWindow::lineGroupSelectionPreflightForCommand(QString* errorMessage) const

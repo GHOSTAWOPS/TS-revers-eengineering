@@ -3,11 +3,13 @@
 #include "command/CommandId.h"
 #include "command/CommandRegistry.h"
 #include "command/RebarLineGroupCommandHandler.h"
+#include "project/runtime/TsRebarProjectRuntime.h"
 
 #include <QMainWindow>
 #include <QString>
 
 #include <memory>
+#include <optional>
 
 class QAction;
 class QTabWidget;
@@ -40,6 +42,9 @@ public:
     bool verifyLegacyUiActionMetadata(QString* errorMessage = nullptr) const;
     [[nodiscard]] const tsrebar::SteelData& steelDataForInspection() const;
     [[nodiscard]] const DirtyState& dirtyStateForInspection() const;
+    void setProjectPackagePathForInspection(const QString& path);
+    [[nodiscard]] const std::optional<tsrebar::TsRebarProjectSaveResult>&
+    lastSaveResultForInspection() const;
 
 private:
     void buildUi();
@@ -47,6 +52,9 @@ private:
     void registerCommandHandlers();
     void executeCommand(tsrebar::CommandId id);
     void applyDirtyStateFromCommandResult(const tsrebar::CommandResult& result);
+    void applyDirtyStateFromSaveResult(const tsrebar::TsRebarProjectSaveResult& result);
+    [[nodiscard]] tsrebar::TsRebarProjectSnapshot currentProjectSnapshotForSave() const;
+    [[nodiscard]] bool hasPersistentDirtyState() const;
     [[nodiscard]] bool lineGroupSelectionPreflightForCommand(QString* errorMessage = nullptr) const;
     [[nodiscard]] bool configureLineGroupParametersForCommand();
     [[nodiscard]] tsrebar::RebarLineGroupCommandParameters nextLineGroupParameters();
@@ -54,7 +62,10 @@ private:
 
     tsrebar::CommandRegistry m_commands;
     tsrebar::SteelData m_steelData;
+    tsrebar::TsRebarProjectRuntime m_projectRuntime;
     DirtyState m_dirtyState;
+    QString m_projectPackagePath;
+    std::optional<tsrebar::TsRebarProjectSaveResult> m_lastSaveResult;
     tsrebar::RebarLineGroupCommandParameters m_lineGroupParameters;
     int m_lineGroupCreateSequence = 0;
     std::shared_ptr<tsrebar::LegacyRebarGeometryReader> m_lineGroupGeometryReader;

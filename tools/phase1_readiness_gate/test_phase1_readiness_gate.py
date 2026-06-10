@@ -1684,6 +1684,97 @@ class Phase1ReadinessGateTests(unittest.TestCase):
             self.assertFalse(report_checks[0].ok)
             self.assertIn("json_nextTodoId_mismatch", report_checks[0].message)
 
+    def test_route_guardrail_accepts_todo086_done_report(self):
+        tmp, root = self.make_guardrail_root()
+        with tmp:
+            (root / "todo.csv").write_text(
+                '"id","priority","phase","task","status","goal_setpoint","acceptance","boundary","evidence","dependencies","risk","notes"\n'
+                '"TODO-086","P0","M2-RebarCreate-016","LineGroup dirty save clear","done","","","","","","",""\n',
+                encoding="utf-8",
+            )
+            reports_dir = root / "docs" / "phase1" / "app_build_reports"
+            reports_dir.mkdir(parents=True, exist_ok=True)
+            (root / "124_M2-RebarCreate-016线配筋Dirty状态与保存清除入口准备P0实现记录.md").write_text(
+                "# stub\n",
+                encoding="utf-8",
+            )
+            (reports_dir / "m2_rebar_create_016_run_001.md").write_text(
+                "# stub\n",
+                encoding="utf-8",
+            )
+            (reports_dir / "m2_rebar_create_016_run_001.json").write_text(
+                '{'
+                '"todoId":"TODO-086",'
+                '"decision":"done_line_group_dirty_save_clear_entry_p0",'
+                '"verification":{'
+                '"targetedSaveClearTests":"pass",'
+                '"targetedSmoke":"pass",'
+                '"defaultCTest":"pass",'
+                '"readinessGateUnit":"pass",'
+                '"readinessGateStrict":"pass",'
+                '"domainRebarCommandOCCLeak":"pass",'
+                '"todoSingleNext":"pass",'
+                '"gitDiffCheck":"pass",'
+                '"xhighReview":"allow_commit"'
+                '},'
+                '"next":{"todoId":"TODO-087"}'
+                '}\n',
+                encoding="utf-8",
+            )
+
+            checks = gate.collect_route_guardrail_checks(root)
+            report_checks = [check for check in checks if check.item == "done_node_reports"]
+
+            self.assertEqual(1, len(report_checks))
+            self.assertTrue(report_checks[0].ok)
+            self.assertIn("checked_done_nodes=1", report_checks[0].message)
+
+    def test_route_guardrail_rejects_todo086_pending_xhigh(self):
+        tmp, root = self.make_guardrail_root()
+        with tmp:
+            (root / "todo.csv").write_text(
+                '"id","priority","phase","task","status","goal_setpoint","acceptance","boundary","evidence","dependencies","risk","notes"\n'
+                '"TODO-086","P0","M2-RebarCreate-016","LineGroup dirty save clear","done","","","","","","",""\n',
+                encoding="utf-8",
+            )
+            reports_dir = root / "docs" / "phase1" / "app_build_reports"
+            reports_dir.mkdir(parents=True, exist_ok=True)
+            (root / "124_M2-RebarCreate-016线配筋Dirty状态与保存清除入口准备P0实现记录.md").write_text(
+                "# stub\n",
+                encoding="utf-8",
+            )
+            (reports_dir / "m2_rebar_create_016_run_001.md").write_text(
+                "# stub\n",
+                encoding="utf-8",
+            )
+            (reports_dir / "m2_rebar_create_016_run_001.json").write_text(
+                '{'
+                '"todoId":"TODO-086",'
+                '"decision":"done_line_group_dirty_save_clear_entry_p0",'
+                '"verification":{'
+                '"targetedSaveClearTests":"pass",'
+                '"targetedSmoke":"pass",'
+                '"defaultCTest":"pass",'
+                '"readinessGateUnit":"pass",'
+                '"readinessGateStrict":"pass",'
+                '"domainRebarCommandOCCLeak":"pass",'
+                '"todoSingleNext":"pass",'
+                '"gitDiffCheck":"pass",'
+                '"xhighReview":"pending_readonly_review"'
+                '},'
+                '"next":{"todoId":"TODO-087"}'
+                '}\n',
+                encoding="utf-8",
+            )
+
+            checks = gate.collect_route_guardrail_checks(root)
+            report_checks = [check for check in checks if check.item == "done_node_reports"]
+
+            self.assertEqual(1, len(report_checks))
+            self.assertFalse(report_checks[0].ok)
+            self.assertIn("json_verification_xhighReview_not_closed:pending_readonly_review",
+                          report_checks[0].message)
+
 
 if __name__ == "__main__":
     unittest.main()

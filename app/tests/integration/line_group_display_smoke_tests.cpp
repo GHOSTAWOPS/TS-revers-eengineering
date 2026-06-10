@@ -9,8 +9,12 @@
 #include <QComboBox>
 #include <QDialogButtonBox>
 #include <QDoubleSpinBox>
+#include <QDir>
+#include <QFile>
+#include <QFileInfo>
 #include <QPushButton>
 #include <QSpinBox>
+#include <QTemporaryDir>
 #include <QTimer>
 
 #include <algorithm>
@@ -57,6 +61,17 @@ QString lineGroupActionObjectName()
     return {};
 }
 
+QString projectSaveActionObjectName()
+{
+    const auto commands = tsrebar::legacyUiCommands();
+    for (const auto& command : commands) {
+        if (command.id == tsrebar::CommandId::ProjectSave) {
+            return command.objectName;
+        }
+    }
+    return {};
+}
+
 void expectCleanDirtyState(const MainWindow& window, const char* message)
 {
     const MainWindow::DirtyState& dirty = window.dirtyStateForInspection();
@@ -68,6 +83,32 @@ void expectCleanDirtyState(const MainWindow& window, const char* message)
     expect(!dirty.viewDirty, message);
     expect(dirty.committedTransactionCount == 0, message);
     expect(dirty.lastDirtyCommand.isEmpty(), message);
+}
+
+void expectLineGroupDirtyState(const MainWindow& window,
+                               int expectedTransactionCount,
+                               const char* message)
+{
+    const MainWindow::DirtyState& dirty = window.dirtyStateForInspection();
+    expect(dirty.projectDirty && dirty.rebarDirty && dirty.drawingDirty, message);
+    expect(!dirty.geometryDirty && !dirty.selectionDirty && !dirty.viewDirty, message);
+    expect(dirty.committedTransactionCount == expectedTransactionCount, message);
+    expect(dirty.lastDirtyCommand == QStringLiteral("Rebar.Create.LineGroup"), message);
+    expect(dirty.legacyDirtyEvidenceId == QStringLiteral("E-IDA-049"), message);
+    expect(dirty.unresolvedDirtyParityGap == QStringLiteral("GAP-REB-C-002"), message);
+}
+
+void expectSaveClearedLineGroupDirtyState(const MainWindow& window,
+                                          int expectedTransactionCount,
+                                          const char* message)
+{
+    const MainWindow::DirtyState& dirty = window.dirtyStateForInspection();
+    expect(!dirty.projectDirty && !dirty.rebarDirty && !dirty.drawingDirty, message);
+    expect(!dirty.geometryDirty && !dirty.selectionDirty && !dirty.viewDirty, message);
+    expect(dirty.committedTransactionCount == expectedTransactionCount, message);
+    expect(dirty.lastDirtyCommand == QStringLiteral("Rebar.Create.LineGroup"), message);
+    expect(dirty.legacyDirtyEvidenceId == QStringLiteral("E-IDA-049"), message);
+    expect(dirty.unresolvedDirtyParityGap == QStringLiteral("GAP-REB-C-002"), message);
 }
 
 template <typename T>
@@ -169,6 +210,10 @@ int main(int argc, char* argv[])
     expect(!actionObjectName.isEmpty(), "RebarLineCreate action metadata must exist");
     QAction* action = window.findChild<QAction*>(actionObjectName);
     expect(action != nullptr, "MainWindow must render RebarLineCreate action");
+    const QString saveActionObjectName = projectSaveActionObjectName();
+    expect(!saveActionObjectName.isEmpty(), "ProjectSave action metadata must exist");
+    QAction* saveAction = window.findChild<QAction*>(saveActionObjectName);
+    expect(saveAction != nullptr, "MainWindow must render ProjectSave action");
 
     const int beforeFailure = viewer->displayedRebarShapeCount();
     const std::size_t groupsBeforeNoSelection = window.steelDataForInspection().groups.size();
@@ -246,6 +291,24 @@ int main(int argc, char* argv[])
     expect(!firstDisplayedGroup.isEmpty(),
            "successful line group command must record displayed group id");
 
+    QTemporaryDir saveTemp;
+    expect(saveTemp.isValid(), "temporary save dir must be valid");
+    const QString packagePath = QDir(saveTemp.path()).filePath("line_group_save.tsrebar");
+    window.setProjectPackagePathForInspection(packagePath);
+    saveAction->trigger();
+    app.processEvents();
+    const auto& saveResult = window.lastSaveResultForInspection();
+    expect(saveResult.has_value(), "Project.Save must record a save result");
+    expect(saveResult->ok, "Project.Save must succeed for current line group SteelData");
+    expect(saveResult->dirtyBefore, "Project.Save must see dirty before saving");
+    expect(!saveResult->dirtyAfter, "Project.Save success must clear runtime dirty");
+    expect(QFileInfo::exists(QDir(packagePath).filePath("manifest.json")),
+           "Project.Save must write the runtime package manifest");
+    expectSaveClearedLineGroupDirtyState(
+        window,
+        1,
+        "Project.Save success must clear project/rebar/drawing dirty and keep transaction evidence");
+
     const int beforeSecondSuccess = viewer->displayedRebarShapeCount();
     acceptLineGroupDialogWithEditedParameters();
     action->trigger();
@@ -255,8 +318,35 @@ int main(int argc, char* argv[])
            "second successful line group command must add AIS display items");
     expect(viewer->lastDisplayedRebarGroupId() != firstDisplayedGroup,
            "second successful line group command must display the newly created group");
-    expect(window.dirtyStateForInspection().committedTransactionCount == 2,
-           "second successful line group command must commit a second dirty transaction");
+    expectLineGroupDirtyState(
+        window,
+        2,
+        "second successful line group command must dirty project/rebar/drawing again");
+
+    const QString blockedPackagePath =
+        QDir(saveTemp.path()).filePath("blocked_save_target.tsrebar");
+    QFile blocker(blockedPackagePath);
+    expect(blocker.open(QIODevice::WriteOnly | QIODevice::Text),
+           "blocking file for failed save must open");
+    blocker.write("keep this file");
+    blocker.close();
+    window.setProjectPackagePathForInspection(blockedPackagePath);
+    saveAction->trigger();
+    app.processEvents();
+    const auto& failedSaveResult = window.lastSaveResultForInspection();
+    expect(failedSaveResult.has_value(), "failed Project.Save must record a save result");
+    expect(!failedSaveResult->ok, "Project.Save install failure must fail");
+    expect(failedSaveResult->dirtyBefore,
+           "Project.Save install failure must see dirty before saving");
+    expect(failedSaveResult->dirtyAfter,
+           "Project.Save install failure must keep runtime dirty");
+    expect(QFileInfo(blockedPackagePath).isFile(),
+           "Project.Save install failure must leave the blocking file in place");
+    expectLineGroupDirtyState(
+        window,
+        2,
+        "Project.Save failure must keep project/rebar/drawing dirty and transaction evidence");
+
     const auto& groups = window.steelDataForInspection().groups;
     expect(!groups.empty(), "successful line group command must leave groups inspectable");
     const tsrebar::SteelBarGroup& latest = groups.back();

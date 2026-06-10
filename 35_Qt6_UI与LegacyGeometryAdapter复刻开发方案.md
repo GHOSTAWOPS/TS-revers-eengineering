@@ -374,6 +374,7 @@ M2-RebarCreate-015 / TODO-085 done
 - `TODO-083 / E-DEV-105` 已把 `sub_1405D5670` 的 split / spline / trim 链落成 P0 trace：`RebarGroupCreator` 只接收 `LegacySegmentCurveNormalizeTrace / Result`，`MainWindow` 的 viewer reader 通过 `OccLegacyGeometryAdapter` 生成 summary，OCCT 没有进入 `domain/rebar`。这只是 `api_entity_entity_distance / api_split_curve / api_curve_spline / endpoint trim` 的 trace，不是完整 topology mutation、group min-distance loop 或 dirty 写回等价。
 - `TODO-084 / E-IDA-049 / E-DEV-106` 已把 `sub_14059B980` group min-distance loop、`sub_1405BD0C0` backup/write edge 和 `sub_1405E49D0` dirty call position 写成 P0 gap contract，并新增 false applied claim 防线。它仍不等价旧 ACIS group list、真实 topology mutation、旧 dirty / undo / save parity、旧 UI 或 golden。
 - `TODO-085 / E-DEV-107` 已把新 app 线配筋命令成功后的 dirty/transaction P0 接通：成功创建才标记 `ProjectDirty + RebarDirty + DrawingDirty`，并追溯到 `E-IDA-049 / GAP-REB-C-002`；空选择、错类型、取消参数窗口和失败路径不 dirty。这只是 app-level dirty P0，不是旧 `sub_1405E49D0` 完整 dirty / undo / save parity。
+- `TODO-086 / E-DEV-108` 已把新 app 的 `Project.Save` P0 保存清除入口接通：保存成功清 `ProjectDirty / RebarDirty / DrawingDirty`，保存失败保持 dirty，并在 app 保存边界把线配筋 binding geometryPath 重写为 runtime 可验证 JSON path。这只是新 app save-clear P0，不是旧图石完整保存 UI、旧 undo/save parity 或关闭提示。
 
 这不代表：
 

@@ -1,0 +1,69 @@
+{
+  "todoId": "TODO-086",
+  "phase": "M2-RebarCreate-016",
+  "evidenceIds": [
+    "E-IDA-049",
+    "E-DEV-107",
+    "E-DEV-108"
+  ],
+  "decision": "done_line_group_dirty_save_clear_entry_p0",
+  "summary": {
+    "projectSaveHandlerAdded": true,
+    "saveSuccessClearsProjectDirty": true,
+    "saveSuccessClearsRebarDirty": true,
+    "saveSuccessClearsDrawingDirty": true,
+    "saveFailureKeepsDirty": true,
+    "runtimeSaveSnapshotUsed": true,
+    "bindingGeometryPathRewrittenAtAppSaveBoundary": true,
+    "legacyDirtyEvidenceId": "E-IDA-049",
+    "unresolvedDirtyParityGap": "GAP-REB-C-002",
+    "oldDirtyUndoSaveParityImplemented": false,
+    "oldSaveUiImplemented": false
+  },
+  "guardrails": {
+    "oldRuntimeAutomaticallyLaunched": false,
+    "haspInstalledAutomatically": false,
+    "systemDirectoryModifiedAutomatically": false,
+    "usbDogInheritedByNewSystem": false,
+    "oldSaveUiImplemented": false,
+    "oldUndoSaveParityImplemented": false,
+    "fullLineGroupAlgorithmImplemented": false,
+    "faceRebarImplemented": false,
+    "arcRebarExpanded": false,
+    "jointImplemented": false,
+    "excelImplemented": false,
+    "detailChanged": false,
+    "golden": "not_started",
+    "occtDirectRebarRewrite": false,
+    "parentRebarMigrated": false,
+    "domainRebarOcctLeak": "pass"
+  },
+  "verification": {
+    "targetedSaveClearTests": "pass",
+    "targetedSmoke": "pass",
+    "defaultCTest": "pass",
+    "readinessGateUnit": "pass",
+    "readinessGateStrict": "pass",
+    "domainRebarCommandOCCLeak": "pass",
+    "todoSingleNext": "pass",
+    "gitDiffCheck": "pass",
+    "xhighReview": "allow_commit"
+  },
+  "xhighReview": {
+    "reviewer": "019eaf3c-9af9-7f52-b559-318f98a1ba78",
+    "verdict": "allow_commit",
+    "critical": [],
+    "important": [],
+    "minor": [
+      "removed unused <set> include from app/src/app/MainWindow.cpp"
+    ],
+    "mainFlowFix": [
+      "removed unused <set> include"
+    ],
+    "agentClosed": true
+  },
+  "next": {
+    "todoId": "TODO-087",
+    "task": "线配筋保存包 runtime 回读验证 P0"
+  }
+}
