@@ -47,8 +47,20 @@ struct LegacySegmentCurveNormalizeTrace
     bool startTrimApplied = false;
     bool endTrimAttempted = false;
     bool endTrimApplied = false;
+    bool groupMinimumDistanceTrimLoopObserved = false;
+    bool groupMinimumDistanceUsesApiEntityPointDistance = false;
+    bool groupMinimumDistanceStartEndpointProbeDeferred = true;
+    bool groupMinimumDistanceEndEndpointProbeDeferred = true;
+    int groupMinimumDistanceStartIterationBudget = 0;
+    int groupMinimumDistanceEndIterationBudget = 0;
+    double groupMinimumDistanceThreshold = 0.0;
     bool groupMinimumDistanceTrimLoopDeferred = true;
+    bool backupWriteEdgeObserved = false;
+    bool backupWriteEdgeEntityBackupObserved = false;
+    bool backupWriteEdgeEntitySlot72Observed = false;
     bool backupWriteEdgeDeferred = true;
+    bool postCreateMutationOrderObserved = false;
+    bool dirtyWriteDeferred = true;
     int effectiveSplineSampleCount = 0;
 };
 

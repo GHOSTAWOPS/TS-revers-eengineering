@@ -650,6 +650,16 @@ TODO-083 已完成 sub_1405D5670 split / spline / trim trace P0：
     -> sub_14059B980.groupMinimumDistanceTrimLoop = deferred-p0
     -> sub_1405BD0C0.backupWriteEdge = deferred-domain-model
 
-下一步可以做 TODO-084，继续拆 group minimum distance trim loop 和 backup / dirty write gap。
-但仍不能声明完整 ENTITY_LIST 选择对象、完整 sub_1405D5670 topology mutation、旧 UI 流程、失败提示、undo/dirty 或 golden 已闭合。
+TODO-084 已完成 group-min-distance / dirty-write gap contract P0：
+  LegacySegmentCurveNormalizeTrace
+    -> sub_14059B980.groupMinimumDistanceTrimLoop.observed = true
+    -> sub_14059B980.api_entity_point_distance = deferred-acis-group-list
+    -> sub_14059B980.thresholdDistanceA4Digit
+    -> sub_1405BD0C0.entityBackup = observed-deferred
+    -> sub_1405BD0C0.entitySlot72Write = observed-deferred
+    -> sub_1404D10C0.postCreateMutationOrder
+    -> sub_1405E49D0.dirtyWrite = deferred-application-state
+
+下一步可以做 TODO-085，继续拆新 app 命令成功 dirty/transaction P0。
+但仍不能声明完整 ENTITY_LIST 选择对象、完整 sub_1405D5670 topology mutation、旧 UI 流程、失败提示、旧 dirty/undo/save parity 或 golden 已闭合。
 ```

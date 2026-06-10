@@ -34,6 +34,25 @@ std::string stepState(bool attempted, bool applied)
     return attempted ? "attempted-not-applied" : "not-attempted";
 }
 
+std::string observedDeferredState(bool observed, bool deferred)
+{
+    if (!observed) {
+        return "not-observed";
+    }
+    return deferred ? "observed-deferred" : "observed-applied";
+}
+
+std::string deferredEndpointProbeState(bool observed, bool deferred, const char* endpointName)
+{
+    if (!observed) {
+        return "not-observed";
+    }
+    if (!deferred) {
+        return "applied";
+    }
+    return std::string("deferred-") + endpointName;
+}
+
 double distanceA4Digit(double distanceA)
 {
     return static_cast<int>(distanceA * 10000.0) / 10000.0;
@@ -100,7 +119,18 @@ LegacyRawBlock creationParameters(const RebarGroupCreationRequest& request,
         "sub_140580950.startTrim",
         "sub_140580950.endTrim",
         "sub_14059B980.groupMinimumDistanceTrimLoop",
+        "sub_14059B980.groupMinimumDistanceTrimLoop.observed",
+        "sub_14059B980.api_entity_point_distance",
+        "sub_14059B980.thresholdDistanceA4Digit",
+        "sub_14059B980.startEndpointProbe",
+        "sub_14059B980.endEndpointProbe",
+        "sub_14059B980.startIterationBudget",
+        "sub_14059B980.endIterationBudget",
         "sub_1405BD0C0.backupWriteEdge",
+        "sub_1405BD0C0.entityBackup",
+        "sub_1405BD0C0.entitySlot72Write",
+        "sub_1404D10C0.postCreateMutationOrder",
+        "sub_1405E49D0.dirtyWrite",
     };
     block.fields.push_back(rawField("minimumCreationDistance",
                                     numberText(kMinimumCreationDistance),
@@ -188,11 +218,65 @@ LegacyRawBlock creationParameters(const RebarGroupCreationRequest& request,
     block.fields.push_back(rawField(
         "sub_14059B980.groupMinimumDistanceTrimLoop",
         normalizeTrace.groupMinimumDistanceTrimLoopDeferred ? "deferred-p0" : "applied",
-        "E-IDA-022"));
+        "E-IDA-049"));
+    block.fields.push_back(rawField(
+        "sub_14059B980.groupMinimumDistanceTrimLoop.observed",
+        boolText(normalizeTrace.groupMinimumDistanceTrimLoopObserved),
+        "E-IDA-049"));
+    block.fields.push_back(rawField(
+        "sub_14059B980.api_entity_point_distance",
+        normalizeTrace.groupMinimumDistanceUsesApiEntityPointDistance
+            ? "deferred-acis-group-list"
+            : "not-observed",
+        "E-IDA-049"));
+    block.fields.push_back(rawField(
+        "sub_14059B980.thresholdDistanceA4Digit",
+        numberText(normalizeTrace.groupMinimumDistanceThreshold),
+        "E-IDA-049"));
+    block.fields.push_back(rawField(
+        "sub_14059B980.startEndpointProbe",
+        deferredEndpointProbeState(normalizeTrace.groupMinimumDistanceTrimLoopObserved,
+                                   normalizeTrace.groupMinimumDistanceStartEndpointProbeDeferred,
+                                   "startpoint"),
+        "E-IDA-049"));
+    block.fields.push_back(rawField(
+        "sub_14059B980.endEndpointProbe",
+        deferredEndpointProbeState(normalizeTrace.groupMinimumDistanceTrimLoopObserved,
+                                   normalizeTrace.groupMinimumDistanceEndEndpointProbeDeferred,
+                                   "endpoint"),
+        "E-IDA-049"));
+    block.fields.push_back(rawField(
+        "sub_14059B980.startIterationBudget",
+        numberText(normalizeTrace.groupMinimumDistanceStartIterationBudget),
+        "E-IDA-049"));
+    block.fields.push_back(rawField(
+        "sub_14059B980.endIterationBudget",
+        numberText(normalizeTrace.groupMinimumDistanceEndIterationBudget),
+        "E-IDA-049"));
     block.fields.push_back(rawField(
         "sub_1405BD0C0.backupWriteEdge",
         normalizeTrace.backupWriteEdgeDeferred ? "deferred-domain-model" : "applied",
-        "E-IDA-022"));
+        "E-IDA-049"));
+    block.fields.push_back(rawField(
+        "sub_1405BD0C0.entityBackup",
+        observedDeferredState(normalizeTrace.backupWriteEdgeEntityBackupObserved,
+                              normalizeTrace.backupWriteEdgeDeferred),
+        "E-IDA-049"));
+    block.fields.push_back(rawField(
+        "sub_1405BD0C0.entitySlot72Write",
+        observedDeferredState(normalizeTrace.backupWriteEdgeEntitySlot72Observed,
+                              normalizeTrace.backupWriteEdgeDeferred),
+        "E-IDA-049"));
+    block.fields.push_back(rawField(
+        "sub_1404D10C0.postCreateMutationOrder",
+        normalizeTrace.postCreateMutationOrderObserved
+            ? "sub_1405D5670->sub_1405C7260->vtable+0x1C8->sub_1405E49D0"
+            : "not-observed",
+        "E-IDA-049"));
+    block.fields.push_back(rawField(
+        "sub_1405E49D0.dirtyWrite",
+        normalizeTrace.dirtyWriteDeferred ? "deferred-application-state" : "applied",
+        "E-IDA-049"));
     block.fields.push_back(rawField("segmentCurveNormalizerP0",
                                     normalizeTrace.capabilityLevel,
                                     "E-IDA-022"));
@@ -298,6 +382,61 @@ LegacySegmentCurveNormalizeRequest normalizerRequest(double unresolvedThreshold)
     return request;
 }
 
+int groupMinimumDistanceIterationBudget(double curveLength,
+                                        const LegacySegmentCurveNormalizeRequest& request)
+{
+    if (request.trimIterationStep <= 0.0) {
+        return 0;
+    }
+    const double searchableLength = curveLength - request.nearEndpointDistance;
+    if (searchableLength <= 0.0) {
+        return 0;
+    }
+    return static_cast<int>(searchableLength / request.trimIterationStep);
+}
+
+QString validateP0MutationGapTrace(const LegacySegmentCurveNormalizeTrace& trace)
+{
+    if (!trace.groupMinimumDistanceTrimLoopDeferred) {
+        return QStringLiteral(
+            "TODO-084 keeps sub_14059B980 group minimum distance trim loop deferred; "
+            "P0 must not mark it applied without full ACIS group-list evidence.");
+    }
+    if (!trace.backupWriteEdgeDeferred) {
+        return QStringLiteral(
+            "TODO-084 keeps sub_1405BD0C0 backup/write edge deferred; "
+            "P0 must not mark entity+72 mutation applied in domain output.");
+    }
+    if (!trace.dirtyWriteDeferred) {
+        return QStringLiteral(
+            "TODO-084 keeps sub_1405E49D0 dirty write deferred to application state; "
+            "P0 must not mark old dirty parity applied.");
+    }
+    return {};
+}
+
+LegacySegmentCurveNormalizeTrace withP0MutationGapEvidence(
+    LegacySegmentCurveNormalizeTrace trace,
+    const LegacySegmentCurveNormalizeRequest& request,
+    const LegacyRebarCurveSnapshot& segmentCurve)
+{
+    const int iterationBudget =
+        groupMinimumDistanceIterationBudget(segmentCurve.length, request);
+    trace.groupMinimumDistanceTrimLoopObserved = true;
+    trace.groupMinimumDistanceUsesApiEntityPointDistance = true;
+    trace.groupMinimumDistanceStartEndpointProbeDeferred = true;
+    trace.groupMinimumDistanceEndEndpointProbeDeferred = true;
+    trace.groupMinimumDistanceStartIterationBudget = iterationBudget;
+    trace.groupMinimumDistanceEndIterationBudget = iterationBudget;
+    trace.groupMinimumDistanceThreshold = request.unresolvedEndpointDistanceThreshold;
+    trace.backupWriteEdgeObserved = true;
+    trace.backupWriteEdgeEntityBackupObserved = true;
+    trace.backupWriteEdgeEntitySlot72Observed = true;
+    trace.postCreateMutationOrderObserved = true;
+    trace.dirtyWriteDeferred = true;
+    return trace;
+}
+
 SteelBarSegmentShape segmentShapeForCommand(bool arcGroup)
 {
     return arcGroup ? SteelBarSegmentShape::Arc : SteelBarSegmentShape::Line;
@@ -346,7 +485,13 @@ RebarGroupCreationResult createGroup(const RebarGroupCreationRequest& request,
                           : normalizedCurveResult.diagnostic);
     }
     const LegacyRebarCurveSnapshot segmentCurve = normalizedCurveResult.value.curve;
-    const LegacySegmentCurveNormalizeTrace normalizeTrace = normalizedCurveResult.value.trace;
+    LegacySegmentCurveNormalizeTrace normalizeTrace = normalizedCurveResult.value.trace;
+    const QString mutationGapDiagnostic = validateP0MutationGapTrace(normalizeTrace);
+    if (!mutationGapDiagnostic.isEmpty()) {
+        return reject(mutationGapDiagnostic);
+    }
+    normalizeTrace =
+        withP0MutationGapEvidence(normalizeTrace, normalizeRequest, segmentCurve);
     if (segmentCurve.length < kMinimumSplitSegmentLength) {
         return reject(QStringLiteral(
             "RebarGroupCreator rejected normalized segment shorter than VisualTS 0.01 split length."));
@@ -373,7 +518,14 @@ RebarGroupCreationResult createGroup(const RebarGroupCreationRequest& request,
                                            effectiveFlag, normalizeTrace);
     segment.unresolvedLegacyFields.push_back(unresolvedField(
         "sub_1405D5670.fullEquivalence",
-        "TODO-083 records split / spline / trim P0 trace, but full mutation / dirty parity remains open."));
+        "TODO-084 records group-min-distance / backup-write / dirty gap contract, but full mutation parity remains open."));
+    segment.unresolvedLegacyFields.push_back(unresolvedField(
+        "sub_14059B980.groupMinimumDistanceTrimLoop.fullEquivalence",
+        "TODO-084 records the IDA-observed start/end group-distance loop, but does not reproduce the old ACIS group list mutation."));
+    segment.unresolvedLegacyFields.push_back(unresolvedField(
+        "sub_1405E49D0.dirtyWriteParity",
+        "TODO-084 records the dirty write call position, but old application dirty / undo / save parity remains open.",
+        "GAP-REB-C-002"));
     segment.evidence.push_back(evidenceRef("sub_1405D5670 split / spline / trim chain"));
 
     SteelBar bar;
@@ -429,7 +581,17 @@ RebarGroupCreationResult createGroup(const RebarGroupCreationRequest& request,
                                    "E-IDA-022"});
     group.unresolvedLegacyFields.push_back(unresolvedField(
         "sub_1405D5670.fullEquivalence",
-        "TODO-083 records split / spline / trim P0 trace, but full mutation / dirty parity remains open."));
+        "TODO-084 records group-min-distance / backup-write / dirty gap contract, but full mutation parity remains open."));
+    group.unresolvedLegacyFields.push_back(unresolvedField(
+        "sub_14059B980.groupMinimumDistanceTrimLoop.fullEquivalence",
+        "TODO-084 records the IDA-observed start/end group-distance loop, but does not reproduce the old ACIS group list mutation."));
+    group.unresolvedLegacyFields.push_back(unresolvedField(
+        "sub_1405BD0C0.backupWriteEdge.fullMutation",
+        "TODO-084 records ENTITY::backup plus entity+72 write evidence, but domain output does not perform old ACIS topology mutation."));
+    group.unresolvedLegacyFields.push_back(unresolvedField(
+        "sub_1405E49D0.dirtyWriteParity",
+        "TODO-084 records the dirty write call position, but old application dirty / undo / save parity remains open.",
+        "GAP-REB-C-002"));
     group.unresolvedLegacyFields.push_back(unresolvedField(
         "objA/objB.oldClassNames",
         "TODO-081 confirmed objA / objB can swap by entry path, but did not close their old class names or UI business names."));
@@ -455,6 +617,9 @@ RebarGroupCreationResult createGroup(const RebarGroupCreationRequest& request,
     group.evidence.push_back(evidenceRef(
         "E-IDA-048",
         "TODO-081 confirmed createdPayload, distanceA_4digit and objA / objB role swap risk"));
+    group.evidence.push_back(evidenceRef(
+        "E-IDA-049",
+        "TODO-084 confirmed group-min-distance loop, backup/write edge and dirty write call positions"));
     if (!arcGroup) {
         group.evidence.push_back(evidenceRef(
             "E-IDA-045",

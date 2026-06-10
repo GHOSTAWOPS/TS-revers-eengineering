@@ -423,6 +423,139 @@ void testLineGroupCreatorRecordsSplitSplineTrimTraceRawEvidence()
            "split/spline/trim trace must keep TODO-020 IDA evidence");
 }
 
+void testLineGroupCreatorRecordsGroupMinimumDistanceDirtyGapContract()
+{
+    FakeLegacyRebarGeometryReader reader;
+    reader.addCurve(lineCurve("selection-v1:edge:mutation-gap", 18.0));
+    auto normalized = lineCurve("selection-v1:edge:mutation-gap", 17.4);
+    normalized.startPoint = {0.3, 0.0, 0.0};
+    normalized.endPoint = {17.7, 0.0, 0.0};
+    reader.setNormalizedCurve(normalized);
+    reader.setNormalizeTrace(fullP0NormalizeTrace());
+
+    auto request = baseRequest("selection-v1:edge:mutation-gap");
+    request.distanceA = 0.12349;
+
+    const auto result = tsrebar::RebarGroupCreator{}.createLineGroup(request, reader);
+
+    expect(result.ok, "line group mutation gap contract creation must succeed");
+    const auto& group = result.steelData.groups.front();
+
+    expect(createdParameterValue(group.createdFromParameters,
+                                 "sub_14059B980.groupMinimumDistanceTrimLoop") == "deferred-p0",
+           "group min-distance trim loop must stay deferred in TODO-084");
+    expect(createdParameterValue(group.createdFromParameters,
+                                 "sub_14059B980.groupMinimumDistanceTrimLoop.observed") == "true",
+           "group min-distance loop must record IDA-observed presence");
+    expect(createdParameterValue(group.createdFromParameters,
+                                 "sub_14059B980.api_entity_point_distance") ==
+               "deferred-acis-group-list",
+           "group min-distance loop must record deferred ACIS entity-point distance");
+    expect(createdParameterValue(group.createdFromParameters,
+                                 "sub_14059B980.thresholdDistanceA4Digit") == "0.1234",
+           "group min-distance threshold must reuse sub_1405D5670 distanceA_4digit");
+    expect(createdParameterValue(group.createdFromParameters,
+                                 "sub_14059B980.startEndpointProbe") == "deferred-startpoint",
+           "group min-distance start endpoint probe must remain deferred");
+    expect(createdParameterValue(group.createdFromParameters,
+                                 "sub_14059B980.endEndpointProbe") == "deferred-endpoint",
+           "group min-distance end endpoint probe must remain deferred");
+    expect(createdParameterValue(group.createdFromParameters,
+                                 "sub_1405BD0C0.backupWriteEdge") ==
+               "deferred-domain-model",
+           "backup/write edge must remain deferred in TODO-084");
+    expect(createdParameterValue(group.createdFromParameters,
+                                 "sub_1405BD0C0.entityBackup") == "observed-deferred",
+           "backup/write edge must record ENTITY::backup evidence");
+    expect(createdParameterValue(group.createdFromParameters,
+                                 "sub_1405BD0C0.entitySlot72Write") == "observed-deferred",
+           "backup/write edge must record entity+72 write evidence");
+    expect(createdParameterValue(group.createdFromParameters,
+                                 "sub_1404D10C0.postCreateMutationOrder") ==
+               "sub_1405D5670->sub_1405C7260->vtable+0x1C8->sub_1405E49D0",
+           "post-create mutation order must record old dirty/display chain");
+    expect(createdParameterValue(group.createdFromParameters,
+                                 "sub_1405E49D0.dirtyWrite") ==
+               "deferred-application-state",
+           "dirty write must stay deferred to the application state layer");
+    expect(hasUnresolvedField(group.unresolvedLegacyFields,
+                              "sub_14059B980.groupMinimumDistanceTrimLoop.fullEquivalence"),
+           "group min-distance full equivalence must remain unresolved");
+    expect(hasUnresolvedField(group.unresolvedLegacyFields,
+                              "sub_1405E49D0.dirtyWriteParity"),
+           "dirty write parity must remain unresolved");
+}
+
+void testLineGroupCreatorRejectsAppliedGroupMinimumDistanceGapClaim()
+{
+    FakeLegacyRebarGeometryReader reader;
+    reader.addCurve(lineCurve("selection-v1:edge:false-applied", 18.0));
+    auto trace = fullP0NormalizeTrace();
+    trace.groupMinimumDistanceTrimLoopDeferred = false;
+    reader.setNormalizeTrace(trace);
+
+    const auto result = tsrebar::RebarGroupCreator{}.createLineGroup(
+        baseRequest("selection-v1:edge:false-applied"), reader);
+
+    expect(!result.ok,
+           "P0 creator must reject false applied group min-distance claims");
+    expect(result.diagnostic.contains(QStringLiteral("sub_14059B980")),
+           "false applied diagnostic must mention sub_14059B980");
+    expect(result.diagnostic.contains(QStringLiteral("TODO-084")),
+           "false applied diagnostic must mention TODO-084");
+    expect(result.steelData.groups.empty() && result.steelData.bars.empty() &&
+               result.steelData.segments.empty(),
+           "false applied group min-distance claim must not emit steel data");
+}
+
+void testLineGroupCreatorRejectsAppliedBackupWriteEdgeGapClaim()
+{
+    FakeLegacyRebarGeometryReader reader;
+    reader.addCurve(lineCurve("selection-v1:edge:false-backup-applied", 18.0));
+    auto trace = fullP0NormalizeTrace();
+    trace.backupWriteEdgeDeferred = false;
+    reader.setNormalizeTrace(trace);
+
+    const auto result = tsrebar::RebarGroupCreator{}.createLineGroup(
+        baseRequest("selection-v1:edge:false-backup-applied"), reader);
+
+    expect(!result.ok,
+           "P0 creator must reject false applied backup/write edge claims");
+    expect(result.diagnostic.contains(QStringLiteral("sub_1405BD0C0")),
+           "false applied diagnostic must mention sub_1405BD0C0");
+    expect(result.diagnostic.contains(QStringLiteral("entity+72")),
+           "false applied diagnostic must mention entity+72 mutation");
+    expect(result.diagnostic.contains(QStringLiteral("TODO-084")),
+           "false applied diagnostic must mention TODO-084");
+    expect(result.steelData.groups.empty() && result.steelData.bars.empty() &&
+               result.steelData.segments.empty(),
+           "false applied backup/write claim must not emit steel data");
+}
+
+void testLineGroupCreatorRejectsAppliedDirtyWriteGapClaim()
+{
+    FakeLegacyRebarGeometryReader reader;
+    reader.addCurve(lineCurve("selection-v1:edge:false-dirty-applied", 18.0));
+    auto trace = fullP0NormalizeTrace();
+    trace.dirtyWriteDeferred = false;
+    reader.setNormalizeTrace(trace);
+
+    const auto result = tsrebar::RebarGroupCreator{}.createLineGroup(
+        baseRequest("selection-v1:edge:false-dirty-applied"), reader);
+
+    expect(!result.ok,
+           "P0 creator must reject false applied dirty-write claims");
+    expect(result.diagnostic.contains(QStringLiteral("sub_1405E49D0")),
+           "false applied diagnostic must mention sub_1405E49D0");
+    expect(result.diagnostic.contains(QStringLiteral("dirty")),
+           "false applied diagnostic must mention dirty parity");
+    expect(result.diagnostic.contains(QStringLiteral("TODO-084")),
+           "false applied diagnostic must mention TODO-084");
+    expect(result.steelData.groups.empty() && result.steelData.bars.empty() &&
+               result.steelData.segments.empty(),
+           "false applied dirty-write claim must not emit steel data");
+}
+
 void testArcGroupCreatorBuildsArcSegmentAndKeepsUnresolvedUiGap()
 {
     FakeLegacyRebarGeometryReader reader;
@@ -585,6 +718,10 @@ int main()
     testLineGroupCreatorBuildsDomainGroupFromLegacyEdge();
     testLineGroupCreatorRecordsPublicCreateRolesRawEvidence();
     testLineGroupCreatorRecordsSplitSplineTrimTraceRawEvidence();
+    testLineGroupCreatorRecordsGroupMinimumDistanceDirtyGapContract();
+    testLineGroupCreatorRejectsAppliedGroupMinimumDistanceGapClaim();
+    testLineGroupCreatorRejectsAppliedBackupWriteEdgeGapClaim();
+    testLineGroupCreatorRejectsAppliedDirtyWriteGapClaim();
     testArcGroupCreatorBuildsArcSegmentAndKeepsUnresolvedUiGap();
     testCreationRejectsDistanceBelowVisualTsThresholdBeforeGeometryQuery();
     testCreationRejectsMissingLegacyObjBBeforeGeometryQuery();

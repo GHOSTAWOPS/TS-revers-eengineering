@@ -242,5 +242,15 @@ int main(int argc, char* argv[])
         std::max(5, static_cast<int>(latestSegment.length * 50.0));
     expect(std::stoi(splineSampleCount) == expectedSplineSampleCount,
            "viewer reader spline trace must match the adapter requested sample count");
+    expect(createdParameterValue(latest.createdFromParameters,
+                                 "sub_14059B980.groupMinimumDistanceTrimLoop.observed") == "true",
+           "viewer reader raw evidence must record TODO-084 group min-distance gap");
+    expect(createdParameterValue(latest.createdFromParameters,
+                                 "sub_1405BD0C0.entitySlot72Write") == "observed-deferred",
+           "viewer reader raw evidence must record TODO-084 backup/write edge gap");
+    expect(createdParameterValue(latest.createdFromParameters,
+                                 "sub_1405E49D0.dirtyWrite") ==
+               "deferred-application-state",
+           "viewer reader raw evidence must record TODO-084 dirty-write gap");
     return 0;
 }

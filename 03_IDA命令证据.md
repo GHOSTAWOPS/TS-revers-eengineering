@@ -2198,6 +2198,62 @@ sub_1405E49D0(object)
 - `objA / objB` 在线配筋和弧形组入口会交换角色，旧源码真实类名和 UI 业务名仍未完全闭合。
 - `sgroupbararc` 对应旧 UI 的 `扇形筋`、`同心圆`，还是二者共用，仍需旧图石运行确认。
 
+## TODO-084 线配筋公共创建 group-min-distance / dirty-write gap 补证
+
+- `E-IDA-049`
+
+IDA MCP 会话：
+
+```text
+database = visualts_todo084
+input = C:\Users\ghost\Desktop\reverse_engineering\【03】图石软件\VisualTS.exe.i64
+```
+
+本轮复核：
+
+```text
+sub_1405D5670
+sub_14059B980
+sub_1405BD0C0
+sub_1405E49D0
+sub_1404D10C0
+```
+
+新增确认：
+
+```text
+sub_14059B980(group, point)
+  -> group + 88 为链表头
+  -> node + 72 为待测 ENTITY
+  -> node + 88 为 next
+  -> 对每个 ENTITY 调 api_entity_point_distance(entity, point)
+  -> 返回最小距离
+
+sub_1405D5670
+  -> 0x1405D5F36 用当前 edge start point 调 sub_14059B980
+  -> 0x1405D5F86 用当前 edge end point 调 sub_14059B980
+  -> 返回距离与 xmm8 / arg4 / distanceA_4digit 比较
+  -> 距离不大于阈值时调用 sub_140580950(&edge, -0.03, start/end)
+
+sub_1405BD0C0(entity, edge)
+  -> ENTITY::backup(entity)
+  -> *((QWORD*)entity + 9) = edge
+  -> 即 entity + 72 写入 edge
+
+sub_1404D10C0 创建成功后
+  -> sub_1405D5670
+  -> sub_1405C7260
+  -> vtable + 0x1C8
+  -> sub_1405E49D0(createdObject + 68)
+```
+
+本轮不能过度推断：
+
+- `sub_14059B980` 证明存在组内最小距离循环，但旧 group/list 节点业务类名仍未闭合。
+- `sub_1405BD0C0` 证明存在 `ENTITY::backup + entity+72` 写回，但新系统 P0 不能把它声明成完整 ACIS topology mutation。
+- `sub_1405E49D0` 证明 dirty 调用位置，但旧 dirty / undo / save parity 仍未闭合。
+- TODO-084 只能把这些写成 P0 gap contract，不关闭完整线配筋算法、旧 UI 运行确认或 golden。
+
 ## TODO-081 线配筋公共创建 createdPayload 与 objA/objB 字段语义补证
 
 - `E-IDA-048`

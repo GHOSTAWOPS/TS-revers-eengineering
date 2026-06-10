@@ -82,6 +82,7 @@ public:
         }
         result.ok = true;
         result.value.curve = normalizedCurve_.stableId.empty() ? curve : normalizedCurve_;
+        result.value.trace = normalizeTrace_;
         return result;
     }
 
@@ -93,6 +94,11 @@ public:
     void failNormalize(QString diagnostic)
     {
         normalizeFailure_ = std::move(diagnostic);
+    }
+
+    void setNormalizeTrace(tsrebar::LegacySegmentCurveNormalizeTrace trace)
+    {
+        normalizeTrace_ = std::move(trace);
     }
 
     [[nodiscard]] int curveSnapshotCallCount() const { return curveSnapshotCallCount_; }
@@ -111,6 +117,7 @@ private:
     QString normalizeFailure_;
     std::unordered_map<std::string, tsrebar::LegacyRebarCurveSnapshot> curves_;
     tsrebar::LegacyRebarCurveSnapshot normalizedCurve_;
+    tsrebar::LegacySegmentCurveNormalizeTrace normalizeTrace_;
 };
 
 tsrebar::LegacyRebarCurveSnapshot lineCurve(const std::string& stableId, double length)
@@ -348,6 +355,38 @@ void testLineGroupHandlerLeavesModelUntouchedWhenNormalizerFails()
            "normalizer failure must not mutate steel data");
 }
 
+void testLineGroupHandlerLeavesModelUntouchedWhenMutationGapClaimIsApplied()
+{
+    std::vector<tsrebar::LegacySelectionRef> selection = {
+        edgeRef("selection-v1:edge:17"),
+    };
+    FakeLegacyRebarGeometryReader reader;
+    reader.addCurve(lineCurve("selection-v1:edge:17", 12.5));
+    tsrebar::LegacySegmentCurveNormalizeTrace trace;
+    trace.groupMinimumDistanceTrimLoopDeferred = false;
+    reader.setNormalizeTrace(trace);
+    tsrebar::SteelData model;
+
+    tsrebar::RebarLineGroupCommandHandler handler(
+        [&selection]() { return selection; },
+        reader,
+        model,
+        commandParameters());
+
+    const tsrebar::CommandResult result = handler.execute();
+
+    expect(result.status == tsrebar::CommandStatus::Failed,
+           "false applied TODO-084 mutation gap must fail the command");
+    expect(result.message.contains(QStringLiteral("sub_14059B980")),
+           "false applied mutation gap diagnostic must pass through");
+    expect(reader.curveSnapshotCallCount() == 1,
+           "mutation gap diagnostic must happen after reading the selected curve");
+    expect(reader.normalizeCallCount() == 1,
+           "mutation gap diagnostic must happen after normalizer trace");
+    expect(model.groups.empty() && model.bars.empty() && model.segments.empty(),
+           "false applied mutation gap must not mutate steel data");
+}
+
 } // namespace
 
 int main()
@@ -358,5 +397,6 @@ int main()
     testLineGroupHandlerUsesUpdatedParameters();
     testLineGroupHandlerLeavesModelUntouchedWhenGeometryFails();
     testLineGroupHandlerLeavesModelUntouchedWhenNormalizerFails();
+    testLineGroupHandlerLeavesModelUntouchedWhenMutationGapClaimIsApplied();
     return 0;
 }
