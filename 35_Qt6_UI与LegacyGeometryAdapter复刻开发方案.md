@@ -1,5 +1,30 @@
 # Qt6 UI 与 LegacyGeometryAdapter 复刻开发方案
 
+## 2026-06-11 路线状态
+
+本文件是旧 VisualTS 1 比 1 路线阶段的架构方案。
+路线切换后，它降级为历史方案和局部兼容参考，不再作为当前 P0/P1 主线。
+
+当前主线是：
+
+```text
+STEP-only + RebarSmart 钢筋生成逻辑证据 + 图石 Detail 包兼容导出
+```
+
+保留结论：
+
+- Qt6 仍是新界面底座。
+- OCCT / AIS 仍负责 STEP 导入、几何计算、显示、选择和高亮。
+- 不允许用 OCCT 直接自由发挥写“差不多”的钢筋软件。
+- `LegacyGeometryAdapter` 已有能力可作为历史 VisualTS 兼容工具和局部几何能力参考。
+
+降级结论：
+
+- 旧 VisualTS UI / 操作流程全量 1 比 1 不再是 P0/P1。
+- 新钢筋生成主线不再叫 `VisualTSRebarDomain`，应转向 RebarSmart 证据驱动的
+  自研 `RebarModel / DrawingModel / IGeometryEngine` 结构。
+- 本文件后文的“正确路线”按历史路线理解，不覆盖 `46`、ADR 和 roadmap。
+
 ## 目标
 
 本文件把 Qt6 界面复刻、旧命令映射、OCCT 替代边界和钢筋业务创建责任集中说明。
@@ -21,7 +46,7 @@ OCCT 替代什么、不替代什么？
 - `17_一期按钮追溯与命令占位矩阵.md`：按钮到 Requirement / CommandId / GAP 的门禁表。
 - `23_父目录源码参考边界与路线纠偏.md`：父目录源码只能参考，不能作为业务真相。
 
-## 当前结论
+## 历史结论（已降级）
 
 正确路线不是：
 
@@ -76,7 +101,11 @@ Qt6 / OCCT 替代旧界面库、显示库、几何库。
 
 ## UI 复刻口径
 
-UI 复刻目标是“功能操作 1 比 1”，不是皮肤像素级复刻。
+旧路线的 UI 复刻目标曾是“功能操作 1 比 1”，不是皮肤像素级复刻。
+
+2026-06-11 后，该 UI 复刻口径降为 P2 / 历史专项。
+当前 P0/P1 只要求新 Qt6 界面能支撑 STEP-only、DetailPackage、
+RebarSmart-style 生成器和必要兼容导出流程。
 
 必须复刻：
 

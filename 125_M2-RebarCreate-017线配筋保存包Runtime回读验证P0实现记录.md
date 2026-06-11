@@ -1,5 +1,17 @@
 # M2-RebarCreate-017 线配筋保存包 Runtime 回读验证 P0 实现记录
 
+## 2026-06-11 路线状态
+
+本文件记录的是路线切换前的旧 VisualTS 线配筋保存包回读节点。
+`TODO-088` 曾是当时建议的下一步，但 2026-06-11 pivot 后已经降级为
+旧路线 pending，不再作为当前 next。
+
+当前 next 以 `todo.csv` 和 `46_CSE_v2Goal执行目标与Todo说明.md` 为准：
+
+```text
+TODO-090 / M1-Detail-001 DetailPackage 数据模型 P0
+```
+
 todoId = TODO-087
 phase = M2-RebarCreate-017
 evidenceIds = E-DEV-046, E-DEV-108, E-DEV-109
@@ -115,12 +127,13 @@ docs/phase1/app_build_reports/m2_rebar_create_017_run_001.md
 docs/phase1/app_build_reports/m2_rebar_create_017_run_001.json
 ```
 
-## 下一步
+## 历史下一步（已降级）
 
-建议下一轮执行：
+当时建议下一轮执行：
 
 ```text
 TODO-088 / Project.Open runtime snapshot 恢复到 app 内存 / 显示入口 P0
 ```
 
-下一轮只做新 app 打开回读后的内存和显示入口，不声明旧图石完整打开 UI、`.sfl` 兼容或完整保存 / 撤销 parity。
+2026-06-11 路线切换后，`TODO-088` 已降级，不再作为当前 next。
+当前 next 是 `TODO-090 / M1-Detail-001 DetailPackage 数据模型 P0`。

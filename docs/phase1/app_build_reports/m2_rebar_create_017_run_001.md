@@ -116,8 +116,10 @@ GAP-UI-REB-001 = old LineGroup dialog / status prompt runtime confirmation still
 ## Next
 
 ```text
-nextTodo = TODO-088
-action = Project.Open runtime snapshot 恢复到 app 内存 / 显示入口 P0
+historicalNextBeforePivot = TODO-088
+historicalAction = Project.Open runtime snapshot 恢复到 app 内存 / 显示入口 P0
+currentNextAfterPivot = TODO-090 / M1-Detail-001 DetailPackage 数据模型 P0
 ```
 
-`TODO-088` 不应自动开始；本轮完成后停下复盘。
+`TODO-088` 是 2026-06-11 路线切换前的历史 next。
+路线切换后不应自动开始；当前 next 以 `todo.csv` 和 `46` 为准。

@@ -1,0 +1,53 @@
+{
+  "id": "m0_pivot_002_md_route_audit_run_001",
+  "node": "M0-Pivot-002",
+  "type": "docs-only-route-audit",
+  "date": "2026-06-11",
+  "primarySetpoint": "All current-entry Markdown docs point to STEP-only + RebarSmart evidence + Tushi Detail compatibility.",
+  "currentNext": {
+    "id": "TODO-090",
+    "phase": "M1-Detail-001",
+    "task": "DetailPackage 数据模型 P0",
+    "status": "next"
+  },
+  "changedFiles": [
+    "00_总览.md",
+    "06_技术路线与替代方案.md",
+    "08_开发命令契约.md",
+    "09_钢筋领域模型草案.md",
+    "18_新设计文件格式替代SFL策略.md",
+    "23_父目录源码参考边界与路线纠偏.md",
+    "35_Qt6_UI与LegacyGeometryAdapter复刻开发方案.md",
+    "36_正式Qt6_OCCT工程架构与首个实现切片.md",
+    "125_M2-RebarCreate-017线配筋保存包Runtime回读验证P0实现记录.md",
+    "docs/phase1/app_build_reports/m2_rebar_create_017_run_001.md",
+    "127_M0-Pivot-002全量Markdown路线审计记录.md",
+    "docs/phase1/app_build_reports/m0_pivot_002_md_route_audit_run_001.md",
+    "docs/phase1/app_build_reports/m0_pivot_002_md_route_audit_run_001.json"
+  ],
+  "verification": [
+    {
+      "command": "rg high-risk stale route patterns --glob *.md",
+      "result": "no matches"
+    },
+    {
+      "command": "Import-Csv todo.csv | Where-Object {$_.status -eq 'next'}",
+      "result": "TODO-090 only"
+    },
+    {
+      "command": "git diff --check",
+      "result": "pass"
+    }
+  ],
+  "subagentReview": {
+    "used": true,
+    "mode": "read-only",
+    "closedAfterCompletion": true
+  },
+  "runtimeActions": {
+    "appCodeTouched": false,
+    "oldVisualTsStarted": false,
+    "haspInstalled": false,
+    "rebarsmartBinaryCommitted": false
+  }
+}

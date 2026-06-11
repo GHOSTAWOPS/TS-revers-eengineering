@@ -1,5 +1,23 @@
 # 正式 Qt6 + OCCT 工程架构与首个实现切片
 
+## 2026-06-11 路线状态
+
+本文件冻结的是旧 VisualTS 1 比 1 路线阶段的首版 `app` 架构。
+路线切换后，`app`、Qt6、OCCT、STEP 导入、AIS 显示、选择系统、
+`.tsrebar` 和既有测试门禁继续保留。
+
+但后续主线已经调整为：
+
+```text
+STEP-only + RebarSmart 钢筋生成逻辑证据 + 图石 Detail 包兼容导出
+```
+
+因此，本文中 `VisualTSRebarDomain / LegacyUiCommandMap / LegacyGeometryAdapter`
+作为历史结构和局部兼容资产保留；新钢筋生成层应逐步改为 RebarSmart
+证据驱动的自研 `RebarModel / DrawingModel / IGeometryEngine` 边界。
+当前下一步以 `46` 和 `todo.csv` 的 `TODO-090 / DetailPackage 数据模型 P0`
+为准，不回到旧 UI 全量 1 比 1 或 TODO-088。
+
 ## 目标
 
 本文件冻结正式开发工程的第一版架构。
@@ -17,9 +35,9 @@ Qt6 + OCCT 在新系统里承担什么职责？
 
 旧图石功能真相仍以运行确认、IDA、SFL、Detail 包和本目录追溯矩阵为准。
 
-## 路线总口径
+## 历史路线总口径（已降级）
 
-正确路线：
+旧路线当时认为正确的口径：
 
 ```text
 Qt6 / OCCT 替代旧商业底座能力。
@@ -84,8 +102,8 @@ Qt6 MainWindow / Dock / Dialog
 - `Qt6 UI`：新界面、按钮、参数窗口、状态栏、模型树、属性面板。
 - `LegacyUiCommandMap`：旧按钮、旧命令字符串、CommandId、Dialog 的映射。
 - `CommandSession`：一次命令的选择、参数、预览、应用、取消、失败回滚。
-- `VisualTSRebarDomain`：复刻旧图石 steelbar / steelbargroup 业务逻辑。
-- `LegacyGeometryAdapter`：提供旧系统语义的几何接口。
+- `VisualTSRebarDomain`：旧路线下用于复刻旧图石 steelbar / steelbargroup 业务逻辑；路线切换后作为历史成果保留。
+- `LegacyGeometryAdapter`：提供旧系统语义的几何接口；路线切换后作为历史 VisualTS 兼容工具和局部几何参考保留。
 - `OCCT Geometry API`：实现长度、参数点、法向、求交、距离、裁剪、剖切、扫掠。
 - `OCCT AIS`：显示、选择、高亮、旋转、缩放、平移。
 - `.tsrebar`：新系统主设计文件格式，结合 SFL 证据和 OCCT 几何引用。
@@ -95,7 +113,7 @@ Qt6 MainWindow / Dock / Dialog
 
 老图石界面审美不作为复刻目标。
 
-必须 1 比 1 对齐的是：
+旧路线要求 1 比 1 对齐的是：
 
 - 功能入口。
 - 菜单层级。
@@ -118,8 +136,8 @@ Qt6 MainWindow / Dock / Dialog
 新界面原则：
 
 ```text
-功能像旧图石。
-视觉和交互用 Qt6 做现代化。
+P0/P1 支撑 STEP-only、DetailPackage、RebarSmart-style 生成器和兼容导出。
+旧图石功能入口和 UI 细节降为 P2 / 历史专项。
 ```
 
 ## 推荐目录结构
