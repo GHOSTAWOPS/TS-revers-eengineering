@@ -1,0 +1,20 @@
+{
+  "runtimeCommercialDependencies": [
+    "none"
+  ],
+  "decision": "done_route_pivot_docs_governance",
+  "verification": {
+    "todoSingleNext": "pass",
+    "gitDiffCheck": "pass",
+    "domainRebarOCCLeak": "pass_no_matches",
+    "readinessGateStrict": "pass_84_84",
+    "xhighReview": "not_required_docs_only"
+  },
+  "todoId": "TODO-089",
+  "phase": "M0-Pivot-001",
+  "notes": "Docs-only route pivot; RebarSmart and VisualTS remain evidence sources only.",
+  "next": {
+    "task": "DetailPackage 数据模型 P0",
+    "todoId": "TODO-090"
+  }
+}

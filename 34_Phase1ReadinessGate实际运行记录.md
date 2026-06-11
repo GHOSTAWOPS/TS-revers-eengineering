@@ -1,5 +1,29 @@
 # Phase 1 Readiness Gate 实际运行记录
 
+## 2026-06-11 路线切换说明
+
+本 gate 早期用于保护“Qt6 + OCCT + VisualTS 证据驱动复刻”路线。
+
+当前路线已调整为：
+
+```text
+STEP-only + RebarSmart 钢筋生成逻辑证据 + 图石 Detail 包兼容导出
+```
+
+现有 readiness gate 仍保留三个价值：
+
+- 检查 `domain/rebar` 不泄漏 OCCT / AIS。
+- 检查父目录 rebar 业务代码没有被迁入正式 app。
+- 检查 `todo.csv` 只有一个 `next`，并保持 done 节点报告可追溯。
+
+但 gate 的路线语义需要后续升级：
+
+- RebarSmart DLL / VisualTS / 3DE / ACIS / HOOPS / Codejock 不得进入运行时。
+- Detail 包应作为 exporter，而不是内部主模型。
+- 新路线的 `TODO-089` 之后，`TODO-090` 起进入 DetailPackage / RebarSmart-style 队列。
+
+本次文档 pivot 不改 gate 脚本，只用现有 route guardrail 做最低限度验证。
+
 ## 目标
 
 本文件记录 `Phase1.ReadinessGate` 从人工清单推进到可运行检查器的状态。
@@ -410,4 +434,4 @@ none
 26. `TODO-084 / 线配筋公共创建 sub_1405D5670 group-min-distance / dirty-write gap 切片 P0` 已形成 `E-IDA-049 / E-DEV-106`：IDA MCP 复核 `sub_14059B980` group min-distance loop、`sub_1405BD0C0` backup/write edge 和 `sub_1404D10C0 -> sub_1405E49D0` dirty call position；正式 `RebarGroupCreator` 将这些写入 P0 gap contract，并新增 false applied claim 防线。readiness gate 已把 `TODO-084` 纳入 done-report 映射，要求 targeted tests、targeted smoke、默认 CTest、readiness gate、domain/rebar OCCT 泄漏检查、todo 单 next、git diff check 和 xhigh 只读 review 全部闭合。当前下一步切到 `TODO-085 / 线配筋命令成功 dirty/transaction 状态 P0`，不自动进入完整旧 dirty/undo/save parity、完整线配筋算法、面配筋、弧筋、接头、Excel、Detail 或 golden。
 27. `TODO-085 / 线配筋命令成功 dirty/transaction 状态 P0` 已形成 `E-DEV-107`：`CommandResult` 新增 `CommandDirtyFlags / CommandTransactionState`；`Rebar.Create.LineGroup` 成功后返回 `ProjectDirty + RebarDirty + DrawingDirty`、`E-IDA-049` 和 `GAP-REB-C-002`；`MainWindow` 只在成功创建后累计 app dirty transaction；空选择、错类型、取消参数窗口、geometry failure、normalizer failure 和 mutation gap failure 不 dirty。readiness gate 已把 `TODO-085` 纳入 done-report 映射，要求 targeted dirty transaction tests、targeted smoke、默认 CTest、readiness gate、domain/rebar+command OCCT 泄漏检查、todo 单 next、git diff check 和 xhigh 只读 review 全部闭合。该节点当时下一步切到 `TODO-086 / 线配筋 dirty 状态与保存清除入口准备 P0`，不自动进入完整旧 dirty/undo/save parity、完整线配筋算法、面配筋、弧筋、接头、Excel、Detail 或 golden。
 28. `TODO-086 / 线配筋 dirty 状态与保存清除入口准备 P0` 已形成 `E-DEV-108`：`Project.Save` P0 handler 接入 `TsRebarProjectRuntime.saveSnapshot`；成功保存后清 `ProjectDirty / RebarDirty / DrawingDirty`，保存失败保持 dirty；`MainWindow` 新增保存路径和结果 inspection 入口，并在 app 保存边界把线配筋 binding geometryPath 重写为 runtime 可验证 JSON path。readiness gate 已把 `TODO-086` 纳入 done-report 映射，要求 targeted save-clear tests、targeted smoke、默认 CTest、readiness gate、domain/rebar+command OCCT 泄漏检查、todo 单 next、git diff check 和 xhigh 只读 review 全部闭合。下一步切到 `TODO-087 / 线配筋保存包 runtime 回读验证 P0`，不自动进入完整旧保存 UI、旧 dirty/undo/save parity、完整线配筋算法、面配筋、弧筋、接头、Excel、Detail 或 golden。
-29. `TODO-087 / 线配筋保存包 runtime 回读验证 P0` 已形成 `E-DEV-109`：`TsRebarProjectRuntime.open(...)` 现在会从 `evidence/evidence_index.json` 恢复 `snapshot.evidenceIds`；真实 `123.stp` smoke 在 `Project.Save` 后回读保存包，确认 `OpenedWarning`、`bindingDecision != blocked`、1 个 `SteelBarGroup / SteelBar / SteelBarSegment`、binding geometryPath 和 `E-DEV-108 / E-IDA-049 / GAP-REB-C-002` 均恢复。readiness gate 已把 `TODO-087` 纳入 done-report 映射，要求 targeted runtime open-back tests、targeted smoke、默认 CTest、readiness gate、domain/rebar+command OCCT 泄漏检查、todo 单 next、git diff check 和 xhigh 只读 review 全部闭合。下一步切到 `TODO-088 / Project.Open runtime snapshot 恢复到 app 内存 / 显示入口 P0`，不自动进入完整旧打开 UI、`.sfl` 兼容、旧 dirty/undo/save parity、完整线配筋算法、面配筋、弧筋、接头、Excel、Detail 或 golden。
+29. `TODO-087 / 线配筋保存包 runtime 回读验证 P0` 已形成 `E-DEV-109`：`TsRebarProjectRuntime.open(...)` 现在会从 `evidence/evidence_index.json` 恢复 `snapshot.evidenceIds`；真实 `123.stp` smoke 在 `Project.Save` 后回读保存包，确认 `OpenedWarning`、`bindingDecision != blocked`、1 个 `SteelBarGroup / SteelBar / SteelBarSegment`、binding geometryPath 和 `E-DEV-108 / E-IDA-049 / GAP-REB-C-002` 均恢复。readiness gate 已把 `TODO-087` 纳入 done-report 映射，要求 targeted runtime open-back tests、targeted smoke、默认 CTest、readiness gate、domain/rebar+command OCCT 泄漏检查、todo 单 next、git diff check 和 xhigh 只读 review 全部闭合。2026-06-11 路线切换后切到 `TODO-090 / DetailPackage 数据模型 P0`，不自动进入完整旧打开 UI、`.sfl` 兼容、旧 dirty/undo/save parity、完整线配筋算法、面配筋、弧筋、接头、Excel、Detail 或 golden。

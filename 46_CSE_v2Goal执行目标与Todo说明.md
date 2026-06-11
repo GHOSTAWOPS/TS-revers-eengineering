@@ -2,154 +2,184 @@
 
 ## 一句话结论
 
-后续 goal 模式的主线不是“重新设计一个钢筋软件”，而是继续把正式 `app` 往旧图石 1:1 复刻方向推进：Qt6 / OCCT 只替代界面、显示、选择和几何能力，钢筋业务逻辑按 VisualTS / IDA / SFL / Detail 证据复刻。
-
-## 当前执行口径（2026-06-10）
+后续 goal 模式的主线已经调整：
 
 ```text
-接头链路现阶段先记录、暂缓。
+不是继续做“旧 VisualTS UI / 操作流程全量 1:1”。
 
-这不是说接头以后不做，
-而是领导已经明确：现阶段先不用考虑接头。
-
-所以当前 goal 主线：
-  -> 不再把 TODO-050 / TODO-061 或其他接头运行确认节点设为 next
-  -> 只保留已有证据、缺口、采样模板和恢复入口
-  -> 当前 next 继续按 todo.csv 执行非接头主线
-  -> TODO-065 已完成：生成工程图 / 下料表运行确认模板、
-     输出目录 / hash / 覆盖策略记录模板和拒收伪工件规则已落文档
-  -> output_uncut_steel / Dialog 0x57C / UnCutSteel.TXT
-     继续只算可选旁证，不算前置设置窗
-  -> TODO-066 已完成真实工件回填；TODO-067 已完成字段对照；TODO-068 已完成最明显旧包格式纠偏；TODO-069 已完成 StbRow 扩展属性骨架；TODO-070 已完成 lineStb StbGeo 字段条件化骨架；TODO-071 已完成线配筋入口契约冻结；TODO-072 已完成 LineGroup command handler P0；TODO-073 已完成 LineGroup UI/AIS 可见反馈 P0；TODO-074 已完成 LineGroup 参数窗口 P0；TODO-075 已完成选择预检与参数窗口顺序对齐 P0；TODO-076 已完成旧 UI 失败提示与状态栏口径静态 stop point；TODO-077 已完成旧图石运行确认采样清单与拒收规则；TODO-078 已审计为 blocked，因为当前只有模板、没有真实旧图石运行截图/hash/listing/填写后的 notes；TODO-079 已完成旧 UI / Dialog 静态资源补证；TODO-080 已完成公共创建 core gate 与 diagnostic P0 对齐；TODO-081 已完成 createdPayload / objA / objB 字段语义补证；TODO-082 已完成 roles DTO 与 raw evidence 对齐；TODO-083 已完成 split / spline / trim trace P0；TODO-084 已完成 group-min-distance / backup-write / dirty-write gap contract；TODO-085 已完成线配筋命令成功 dirty/transaction P0；TODO-086 已完成线配筋 dirty 保存清除入口 P0；TODO-087 已完成线配筋保存包 runtime 回读验证 P0；现在的主线是 TODO-088
+而是在现有 Qt6 + OCCT app 基础上，
+走 STEP-only + RebarSmart 钢筋生成逻辑证据 + 图石 Detail 包兼容导出。
 ```
 
-## 可直接粘贴到 Goal 模式的目标
+白话说：
 
-### 长期 Goal（可直接复制，适合长期执行）
+- RebarSmart3DE 负责给我们“钢筋怎么生成”的证据。
+- VisualTS / 老图石负责给我们“Detail 包、工程图、下料表、旧 CAD 插件怎么兼容”的证据。
+- Qt6 + OCCT 是新软件唯一长期运行时底座。
+- 新系统不继承 USB 狗、HASP、3DE、ACIS、HOOPS、Codejock 等商业运行时依赖。
 
-目标：长期持续推进《图石钢筋 1 比 1 复刻》正式 `app` 开发，直到具备按旧 VisualTS 证据复刻钢筋创建、编辑、统计、出图的工程条件。
+## 当前路线切换记录
 
-本 goal 不是“用 OCCT 重新设计一个差不多的钢筋软件”。
-
-正确路线必须始终保持为：
+2026-06-11 已建立 pivot 前时间线：
 
 ```text
-Qt6
-  -> 替代 MFC / Codejock，只负责新界面、菜单、命令入口、窗口状态。
-
-OCCT AIS
-  -> 替代 HOOPS，只负责三维显示、旋转缩放、选择、高亮。
-
-OCCT 几何 API
-  -> 替代 ACIS，只负责 EDGE / FACE / 曲线 / 距离 / 投影 / split /
-     trim / spline / wire chain / offset / section / sweep 等几何能力。
-
-LegacyGeometryAdapter
-  -> 把 OCCT 包装成旧 VisualTS 熟悉的 EDGE / FACE / ENTITY_LIST /
-     曲线 / 点 / 面 / 选择引用语义。
-
-VisualTS 复刻业务层
-  -> 按 IDA / SFL / Detail / 旧图石运行证据 1:1 复刻钢筋创建、
-     编辑、统计、出图逻辑。
-
-Detail / 新设计文件格式输出层
-  -> 输出 Detail.xml + DetailNN.stl；
-     用新的工程格式替代 .sfl 主保存格式；
-     新格式结合 SFL 业务语义和 OCCT 几何引用。
+tag: before-rebarsmart-detail-pivot-20260611
 ```
 
-一句话硬约束：
+当前正式路线文档：
+
+- `docs/adr/ADR-20260611-step-only-rebarsmart-detail.md`
+- `docs/roadmap/STEP_only_RebarSmart_Detail_refactor_plan.md`
+
+旧 VisualTS 1:1 复刻文档保留为历史证据，但不再作为 P0/P1 主执行路线。
+
+## 长期 Goal（可直接复制）
+
+创建并执行长期 goal：
 
 ```text
-外壳换 Qt6 + OCCT。
-几何能力由 OCCT 提供。
-钢筋业务规则按旧图石 VisualTS 证据复刻。
-中间必须经过 LegacyGeometryAdapter 隔离。
+目标：
+长期推进图石钢筋替代系统正式 app 开发。
+严格按 46_CSE_v2Goal执行目标与Todo说明.md 和 todo.csv 执行。
+
+核心路线：
+外部几何输入只支持 STEP/STP。
+Qt6 只负责新界面、菜单、参数面板和命令入口。
+OCCT 负责 STEP 导入、几何计算、AIS 显示、选择和高亮。
+RebarSmart3DE 只作为钢筋生成逻辑证据源，不作为运行时依赖。
+VisualTS / 老图石只作为 Detail 包、工程图字段、下料表、旧 AutoCAD 插件兼容和必要历史证据源。
+.tsrebar 是新系统内部主工程格式。
+Detail.xml + DetailNN.stl XML 包是旧 AutoCAD 插件兼容导出格式，不是内部主数据格式。
+
+执行规则：
+每轮只做 todo.csv 中 status=next 的一个节点。
+先读 46 文档、todo.csv 和该任务 evidence 指向的文档。
+涉及代码时先补测试，再实现。
+实现后运行相关测试、默认 CTest、readiness gate、domain/rebar OCCT 泄漏检查。
+涉及代码、测试、构建脚本的节点，commit 前必须执行 xhigh 只读 review。
+xhigh 只能 review，不能修改；修改由主流程 agent 完成。
+Critical / Important 必须修复或写明技术反驳理由。
+完成后更新实现记录、build report、追溯矩阵、99缺口、todo.csv、46文档。
+最后 commit、打 annotated tag、push main 和 tags。
+
+禁止：
+不要把 RebarSmart DLL / VisualTS / 3DE / ACIS / HOOPS / Codejock 接进新系统运行时。
+不要用 OCCT 直接自由发挥写一个“差不多”的钢筋软件。
+不要迁入父目录 rebar 业务代码。
+不要让 domain/rebar 依赖 TopoDS_ / AIS_ / BRep / TopAbs_。
+不要把 DetailNN.stl 当标准 STL 网格；它是旧插件使用的 XML 文本。
+不要把旧 VisualTS UI 全量 1:1 当 P0/P1 阻塞项。
+不要把公司内部 RebarSmart 二进制、真实客户样本、授权文件或敏感配置提交到公开仓库。
+
+停止条件：
+完成一个节点后复盘并停止，不自动进入下一个节点，除非用户明确说继续。
 ```
 
-用户要点冻结：
-
-```text
-1. 目标是 1:1 复刻旧图石钢筋功能操作，不是做一个“够用的新钢筋软件”。
-2. 老图石界面可以更现代、更好看，但菜单入口、命令语义、参数、状态机和输出结果要能追溯到旧图石。
-3. OCCT 不能成为钢筋业务真相；OCCT 只替代 ACIS/HOOPS 的几何、显示、选择能力。
-4. 钢筋由我们复刻的 VisualTS 业务层创建，不由 OCCT 直接创建业务钢筋。
-5. 父目录已有开发只能参考 STEP/STP 导入、XCAF 遍历、AIS viewer、选择 ID、OCCT API 写法。
-6. 父目录的 OCCT 直接重写钢筋路线是错误路线，不能迁入正式 app 当主线。
-7. 新系统不用 .sfl 做主保存格式；新设计文件格式要结合 SFL 业务语义和 OCCT 几何引用。
-8. SFL / STP / Detail / 旧图石运行结果都是证据来源，但不能互相替代。
-9. CAD 有商业版，可以作为 Detail / AutoCAD 插件验证环境；但 ACIS / HOOPS / Codejock 不纳入新系统依赖。
-10. golden 不是当前前置阻塞，但后续做 1:1 行为闭环时必须逐步补。
-11. 不确定旧逻辑时优先用 IDA MCP 或旧图石运行确认，不能凭父目录代码拍脑袋定案。
-12. 每次完成一个清晰节点都要 commit、打 tag、push，形成可回退时间线。
-13. 涉及代码、测试、构建脚本的节点，在 commit 前必须经过 xhigh 只读 review；修改只能由主流程 agent 完成。
-14. 旧图石如果依赖 USB 狗或其他许可前置，那只属于旧系统运行取证条件；新系统复刻目标不继承 USB 狗 / 网络许可依赖，仍要保持开源、无狗。
-15. 接头链路现阶段只保留证据和恢复入口，不作为当前 next；除非用户明确恢复优先级，否则不要自动回到 TODO-050 / TODO-061 或其他接头运行确认节点。
-```
-
-CSE v2 Control Contract：
+## CSE v2 Control Contract
 
 ```text
 Primary Setpoint
-  长期推进正式 app，让 Qt6 / OCCT 成为旧商业底座替代层，
-  让 VisualTS 复刻业务层逐步具备钢筋创建、编辑、统计、出图能力。
+  把正式 app 推进成独立 Qt6 + OCCT 新平台：
+  STEP 输入，RebarSmart-style 生成逻辑，自研 RebarModel / DrawingModel，
+  并能导出旧图石 CAD 插件可读的 Detail 包。
 
 Acceptance
   每个切片有测试、实现记录、build report、追溯矩阵、缺口记录、
-  todo 状态、代码节点 xhigh review 结论、commit、annotated tag、push 结果。
+  todo 状态、必要 xhigh review、commit、annotated tag、push 结果。
 
 Guardrail Metrics
-  domain/rebar 不出现 TopoDS_、AIS_、BRep*、TopAbs_；
-  不迁入父目录 rebar 业务；
-  不把 OCCT API 直接扩散到业务层；
-  不把低置信推断写成确定事实。
+  运行时不依赖 RebarSmart / VisualTS / 3DE / ACIS / HOOPS / Codejock。
+  domain/rebar 不出现 TopoDS_、AIS_、BRep*、TopAbs_。
+  不迁入父目录 rebar 业务。
+  Detail 包只作为 exporter，不成为业务模型事实源。
+  RebarSmart 只作为证据源，不作为二进制依赖。
 
 Sampling Plan
-  每轮开始看 todo.csv / 46 / 99 / git status；
-  每轮结束跑默认 CTest、readiness gate、domain OCCT 泄漏检查；
-  涉及代码、测试、构建脚本的节点，在验证通过后、commit 前执行 xhigh 只读 review；
-  涉及旧业务时补 IDA / 旧图石 / SFL / STP / Detail 证据。
+  每轮开始看 todo.csv / 46 / 99 / git status。
+  每轮结束跑默认 CTest、readiness gate、OCCT 泄漏检查。
+  涉及代码、测试、构建脚本的节点，在验证通过后、commit 前执行 xhigh 只读 review。
+  涉及 RebarSmart 逻辑时读取 INI / 导出符号 / 反编译证据。
+  涉及 Detail 时读取旧 Detail 包、AutoCAD 插件运行记录和字段矩阵。
 
 Known Delays
-  IDA MCP 可能没有绑定数据库；
-  旧图石运行确认依赖用户操作；
-  golden 采集成本高；
-  OCCT 与 ACIS 的容差差异需要后续样本验证。
+  RebarSmart 反编译证据需要逐步整理。
+  RebarSmart INI 可能是 GBK/ANSI 编码，不能假定 UTF-8。
+  旧 AutoCAD 插件 L2 验证依赖可运行的 AutoCAD 环境。
+  VisualTS / 旧图石运行确认依赖 USB 狗和用户环境，但新软件不继承这些依赖。
 
 Recovery Target
-  如果路线偏成“OCCT 直接重写钢筋”，立即停止功能开发，
-  回到 23 / 35 / 46 文档和 adapter 边界修正。
+  如果路线滑回“旧 VisualTS UI 全量 1:1”或“OCCT 直接自由写钢筋”，
+  立即停止功能开发，回到 ADR / 46 / todo / AGENTS 纠偏。
 
 Rollback Trigger
-  测试或 gate 失败仍继续堆功能；
-  domain/rebar 引入 OCCT/AIS；
-  父目录 rebar 业务被迁入；
-  无证据旧逻辑被写死；
-  代码节点跳过 xhigh 只读 review；
+  RebarSmart DLL 被接入运行时。
+  VisualTS / 3DE / ACIS / HOOPS / Codejock 被接入运行时。
+  domain/rebar 引入 OCCT/AIS。
   todo 与 46 的 next 目标不一致。
+  测试或 gate 失败仍继续堆功能。
+  代码节点跳过 xhigh 只读 review。
 
 Boundary
-  每轮只推进一个 M1/M2 切片；
-  adapter 切片只改 legacy geometry DTO、OCCT adapter、测试、文档；
-  业务切片只通过 legacy interface 使用几何能力；
-  UI 切片只对齐旧命令入口和状态，不顺手改业务。
-  xhigh agent 只读，只能评审 diff / 文档 / 测试输出，不能修改、格式化、commit、tag、push。
+  单轮只推进一个 todo 节点。
+  M1 优先 Detail 包 POC。
+  M2 再推进 RebarSmart 纯算法层。
+  M3 再接 OCCT 几何接口和 FixDistance/FixNumber。
+  旧 VisualTS 文档只作为历史证据和 Detail/出图证据，不再驱动 UI 全量 1:1。
 
 Actuator Budget
-  单轮只做一个可验证节点；
-  完成后停止复盘，除非用户明确要求继续下一轮。
+  单轮只做一个可验证节点。
+  完成后停止复盘，除非用户明确要求继续。
 ```
+
+## 当前已知状态
+
+已保留并可继续使用的资产：
+
+- Qt6 app 骨架。
+- STEP import probe。
+- 最小 OCCT AIS Viewer。
+- face / edge / vertex 选择系统。
+- `selection-v1` 稳定引用。
+- `LegacyGeometryAdapter` 已有大量几何兼容能力，后续降级为历史 VisualTS 支撑和局部兼容工具。
+- `domain/rebar` 基础模型。
+- `.tsrebar` 新工程包方向。
+- DetailWriter / Detail 字段骨架 / 多图纸输出等历史成果。
+- readiness gate、依赖合规、SBOM、测试和文档门禁。
+
+已降级为非当前主线：
+
+- `TODO-088 / Project.Open runtime snapshot 恢复到 app 内存 / 显示入口 P0`。
+- 旧 VisualTS 线配筋保存/打开链继续作为历史成果，不作为新路线 next。
+- 接头链路继续记录和暂缓。
+- 旧 UI / 菜单 / 状态栏 / 弹窗全量 1:1 降为 P2。
+
+## 当前下一步
+
+当前 `todo.csv` 的下一步应是：
+
+```text
+TODO-090 / M1-Detail-001
+  -> DetailPackage 数据模型 P0
+```
+
+原因：
+
+```text
+新路线的第一道门槛不是继续旧 VisualTS 保存/打开链，
+而是证明旧图石 CAD 插件兼容链路可控。
+
+所以 M1 先做 DetailPackage Reader / Writer / round-trip / 极简包，
+再接 RebarModel、DrawingModel 和 RebarSmart-style 生成器。
+```
+
+## TODO-090 短期 Goal（下一轮复制）
+
+目标：只完成 `TODO-090 / M1-Detail-001 DetailPackage 数据模型 P0`，不自动进入 Reader / Writer / RebarSmart 算法。
 
 工作目录：
 
 ```text
 C:\Users\ghost\Desktop\reverse_engineering\【03】图石软件
-```
-
-主项目目录：
-
-```text
-【图石钢筋1比1复刻】
 ```
 
 正式开发目录：
@@ -158,913 +188,144 @@ C:\Users\ghost\Desktop\reverse_engineering\【03】图石软件
 【图石钢筋1比1复刻】\app
 ```
 
-先读取以下入口文件，建立当前事实边界：
-
-1. `【图石钢筋1比1复刻】\00_总览.md`
-2. `【图石钢筋1比1复刻】\06_技术路线与替代方案.md`
-3. `【图石钢筋1比1复刻】\07_1比1复刻实施路线.md`
-4. `【图石钢筋1比1复刻】\08_开发命令契约.md`
-5. `【图石钢筋1比1复刻】\09_钢筋领域模型草案.md`
-6. `【图石钢筋1比1复刻】\11_需求证据追溯矩阵.md`
-7. `【图石钢筋1比1复刻】\13_Detail字段映射矩阵.md`
-8. `【图石钢筋1比1复刻】\15_线配筋与弧形组专项初稿.md`
-9. `【图石钢筋1比1复刻】\16_seg_steelbargroup字段地图初稿.md`
-10. `【图石钢筋1比1复刻】\18_新设计文件格式替代SFL策略.md`
-11. `【图石钢筋1比1复刻】\23_父目录源码参考边界与路线纠偏.md`
-12. `【图石钢筋1比1复刻】\24_新设计文件格式Schema与Fixture草案.md`
-13. `【图石钢筋1比1复刻】\32_Validator实现契约与错误码总表.md`
-14. `【图石钢筋1比1复刻】\34_Phase1ReadinessGate实际运行记录.md`
-15. `【图石钢筋1比1复刻】\35_Qt6_UI与LegacyGeometryAdapter复刻开发方案.md`
-16. `【图石钢筋1比1复刻】\36_正式Qt6_OCCT工程架构与首个实现切片.md`
-17. `【图石钢筋1比1复刻】\40_M1-App-004LegacyGeometryAdapterP0实现记录.md`
-18. `【图石钢筋1比1复刻】\41_M1-App-005LegacyGeometryAdapterP1实现记录.md`
-19. `【图石钢筋1比1复刻】\42_M1-App-006LegacyGeometryAdapterP2A实现记录.md`
-20. `【图石钢筋1比1复刻】\43_M1-App-007LegacyGeometryAdapterP2B实现记录.md`
-21. `【图石钢筋1比1复刻】\44_M1-App-008LegacyGeometryAdapterP2C实现记录.md`
-22. `【图石钢筋1比1复刻】\45_M1-App-009LegacyGeometryAdapterP3A实现记录.md`
-23. `【图石钢筋1比1复刻】\47_M1-App-010LegacyGeometryAdapterP3B实现记录.md`
-24. `【图石钢筋1比1复刻】\48_M1-App-011LegacyGeometryAdapterP3C实现记录.md`
-25. `【图石钢筋1比1复刻】\49_M1-App-012LegacyGeometryAdapterP3D实现记录.md`
-26. `【图石钢筋1比1复刻】\50_M1-App-013LegacyGeometryAdapterP3E实现记录.md`
-27. `【图石钢筋1比1复刻】\51_M1-App-014LegacyWireChain实现记录.md`
-28. `【图石钢筋1比1复刻】\52_M1-App-015LegacyGeometryAdapterOffsetSpike实现记录.md`
-29. `【图石钢筋1比1复刻】\53_M1-App-016LegacyGeometryAdapterSectionSpike实现记录.md`
-30. `【图石钢筋1比1复刻】\54_M1-App-017LegacyGeometryAdapterSweepBoundary实现记录.md`
-31. `【图石钢筋1比1复刻】\55_M1-App-018RebarDomainModelFreezeP1实现记录.md`
-32. `【图石钢筋1比1复刻】\56_M1-App-019LegacyCommandContractP1实现记录.md`
-33. `【图石钢筋1比1复刻】\99_缺口和待确认项.md`
-34. `【图石钢筋1比1复刻】\todo.csv`
-
-当前已完成状态：
-
-```text
-M1-App-001 = done
-  -> Qt6 app 骨架、五个旧图石页签、命令注册、STEP import probe。
-
-M1-App-002 = done
-  -> 最小 OCCT AIS Viewer 和 STEP 显示。
-
-M1-App-003 = done
-  -> face / edge / vertex 选择系统、selection-v1 稳定引用。
-
-M1-App-004 = done
-  -> LegacyGeometryAdapter P0，EDGE / FACE 基础几何摘要。
-
-M1-App-005 = done
-  -> LegacyGeometryAdapter P1，bbox、采样、boundary loop、
-     fingerprint、诊断矩阵。
-
-M1-App-006 = done
-  -> LegacyGeometryAdapter P2A，edge 切向、距离、最近点对。
-
-M1-App-007 = done
-  -> LegacyGeometryAdapter P2B，face boundary edge stableId、
-     edge-face 接触/重叠代表点。
-
-M1-App-008 = done
-  -> LegacyGeometryAdapter P2C，edge 参数区间、子段长度、bbox、采样。
-
-M1-App-009 = done
-  -> LegacyGeometryAdapter P3A，edge split by parameter。
-
-M1-App-010 = done
-  -> edgeProjectPoint + edgeSplitAtPoint。
-
-M1-App-011 = done
-  -> edgeTrimEndpoint。
-
-M1-App-012 = done
-  -> pointToEdgeGroupDistance。
-
-M1-App-013 = done
-  -> buildSplineFromPoints。
-
-M1-App-014 = done
-  -> buildWireChain。
-
-M1-App-015 = done
-  -> offsetEdgePreview。
-
-M1-App-016 = done
-  -> facePlaneSectionPreview。
-
-M1-App-017 = done
-  -> edgeCircularSweepPreview。
-
-M1-App-018 = done
-  -> domain/rebar 钢筋领域模型冻结 P1。
-
-M1-App-019 = done
-  -> 旧命令契约绑定 P1，线筋 / 弧筋 / 与线裁剪 / 与面裁剪进入
-     LegacyUiCommandMap 和 CommandRegistry，当前为 NotImplemented 占位。
-
-TODO-020 = done
-  -> IDA MCP 旧线筋 / 弧筋链补证据，确认
-     sgroupbarline / sgroupbararc -> sub_1404D10C0 -> sub_1405D5670
-     的 split / spline / trim / min-distance / backup 写回主规则。
-
-TODO-021 / M1-App-020 = done
-  -> 旧线筋 / 弧筋创建算法 P0，新增 RebarGroupCreator、
-     LegacyRebarGeometryReader 和 SegmentCurveNormalizer P0 请求，
-     可输出 domain SteelBarGroup，但不声明完整旧 UI/golden。
-
-TODO-022 / M1-App-021 = done
-  -> AIS 钢筋显示映射 P0，RebarAisPresentationAdapter 可把
-     domain SteelBarGroup / SteelBarSegment 映射为 presentation/occ 层
-     AIS_Shape，不让 AIS / OCCT 泄漏进 domain/rebar。
-
-TODO-023 / M1-App-022 = done
-  -> 新设计文件格式 runtime P1，TsRebarProjectRuntime 可保存 /
-     读取 STEP 来源、selection-v1 refs、rebar groups、binding、
-     evidence 和 unresolved 字段。
-
-TODO-024 / M1-App-023 = done
-  -> DetailWriter P1，DetailWriter 可把 domain SteelData /
-     SteelBarGroup / SteelBar / SteelBarSegment 映射为 Detail.xml +
-     Detail01.stl 首批字段，并覆盖失败恢复旧 Detail 包。
-
-TODO-025 / Evidence = done
-  -> 旧图石输出钢筋 STP 样本入库验证，`123.stp` 已固定为
-     `tushi_rebar_123_stp` 几何 witness，记录源 SFL、hash、
-     OCCT import probe 和既有 5 轮 STEP selection gate 摘要。
-
-TODO-027 / M2-UI = done
-  -> 旧 UI 功能入口 P1，`17` 矩阵一期入口已接入
-     CommandId / LegacyUiCommandMap / CommandRegistry / Qt6 QAction，
-     `tsrebar_app --smoke` 会校验 QAction 追溯 metadata。
-
-TODO-029 / M2-Edit = done
-  -> Rebar.Edit.Move / 钢筋移动 P0，IDA MCP 已补证
-     barmove -> Input_Choice -> translate_transf 移动链，
-     domain/rebar 新增 RebarEditMoveService，按 copyFlag=0
-     实现领域层整体平移，不声明完整旧 ACIS topology mutation。
-
-TODO-032 / M2-Edit = done
-  -> Rebar.Edit.Copy / 钢筋拷贝 P0，IDA MCP 已补证
-     scopy -> Input_Choice copyFlag=1 -> sub_1405989C0 -> sub_1405AA5D0
-     拷贝链，domain/rebar 新增 RebarEditCopyService，按复制后累计平移
-     实现领域层 copy，不声明完整旧 ACIS topology clone、旧编号、dirty/undo 或 golden。
-```
-
-当前最新验证基线：
-
-```text
-app 默认 CTest = 20/20 pass
-readiness gate = M1-Formal-Ready, 84/84 pass
-domain/rebar + drawing + project OCCT 边界 = pass
-TODO-030 xhigh 复审 = allow_commit
-TODO-031 xhigh review = allow_commit
-TODO-033 xhigh review = allow_commit
-TODO-034 IDA MCP 复核 = fdrawing_arx_todo034 active session
-TODO-035 验证 = CTest 17/17 pass, readiness 84/84 pass, OCCT leak scan pass, xhigh allow_commit
-TODO-036 验证 = complexSkeleton.passed=true, acad.exe/accoreconsole.exe not_found, AutoCAD registry root keys exist but no version child groups, autocadL2 not_run, CTest 17/17 pass, readiness 84/84 pass, OCCT leak scan pass, xhigh needs_fix important fixed
-TODO-037 验证 = pointFaceEdge.passed=true, acad.exe/accoreconsole.exe not_found, AutoCAD registry root keys exist but no version child groups, autocadL2 not_run, CTest 17/17 pass, readiness 84/84 pass, OCCT leak scan pass, xhigh allow_commit
-TODO-038 验证 = sectionLine.passed=true, lineCount=1, arcCount=1, autocadL2=not_run, CTest 17/17 pass, readiness 84/84 pass, OCCT leak scan pass, xhigh allow_commit
-TODO-039 验证 = sectionLine.passed=true, lineCount=1, arcCount=1, acad.exe/accoreconsole.exe not_found, AutoCAD registry root keys exist but no version child groups, autocadL2=not_run, CTest 17/17 pass, readiness 84/84 pass, OCCT leak scan pass, xhigh allow_commit
-TODO-040 验证 = lineContainers.passed=true, containerCount=4, acad.exe/accoreconsole.exe not_found, AutoCAD registry root keys exist but no version child groups, autocadL2=not_run, CTest 17/17 pass, readiness 84/84 pass, OCCT leak scan pass, xhigh round2 allow_commit
-TODO-041 验证 = lineContainers.passed=true, containerCount=4, acad.exe/accoreconsole.exe not_found, AutoCAD registry root keys exist but no version child groups, autocadL2=not_run, CTest 17/17 pass, readiness 84/84 pass, OCCT leak scan pass, xhigh allow_commit
-TODO-042 验证 = pointFaceEdge.passed=true, pointGroupCount=2, pointGeoCount=2, faceEdgeCount=2, acad.exe/accoreconsole.exe not_found, AutoCAD registry root keys exist but no version child groups, autocadL2=not_run, CTest 17/17 pass, readiness 84/84 pass, OCCT leak scan pass, xhigh allow_commit
-TODO-043 验证 = othersSteeljoint.passed=true, Others empty container, steeljoint-line/joints present, acad.exe/accoreconsole.exe not_found, AutoCAD registry root keys exist but no version child groups, autocadL2=not_run, CTest 17/17 pass, readiness 84/84 pass, OCCT leak scan pass, xhigh needs_fix important fixed, agent closed
-TODO-044 验证 = othersSteeljoint.passed=true, Others empty container, steeljoint-line/joints present, acad.exe/accoreconsole.exe not_found, AutoCAD registry root keys exist but no version child groups, autocadL2=not_run, CTest 18/18 pass, readiness 84/84 pass, OCCT leak scan pass, xhigh needs_fix important fixed, agent closed
-TODO-057 验证 = owner types traced to steelbar / steelbargroup / seg_steelbargroup, Dialog #428 OK chain traced to sub_14045D720 -> sub_1405CB160 -> sub_1405B7350, child+112 narrowed to phase/position/start offset, phase1 gate unittest 18 tests pass, CTest 18/18 pass, readiness 84/84 pass, OCCT leak scan pass, xhigh completed important_fixed minor_refined
-TODO-069 验证 = StbRow smallTable / mirrorType / mirrorSEFlag 字段骨架已输出，CTest 18/18 pass, readiness unit 28/28 pass, strict readiness 84/84 pass, OCCT leak scan pass, xhigh needs_fix important fixed, one-shot reviewer process exited
-
-latest completed baseline tag = m2-rebar-create-017-todo-087-linegroup-save-package-runtime-openback
-current node tag to create after verification = m2-rebar-create-018-todo-088-project-open-runtime-snapshot-app-entry
-```
-
-当前下一步：
-
-```text
-TODO-088 / Project.Open runtime snapshot 恢复到 app 内存 / 显示入口 P0
-  -> 接头链路现阶段先记录、暂缓。
-  -> TODO-071 已完成 sgroupbarline 入口契约冻结。
-  -> TODO-072 已完成 LineGroup command handler P0 事务接入。
-  -> TODO-073 已完成 LineGroup UI/AIS 可见反馈 P0。
-  -> TODO-074 已完成 LineGroup 参数窗口 P0。
-  -> TODO-075 已完成先选择预检、再打开参数窗口的最小顺序对齐。
-  -> TODO-076 已确认旧 handler / helper 无直接中文失败提示，公共链只收窄到 Input_float / Dialog #383。
-  -> TODO-077 已完成旧 UI 运行确认清单与工件门禁。
-  -> TODO-078 已确认采样目录只有模板、缺真实旧图石运行工件，因此 blocked。
-  -> TODO-079 已完成旧 UI / Dialog 静态资源补证，仍没有直接旧中文 UI / 状态栏文案绑定。
-  -> TODO-080 已完成旧 sub_1404D10C0 已确认公共创建 gate 与 diagnostic P0 对齐。
-  -> TODO-081 已完成 sub_1404D10C0 -> sub_140451730 -> createdObject / payload 字段语义补证。
-  -> TODO-082 已完成 roles DTO / raw evidence 对齐。
-  -> TODO-083 已完成 split / spline / trim trace P0。
-  -> TODO-084 已完成 group minimum distance trim loop、backup/write edge 和 dirty 写回 gap contract。
-  -> TODO-085 已完成新 app 线配筋命令成功后的 dirty/transaction P0 状态。
-  -> TODO-086 已完成新 app 保存成功清 dirty / 保存失败保持 dirty P0。
-  -> TODO-087 已完成保存包 runtime 回读验证 P0。
-  -> 下一轮只做 Project.Open runtime snapshot 恢复到 app 内存 / 显示入口 P0。
-  -> 不自动启动旧图石，不安装 HASP，不用 OCCT 直接重写钢筋业务。
-  -> 不替代 TODO-078 的真实运行确认。
-```
-
-长期执行循环：
-
-```text
-从 todo.csv 中选择 status=next 的任务。
-如果没有 next，选择依赖已满足的最高优先级 P0 pending。
-每轮只推进一个明确切片。
-每轮必须先读该任务 evidence 指向的文档。
-每轮必须先补测试或测试用例，再改实现。
-每轮实现后必须跑窄测、默认 CTest、readiness gate 或专项 gate。
-涉及代码、测试、构建脚本的节点，验证通过后、commit 前必须执行 xhigh 只读 review。
-xhigh 只能审查，不能修改；Critical / Important 必须由主流程 agent 修复或写明技术反驳理由。
-每轮必须更新实现记录、build report、追溯矩阵、缺口文档和 todo.csv。
-每轮完成后必须 commit、打 annotated tag、push main 和 tags。
-完成一个切片后停止复盘，不自动进入下一个切片。
-```
-
-每轮开始必须检查：
-
-```text
-git status --short --branch
-todo.csv 当前 next 项
-46_CSE_v2Goal执行目标与Todo说明.md 当前目标
-99_缺口和待确认项.md 当前相关缺口
-app/src/domain/rebar 是否仍无 OCCT / AIS 类型泄漏
-```
-
-每轮默认验证命令：
-
-```text
-cd /d "C:\Users\ghost\Desktop\reverse_engineering\【03】图石软件\【图石钢筋1比1复刻】\app"
-
-"D:\Work\vcpkg\downloads\tools\cmake-4.3.2-windows\cmake-4.3.2-windows-x86_64\bin\cmake.exe" --build build
-
-"D:\Work\vcpkg\downloads\tools\cmake-4.3.2-windows\cmake-4.3.2-windows-x86_64\bin\ctest.exe" --test-dir build --output-on-failure
-```
-
-每轮必须额外运行：
-
-```text
-py .\tools\phase1_readiness_gate\check_phase1_readiness.py --strict
-
-rg -n "TopoDS_|AIS_|BRep|TopAbs_" ".\app\src\domain\rebar"
-```
-
-TDD 规则：
-
-```text
-新增功能或行为变更必须先写失败测试。
-必须看到 RED。
-再写最小实现。
-再跑 GREEN。
-没有 RED 不能声称 TDD 完成。
-```
-
-禁止事项：
-
-```text
-禁止把父目录 src/rebar/* 当作旧图石业务真相迁入。
-禁止迁入 RebarCreationCommandService。
-禁止迁入 EdgeToRebarFactory。
-禁止迁入 FaceRebarGenerator。
-禁止迁入 PolylineRebarGenerator。
-禁止用 OCCT 能怎么做替代旧图石怎么做。
-禁止在 domain/rebar 中出现 TopoDS_、AIS_、BRep*、TopAbs_。
-禁止业务层直接依赖 OCCT / AIS。
-禁止在没有证据时把低置信推断写成确定结论。
-禁止 CTest 或 gate 失败时继续堆新功能。
-禁止因为没有 golden 就跳过证据追溯。
-禁止让 xhigh agent 修改文件、格式化、commit、tag、push。
-禁止代码节点跳过 xhigh 只读 review 后提交。
-```
-
-允许事项：
-
-```text
-允许参考父目录的 STEP/STP 导入、XCAF 遍历、AIS viewer、
-选择 ID、OCCT API 写法。
-
-允许在 LegacyGeometryAdapter 内部使用 OCCT。
-
-允许在 presentation / viewer 层使用 AIS。
-
-允许在文档中把低置信结论明确标为 gap。
-
-允许 IDA MCP 可用时优先查旧函数、调用链、常量、字段。
-```
-
-IDA / 旧图石确认规则：
-
-```text
-遇到旧业务不确定时，优先级如下：
-
-1. IDA MCP 查询旧 VisualTS 函数、调用链、常量和字段。
-2. 旧图石软件运行确认，记录截图、操作步骤、输出文件、hash。
-3. SFL / Detail / STP 样本交叉验证。
-4. 父目录代码只能作为 OCCT 工程写法参考，不能关闭旧业务证据缺口。
-
-如果 IDA MCP 不可用，必须写入 99_缺口和待确认项.md。
-```
-
-证据闭环要求：
-
-```text
-每个已完成功能必须有：
-
-1. 实现记录 md。
-2. build report md。
-3. build report json。
-4. 需求证据追溯矩阵更新。
-5. 99 缺口更新。
-6. todo.csv 状态更新。
-7. CTest 结果。
-8. readiness gate 结果。
-9. 代码节点的 xhigh 只读 review 结论和处理结果。
-10. commit。
-11. annotated tag。
-12. push 到 GitHub。
-```
-
-xhigh 只读 review 契约：
-
-```text
-适用范围：
-  涉及代码、测试、构建脚本的节点强制执行。
-  纯文档、todo、证据整理节点不强制，但可以按需执行。
-
-执行时机：
-  主流程 agent 完成实现和本地验证后、commit 前执行。
-
-xhigh 权限：
-  只读。
-  只能读取 diff、相关文档、测试输出和验证报告。
-  不能修改文件。
-  不能 apply patch。
-  不能运行格式化写回。
-  不能 commit、tag、push。
-
-输入必须包含：
-  当前任务目标。
-  相关 goal / todo / evidence 文档。
-  base/head diff。
-  本地验证命令和输出。
-  本轮禁止事项，尤其是 OCCT 不得泄漏进 domain/rebar。
-
-输出必须包含：
-  Critical：必须修。
-  Important：必须修或主流程 agent 写明技术反驳理由。
-  Minor：可记录后续处理。
-  Verdict：block 或 allow_commit。
-
-子代理生命周期：
-  xhigh 或其他子代理完成本轮任务并返回结论后，主流程 agent 必须及时调用 close_agent 关闭该子代理。
-  关闭范围只限已经完成且不再需要的子代理，目的是减少代理负担。
-  这不是“清空代理池”，也不关闭仍在执行有效任务的代理。
-  如确需继续复用同一个子代理，必须在当前轮说明原因；复用结束后仍要关闭。
-
-修复责任：
-  xhigh 只给意见。
-  主流程 agent 负责修改、再验证、文档更新、commit、tag、push。
-
-不可用处理：
-  如果 xhigh agent 不可用，必须在实现记录或 build report 中写明阻塞原因。
-  不能伪造 review 结果。
-```
-
-Git 节点规则：
-
-```text
-每完成一个清晰节点必须 commit。
-每个节点必须打 annotated tag。
-tag 命名建议：
-
-m1-app-015/offset-curve-preview-spike
-m1-app-016/section-intersection-spike
-m1-app-017/sweep-capability-boundary
-m1-app-018/rebar-domain-model-p1
-
-提交后必须：
-
-git push origin main
-git push origin --tags
-```
-
-长期成功标准：
-
-```text
-功能矩阵完整。
-技术路线明确。
-命令契约可开发。
-钢筋领域模型可编码。
-Detail 工程图字段可映射。
-新设计文件格式可保存/读取/修复 binding。
-需求、证据、缺口、运行确认能互相追溯。
-关键缺口通过 IDA 或旧图石运行确认逐步闭合。
-Qt6 + OCCT 只替代商业底座。
-钢筋业务按旧 VisualTS 证据 1:1 复刻。
-```
-
-当前长期风险：
-
-```text
-IDA MCP 当前可能没有绑定数据库。
-旧图石运行确认依赖用户操作。
-OCCT 和 ACIS 几何细节可能有容差差异。
-没有 golden 时只能先做结构正确和证据闭环。
-父目录旧开发路线容易把项目带回“OCCT 直接重写钢筋”的错误方向。
-```
-
-恢复 / 回滚规则：
-
-```text
-发现路线偏移时，停止继续开发钢筋业务，先回到文档和 adapter 边界修正。
-
-出现以下情况要停止并修正：
-
-domain/rebar 出现 OCCT include。
-父目录 rebar 业务被迁入。
-测试失败但继续堆功能。
-旧逻辑无证据却写成确定结论。
-todo.csv 状态和 46 目标不一致。
-文档说已完成但没有 build report / gate / commit / tag。
-```
-
-本长期 goal 的执行方式：
-
-```text
-不要中途停下来问是否继续。
-除非遇到真实阻塞，否则按 todo.csv 顺序持续推进。
-每轮只做一个切片。
-每轮完成后更新 46，让下一轮 goal 指向新的 next。
-每轮完成后输出：
-
-完成了什么
-验证了什么
-还缺什么
-下一阶段建议做什么
-commit / tag / push 状态
-```
-
-### 短期 Goal（下一轮推荐复制）
-
-目标：只完成 `TODO-088 / Project.Open runtime snapshot 恢复到 app 内存 / 显示入口 P0` 这个短期阶段，不自动进入后续长期开发。
-
-当前状态：
-
-```text
-接头链路现阶段先记录、暂缓：
-  TODO-050 = blocked
-  TODO-061 = pending
-  不再作为当前 next。
-
-非接头主线已推进到：
-  TODO-071 = done  线配筋入口契约冻结
-  TODO-072 = done  LineGroup command handler P0
-  TODO-073 = done  LineGroup UI/AIS 可见反馈 P0
-  TODO-074 = done  LineGroup 参数窗口 P0
-  TODO-075 = done  选择预检与参数窗口顺序对齐 P0
-  TODO-076 = done  旧 UI 失败提示与状态栏口径静态 stop point
-  TODO-077 = done  旧图石运行确认采样清单与拒收规则
-  TODO-078 = blocked  当前只有模板，没有真实旧图石运行截图/hash/listing/填写后的 notes
-  TODO-079 = done  旧 UI / Dialog 静态资源补证 static stop point
-  TODO-080 = done  公共创建 core gate 与 diagnostic P0 对齐
-  TODO-081 = done  createdPayload / objA / objB 字段语义补证
-  TODO-082 = done  roles DTO / raw evidence 对齐
-  TODO-083 = done  split / spline / trim trace P0
-  TODO-084 = done  group-min-distance / backup-write / dirty-write gap contract
-  TODO-085 = done  线配筋命令成功 dirty/transaction 状态 P0
-  TODO-086 = done  线配筋 dirty 状态与保存清除入口准备 P0
-  TODO-087 = done  线配筋保存包 runtime 回读验证 P0
-  TODO-088 = next  Project.Open runtime snapshot 恢复到 app 内存 / 显示入口 P0
-```
-
-本轮只做：
-
-```text
-ProjectOpenRuntimeSnapshotAppEntryP0 / TODO-088
-  -> 从 todo.csv / 33 / 46 / 99 / 125 出发
-  -> 基于 E-DEV-046 / E-DEV-108 / E-DEV-109 已确认的 runtime save/open-back P0
-  -> 把 Project.OpenTsRebar 最小 app 入口接到 TsRebarProjectRuntime.open 结果
-  -> 打开后 MainWindow/app 内存可恢复 group / bar / segment
-  -> bindingDecision 不 blocked
-  -> open 后不 dirty
-  -> 为后续 AIS 重新显示入口准备最小状态
-  -> 仍保留旧 sub_1405E49D0 / undo / save prompt / golden parity gap
-  -> 不一次性实现完整旧 Save/Open UI、SaveAs、关闭提示或旧 SFL 兼容
-  -> 更新实现记录、run report、追溯矩阵、缺口文档、46 和 todo
-  -> 本轮是代码 / 测试节点，必须先补测试，再实现
-  -> 运行默认 CTest、readiness gate、OCCT 泄漏检查和 git diff --check
-  -> commit 前必须执行 xhigh 只读 review
-  -> 不启动旧图石，不安装 HASP
-  -> 不改 LineGroupParameterDialog 文案
-  -> 不改旧保存 UI 文案
-  -> 不用 OCCT 直接重写钢筋业务
-  -> 不迁入父目录 rebar 业务
-  -> domain/rebar 不引入 TopoDS / AIS / BRep / TopAbs
-  -> 不进入完整线配筋算法、面配筋、弧筋、接头、Excel、Detail 字段继续扩张
-  -> 不跑 AutoCAD L2，不进入 golden
-```
+本轮必须先读：
+
+1. `46_CSE_v2Goal执行目标与Todo说明.md`
+2. `todo.csv`
+3. `docs/adr/ADR-20260611-step-only-rebarsmart-detail.md`
+4. `docs/roadmap/STEP_only_RebarSmart_Detail_refactor_plan.md`
+5. `05_Detail工程图包证据.md`
+6. `13_Detail字段映射矩阵.md`
+7. `20_DetailWriter输出事务契约.md`
+8. `99_缺口和待确认项.md`
 
 目标语义：
 
 ```text
-TODO-078 不是完成了，而是 blocked：
-  runtime_capture/todo_077_line_group_ui_prompt_capture 目前只有模板。
-  缺 hashes.txt、旧图石运行截图、listing、输出 hash 和填写后的 capture_notes。
-
-TODO-079 已完成 static stop point：
-  旧 UI / Dialog / 状态栏静态证据已继续收窄。
-  仍不能替代旧图石真实运行确认。
-
-TODO-080 已完成：
-  不再继续猜 UI 文案。
-  已把旧 sub_1404D10C0 已确认的公共创建 gate 和失败诊断对齐到 P0 代码/测试。
-
-TODO-081 已完成：
-  createdObject + 104 可作为 createdPayload。
-  sub_1405D5670 第 4 个 double 来自 distanceA_4digit。
-  createdObject + 112 只能低置信记为 linkedModelRef / createdLinkRef。
-  objA / objB 在线配筋和弧形组入口存在角色交换风险，不能硬编码为固定源/目标组。
-
-TODO-082 已完成：
-  createdPayloadRef / linkedModelRef / distanceA_4digit / objA-objB role
-  已落到 LegacyPublicCreateRolesSnapshot 和 raw evidence。
-  normalizer 已使用 distanceA_4digit。
-
-TODO-083 已完成：
-  LegacySegmentCurveNormalizeTrace / Result 已落地。
-  api_entity_entity_distance / api_split_curve / api_curve_spline / endpoint trim
-  已写入 createdFromParameters / legacyRaw。
-  line_group_display_smoke_123 已覆盖 viewer reader 的 effectiveSampleCount。
-  groupMinimumDistanceTrimLoop 和 backupWriteEdge 当时仍保持 deferred。
-
-TODO-084 已完成：
-  groupMinimumDistanceTrimLoop / api_entity_point_distance /
-  thresholdDistanceA4Digit / start-end endpoint probe /
-  backupWriteEdge / ENTITY::backup / entity+72 write /
-  postCreateMutationOrder / dirtyWrite deferred
-  已落到 createdFromParameters / legacyRaw。
-
-  但 TODO-084 仍只是 gap contract：
-  不能证明完整旧 ACIS topology mutation、旧 dirty parity、
-  旧 undo/save 体系或完整线配筋算法已经完成。
-
-TODO-081 / TODO-082 / TODO-083 / TODO-084 仍不能证明：
-  完整线配筋算法已完成。
-  旧图石真实运行提示已闭合。
-  Dialog #383 一定出现在真实线配筋流程。
-  当前 Qt6 LineGroupParameterDialog 已 1:1 等于旧图石窗口。
-  面配筋、弧筋、接头、Excel、Detail 或 golden 已完成。
-
-TODO-085 已完成：
-  在旧 sub_1404D10C0 成功链已确认会调用 sub_1405E49D0 后，
-  正式 app 的线配筋命令已具备最小可测试 dirty/transaction 状态。
-
-  这一步只解决新 app 自己的成功/失败/取消状态污染边界，
-  不能把它说成旧图石 dirty/undo/save 完整等价。
-
-TODO-086 的价值是：
-  在 TODO-085 已能标 dirty 后，
-  补最小保存清除入口准备。
-
-  这一步只解决新 app 保存成功清 dirty / 保存失败保持 dirty 的 P0 边界，
-  不能把它说成旧图石保存 UI、撤销栈、关闭提示或完整 save parity 已完成。
+建立 Detail 包的内部数据模型，
+让后续 Reader / Writer / Exporter 都有统一承载对象。
 ```
 
-本轮完成后必须停止并复盘：
+建议输出：
 
 ```text
-完成了哪些 Project.Open app 内存恢复 P0 状态切片
-验证了哪些门禁和 xhigh review
-还缺哪些旧图石运行工件、旧类名、旧保存提示和完整算法证据
-TODO-078 是否仍 blocked
-下一阶段建议继续 TODO-089 还是回填 TODO-078
+app/src/drawing/detail/DetailPackage.h
+app/src/drawing/detail/DetailGeneralInfo.h
+app/src/drawing/detail/DetailPrimitive.h
+app/src/drawing/detail/DetailRebarGroup.h
+app/src/drawing/detail/DetailTable.h
+app/tests/... 对应 DetailPackage 模型测试
 ```
-### 按任务补读的参考文档
 
-如果任务涉及 UI / 菜单 / 命令入口，补读：
+验收标准：
 
-- `01_功能操作矩阵.md`
-- `02_界面窗口参数矩阵.md`
-- `17_一期按钮追溯与命令占位矩阵.md`
+1. 能构造一个空 `DetailPackage`。
+2. 能构造一个包含 `DrawingRoot / ViewPort / PartDetailDrawing / General-Info / section-line / StbDetailDrawing / StbGroups` 的最小对象。
+3. 能构造钢筋表、材料表、钢筋组、几何段的 P0 字段对象。
+4. 字段命名保持新系统语义，不能把业务模型直接命名成 `StbGroup1` 这类 XML 序号。
+5. 不写 XML 文件；Writer 是 TODO-092。
+6. 默认 CTest 通过。
+7. readiness gate 通过，或记录明确失败原因。
+8. domain/rebar 无 OCCT/AIS 泄漏。
+9. 代码节点完成后必须 xhigh 只读 review。
+10. 更新实现记录、build report、11、34、46、99、todo.csv。
+11. commit、annotated tag、push main 和 tags。
 
-如果任务涉及 IDA / 旧 VisualTS 调用链，补读：
+本轮禁止：
 
-- `03_IDA命令证据.md`
-- `15_线配筋与弧形组专项初稿.md`
-- `16_seg_steelbargroup字段地图初稿.md`
+- 不做 Reader。
+- 不做 Writer。
+- 不做 round-trip。
+- 不做 CAD 插件导入验证。
+- 不接 RebarModel。
+- 不接 RebarSmart 生成器。
+- 不迁入 RebarSmart DLL / VisualTS / 3DE / ACIS / HOOPS。
+- 不把 Detail 包当内部主数据格式。
 
-如果任务涉及 SFL / 旧样本 / 新设计文件格式，补读：
+## 后续任务队列
 
-- `04_SFL样本证据.md`
-- `18_新设计文件格式替代SFL策略.md`
-- `24_新设计文件格式Schema与Fixture草案.md`
-- `25_新设计文件格式SFL_OCCT联合开发任务拆解.md`
-- `26_首期可验证联合格式Fixture与Validator执行清单.md`
-- `29_首期tsrebar实际Fixture包清单与Golden断言.md`
-- `31_STEP选择ID实际运行记录模板与样本清单.md`
-- `33_Qt6应用SaveOpen与Binding修复契约.md`
-
-如果任务涉及 Detail / 工程图 / 下料表，补读：
-
-- `05_Detail工程图包证据.md`
-- `13_Detail字段映射矩阵.md`
-- `20_DetailWriter输出事务契约.md`
-
-如果任务涉及 Qt6 / OCCT / 依赖合规，补读：
-
-- `21_QtOCCT依赖许可证门禁.md`
-- `27_Qt6_OCCT开发入口门禁与首批工件清单.md`
-- `28_QtOCCT依赖清单与发布材料模板.md`
-- `DEPENDENCIES.md`
-- `THIRD_PARTY_NOTICES.md`
-
-如果任务涉及正式 app 已完成切片，补读：
-
-- `37_M1-App-001实现计划.md`
-- `38_M1-App-002最小AISViewer显示实现记录.md`
-- `39_M1-App-003选择系统实现记录.md`
-- `40_M1-App-004LegacyGeometryAdapterP0实现记录.md`
-- `41_M1-App-005LegacyGeometryAdapterP1实现记录.md`
-- `42_M1-App-006LegacyGeometryAdapterP2A实现记录.md`
-- `43_M1-App-007LegacyGeometryAdapterP2B实现记录.md`
-- `44_M1-App-008LegacyGeometryAdapterP2C实现记录.md`
-- `45_M1-App-009LegacyGeometryAdapterP3A实现记录.md`
-- `47_M1-App-010LegacyGeometryAdapterP3B实现记录.md`
-- `48_M1-App-011LegacyGeometryAdapterP3C实现记录.md`
-- `49_M1-App-012LegacyGeometryAdapterP3D实现记录.md`
-- `50_M1-App-013LegacyGeometryAdapterP3E实现记录.md`
-- `51_M1-App-014LegacyWireChain实现记录.md`
-- `52_M1-App-015LegacyGeometryAdapterOffsetSpike实现记录.md`
-- `53_M1-App-016LegacyGeometryAdapterSectionSpike实现记录.md`
-- `54_M1-App-017LegacyGeometryAdapterSweepBoundary实现记录.md`
-- `55_M1-App-018RebarDomainModelFreezeP1实现记录.md`
-
-### 当前已知状态
-
-当前正式 `app` 已完成：
-
-- `M1-App-001`：Qt6 app 骨架、五个旧图石页签、命令注册、STEP import probe。
-- `M1-App-002`：最小 OCCT AIS Viewer 和 STEP 显示。
-- `M1-App-003`：face / edge / vertex 选择系统、`selection-v1` 稳定引用。
-- `M1-App-004`：`LegacyGeometryAdapter P0`，EDGE / FACE 基础几何摘要。
-- `M1-App-005`：`LegacyGeometryAdapter P1`，bbox、采样、boundary loop、fingerprint、诊断矩阵。
-- `M1-App-006`：`LegacyGeometryAdapter P2A`，edge 切向、距离、最近点对。
-- `M1-App-007`：`LegacyGeometryAdapter P2B`，face boundary edge stableId、edge-face 接触/重叠代表点。
-- `M1-App-008`：`LegacyGeometryAdapter P2C`，edge 参数区间、子段长度、bbox、采样。
-- `M1-App-009`：`LegacyGeometryAdapter P3A`，edge split by parameter。
-- `M1-App-010`：`LegacyGeometryAdapter P3B`，edge point projection 和 split by projected point。
-- `M1-App-011`：`LegacyGeometryAdapter P3C`，endpoint inward trim summary。
-- `M1-App-012`：`LegacyGeometryAdapter P3D`，point to edge group minimum distance summary。
-- `M1-App-013`：`LegacyGeometryAdapter P3E`，point list spline rebuild summary。
-- `M1-App-014`：`LegacyWireChain`，edge refs to wire chain summary。
-- `M1-App-015`：`LegacyGeometryAdapter offset preview`，edge ref to offset curve preview summary。
-- `M1-App-016`：`LegacyGeometryAdapter section preview`，face-plane section preview summary。
-- `M1-App-017`：`LegacyGeometryAdapter sweep preview`，edge circular sweep preview summary。
-- `M1-App-018`：`domain/rebar` 钢筋领域模型冻结 P1，SteelData / SteelBarGroup / SteelBar / SteelBarSegment 字段可编码。
-- `M1-App-019`：旧命令契约绑定 P1，LineGroup / ArcGroup / TrimByLine / TrimByFace 可查询、可注册稳定 NotImplemented placeholder。
-- `TODO-020`：IDA MCP 旧线筋 / 弧筋链补证据，形成 `E-IDA-022`，可支撑 `TODO-021` 的 P0 业务创建 spike。
-- `M1-App-020`：旧线筋 / 弧筋创建算法 P0，RebarGroupCreator 可输出 domain SteelBarGroup。
-- `M1-App-021`：AIS 钢筋显示映射 P0，RebarAisPresentationAdapter 可输出 AIS_Shape。
-- `M1-App-022`：新设计文件格式 runtime P1，TsRebarProjectRuntime 可保存 / 读取 STEP 来源、selection-v1 refs、rebar groups、binding 和 evidence。
-- `M1-App-023`：DetailWriter P1，DetailWriter 可把 domain SteelData / SteelBarGroup / SteelBar / SteelBarSegment 映射为 Detail.xml + Detail01.stl 首批字段。
-- `TODO-025 / M1-App-024`：旧图石输出钢筋 STP 样本入库验证，`123.stp` 已固定为旧图石钢筋几何 witness；该证据只证明几何可被 OCCT 稳定读取，不证明旧业务算法或新系统可生成同样几何。
-- `TODO-027 / M2-UI-001`：旧 UI 功能入口 P1，`17` 矩阵一期入口已接入 `CommandId / LegacyUiCommandMap / CommandRegistry / Qt6 QAction`，并通过 `tsrebar_app --smoke` 校验追溯 metadata；该证据只证明入口占位和命令契约，不证明业务算法已实现。
-- `TODO-028 / M2-Gate-001`：CSE readiness gate 扩展，RouteGuardrail 已接入 `Phase1.ReadinessGate`，自动检查 OCCT/AIS 泄漏、父目录 rebar 业务引用、todo 状态和 done 节点报告；该证据只证明路线护栏可自动检查，不证明旧业务算法已完成。
-- `TODO-029 / M2-Edit-001`：Rebar.Edit.Move / 钢筋移动 P0，IDA MCP 已补证 `barmove -> Input_Choice -> translate_transf` 移动链，domain/rebar 新增 `RebarEditMoveService`；该证据只证明领域层整体平移 P0，不证明完整旧 ACIS topology mutation、dirty/undo 或 golden。
-- `TODO-032 / M2-Edit-002`：Rebar.Edit.Copy / 钢筋拷贝 P0，IDA MCP 已补证 `scopy -> Input_Choice copyFlag=1 -> sub_1405989C0 -> sub_1405AA5D0` 拷贝链，domain/rebar 新增 `RebarEditCopyService`；该证据只证明领域层复制后累计平移 P0，不证明完整旧 ACIS topology clone、旧编号、dirty/undo 或 golden。
-- `TODO-030 / M2-Stats-001`：钢筋统计 / 下料表 P0，IDA MCP 已补证 Detail / XML writer 侧 `StbTable / MaterialTable` 写出链，domain/rebar 新增 `RebarScheduleService`，DetailWriter 已消费同一 schedule service；该证据只证明首批统计字段和材料聚合 P0，不证明完整 `sameGrpNum` 合并规则、旧 `singleMass` 来源、`Volume722` ACIS 等价、AutoCAD L2 或 golden。
-- `TODO-031 / M2-Drawing-001`：DetailWriter 多图纸 DetailNN P0，IDA MCP 已补证旧 `Detail01..Detail09 / Detail10+` 命名规则；DetailWriter 可按多个 `DrawingView` 输出多张 `DetailNN.stl`，L0/L1 校验覆盖所有生成图纸，成功安装会删除旧多余 DetailNN 并保留非 Detail 文件，安装失败恢复旧 Detail 包；该证据只证明多图纸命名和事务 P0，不证明完整工程图、剖切线、隐藏线、填充线、AutoCAD L2 或 golden。
-- `TODO-033 / M2-Drawing-002`：AutoCAD L2 导入验证 P0，新增 `detail_l2_fixture_probe`，用正式 `DetailWriter` 生成 `Detail.xml + Detail01.stl + Detail02.stl + Detail03.stl` 三图纸验证包并记录 hash；旧 `FDrawing.arx / FDrawingObj.dbx` 文件存在且 hash 已记录；当前本机未发现 `acad.exe / accoreconsole.exe`，所以 AutoCAD L2 自动导入未运行；该证据只证明验证包和阻塞记录齐备，不证明旧插件已接受新包、完整工程图、剖切线、隐藏线、填充线或 golden。
-- `TODO-034 / M2-Drawing-003`：Detail复杂字段静态证据 P0，已从旧 `Detail01.stl` 样例整理 `continue-line / hidden-line / central-line / section-line / hatch-line / Others / steeljoint-line` 容器、section Line/Arc、pointStb 和 FaceEdge 字段；IDA MCP 复核 `FDrawing.arx` 中 `CViewInfo / CWSNLineDim / CWSNPointDim / CWSNSteelBarTable / CWSNMaterialTable` 等旧插件对象符号；该证据只证明静态字段和插件对象模型存在，不证明 AutoCAD L2 通过、旧插件容忍度、剖切线 / 隐藏线 / 填充线 / 接头线算法或 golden。
-- `TODO-035 / M2-Drawing-004`：DetailWriter复杂字段骨架 P0，正式 app `DetailWriter` 已输出 `PartDetailDrawing` 复杂容器骨架、`General-Info` 首批扩展默认字段和 `pointStb StbGeo shapeType=C` 字段骨架；该证据只证明字段骨架可由 writer 输出，不证明 AutoCAD L2 通过、旧插件接受新包、`CompanyName` 旧默认值、FaceEdge、ZValue、剖切线 / 隐藏线 / 填充线 / 接头线算法或 golden。
-- `TODO-036 / M2-Drawing-005`：AutoCAD L2复杂字段骨架导入验证 P0，`detail_l2_fixture_probe` 已生成 TODO-036 三图纸复杂骨架包，离线确认 `PartDetailDrawing num=8`、复杂容器和 `General-Info` 首批扩展字段；旧 `FDrawingObj.dbx / FDrawing.arx` 文件存在且 hash 已记录；当前本机未发现 `acad.exe / accoreconsole.exe`，AutoCAD 注册表根键存在但无版本子项，所以 AutoCAD L2 自动导入未运行；xhigh 已指出并修正 pointStb L2 变量污染，本轮不声明旧插件接受、pointStb L2、FaceEdge、完整工程图或 golden。
-- `TODO-037 / M2-Drawing-006`：DetailWriter pointStb / FaceEdge 兼容字段骨架 P0，正式 app `DetailWriter` 已输出 `pointStb StbGeo shapeType=C` 和显式 `FaceEdge shapeType=L/A` 字段骨架；`detail_l2_fixture_probe --fixture point-face-edge` 已生成独立三图纸包并离线确认 `pointFaceEdge.passed=true`；当前本机未发现 `acad.exe / accoreconsole.exe`，AutoCAD 注册表根键存在但无版本子项，所以 AutoCAD L2 自动导入仍未运行；本轮不声明旧插件接受、点筋生成算法、FaceEdge 生成规则、完整工程图或 golden。
-- `TODO-038 / M2-Drawing-007`：DetailWriter section-line Line/Arc/ZValue 字段骨架 P0，正式 app `DetailWriter` 已输出 `section-line / lines / LineN` 和 `section-line / Arcs / ArcN` 字段骨架，并保留旧样例确认的 `ZValue` 字符串；`detail_l2_fixture_probe --fixture section-line` 已生成独立三图纸包并离线确认 `sectionLine.passed=true`；本轮不声明旧插件接受、真实剖切线算法、隐藏线 / 填充线 / 接头线算法、`ZValue` 语义、完整工程图或 golden。
-- `TODO-039 / M2-Drawing-008`：DetailWriter section-line AutoCAD L2 运行确认准备 P0，复用 `section-line` 独立变量生成 TODO-039 三图纸 Detail 包和手工 L2 确认清单，记录 FDrawing 插件 hash，并确认本机未发现 `acad.exe / accoreconsole.exe`，AutoCAD 注册表根键存在但无版本子项，所以 `autocadL2=not_run`；默认 CTest、strict readiness 和保护层 OCCT/AIS 泄漏扫描已通过；本轮不声明旧插件接受、AutoCAD L2 通过、真实剖切线算法、`ZValue` 语义、完整工程图或 golden。
-- `TODO-040 / M2-Drawing-009`：DetailWriter 线容器字段骨架 P0，正式 app `DetailWriter` 已输出 `continue-line / hidden-line / central-line / hatch-line` 下的 `LineN start_x/start_y/end_x/end_y/ZValue` 字段骨架；`detail_l2_fixture_probe --fixture line-containers` 已生成独立三图纸包并离线确认 `lineContainers.passed=true`；本轮不声明旧插件接受、AutoCAD L2 通过、真实连续线 / 隐藏线 / 中心线 / 填充线算法、完整工程图或 golden。
-- `TODO-041 / M2-Drawing-010`：DetailWriter line-containers AutoCAD L2 运行确认准备 P0，复用 `line-containers` 独立变量生成 TODO-041 三图纸 Detail 包和手工 L2 确认清单，记录 FDrawing 插件 hash、旧样例包 hash 和新包 hash，并确认本机未发现 `acad.exe / accoreconsole.exe`，AutoCAD 注册表根键存在但无版本子项，所以 `autocadL2=not_run`；本轮不声明旧插件接受、AutoCAD L2 通过、真实连续线 / 隐藏线 / 中心线 / 填充线算法、完整工程图或 golden。
-
-当前最新验证状态：
+推荐新队列：
 
 ```text
-app 默认 CTest = 20/20 pass
-readiness gate = M1-Formal-Ready, 84/84 pass
-domain/rebar + drawing + project OCCT 边界 = pass
-TODO-030 xhigh 复审 = allow_commit
-TODO-031 xhigh review = allow_commit
-TODO-033 xhigh review = allow_commit
-TODO-034 验证 = CTest 17/17 pass, readiness 84/84 pass, OCCT leak scan pass；xhigh first review found doc-status drift and fix is applied
-TODO-035 验证 = CTest 17/17 pass, readiness 84/84 pass, OCCT leak scan pass, xhigh allow_commit
-TODO-036 验证 = complexSkeleton.passed=true, acad.exe/accoreconsole.exe not_found, AutoCAD registry root keys exist but no version child groups, autocadL2 not_run, CTest 17/17 pass, readiness 84/84 pass, OCCT leak scan pass, xhigh needs_fix important fixed
-TODO-037 验证 = pointFaceEdge.passed=true, pointGroupCount=2, pointGeoCount=2, faceEdgeCount=2, acad.exe/accoreconsole.exe not_found, AutoCAD registry root keys exist but no version child groups, autocadL2 not_run, CTest 17/17 pass, readiness 84/84 pass, OCCT leak scan pass, xhigh allow_commit
-TODO-038 验证 = sectionLine.passed=true, lineCount=1, arcCount=1, acad.exe/accoreconsole.exe not_found, AutoCAD registry root keys exist but no version child groups, autocadL2=not_run, CTest 17/17 pass, readiness 84/84 pass, OCCT leak scan pass, xhigh allow_commit
-TODO-039 验证 = sectionLine.passed=true, lineCount=1, arcCount=1, acad.exe/accoreconsole.exe not_found, AutoCAD registry root keys exist but no version child groups, autocadL2=not_run, CTest 17/17 pass, readiness 84/84 pass, OCCT leak scan pass, xhigh allow_commit
-TODO-040 验证 = lineContainers.passed=true, containerCount=4, acad.exe/accoreconsole.exe not_found, AutoCAD registry root keys exist but no version child groups, autocadL2=not_run, CTest 17/17 pass, readiness 84/84 pass, OCCT leak scan pass, xhigh round2 allow_commit
-TODO-041 验证 = lineContainers.passed=true, containerCount=4, acad.exe/accoreconsole.exe not_found, AutoCAD registry root keys exist but no version child groups, autocadL2=not_run, CTest 17/17 pass, readiness 84/84 pass, OCCT leak scan pass, xhigh allow_commit
-TODO-042 验证 = pointFaceEdge.passed=true, pointGroupCount=2, pointGeoCount=2, faceEdgeCount=2, acad.exe/accoreconsole.exe not_found, AutoCAD registry root keys exist but no version child groups, autocadL2=not_run, CTest 17/17 pass, readiness 84/84 pass, OCCT leak scan pass, xhigh allow_commit
-TODO-043 验证 = othersSteeljoint.passed=true, Others empty, steeljoint-line/joints present, acad.exe/accoreconsole.exe not_found, AutoCAD registry root keys exist but no version child groups, autocadL2=not_run, CTest 17/17 pass, readiness 84/84 pass, OCCT leak scan pass, xhigh needs_fix important fixed, agent closed
-TODO-044 验证 = othersSteeljoint.passed=true, Others empty, steeljoint-line/joints present, acad.exe/accoreconsole.exe not_found, AutoCAD registry root keys exist but no version child groups, autocadL2=not_run, CTest 18/18 pass, readiness 84/84 pass, OCCT leak scan pass, xhigh needs_fix important fixed, agent closed
-TODO-046 验证 = JointWeldLength half-length formula closed, pattern raw byte = 0x4C('L'), Others gate = *(v8+848)&&a4==0, extra arc branch ties to DrawTaoTong, autocadL2=not_run, CTest 18/18 pass, readiness 84/84 pass, OCCT leak scan pass, xhigh not_required_docs_only
-TODO-047 验证 = VisualTS startup stop point recorded, mainWindowTitle=提示, visible text prefix=请检查网线是否..., SFL not opened, runtime non-empty sample not collected, autocadL2=not_run, CTest 18/18 pass, readiness 84/84 pass, OCCT leak scan pass, xhigh not_required_docs_only
-TODO-048 验证 = startup chain closed, error41=许可已过期, otherNonZeroFallback=请检查网线是否接好, manualPrereqChecklistReady=true, autocadL2=not_run, CTest 18/18 pass, readiness 84/84 pass, OCCT leak scan pass, xhigh not_required_docs_only
-TODO-051 验证 = symbolcutIOS producer chain traced, HVIEWPORT+840/+848 producer confirmed, uiChineseCaptionClosed=false, nonEmptyRuntimeSampleCollected=false, autocadL2=not_run, CTest 18/18 pass, readiness 84/84 pass, OCCT leak scan pass, xhigh not_required_docs_only
-TODO-052 验证 = static UI/Ribbon stop point, joint command handler table traced, direct Ribbon immediate hit=false, dialog resources confirmed, uiChineseCaptionClosed=false, nonEmptyRuntimeSampleCollected=false, autocadL2=not_run, CTest 18/18 pass, readiness 84/84 pass, OCCT leak scan pass, xhigh not_required_docs_only
-TODO-053 验证 = dynamic context menu mechanism traced, popup constructors=sub_1405C2EF0/sub_1406BA690, LoadMenuW resources=0xAD/0xF8, all MENU known joint hits=0, known joint immediate matches=false, uiChineseCaptionClosed=false, contextMenuBindingClosed=false, nonEmptyRuntimeSampleCollected=false, autocadL2=not_run, xhigh not_required_docs_only
-TODO-054 验证 = joint handler object filters classified, bar/group/seg/feat source=selection item +13 with type predicates, goujian source=selection item +80==4 plus item+120 child chain node+104, uiChineseCaptionClosed=false, nonEmptyRuntimeSampleCollected=false, autocadL2=not_run, xhigh not_required_docs_only
-TODO-055 验证 = joint handler action field semantics traced, groupjoint obj+80 child chain and child+72/+88/+96/+108/+112/+116/+128 fields classified, backup write helpers closed, feat/goujian obj+192 clear adapter traced, segjoint clear/dialog init classified, full sub_1405DB6C0 geometry algorithm still open, autocadL2=not_run, xhigh not_required_docs_only
-TODO-056 验证 = DB6C0 static rebuild core traced, child+88/+108/+112/+116 and node+72/+80/+88/+104/+112 fields classified, reverse traversal and helper chain closed, bounded curve parameter sampling and end_indexed_polygon(rcx=node, rdx=point, r8d=intMmIndex) confirmed, owning structure names/dialog apply/runtime sample still open, autocadL2=not_run, xhigh review completed, critical fixed, important fixed
-TODO-069 验证 = StbRow smallTable / mirrorType / mirrorSEFlag 字段骨架已输出，CTest 18/18 pass, readiness unit 28/28 pass, strict readiness 84/84 pass, OCCT leak scan pass, xhigh needs_fix important fixed, one-shot reviewer process exited
-TODO-070 验证 = lineStb + shapeType=L 的 StbGeo 字段集已收窄到 start/end/offset，detail_writer_tests TDD red->green, CTest 18/18 pass, readiness unit 29/29 pass, strict readiness 84/84 pass, OCCT leak scan pass, xhigh needs_fix important fixed, one-shot reviewer process exited
-TODO-071 验证 = sgroupbarline 表项、sub_1404DE720 入口契约和 sub_1404D10C0 公共创建调用已由 IDA MCP 复核，RebarGroupCreator P0 raw/evidence 已写入 E-IDA-045 / E-DEV-093，rebar_group_creator_tests TDD red->green, CTest 18/18 pass, readiness unit 31/31 pass, strict readiness 84/84 pass, xhigh needs_fix important fixed, agent closed
-TODO-072 验证 = RebarLineGroupCommandHandler 已接入 CommandId::RebarLineCreate，测试覆盖 empty selection / wrong type / valid edge / geometry failure / normalizer failure，CTest 19/19 pass, readiness unit 32/32 pass, strict readiness 84/84 pass, domain/rebar + command OCCT leak scan pass, xhigh allow_commit，Franklin reviewer 已关闭
-TODO-073 验证 = Rebar.Create.LineGroup 成功后已通过 RebarAisPresentationAdapter / OccViewerWidget 显示新增 SteelBarGroup，line_group_display_smoke_123 覆盖失败路径不刷新、成功路径显示计数增加、连续两次成功创建显示不同新 group，CTest 20/20 pass, readiness unit 33/33 pass, strict readiness 84/84 pass, domain/rebar + command OCCT leak scan pass, xhigh needs_fix 且 Critical / Important 已修复，Socrates reviewer 已关闭
-TODO-074 验证 = LineGroupParameterDialog P0 已接入 Rebar.Create.LineGroup，参数传递覆盖默认值和用户修改值，取消/失败不污染 SteelData 且不刷新 AIS，IDA MCP 未确认旧 Dialog 字段字符串，CTest 21/21 pass, readiness unit 34/34 pass, strict readiness 84/84 pass, domain/rebar + command OCCT leak scan pass, xhigh allow_commit，Erdos reviewer 已关闭
-TODO-075 验证 = Rebar.Create.LineGroup 已先做当前选择预检再打开 LineGroupParameterDialog，无选择 / 非 edge 不打开参数窗口、不污染 SteelData 且不刷新 AIS，有效 edge 保留 TODO-074 参数传递能力，CTest 21/21 pass, readiness / leak / xhigh 结果见 113 和 m2_rebar_create_005_run_001
-TODO-076 验证 = IDA MCP 已确认 sub_1404DE720 / sub_14054B410 无直接中文失败提示字符串，sub_1404D10C0 只收窄到公共 ACIS outcome / part state 链和 Input_float / Dialog #383；Dialog #383 不是旧线配筋主参数窗口；旧运行提示和状态栏 pane 仍需 TODO-077 现场采样清单闭合
+TODO-090 / M1-Detail-001  DetailPackage 数据模型 P0
+TODO-091 / M1-Detail-002  DetailPackageReader P0
+TODO-092 / M1-Detail-003  DetailPackageWriter round-trip P0
+TODO-093 / M1-Detail-004  极简 Detail 包生成 P0
+TODO-094 / M2-RebarSmart-001  GenerateRebarData 参数结构 P0
+TODO-095 / M2-RebarSmart-002  RebarSmartIniLoader GBK/ANSI + unit handling P0
+TODO-096 / M2-RebarSmart-003  SpaceListParser P0
+TODO-097 / M2-RebarSmart-004  PrioritySpace/PriorityList Distributor P0
+TODO-098 / M2-RebarSmart-005  GuideCurveZoneCalculator P0
+TODO-099 / M3-Geometry-001  IGeometryEngine 接口 P0
 ```
 
-当前下一步：
+## 证据优先级
 
-```text
-TODO-087 / 线配筋保存包 runtime 回读验证 P0
-  -> TODO-071 已完成 sgroupbarline 入口契约冻结
-  -> TODO-072 已完成 LineGroup command handler P0 事务接入
-  -> TODO-073 已完成 LineGroup UI/AIS 可见反馈 P0
-  -> TODO-074 已完成 LineGroup 参数窗口 P0
-  -> TODO-075 已完成选择预检与参数窗口顺序对齐 P0
-  -> TODO-076 已完成旧 UI 失败提示与状态栏口径静态 stop point
-  -> TODO-077 已完成旧图石运行确认清单、截图/输出工件模板和拒收伪工件门禁
-  -> TODO-078 已确认当前只有模板、缺真实旧图石运行工件，因此 blocked
-  -> TODO-079 已完成旧 UI / Dialog 静态资源补证
-  -> TODO-080 已完成公共创建 core gate 与 diagnostic P0 对齐
-  -> TODO-081 已完成 createdPayload / distanceA_4digit / objA-objB 字段语义补证
-  -> TODO-082 已完成 roles DTO / raw evidence 对齐
-  -> TODO-083 已完成 split / spline / trim trace P0
-  -> TODO-084 已完成 group-min-distance / backup-write / dirty-write gap contract
-  -> TODO-085 已完成新 app 线配筋命令成功后的 dirty/transaction P0 状态
-  -> TODO-086 已完成新 app 保存成功清 dirty / 保存失败保持 dirty P0
-  -> TODO-087 已完成保存包 runtime 回读验证 P0
-  -> 下一轮只做 Project.Open runtime snapshot 恢复到 app 内存 / 显示入口 P0
-  -> 不自动安装 HASP，不自动启动旧图石
-  -> 不用 OCCT 直接重写钢筋业务，不迁入父目录 rebar 业务
-  -> 不替代 TODO-078 的真实运行确认
-  -> 不声明完整线配筋、AutoCAD L2 通过或 golden
-```
+钢筋生成：
 
-原因：
+1. RebarSmart3DE 类名、导出符号、INI 默认值、参数结构、反编译证据。
+2. 旧图石导出的 STP / Detail / 下料表 / 截图等结果证据。
+3. VisualTS / IDA 作为补充，不再单独驱动 P0 生成逻辑。
+4. 父目录代码只能参考工程写法。
 
-```text
-TODO-067 已经把真实字段差距列清楚。
-TODO-068 已经把最明显的旧包格式差异先修正。
-TODO-069 已经补齐 StbRow 扩展属性骨架。
-TODO-070 已经收窄 lineStb 直线段 StbGeo 字段集合。
-TODO-071 已经把 sgroupbarline 旧入口契约冻结到 P0 creator raw/evidence。
-TODO-072 已经把命令入口接到创建事务边界。
-TODO-073 已经把创建结果接到可见 AIS 反馈。
-TODO-074 已经把参数窗口和参数传递接到命令入口。
-TODO-075 已经把 UI 顺序收窄到“先选择预检，再打开参数窗口”。
-TODO-076 已经用 IDA MCP 把旧 handler/helper 的直接失败提示证据收窄到 static stop point：
-  handler/helper 内没有直接中文失败提示；
-  Dialog #383 是公共 Input_float，不是旧线配筋主参数窗口。
-TODO-077 已经把静态无法确认的旧运行 UI 信息转成可采样清单。
-TODO-078 已审计当前采样目录只有模板，无法回填真实运行结果，因此 blocked。
+工程图 / Detail：
 
-当前最值得继续推进的是线配筋生成主线：
-  在等待 TODO-078 用户现场运行工件期间，
-  TODO-079 已经完成旧 UI / Dialog / 状态栏的静态资源补证。
-  TODO-080 已经把公共创建 gate 和 diagnostic 落到 P0。
-  TODO-081 已经把 createdPayload / distanceA_4digit / objA-objB 角色语义收窄到静态证据。
-  TODO-082 已经把这些静态证据落进 app 的 roles DTO / raw evidence。
-  TODO-083 已经把 split / spline / trim trace 落成 P0 gap contract。
-  TODO-084 已经把 group minimum distance、backup/write edge 和 dirty write 调用位置落成 P0 gap contract。
+1. 旧图石真实导出的 `Detail.xml + DetailNN.stl` 包。
+2. 旧 AutoCAD 插件实际导入结果。
+3. VisualTS / FDrawing 静态证据和 IDA MCP。
+4. 当前 DetailWriter / DrawingModel 测试。
 
-这比继续抠 Detail 小字段更贴近当前成熟度瓶颈：
-  线配筋命令现在已有成功后的新 app dirty/transaction 状态边界，
-  下一步应先保证保存成功能清 dirty、保存失败保持 dirty 的口径可测试，
-  而不是扩张成完整旧保存 UI 或用 OCCT 直接写一个差不多的生成器。
-golden 采集 TODO-026 仍按用户要求保持 pending。
-```
-
-### 执行规则
+## 执行规则
 
 每轮 goal 模式按这个闭环执行：
 
-1. 先读 `todo.csv`，选择 `status=next` 的任务。
-2. 如果没有 `next`，选择依赖已满足的最高优先级 `P0 pending`。
+1. 先读 `todo.csv`，选择唯一 `status=next` 的任务。
+2. 如果没有唯一 next，停止并修 todo，不继续开发。
 3. 读取该任务 `evidence` 字段指向的文档。
-4. 读取相关代码和测试，确认现有模式。
-5. 先补测试或测试用例，再改实现。
-6. 默认只推进一个 M1 切片，不同时铺开 UI、几何、钢筋业务和工程图。
-7. 修改后运行默认 CTest。
-8. 运行 readiness gate 或对应专项 gate。
-9. 涉及代码、测试、构建脚本的节点，验证通过后、commit 前执行 xhigh 只读 review。
-10. xhigh 只给审查结论；Critical / Important 必须由主流程 agent 修复或写明技术反驳理由。
-11. 修复后重新运行受影响验证。
-12. 更新实现记录文档、build report、`11_需求证据追溯矩阵.md`、`99_缺口和待确认项.md`。
-13. 更新 `todo.csv`：完成项改为 `done`，下一个可执行项改为 `next`。
+4. 读取相关代码和测试。
+5. 涉及代码时先补测试，再改实现。
+6. 默认只推进一个切片。
+7. 修改后运行相关测试。
+8. 运行默认 CTest。
+9. 运行 readiness gate 或对应专项 gate。
+10. 涉及 `domain/rebar` 时运行 OCCT/AIS 泄漏检查。
+11. 涉及代码、测试、构建脚本时执行 xhigh 只读 review。
+12. 更新实现记录、build report、追溯矩阵、99 缺口、46、todo.csv。
+13. commit、annotated tag、push。
 
-### 禁止事项
+## 旧文档处理原则
 
-禁止：
+不要批量删除旧文档。
 
-- 把父目录 `src/rebar/*` 当作旧图石业务真相迁入。
-- 把 `RebarCreationCommandService`、`EdgeToRebarFactory`、`FaceRebarGenerator`、`PolylineRebarGenerator` 当主线复用。
-- 在 `domain/rebar` 中引入 `TopoDS_`、`AIS_`、`BRep*`、`TopAbs_` 等 OCCT / AIS 细节。
-- 用“OCCT 能怎么做”替代“旧图石怎么做”。
-- 不确定旧逻辑时直接写死结论。
-- CTest 或 gate 失败时继续堆新功能。
-- 因为没有 golden 就跳过证据追溯。
-- 让 xhigh agent 修改文件、格式化、commit、tag、push。
-- 代码节点跳过 xhigh 只读 review 后提交。
-
-允许：
-
-- 参考父目录的 STEP/STP 导入、XCAF 遍历、AIS viewer、选择 ID、OCCT API 写法。
-- 在 `LegacyGeometryAdapter` 内部使用 OCCT。
-- 在 presentation / viewer 层使用 AIS。
-- 在文档中把低置信结论明确标为 gap。
-- IDA MCP 可用时优先查旧函数、调用链、常量、字段。
-
-### IDA / 旧图石确认规则
-
-遇到旧业务不确定时，优先级如下：
-
-1. IDA MCP 查询旧 VisualTS 函数、调用链、常量和字段。
-2. 旧图石软件运行确认，记录截图、操作步骤、输出文件、hash。
-3. SFL / Detail / STP 样本交叉验证。
-4. 父目录代码只能作为 OCCT 工程写法参考，不能关闭旧业务证据缺口。
-
-如果 IDA MCP 不可用，要把阻塞原因写入 `99_缺口和待确认项.md`，不能假装已经确认。
-
-成功标准：
-
-- `todo.csv` 中 P0 / P1 任务按依赖顺序完成，状态、证据和验收结果可追溯。
-- `app` 默认 CTest 通过，readiness gate 通过。
-- `domain/rebar` 不出现 `TopoDS_`、`AIS_`、`BRep*`、`TopAbs_` 等 OCCT / AIS 细节。
-- 每个已实现功能都有实现记录、测试报告和需求证据追溯更新。
-- 每个代码节点都有 xhigh 只读 review 结论；Critical / Important 已处理或有技术反驳记录。
-- 旧逻辑不确定时，优先用 IDA MCP 或旧图石运行确认闭合，不用父目录代码替代旧图石证据。
-
-## CSE v2 Control Contract
-
-- **Primary Setpoint**：下一轮只完成 `TODO-088 / Project.Open runtime snapshot 恢复到 app 内存 / 显示入口 P0`，把 `Project.OpenTsRebar` 最小 app 入口接到 `TsRebarProjectRuntime.open()` 结果，让线配筋 SteelData / binding / evidence 可恢复到 MainWindow/app 内存状态。
-- **Acceptance**：新增或调整最小 Project.Open app 入口 P0 切片；测试覆盖打开 TODO-087 保存包后 MainWindow/app 内存恢复 group/bar/segment、bindingDecision 不 blocked、open 后不 dirty、旧保存/打开 UI gap 保留；更新实现记录、run report、11/35/46/99/todo；默认 CTest、readiness gate、OCCT 泄漏检查、git diff --check 和 xhigh 只读 review 必须通过。
-- **Guardrail Metrics**：不能用 Project.Open P0 冒充旧图石 SFL 兼容或完整 UI Open；不能用 OCCT 能怎么做替代旧图石怎么做；不能迁入父目录 rebar 业务；不能让 `domain/rebar` 依赖 TopoDS/AIS/BRep/TopAbs；不能在一个节点里铺开完整旧保存/打开 UI、面配筋、接头、Excel、Detail 字段继续扩张或 golden。
-- **Sampling Plan**：先读 `todo.csv / 33 / 46 / 99 / 125`，确认 `TODO-088` 只做 Project.Open runtime snapshot 恢复到 app 内存 / 显示入口 P0；先补测试，再实现；最后运行默认 CTest、readiness gate、OCCT 泄漏检查、git diff --check 和 xhigh 只读 review。
-- **Known Delays**：旧 dirty/undo/save parity、旧保存提示、关闭提示、旧 UI 参数窗口字段、状态栏流程和失败提示最终仍依赖 IDA 深追或用户插狗后的现场运行；TODO-088 只能推进新 app Project.Open 内存恢复边界，不能替代 TODO-078、旧图石 SFL 兼容或旧 dirty/save/open 完整等价。
-- **Recovery Target**：如果 Project.Open P0 会被误读成完整旧图石 SFL/Open/dirty/save 体系，就缩小字段命名、保留 raw evidence 和 gap，不编造旧状态机。
-- **Rollback Trigger**：domain/rebar 出现 OCCT/AIS include；父目录 rebar 业务被迁入；无 IDA/运行证据却写成旧逻辑已确认；测试或 gate 失败仍继续堆功能。
-- **Constraints**：不使用 ACIS / HOOPS / Codejock 等商业库；新系统不引入 USB 狗 / 网络许可依赖；旧逻辑不确定时优先查 IDA MCP 或旧图石运行确认；xhigh 只读，修改由主流程 agent 完成；不自动安装 HASP，不自动再次启动旧图石。
-- **Boundary**：下一轮允许改 MainWindow Project.OpenTsRebar P0 handler / inspection 接口、project runtime 调用测试、实现记录、run report、追溯矩阵、缺口、todo 和必要门禁；禁止启动旧图石，禁止安装 HASP，禁止改旧 UI 文案，禁止实现完整旧 dirty/undo/save parity、完整线配筋算法、面配筋、弧筋、接头、Excel、Detail、golden，禁止迁入父目录 rebar 业务。
-- **Coupling Notes**：`domain/rebar` 是业务对象边界；command / app 状态是 dirty/transaction 边界；`LegacyGeometryAdapter` 是几何能力边界；线配筋创建若需要几何读取，只能通过 legacy 语义接口，不让业务层直接写 OCCT。
-- **Approximation Validity**：TODO-088 的目标是新 app Project.Open runtime snapshot 恢复到 app 内存 / 显示入口 P0，不是旧图石真实运行确认、完整旧 dirty/undo/save/open parity、完整旧参数窗口、完整线配筋、面配筋、弧筋、统计、出图或 golden。
-- **Actuator Budget**：下一轮只推进 `TODO-088`。完成后停止复盘，不自动进入完整线配筋算法、面配筋、弧筋、接头、Excel、Detail 字段继续扩张或 golden。
-- **Risks**：Project.Open P0 容易被误读成旧图石完整 SFL/Open/dirty/save；必须保留旧 sub_1405E49D0、旧 undo/save/open、运行 UI 和完整算法 gap，不得伪装成旧图石运行确认结论。
-## Todo CSV 使用方式
-
-`todo.csv` 是后续执行看板。建议每次 goal 模式只拿 `status=next` 或最高优先级 `pending` 的任务推进。
-
-字段说明：
-
-- `id`：任务编号。
-- `priority`：`P0` 必须优先，`P1` 近期开发，`P2` 后续增强。
-- `phase`：对应 M1 / M2 / evidence / doc 阶段。
-- `task`：任务名。
-- `status`：`done`、`next`、`pending`、`blocked`。
-- `goal_setpoint`：本任务要把系统推进到什么状态。
-- `acceptance`：怎样算完成。
-- `boundary`：允许碰哪里，禁止碰哪里。
-- `evidence`：依赖的证据来源。
-- `dependencies`：前置任务。
-- `risk`：主要风险。
-- `notes`：补充说明。
-
-## 当前执行建议
-
-下一步优先执行：
+旧文档按三类处理：
 
 ```text
-TODO-087 / 线配筋保存包 runtime 回读验证 P0
-  -> TODO-071 已完成 sgroupbarline 入口契约冻结
-  -> TODO-072 已完成 LineGroup command handler P0 事务接入
-  -> TODO-073 已完成 LineGroup UI/AIS 可见反馈 P0
-  -> TODO-074 已完成最小参数窗口和参数传递
-  -> TODO-075 已完成打开参数窗口前的选择预检
-  -> TODO-076 已完成旧 UI 失败提示与状态栏口径静态 stop point
-  -> TODO-077 已完成旧运行采样清单和工件门禁
-  -> TODO-078 已因缺真实旧图石运行工件 blocked
-  -> TODO-079 已完成旧 UI / Dialog 静态资源补证 static stop point
-  -> TODO-080 已完成 sub_1404D10C0 公共创建 gate / diagnostic 对齐
-  -> TODO-081 已完成 createdPayload / objA / objB 字段语义补证
-  -> TODO-082 已完成 roles DTO / raw evidence 对齐
-  -> TODO-083 已完成 split / spline / trim trace P0
-  -> TODO-084 已完成 group-min-distance / backup-write / dirty-write gap contract
-  -> TODO-085 已完成新 app 线配筋命令成功后的 dirty/transaction P0 状态
-  -> TODO-086 已完成新 app 保存成功清 dirty / 保存失败保持 dirty P0
-  -> TODO-087 已完成保存包 runtime 回读验证 P0
-  -> 下一轮只做 Project.Open runtime snapshot 恢复到 app 内存 / 显示入口 P0
-  -> 不自动安装 HASP
-  -> 不自动启动旧图石
-  -> 不用 OCCT 直接重写钢筋业务
-  -> 不迁入父目录 rebar 业务
-  -> 不替代 TODO-078 的真实运行确认
-  -> 不声明完整线配筋、AutoCAD L2 通过或 golden
+保留可复用资产：
+  Qt6 / OCCT / STEP / AIS / selection / .tsrebar / DetailWriter / gate。
+
+降级为历史证据：
+  VisualTS UI 全量 1:1、旧菜单、旧状态栏、旧线配筋保存打开链。
+
+继续作为主证据：
+  Detail 包字段、旧图石真实导出、旧 AutoCAD 插件兼容、下料表字段。
 ```
 
-原因很简单：TODO-087 已把线配筋保存包 runtime open-back 的边界落成可测试切片。下一步更稳的是把 runtime open 结果接到 Project.Open 的 app 内存恢复入口，继续保持“按 VisualTS 证据复刻”，而不是扩张成完整旧打开 UI 或用 OCCT 直接写一个新的钢筋生成器。
-TODO-026 golden 采集暂按用户要求保持 pending。
+## 当前风险
+
+- RebarSmart 证据来自公司内部包，不能把二进制和敏感内部资源提交到公开仓库。
+- RebarSmart INI 编码可能是 GBK/ANSI，不能用 UTF-8 硬读。
+- Detail 包字段容忍度必须靠旧 AutoCAD 插件实测。
+- OCCT 的几何结果可能和 3DE / ACIS 有差异，后续要靠 golden 校准。
+- 当前仓库如果仍是 public，应避免提交真实客户样本、授权文件、IDA 数据库和私有二进制。
+
+## 完成后复盘格式
+
+每轮完成后输出：
+
+```text
+完成了什么
+验证了什么
+还缺什么
+下一阶段建议做哪个 TODO
+是否已 commit / tag / push
+```
